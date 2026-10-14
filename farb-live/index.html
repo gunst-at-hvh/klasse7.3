@@ -126,6 +126,10 @@ button.sneaky{background:none;box-shadow:none;color:var(--muted);text-decoration
 .prow .axis{font-size:.85rem;margin:0 6px 4px}
 .pbtns{display:flex;flex-direction:column;gap:10px}
 .pbtns button{font-size:1.3rem;padding:14px}
+#pTeams .pchip{font-size:.95rem;padding:3px 10px 3px 6px}
+#pTeams .pchip .e{font-size:1.4rem}
+#pTeams .pchip .arr{font-size:.9rem}
+#pTeams .pchip.turn{outline:3px solid #ffb703}
 
 /* Pop-ups */
 #toasts{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:40;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
@@ -163,7 +167,9 @@ button.sneaky{background:none;box-shadow:none;color:var(--muted);text-decoration
     <div class="muted">Karten nach Farbanteil ordnen – jede Gruppe spielt am eigenen Gerät.</div>
     <div class="choices">
       <button class="blue" id="homeHost">🖥️ Spiel leiten (Beamer)</button>
+      <button class="go" id="homeRoom" style="background:#d89e00">📱 Raum erstellen &amp; mitspielen</button>
       <button class="go" id="homeJoin">📱 Mitspielen</button>
+      <div class="muted" style="font-size:.9rem">„Raum erstellen“: ohne Beamer – dein Gerät lädt ein und spielt selbst mit.</div>
     </div>
   </div>
 </section>
@@ -245,12 +251,33 @@ button.sneaky{background:none;box-shadow:none;color:var(--muted);text-decoration
         <div class="muted" id="pJoinMsg"></div>
       </div>
     </div>
+    <div class="hidden" id="pLobby" style="display:flex;flex-direction:column;gap:12px;align-items:center">
+      <div class="card" style="width:min(460px,100%);text-align:center">
+        <div class="muted" style="font-weight:800">Einladen – Code oder QR:</div>
+        <div style="font-size:3.2rem;font-weight:900;letter-spacing:.14em;color:var(--purple)" id="rlCode">····</div>
+        <div id="rlQr" style="display:grid;place-items:center"></div>
+        <div style="display:flex;gap:8px;justify-content:center;margin-top:8px;flex-wrap:wrap">
+          <button class="blue" id="rlShare">📤 Link teilen</button>
+        </div>
+        <div class="muted" id="rlNet" style="margin-top:6px">Verbinde …</div>
+      </div>
+      <div class="card" style="width:min(460px,100%)">
+        <div style="font-weight:900;margin-bottom:8px" id="rlCount">Dabei:</div>
+        <div class="plist" id="rlList" style="gap:6px"></div>
+        <div style="margin-top:12px">Gewonnen hat, wer zuerst
+          <button class="chip" data-rt="2">2</button> <button class="chip" data-rt="3">3</button> <button class="chip" data-rt="4">4</button> <button class="chip" data-rt="5">5</button>
+          Pfeilkarten hat.</div>
+      </div>
+      <button class="go" id="rlStart" style="font-size:1.4rem;padding:14px 28px;width:min(460px,100%)">▶ Los geht's</button>
+      <div style="font-weight:700;opacity:.9;text-align:center">⚠️ Dieses Gerät bitte nicht schließen oder sperren – es leitet das Spiel.</div>
+    </div>
     <div class="center hidden" id="pWait">
       <div class="bigemoji" id="pWaitE"></div>
       <div style="font-size:1.8rem;font-weight:900" id="pWaitT">Du bist dabei!</div>
       <div style="font-size:1.1rem;opacity:.85" id="pWaitS">Schau auf den Beamer – gleich geht's los.</div>
     </div>
     <div class="hidden" id="pGame" style="display:flex;flex-direction:column;gap:10px">
+      <div class="plist" id="pTeams" style="gap:6px;justify-content:center"></div>
       <div style="text-align:center"><span class="arrowwide" id="pArrow"><span class="a">➜</span><span id="pArrowName"></span></span></div>
       <div class="pturn" id="pTurn"></div>
       <div class="pnext" id="pNext"></div>
@@ -263,6 +290,11 @@ button.sneaky{background:none;box-shadow:none;color:var(--muted);text-decoration
         <button class="red" id="pChallenge">⚡ Täuschung!</button>
       </div>
       <div class="pturn" id="pResult" style="font-size:1.2rem"></div>
+      <div class="pbtns hidden" id="pHostCtl">
+        <button class="blue" id="pNextRound">▶ Nächste Runde</button>
+        <button class="go" id="pAgain">🔄 Neues Spiel</button>
+        <button class="sneaky" id="pBars" style="color:#fff">▤ Flächen zeigen</button>
+      </div>
     </div>
   </div>
 </section>
@@ -504,7 +536,8 @@ function hStateFor(t){
     next: G.next ? G.next.seed : null, newestId:G.newestId, wrong:[...G.wrong],
     cur: cur ? {pid:cur.pid, name:cur.name, avatar:cur.avatar} : null,
     mine: t.pid === G.cur && G.phase === 'play', arrows: t.arrows.length, target:G.target,
-    result: G.result};
+    result: G.result, bars: G.bars, lastAction: G.lastAction, room: !!G.room,
+    teams: G.order.map(pid => G.teams.get(pid)).filter(Boolean).map(x => ({pid:x.pid, name:x.name, avatar:x.avatar, color:x.color, arrows:x.arrows, online:x.online}))};
 }
 function startHost(){
   show('home', false); show('host');
@@ -528,6 +561,7 @@ function hOpenPeer(){
     const url = joinUrl(G.code); $('hUrl').textContent = url.replace(/^https?:\/\//, '');
     try { const qr = qrcode(0, 'M'); qr.addData(url); qr.make(); $('hQr').innerHTML = qr.createSvgTag({cellSize:6, margin:2, scalable:true}); } catch(e){}
     $('hNet').textContent = '✅ Bereit – Gruppen können beitreten.'; netInfo('');
+    if (G.onReady) G.onReady(url);
   });
   peer.on('connection', conn => {
     conn.on('data', m => hOnMsg(conn, m));
@@ -593,7 +627,7 @@ function hPlace(i){
   const placer = G.teams.get(G.cur);
   G.cur = hNextOnline(G.cur);
   G.next = renderCard(newSeed()); G.next.id = 'c' + G.next.seed;
-  if (placer) toast(`${placer.avatar} ${placer.name} hat gelegt`, 1800);
+  if (placer){ G.lastAction = {id: Date.now(), text: `${placer.avatar} ${placer.name} hat gelegt`}; if (!G.room) toast(G.lastAction.text, 1800); }
   hRender(); hBroadcastState();
 }
 function hChallenge(pid){
@@ -610,10 +644,10 @@ function hChallenge(pid){
              : `Die Reihe war falsch! ${winner.avatar} ${winner.name} bekommt die Pfeilkarte.`};
   G.phase = (winner.arrows.length >= G.target || G.arrowIdx >= 11) ? 'over' : 'reveal';
   hRender(); hBroadcastState();
-  bigMessage(G.result.title, G.result.text, ok ? '#26890c' : '#e21b3c');
+  if (!G.room) bigMessage(G.result.title, G.result.text, ok ? '#26890c' : '#e21b3c');
   if (G.phase === 'over'){
     setTimeout(() => {
-      showBoard('🏆 Endstand', [...G.teams.values()].map(t => ({avatar:t.avatar, name:t.name, color:t.color, score:t.arrows.length, label:t.arrows.length + ' ➜'})));
+      if (!G.room) showBoard('🏆 Endstand', [...G.teams.values()].map(t => ({avatar:t.avatar, name:t.name, color:t.color, score:t.arrows.length, label:t.arrows.length + ' ➜'})));
       const all = [...G.teams.values()].sort((a,b) => b.arrows.length - a.arrows.length);
       let place = 0, last = null; all.forEach((t,i) => { if (t.arrows.length !== last){ place = i+1; last = t.arrows.length; } hSend(t, {t:'end', place, of:all.length, arrows:t.arrows.length}); });
     }, 2500);
@@ -630,6 +664,7 @@ function hChip(t, cls){
 }
 function hRender(){
   const ts = [...G.teams.values()];
+  if (G.room) rlRender();
   $('hCount').textContent = ts.length === 1 ? '1 Gruppe' : ts.length + ' Gruppen';
   const ll = $('hLobbyList'); ll.innerHTML = ''; ts.forEach(t => ll.appendChild(hChip(t)));
   $('hStart').disabled = ts.length < 1;
@@ -712,7 +747,7 @@ function startPlayer(code){
   $('pChallenge').onclick = () => { if (P.state && P.state.mine) P.conn.send({t:'challenge'}); };
   addEventListener('resize', () => P.state && pRender());
 }
-function pScreen(id){ ['pJoin','pWait','pGame'].forEach(x => show(x, x === id)); show('pTop', id !== 'pJoin'); }
+function pScreen(id){ ['pJoin','pLobby','pWait','pGame'].forEach(x => show(x, x === id)); show('pTop', id !== 'pJoin'); }
 function pJoin(){
   const code = $('pCode').value.trim().toUpperCase(), name = $('pName').value.trim();
   if (code.length < 4){ $('pJoinMsg').textContent = 'Bitte den Code vom Beamer eingeben.'; return; }
@@ -745,10 +780,12 @@ function pTop(arrows){ $('pTopE').textContent = P.avatar; $('pTopN').textContent
 function pOnMsg(m){
   if (!m || typeof m !== 'object') return;
   if (m.t === 'welcome'){ P.name = m.name; P.avatar = m.avatar; P.color = m.color; pTop(0); }
+  else if (m.t === 'wait' && P.isCreator && G.phase === 'lobby'){ pTop(0); pScreen('pLobby'); }
   else if (m.t === 'wait'){ pTop(); $('pWaitE').textContent = P.avatar; $('pWaitT').textContent = 'Du bist dabei!'; $('pWaitS').textContent = m.text; pScreen('pWait'); }
   else if (m.t === 'state'){
     const wasMine = P.state && P.state.mine;
     P.state = m; if (!m.mine) P.sel = null;
+    if (m.lastAction && m.lastAction.id !== P.lastActionId){ if (P.lastActionId !== undefined) toast(m.lastAction.text, 1800); P.lastActionId = m.lastAction.id; }
     pTop(m.arrows); pScreen('pGame'); pRender();
     if (m.mine && !wasMine && navigator.vibrate) try { navigator.vibrate(200); } catch(e){}
     if (m.result){
@@ -758,6 +795,8 @@ function pOnMsg(m){
   }
   else if (m.t === 'end'){
     pTop(m.arrows);
+    if (P.state && P.state.teams) showBoard('🏆 Endstand', P.state.teams.map(t => ({avatar:t.avatar, name:t.name, color:t.color, score:t.arrows.length, label:t.arrows.length + ' ➜'})));
+    if (P.isCreator) return;
     $('pWaitE').textContent = m.place <= 3 ? ['','🥇','🥈','🥉'][m.place] : P.avatar;
     $('pWaitT').textContent = `Platz ${m.place} von ${m.of}`; $('pWaitS').textContent = `${m.arrows} Pfeilkarte(n) – super gespielt!`;
     setTimeout(() => pScreen('pWait'), 2500);
@@ -766,6 +805,17 @@ function pOnMsg(m){
 function pRender(){
   const s = P.state; if (!s) return;
   const reveal = s.phase !== 'play';
+  const tl = $('pTeams'); tl.innerHTML = '';
+  (s.teams || []).forEach(t => {
+    const d = document.createElement('div'); d.className = 'pchip' + (t.online === false ? ' off' : '') + (s.cur && s.cur.pid === t.pid && !reveal ? ' turn' : '');
+    d.style.borderLeft = '6px solid ' + t.color;
+    d.innerHTML = `<span class="e"></span><span class="n"></span><span class="arr">${t.arrows.map(ci => `<span style="color:${COLS[ci].hex}">➜</span>`).join('') || '–'}</span>`;
+    d.querySelector('.e').textContent = t.avatar; d.querySelector('.n').textContent = t.name;
+    tl.appendChild(d);
+  });
+  show('pHostCtl', !!P.isCreator && reveal);
+  show('pNextRound', s.phase === 'reveal'); show('pAgain', s.phase === 'over');
+  $('pBars').textContent = s.bars ? '🂠 Rückseiten zeigen' : '▤ Flächen zeigen';
   setArrow($('pArrow'), $('pArrowName'), s.color);
   $('pAxisL').textContent = `← wenig ${COLS[s.color].name}`; $('pAxisR').textContent = `viel ${COLS[s.color].name} →`;
   const t = $('pTurn'); t.classList.toggle('mine', s.mine);
@@ -787,7 +837,7 @@ function pRender(){
   s.row.forEach((c, i) => {
     const pair = document.createElement('div'); pair.className = 'pair';
     pair.appendChild(slot(i));
-    const el = cardEl(c.seed, c.pct ? {pct:c.pct, color:s.color} : {});
+    const el = cardEl(c.seed, c.pct ? {pct:c.pct, color:s.color, bars:s.bars} : {});
     if (c.id === s.newestId && !reveal) el.classList.add('newest');
     if (reveal && c.pct){ el.classList.add('flipped', s.wrong.includes(i) ? 'wrong' : 'right'); el.onclick = () => el.classList.toggle('flipped'); }
     pair.appendChild(el); row.appendChild(pair);
@@ -800,13 +850,70 @@ function pRender(){
   $('pPlace').disabled = P.sel == null;
   $('pPlace').textContent = P.sel == null ? 'Tippe auf eine Lücke ＋' : '✓ Hier hinlegen';
   $('pChallenge').disabled = s.row.length < 2;
-  $('pResult').textContent = reveal ? 'Schau auf den Beamer – gleich geht\'s weiter.' : (!s.mine ? 'Überlegt schon mal: Stimmt die Reihe?' : '');
+  $('pResult').textContent = reveal ? (s.room ? (P.isCreator ? '' : 'Gleich geht\'s weiter …') : 'Schau auf den Beamer – gleich geht\'s weiter.') : (!s.mine ? 'Überlegt schon mal: Stimmt die Reihe?' : '');
+}
+
+/* =====================================================================
+   RAUM-MODUS: Ersteller-Gerät leitet im Hintergrund und spielt selbst mit
+   ===================================================================== */
+let wakeLock = null;
+async function keepAwake(){
+  try { if ('wakeLock' in navigator){ wakeLock = await navigator.wakeLock.request('screen'); } } catch(e){}
+}
+document.addEventListener('visibilitychange', () => { if (G.room && document.visibilityState === 'visible') keepAwake(); });
+function startRoom(){
+  startPlayer('');
+  P.isCreator = true;
+  show('pCode', false);
+  $('pJoinBtn').textContent = 'Raum erstellen ▶';
+  $('pJoinBtn').onclick = () => {
+    const name = $('pName').value.trim();
+    if (!name){ $('pJoinMsg').textContent = 'Bitte einen Gruppennamen eingeben.'; return; }
+    P.name = name;
+    try { localStorage.setItem('schaetzlive-me', JSON.stringify({name, avatar:P.avatar})); } catch(e){}
+    $('pJoinBtn').disabled = true; $('pJoinMsg').textContent = 'Raum wird erstellt …';
+    G.room = true;
+    G.onReady = url => {
+      G.onReady = null;
+      $('rlCode').textContent = G.code; $('rlNet').textContent = '✅ Bereit – lade die anderen ein!';
+      try { const qr = qrcode(0, 'M'); qr.addData(url); qr.make(); $('rlQr').innerHTML = qr.createSvgTag({cellSize:5, margin:2, scalable:true}); $('rlQr').querySelector('svg').style.width = 'min(200px,60vw)'; } catch(e){}
+      $('rlShare').onclick = async () => {
+        try { if (navigator.share){ await navigator.share({title:'Farb-Live', text:'Spiel mit! Code: ' + G.code, url}); return; } } catch(e){ return; }
+        try { await navigator.clipboard.writeText(url); toast('Link kopiert ✓', 1500); } catch(e){ prompt('Link kopieren:', url); }
+      };
+      // eigene Gruppe direkt im Gerät verbinden (ohne Netzwerk)
+      const hostSide = {open:true, send: m => setTimeout(() => pOnMsg(m), 0)};
+      P.conn = {open:true, send: m => setTimeout(() => hOnMsg(hostSide, m), 0)};
+      P.conn.send({t:'hello', pid:P.pid, name:P.name, avatar:P.avatar});
+      keepAwake();
+    };
+    hOpenPeer();
+  };
+  document.querySelectorAll('[data-rt]').forEach(b => b.onclick = () => { G.target = +b.dataset.rt; rlRender(); });
+  $('rlStart').onclick = () => hStartGame();
+  $('pNextRound').onclick = () => hNewRound(G.result ? G.result.winner : G.order[0]);
+  $('pAgain').onclick = () => hStartGame();
+  $('pBars').onclick = () => { G.bars = !G.bars; hBroadcastState(); };
+}
+function rlRender(){
+  const ts = G.order.map(pid => G.teams.get(pid)).filter(Boolean);
+  $('rlCount').textContent = `Dabei: ${ts.length} ${ts.length === 1 ? 'Gruppe' : 'Gruppen'}`;
+  const l = $('rlList'); l.innerHTML = '';
+  ts.forEach(t => {
+    const d = document.createElement('div'); d.className = 'pchip' + (t.online ? '' : ' off'); d.style.borderLeft = '6px solid ' + t.color;
+    d.innerHTML = '<span class="e"></span><span class="n"></span>';
+    d.querySelector('.e').textContent = t.avatar; d.querySelector('.n').textContent = t.name; l.appendChild(d);
+  });
+  document.querySelectorAll('[data-rt]').forEach(b => b.classList.toggle('on', +b.dataset.rt === G.target));
+  $('rlStart').disabled = ts.length < 2;
+  $('rlStart').textContent = ts.length < 2 ? 'Warte auf Mitspieler …' : "▶ Los geht's";
 }
 
 /* ================= Start ================= */
 if (typeof Peer === 'undefined'){ document.body.innerHTML = '<div style="color:#fff;padding:30px">Die Verbindungs-Bibliothek konnte nicht geladen werden.</div>'; return; }
 $('homeHost').onclick = startHost;
 $('homeJoin').onclick = () => startPlayer('');
+$('homeRoom').onclick = startRoom;
 if (Q.get('join') !== null) startPlayer(Q.get('join'));
 else if (Q.get('host') !== null) startHost();
 })();
