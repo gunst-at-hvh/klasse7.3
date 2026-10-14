@@ -64,7 +64,7 @@ button.primary:disabled{opacity:.45;cursor:not-allowed}
 .dot{width:18px;height:18px;border-radius:50%;flex:none}
 .player .name{flex:1;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .player .st{font-size:.8rem;color:var(--muted)}
-.player .pts{font-size:1rem;font-weight:800;min-width:40px;text-align:right}
+.player .pts{font-size:1rem;font-weight:800;min-width:56px;text-align:right;font-variant-numeric:tabular-nums}
 .newgame{text-align:center;margin-top:18px}
 .newgame a{color:var(--muted);font-size:.8rem;text-decoration:underline;cursor:pointer}
 .player .x{border:none;background:none;color:var(--muted);padding:0 4px}
@@ -154,7 +154,7 @@ td.num{text-align:right;font-variant-numeric:tabular-nums}
       </div>
       <div id="resultBox" class="hidden" style="margin-top:14px">
         <table>
-          <thead><tr><th>Platz</th><th>Name</th><th class="num">Geschätzt</th><th class="num">Abweichung</th></tr></thead>
+          <thead><tr><th>Platz</th><th>Name</th><th class="num">Geschätzt</th><th class="num">Abweichung</th><th class="num">Punkte</th></tr></thead>
           <tbody id="resultBody"></tbody>
         </table>
       </div>
@@ -493,7 +493,8 @@ function renderResults(){
     tr.innerHTML = `<td>${medals[rank] || (rank+1)+'.'}</td>
       <td><span class="dot" style="display:inline-block;vertical-align:middle;margin-right:6px;background:${r.p.color}"></span><span class="nm"></span></td>
       <td class="num">${r.p.est} %</td>
-      <td class="num">${sign}${Math.abs(r.d)} Pp.</td>`;
+      <td class="num">${sign}${Math.abs(r.d)} Pp.</td>
+      <td class="num"><b>+${100 - Math.abs(r.d)}</b></td>`;
     tr.querySelector('.nm').textContent = r.p.name;
     $('resultBody').appendChild(tr);
   });
@@ -597,8 +598,8 @@ $('revealBtn').addEventListener('click', () => {
   S.revealed = true;
   const ests = S.players.filter(p => p.est != null);
   if (ests.length){
-    const best = Math.min(...ests.map(p => Math.abs(p.est - S.value)));
-    ests.forEach(p => { if (Math.abs(p.est - S.value) === best) p.score++; });
+    // Punkte: 100 minus Abweichung
+    ests.forEach(p => { p.score += Math.max(0, 100 - Math.abs(p.est - S.value)); });
   }
   update();
 });
