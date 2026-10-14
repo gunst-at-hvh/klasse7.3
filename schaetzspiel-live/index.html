@@ -1036,6 +1036,7 @@ if (typeof Peer === 'undefined'){
   return;
 }
 $('homeHost').onclick = startHost;
+{ const v = document.createElement('div'); v.style.cssText = 'margin-top:14px;font-size:.8rem;color:#6b7280'; v.textContent = 'Version ' + APP_VERSION; document.querySelector('#home .card').appendChild(v); }
 $('homeJoin').onclick = () => startPlayer('');
 if (Q.get('join') !== null) startPlayer(Q.get('join'));
 else if (Q.get('host') !== null) startHost();

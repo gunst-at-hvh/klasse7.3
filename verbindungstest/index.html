@@ -54,6 +54,7 @@ function log(msg, cls){ const s = ((Date.now()-t0)/1000).toFixed(1).padStart(5) 
 function sum(msg, cls){ $('sum').textContent = msg; $('sum').className = 'sum ' + (cls||''); }
 log('Gerät: ' + navigator.userAgent);
 log('Seite: ' + location.href);
+log('Version: 2026-10-14e (mit Metered-Umleitung)');
 if (typeof Peer === 'undefined'){ log('✗ Verbindungs-Bibliothek nicht geladen!', 'bad'); }
 
 // WebRTC-Details einer Verbindung beobachten

@@ -1006,6 +1006,7 @@ function rlRender(){
 /* ================= Start ================= */
 if (typeof Peer === 'undefined'){ document.body.innerHTML = '<div style="color:#fff;padding:30px">Die Verbindungs-Bibliothek konnte nicht geladen werden.</div>'; return; }
 $('homeHost').onclick = startHost;
+{ const v = document.createElement('div'); v.style.cssText = 'margin-top:14px;font-size:.8rem;color:#6b7280'; v.textContent = 'Version ' + APP_VERSION; document.querySelector('#home .card').appendChild(v); }
 $('homeJoin').onclick = () => startPlayer('');
 $('homeRoom').onclick = startRoom;
 if (Q.get('join') !== null) startPlayer(Q.get('join'));
