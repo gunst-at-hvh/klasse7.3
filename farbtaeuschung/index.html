@@ -167,7 +167,21 @@ button.primary{box-shadow:0 4px 0 rgba(0,0,0,.28)}
 .band.on.big{font-size:1.4em}
 .sneaky{background:none;border:none;box-shadow:none;color:var(--muted);font-size:.85rem;text-decoration:underline;padding:2px}
 .sneaky:active:not(:disabled){transform:none}
-.team .ava{font-size:1.4rem}
+.team .ava{font-size:1.8rem}
+.picker{position:fixed;inset:0;z-index:45;background:rgba(0,0,0,.5);display:grid;place-items:center;padding:12px;animation:fadeIn .2s}
+.picker .pbox{background:var(--card);color:var(--ink);border-radius:20px;padding:18px;width:min(560px,100%);max-height:94vh;overflow:auto;
+  animation:toastIn .35s cubic-bezier(.2,1.6,.4,1) both;box-shadow:0 12px 40px rgba(0,0,0,.35)}
+.picker h3{margin:0 0 4px;font-size:1.3rem;display:flex;align-items:center;gap:10px}
+.picker h3 .cur{font-size:3rem;line-height:1}
+.picker .grid8{display:grid;grid-template-columns:repeat(auto-fill,minmax(58px,1fr));gap:6px;margin:12px 0}
+.picker .grid8 button{font-size:2.2rem;line-height:1;padding:8px 0;border-radius:14px;background:var(--bg)}
+.picker .grid8 button.used{opacity:.3}
+.picker .grid8 button.sel{outline:3px solid var(--accent)}
+.picker .own{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.picker .own input{width:4.2em;font-size:2.2rem;text-align:center;padding:4px;border-radius:12px;border:2px solid var(--line);background:var(--bg);color:var(--ink)}
+.picker .own small{color:var(--muted);flex-basis:100%}
+.picker .foot{display:flex;justify-content:flex-end;margin-top:12px}
+
 </style>
 </head>
 <body>
@@ -258,6 +272,38 @@ button.primary{box-shadow:0 4px 0 rgba(0,0,0,.28)}
 const $ = id => document.getElementById(id);
 
 /* ---------- Spaß-Elemente ---------- */
+const PICK_SET = ['😀','😎','🤓','🥳','🤩','😜','🤠','🥸','😇','🤖','👻','👽','💩','🐱','🐶','🦊','🐼','🐸','🦁','🐯','🐵','🐙','🦄','🐝','🐢','🦖','🐧','🦉','🐬','🦈','🍕','🍩','🍉','⚽','🏀','🎮','🎸','🚀','🌈','🔥','⭐','💎','👑','🌵'];
+function firstEmoji(s){
+  s = (s || '').trim(); if (!s) return '';
+  try { return [...new Intl.Segmenter('de', {granularity:'grapheme'}).segment(s)][0].segment; }
+  catch(e){ return Array.from(s)[0]; }
+}
+function openAvatarPicker(name, current, used, onPick){
+  const m = document.createElement('div'); m.className = 'picker';
+  m.innerHTML = `<div class="pbox">
+    <h3><span class="cur"></span><span class="ttl"></span></h3>
+    <div class="grid8"></div>
+    <div class="own"><input maxlength="16" aria-label="Eigenes Emoji"><button class="primary">Übernehmen</button>
+      <small>Eigenes Emoji: ins Feld tippen – am PC mit <b>Win + .</b>, am Handy über die Emoji-Tastatur.</small></div>
+    <div class="foot"><button class="close">Abbrechen</button></div></div>`;
+  m.querySelector('.cur').textContent = current;
+  m.querySelector('.ttl').textContent = 'Smiley für ' + name;
+  const close = () => m.remove();
+  const choose = em => { if (em){ onPick(em); } close(); };
+  const grid = m.querySelector('.grid8');
+  PICK_SET.forEach(em => {
+    const b = document.createElement('button'); b.textContent = em;
+    if (em === current) b.classList.add('sel'); else if (used.includes(em)) b.classList.add('used');
+    b.onclick = () => choose(em); grid.appendChild(b);
+  });
+  const inp = m.querySelector('.own input');
+  m.querySelector('.own .primary').onclick = () => choose(firstEmoji(inp.value));
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter') choose(firstEmoji(inp.value)); });
+  m.querySelector('.close').onclick = close;
+  m.addEventListener('click', e => { if (e.target === m) close(); });
+  document.body.appendChild(m);
+}
+
 const AVATARS = ['😀','😎','🤓','🥳','🤩','🤖','👻','👽','🐱','🐶','🦊','🐼','🐸','🦁','🐵','🐙','🦄','🐝','🐢','🦖','🐧','🍕','⚽','🚀','🌈','🔥','⭐'];
 function pickAvatar(used){
   const free = AVATARS.filter(a => !used.includes(a));
@@ -471,8 +517,9 @@ function teamChip(t, i, removable){
     ${removable ? '<button class="x" title="Entfernen">✕</button>' : `<span class="arr">${arr || '<span style="color:var(--muted)">–</span>'}</span>`}`;
   d.querySelector('.nm').textContent = t.name;
   d.querySelector('.ava').onclick = () => {
-    t.avatar = nextAvatarOf(t.avatar, G.teams.map(x => x.avatar));
-    G.phase === 'setup' ? renderSetup() : render();
+    openAvatarPicker(t.name, t.avatar, G.teams.map(x => x.avatar), em => {
+      t.avatar = em; G.phase === 'setup' ? renderSetup() : render();
+    });
   };
   if (removable) d.querySelector('.x').onclick = () => { G.teams.splice(i,1); renderSetup(); };
   return d;
