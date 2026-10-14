@@ -27,6 +27,8 @@ input{font:inherit;font-size:1.6rem;letter-spacing:.2em;text-transform:uppercase
   <div style="margin-top:10px">
     <input id="joinCode" placeholder="CODE" maxlength="6"> <button id="joinBtn">📱 Verbinden</button>
   </div>
+  <label style="display:block;margin-top:10px;font-weight:700"><input type="checkbox" id="relayOnly" style="width:auto;font-size:1rem;letter-spacing:0"> Nur über Metered (Umleitungs-Server) verbinden</label>
+  <div style="font-size:.85rem;color:#6b7280">Zum Prüfen, ob Metered funktioniert: Haken auf <b>beiden</b> Geräten setzen, dann testen.</div>
   <div class="sum" id="sum"></div>
 </div>
 <div class="card">
@@ -50,6 +52,11 @@ const ICE_SERVERS = [
 OPTS.config = {iceServers: ICE_SERVERS};
 const PREFIX = 'hvh-verbtest-';
 const t0 = Date.now();
+function opts(){
+  const o = Object.assign({}, OPTS, {config: Object.assign({}, OPTS.config)});
+  if ($('relayOnly').checked){ o.config.iceTransportPolicy = 'relay'; log('Modus: NUR Umleitungs-Server (Metered)', 'mid'); }
+  return o;
+}
 function log(msg, cls){ const s = ((Date.now()-t0)/1000).toFixed(1).padStart(5) + 's  ' + msg; const d = document.createElement('div'); d.textContent = s; if (cls) d.className = cls; $('log').appendChild(d); }
 function sum(msg, cls){ $('sum').textContent = msg; $('sum').className = 'sum ' + (cls||''); }
 log('Gerät: ' + navigator.userAgent);
@@ -79,7 +86,9 @@ function watch(conn, who){
       const stats = await pc.getStats(); stats.forEach(r => {
         if (r.type === 'candidate-pair' && r.state === 'succeeded' && r.nominated){
           const loc = stats.get(r.localCandidateId), rem = stats.get(r.remoteCandidateId);
+          const relay = (loc && loc.candidateType === 'relay') || (rem && rem.candidateType === 'relay');
           log(`  ${who}: Genutzter Weg: ${loc && loc.candidateType} ↔ ${rem && rem.candidateType}`, 'ok');
+          log(relay ? `  ➜ Läuft über den Umleitungs-Server (Metered) ✓` : `  ➜ Direkte Verbindung (Metered wird nicht gebraucht)`, relay ? 'ok' : '');
         }
       });
     } catch(e){}
@@ -90,7 +99,7 @@ $('hostBtn').onclick = () => {
   $('hostBtn').disabled = true;
   const code = [...Array(4)].map(() => 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random()*32)]).join('');
   log('Öffne Test-Raum ' + code + ' …');
-  const peer = new Peer(PREFIX + code, OPTS);
+  const peer = new Peer(PREFIX + code, opts());
   peer.on('open', id => { log('✓ Vermittlung erreicht (Raum-ID ' + id + ')', 'ok'); $('hostBox').style.display = ''; $('code').textContent = code; sum('Warte auf das Handy …'); });
   peer.on('connection', conn => {
     log('→ Ein Gerät klopft an …'); watch(conn, 'PC');
@@ -106,7 +115,7 @@ $('joinBtn').onclick = () => {
   const code = $('joinCode').value.trim().toUpperCase(); if (code.length < 4) return;
   $('joinBtn').disabled = true;
   log('Verbinde mit Raum ' + code + ' …');
-  const peer = new Peer(undefined, OPTS);
+  const peer = new Peer(undefined, opts());
   peer.on('open', id => {
     log('✓ Vermittlung erreicht (eigene ID ' + id.slice(0,8) + '…)', 'ok');
     const conn = peer.connect(PREFIX + code, {reliable:true}); watch(conn, 'Handy');
