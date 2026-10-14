@@ -158,7 +158,7 @@ button.primary{box-shadow:0 4px 0 rgba(0,0,0,.28)}
 <main>
   <div class="topbar">
     <h1>🎯 Prozent-Schätzspiel</h1>
-    <div style="display:flex;gap:8px"><button id="boardBtn">🏅 Punktestand</button><button id="themeBtn" title="Hell/Dunkel umschalten">🌙 Dunkel</button></div>
+    <div style="display:flex;gap:8px"><button id="boardBtn">🏅 Punktestand</button><button id="fsBtn">⛶ Vollbild</button><button id="themeBtn" title="Hell/Dunkel umschalten">🌙 Dunkel</button></div>
   </div>
   <div class="grid">
     <!-- Seitenleiste -->
@@ -246,6 +246,32 @@ button.primary{box-shadow:0 4px 0 rgba(0,0,0,.28)}
 <script>
 (() => {
 
+/* ---------- Pop-ups, die bis zum nächsten Klick stehen bleiben ---------- */
+let stickyTimers = [], stickyShownAt = 0;
+function stickyToast(text, cls, delay){
+  stickyTimers.push(setTimeout(() => {
+    let box = document.getElementById('toasts');
+    if (!box){ box = document.createElement('div'); box.id = 'toasts'; document.body.appendChild(box); }
+    const t = document.createElement('div');
+    t.className = 'toast sticky ' + cls; t.textContent = text;
+    t.style.animation = 'toastIn .35s cubic-bezier(.2,1.6,.4,1) both';
+    box.appendChild(t);
+    stickyShownAt = Date.now();
+  }, delay));
+}
+function dismissSticky(){
+  const toasts = document.querySelectorAll('.toast.sticky');
+  const crown = document.getElementById('crownPop');
+  const crownOn = crown && !crown.classList.contains('hidden');
+  if (!toasts.length && !crownOn) return;
+  if (Date.now() - stickyShownAt < 250) return;     // nicht sofort wieder schließen
+  stickyTimers.forEach(clearTimeout); stickyTimers = [];
+  toasts.forEach(t => { t.style.animation = 'toastOut .5s ease-in forwards'; setTimeout(() => t.remove(), 520); });
+  if (crownOn){ crown.style.transition = 'opacity .5s'; crown.style.opacity = '0';
+    setTimeout(() => { crown.classList.add('hidden'); crown.style.opacity = ''; }, 520); }
+}
+document.addEventListener('pointerdown', dismissSticky, true);
+document.addEventListener('keydown', dismissSticky, true);
 /* ---------- Spaß-Elemente ---------- */
 const PICK_SET = ['😀','😎','🤓','🥳','🤩','😜','🤠','🥸','😇','🤖','👻','👽','💩','🐱','🐶','🦊','🐼','🐸','🦁','🐯','🐵','🐙','🦄','🐝','🐢','🦖','🐧','🦉','🐬','🦈','🍕','🍩','🍉','⚽','🏀','🎮','🎸','🚀','🌈','🔥','⭐','💎','👑','🌵'];
 function firstEmoji(s){
@@ -798,7 +824,7 @@ $('revealBtn').addEventListener('click', () => {
         const d = p.est - S.value, ad = Math.abs(d);
         const cls = ad < 5 ? 'green' : ad < 10 ? 'yellow' : 'red';
         const word = ad < 5 ? 'super!' : ad < 10 ? 'knapp daneben' : 'daneben';
-        toast(`${p.avatar} ${p.name}: ${d > 0 ? '+' : '−'}${ad} · ${word}`, cls, 2800, (exact.length ? 1400 : 200) + i * 380);
+        stickyToast(`${p.avatar} ${p.name}: ${d > 0 ? '+' : '−'}${ad} · ${word}`, cls, (exact.length ? 1400 : 200) + i * 380);
       });
   }
   update();
@@ -831,7 +857,7 @@ function showCrown(names){
   pop.classList.remove('hidden');
   const c = pop.querySelector('.c'); c.style.animation = 'none'; c.offsetWidth; c.style.animation = '';
   clearTimeout(crownTimer);
-  crownTimer = setTimeout(() => pop.classList.add('hidden'), 2600);
+  stickyShownAt = Date.now();
 }
 
 /* ---------- Siegerehrung ---------- */
@@ -871,6 +897,24 @@ $('podiumNew').addEventListener('click', () => location.reload());
 $('newGameLink').addEventListener('click', () => {
   if (confirm('Neues Spiel starten? Alle Punkte werden auf 0 gesetzt.')) location.reload();
 });
+
+
+/* ---------- Vollbild ---------- */
+(function(){
+  const btn = document.getElementById('fsBtn'); if (!btn) return;
+  const root = document.documentElement;
+  const canFs = root.requestFullscreen || root.webkitRequestFullscreen;
+  if (!canFs){ btn.style.display = 'none'; return; }   // z. B. iPhone: kein Vollbild möglich
+  const isFs = () => document.fullscreenElement || document.webkitFullscreenElement;
+  const sync = () => { btn.textContent = isFs() ? '🗗 Vollbild aus' : '⛶ Vollbild'; };
+  btn.onclick = () => {
+    if (isFs()) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+    else (root.requestFullscreen || root.webkitRequestFullscreen).call(root);
+  };
+  document.addEventListener('fullscreenchange', sync);
+  document.addEventListener('webkitfullscreenchange', sync);
+  sync();
+})();
 
 /* ---------- Hell / Dunkel ---------- */
 const mq = matchMedia('(prefers-color-scheme: dark)');

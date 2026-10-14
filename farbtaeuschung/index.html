@@ -195,6 +195,7 @@ button.primary{box-shadow:0 4px 0 rgba(0,0,0,.28)}
     <h1>🎨 Farb-Täuschung</h1>
     <div class="row">
       <button id="boardBtn">🏅 Punktestand</button>
+      <button id="fsBtn">⛶ Vollbild</button>
       <button id="themeBtn">🌙 Dunkel</button>
     </div>
   </div>
@@ -736,6 +737,24 @@ $('boardBtn').onclick = () => showBoard('🏅 Punktestand', G.teams.map(t => ({a
 $('nextRoundBtn').onclick = () => newRound(G.roundWinner);
 $('againBtn').onclick = () => { $('winOverlay').classList.add('hidden'); startGame(); };
 $('closeWin').onclick = () => $('winOverlay').classList.add('hidden');
+
+
+/* ---------- Vollbild ---------- */
+(function(){
+  const btn = document.getElementById('fsBtn'); if (!btn) return;
+  const root = document.documentElement;
+  const canFs = root.requestFullscreen || root.webkitRequestFullscreen;
+  if (!canFs){ btn.style.display = 'none'; return; }   // z. B. iPhone: kein Vollbild möglich
+  const isFs = () => document.fullscreenElement || document.webkitFullscreenElement;
+  const sync = () => { btn.textContent = isFs() ? '🗗 Vollbild aus' : '⛶ Vollbild'; };
+  btn.onclick = () => {
+    if (isFs()) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+    else (root.requestFullscreen || root.webkitRequestFullscreen).call(root);
+  };
+  document.addEventListener('fullscreenchange', sync);
+  document.addEventListener('webkitfullscreenchange', sync);
+  sync();
+})();
 
 /* ---------- Hell / Dunkel ---------- */
 const mq = matchMedia('(prefers-color-scheme: dark)');
