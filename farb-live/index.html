@@ -179,6 +179,7 @@ button.sneaky{background:none;box-shadow:none;color:var(--muted);text-decoration
   <div class="hbar">
     <h1>🎨 Farb-Live</h1>
     <span class="codebox" id="hCodeSmall">····</span>
+    <span id="hLamp" style="font-weight:800;font-size:.95rem">⚪ …</span>
     <button class="ghost" id="hBoardBtn">🏅 Punktestand</button>
     <button class="ghost" id="hFsBtn">⛶ Vollbild</button>
   </div>
@@ -310,8 +311,33 @@ const show = (id, on = true) => $(id).classList.toggle('hidden', !on);
 const Q = new URLSearchParams(location.search);
 const PEER_OPTS = Q.get('ph') ? {host: Q.get('ph'), port: +(Q.get('pp') || 9000), path: Q.get('ppath') || '/', secure: Q.get('ps') === '1'} : {};
 PEER_OPTS.debug = 1;
+const ICE_SERVERS = [
+  {urls: 'stun:stun.relay.metered.ca:80'},
+  {urls: 'stun:stun.l.google.com:19302'},
+  {urls: 'turn:global.relay.metered.ca:80', username: 'a8c27e443d09af6572e14185', credential: 'lXvBAswWQlUTXAaL'},
+  {urls: 'turn:global.relay.metered.ca:80?transport=tcp', username: 'a8c27e443d09af6572e14185', credential: 'lXvBAswWQlUTXAaL'},
+  {urls: 'turn:global.relay.metered.ca:443', username: 'a8c27e443d09af6572e14185', credential: 'lXvBAswWQlUTXAaL'},
+  {urls: 'turns:global.relay.metered.ca:443?transport=tcp', username: 'a8c27e443d09af6572e14185', credential: 'lXvBAswWQlUTXAaL'}
+];
+PEER_OPTS.config = {iceServers: ICE_SERVERS};
+
+/* Beamer/Ersteller: beim Vermittler angemeldet bleiben (z. B. nach längerem Hintergrund) */
+function keepRegistered(getPeer, lampId){
+  const check = () => {
+    const peer = getPeer(); if (!peer || peer.destroyed) return;
+    const lamp = lampId && document.getElementById(lampId);
+    if (peer.disconnected){
+      if (lamp){ lamp.textContent = '🔴 verbindet neu …'; lamp.title = 'Neue Gruppen können gerade nicht beitreten'; }
+      try { peer.reconnect(); } catch(e){}
+    } else if (lamp){ lamp.textContent = '🟢 erreichbar'; lamp.title = 'Gruppen können beitreten'; }
+  };
+  setInterval(check, 4000);
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') check(); });
+  window.addEventListener('online', check);
+}
+
 const PREFIX = 'hvh-farblive-';
-const APP_VERSION = '2026-10-14d';
+const APP_VERSION = '2026-10-14e';
 const AUTOJOIN_KEY = 'farb-live-autojoin';
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const EMOJIS = ['😀','😎','🤓','🥳','🤩','😜','🤠','🥸','😇','🤖','👻','👽','💩','🐱','🐶','🦊','🐼','🐸','🦁','🐯','🐵','🐙','🦄','🐝','🐢','🦖','🐧','🦉','🐬','🦈','🍕','🍩','🍉','⚽','🏀','🎮','🎸','🚀','🌈','🔥','⭐','💎','👑','🌵'];
@@ -565,6 +591,7 @@ function hOpenPeer(){
     $('hNet').textContent = '✅ Bereit – Gruppen können beitreten.'; netInfo('');
     if (G.onReady) G.onReady(url);
   });
+  if (!G.keep){ G.keep = true; keepRegistered(() => G.peer, 'hLamp'); }
   peer.on('connection', conn => {
     conn.on('data', m => hOnMsg(conn, m));
     conn.on('close', () => { const t = [...G.teams.values()].find(x => x.conn === conn); if (t){ t.online = false; hRender(); } });

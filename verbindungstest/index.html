@@ -39,6 +39,15 @@ const $ = id => document.getElementById(id);
 const Q = new URLSearchParams(location.search);
 const OPTS = Q.get('ph') ? {host:Q.get('ph'), port:+(Q.get('pp')||9000), path:'/', secure:Q.get('ps')==='1'} : {};
 OPTS.debug = 1;
+const ICE_SERVERS = [
+  {urls: 'stun:stun.relay.metered.ca:80'},
+  {urls: 'stun:stun.l.google.com:19302'},
+  {urls: 'turn:global.relay.metered.ca:80', username: 'a8c27e443d09af6572e14185', credential: 'lXvBAswWQlUTXAaL'},
+  {urls: 'turn:global.relay.metered.ca:80?transport=tcp', username: 'a8c27e443d09af6572e14185', credential: 'lXvBAswWQlUTXAaL'},
+  {urls: 'turn:global.relay.metered.ca:443', username: 'a8c27e443d09af6572e14185', credential: 'lXvBAswWQlUTXAaL'},
+  {urls: 'turns:global.relay.metered.ca:443?transport=tcp', username: 'a8c27e443d09af6572e14185', credential: 'lXvBAswWQlUTXAaL'}
+];
+OPTS.config = {iceServers: ICE_SERVERS};
 const PREFIX = 'hvh-verbtest-';
 const t0 = Date.now();
 function log(msg, cls){ const s = ((Date.now()-t0)/1000).toFixed(1).padStart(5) + 's  ' + msg; const d = document.createElement('div'); d.textContent = s; if (cls) d.className = cls; $('log').appendChild(d); }
