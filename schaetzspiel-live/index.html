@@ -313,6 +313,8 @@ const Q = new URLSearchParams(location.search);
 const PEER_OPTS = Q.get('ph') ? {host: Q.get('ph'), port: +(Q.get('pp') || 9000), path: Q.get('ppath') || '/', secure: Q.get('ps') === '1'} : {};
 PEER_OPTS.debug = 1;
 const PREFIX = 'hvh-schaetzlive-';
+const APP_VERSION = '2026-10-14c';
+const AUTOJOIN_KEY = 'schaetzspiel-live-autojoin';
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const EMOJIS = ['😀','😎','🤓','🥳','🤩','😜','🤠','🥸','😇','🤖','👻','👽','💩','🐱','🐶','🦊','🐼','🐸','🦁','🐯','🐵','🐙','🦄','🐝','🐢','🦖','🐧','🦉','🐬','🦈','🍕','🍩','🍉','⚽','🏀','🎮','🎸','🚀','🌈','🔥','⭐','💎','👑','🌵'];
 const COLORS = ['#e21b3c','#1368ce','#d89e00','#26890c','#864cbf','#0aa3a3','#e0569b','#f77f00','#6b8e23','#3a0ca3','#8d6e63','#495057'];
@@ -612,7 +614,7 @@ function hOnMsg(conn, m){
       H.players.set(m.pid, p);
     } else { p.name = name; p.avatar = avatar; }
     p.conn = conn; p.online = true;
-    hSend(p, {t:'welcome', name:p.name, avatar:p.avatar, color:p.color, score:p.score});
+    hSend(p, {t:'welcome', v:APP_VERSION, name:p.name, avatar:p.avatar, color:p.color, score:p.score});
     if (H.phase === 'running') hSend(p, hRoundMsg());
     else if (H.phase === 'reveal' && p.lastResult) hSend(p, p.lastResult);
     else hSend(p, {t:'wait', text: H.phase === 'lobby' ? 'Schau auf den Beamer – gleich geht\'s los.' : 'Gleich geht\'s los!'});
@@ -801,7 +803,7 @@ function hRender(){
 /* =====================================================================
    SPIELER (Handy)
    ===================================================================== */
-const C = {peer:null, conn:null, pid:'', name:'', avatar:'', color:'#864cbf', round:null, est:null, done:false, locked:false,
+const C = {peer:null, conn:null, gen:0, connTimer:null, retryTimer:null, pid:'', name:'', avatar:'', color:'#864cbf', round:null, est:null, done:false, locked:false,
   deadline:0, sendTimer:null, tick:null, score:0, retry:0};
 function pid(){
   try { let id = localStorage.getItem('schaetzlive-pid'); if (!id){ id = Math.random().toString(36).slice(2) + Date.now().toString(36); localStorage.setItem('schaetzlive-pid', id); } return id; }
@@ -821,6 +823,10 @@ function startPlayer(code){
     grid.appendChild(b);
   });
   $('pJoinBtn').onclick = pJoin;
+  try {
+    const aj = sessionStorage.getItem(AUTOJOIN_KEY);
+    if (aj !== null){ sessionStorage.removeItem(AUTOJOIN_KEY); if (aj && $('pName').value.trim()){ $('pCode').value = aj; setTimeout(pJoin, 300); } }
+  } catch(e){}
   $('pName').addEventListener('keydown', e => { if (e.key === 'Enter') pJoin(); });
   if (code && saved.name) $('pName').focus();
   pSetupInput();
@@ -833,30 +839,88 @@ function pJoin(){
   C.name = name; C.code = code;
   try { localStorage.setItem('schaetzlive-me', JSON.stringify({name, avatar:C.avatar})); } catch(e){}
   $('pJoinMsg').textContent = 'Verbinde …'; $('pJoinBtn').disabled = true;
-  pConnect();
+  C.retry = 0; hideStuck(); pConnect();
 }
 function pConnect(){
-  if (C.peer && !C.peer.destroyed){ try { C.peer.destroy(); } catch(e){} }
+  // Jeder Versuch bekommt eine Nummer – alte Versuche werden still beendet (keine Endlosschleife)
+  const gen = ++C.gen;
+  clearTimeout(C.connTimer); clearTimeout(C.retryTimer);
+  const old = C.peer; C.peer = null; C.conn = null;
+  if (old){ try { old.destroy(); } catch(e){} }
   const peer = new Peer(undefined, PEER_OPTS); C.peer = peer;
+  const retryLater = (ms, msg) => {
+    if (gen !== C.gen) return;
+    if (msg) netInfo(msg);
+    C.retryTimer = setTimeout(() => { if (gen === C.gen) pConnect(); }, ms);
+  };
+  // Zeitgrenze: steht die Verbindung nach 12 s nicht, neu versuchen
+  C.connTimer = setTimeout(() => {
+    if (gen !== C.gen || (C.conn && C.conn.open)) return;
+    if (++C.retry >= 4){ pStuck(); return; }
+    retryLater(0, 'Verbindung hakt – neuer Versuch (' + C.retry + ') …');
+  }, 12000);
   peer.on('open', () => {
+    if (gen !== C.gen) return;
     const conn = peer.connect(PREFIX + C.code, {reliable:true}); C.conn = conn;
-    conn.on('open', () => { C.retry = 0; netInfo(''); conn.send({t:'hello', pid:C.pid, name:C.name, avatar:C.avatar}); });
-    conn.on('data', pOnMsg);
-    conn.on('close', () => { netInfo('Verbindung verloren – verbinde neu …'); setTimeout(pConnect, 1500); });
+    conn.on('open', () => {
+      if (gen !== C.gen) return;
+      clearTimeout(C.connTimer); C.retry = 0; netInfo(''); hideStuck();
+      conn.send({t:'hello', pid:C.pid, name:C.name, avatar:C.avatar, v:APP_VERSION});
+    });
+    conn.on('data', m => { if (gen === C.gen) pOnMsg(m); });
+    conn.on('close', () => retryLater(1500, 'Verbindung verloren – verbinde neu …'));
+    conn.on('error', () => retryLater(1500, 'Verbindung gestört – verbinde neu …'));
   });
   peer.on('error', err => {
+    if (gen !== C.gen) return;
     if (err.type === 'peer-unavailable'){
-      if ($('pJoin').classList.contains('hidden')){ netInfo('Spiel nicht erreichbar – versuche erneut …'); setTimeout(pConnect, 2500); }
-      else { $('pJoinMsg').textContent = 'Kein Spiel mit diesem Code gefunden.'; $('pJoinBtn').disabled = false; }
+      if ($('pJoin').classList.contains('hidden')) retryLater(2500, 'Spiel nicht erreichbar – versuche erneut …');
+      else { clearTimeout(C.connTimer); C.gen++; $('pJoinMsg').textContent = 'Kein Spiel mit diesem Code gefunden.'; $('pJoinBtn').disabled = false; }
       return;
     }
-    netInfo('⚠️ Netzwerk: ' + err.type);
-    if (++C.retry < 6) setTimeout(pConnect, 2000); else { $('pJoinMsg').textContent = 'Verbindung klappt nicht: ' + err.type; $('pJoinBtn').disabled = false; }
+    if (++C.retry >= 4){ clearTimeout(C.connTimer); pStuck(err.type); return; }
+    retryLater(2000, '⚠️ Netzwerk: ' + err.type + ' – neuer Versuch …');
   });
 }
+/* Hilfe, wenn gar nichts geht: neu laden (ohne Zwischenspeicher) oder Gerät zurücksetzen */
+function freshUrl(){
+  const u = new URL(location.href); u.searchParams.set('r', Date.now().toString(36));
+  if (C.code) u.searchParams.set('join', C.code);
+  return u.toString();
+}
+function pStuck(detail){
+  netInfo('');
+  let box = document.getElementById('stuck');
+  if (!box){
+    box = document.createElement('div'); box.id = 'stuck';
+    box.style.cssText = 'position:fixed;inset:auto 12px 12px 12px;z-index:60;background:#fff;color:#1d2433;border-radius:18px;padding:16px;box-shadow:0 10px 30px rgba(0,0,0,.35);text-align:center';
+    box.innerHTML = `<div style="font-weight:900;font-size:1.2rem">😕 Verbindung klappt gerade nicht</div>
+      <div style="margin:6px 0 12px;color:#6b7280" class="d"></div>
+      <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+        <button class="go" data-a="reload">↻ Neu laden</button>
+        <button data-a="reset">🧹 Zurücksetzen &amp; neu laden</button>
+        <button data-a="retry">Nochmal versuchen</button></div>`;
+    box.querySelector('[data-a=reload]').onclick = () => { try { sessionStorage.setItem(AUTOJOIN_KEY, C.code || ''); } catch(e){} location.replace(freshUrl()); };
+    box.querySelector('[data-a=reset]').onclick = () => {
+      try { Object.keys(localStorage).filter(k => /schaetzlive|farblive/.test(k) && !/-me$/.test(k)).forEach(k => localStorage.removeItem(k)); sessionStorage.setItem(AUTOJOIN_KEY, C.code || ''); } catch(e){}
+      location.replace(freshUrl());
+    };
+    box.querySelector('[data-a=retry]').onclick = () => { hideStuck(); C.retry = 0; pConnect(); };
+    document.body.appendChild(box);
+  }
+  box.querySelector('.d').textContent = 'Prüfe WLAN/Internet. ' + (detail ? '(' + detail + ')' : 'Ist der Spiel-Code noch aktiv?');
+  box.style.display = '';
+  if (!$('pJoin').classList.contains('hidden')){ $('pJoinMsg').textContent = ''; $('pJoinBtn').disabled = false; }
+}
+function hideStuck(){ const b = document.getElementById('stuck'); if (b) b.style.display = 'none'; }
 function pTop(){ $('pTopE').textContent = C.avatar; $('pTopN').textContent = C.name; $('pTopS').textContent = C.score + ' P'; $('pTopS').style.background = '#fff'; }
 function pOnMsg(m){
   if (!m || typeof m !== 'object') return;
+  if (m.t === 'welcome' && m.v && m.v !== APP_VERSION){
+    // Seite ist veraltet (Zwischenspeicher) – einmal frisch laden und automatisch wieder beitreten
+    let done = false; try { done = sessionStorage.getItem('vfix-' + m.v) === '1'; sessionStorage.setItem('vfix-' + m.v, '1'); sessionStorage.setItem(AUTOJOIN_KEY, C.code || ''); } catch(e){}
+    if (!done){ netInfo('Neue Version – lade neu …'); location.replace(freshUrl()); return; }
+  }
   if (m.t === 'welcome'){ C.name = m.name; C.avatar = m.avatar; C.color = m.color; C.score = m.score; pTop(); }
   else if (m.t === 'wait'){ pTop(); $('pWaitE').textContent = C.avatar; $('pWaitT').textContent = 'Du bist dabei!'; $('pWaitS').textContent = m.text; pScreen('pWait'); }
   else if (m.t === 'round'){ pStartRound(m); }
@@ -935,6 +999,7 @@ function pResult(m){
   pScreen('pResult');
 }
 
+if (Q.get('debug')) window.__dbg = C;   // nur zum Testen
 /* ================= Start ================= */
 if (typeof Peer === 'undefined'){
   document.body.innerHTML = '<div style="color:#fff;padding:30px;font-size:1.3rem">Die Verbindungs-Bibliothek konnte nicht geladen werden.</div>';
