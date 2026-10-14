@@ -335,17 +335,22 @@ const GEO = {
        bar:{x0:40,x1:760,y0:180,y1:260,dir:'h'},
        battery:{x0:80,x1:680,y0:120,y1:320,dir:'h'},
        square:{x0:270,x1:530,y0:80,y1:340,dir:'v'},
-       circle:{cx:400,cy:225,r:160,dir:'c'} },
+       circle:{cx:400,cy:225,r:160,dir:'c'},
+       triangle:{ax:400,ay:35,y1:400,hw:230,dir:'t'} },
   v: { vb:[300,520],
        bar:{x0:105,x1:195,y0:20,y1:500,dir:'v'},
        battery:{x0:45,x1:255,y0:62,y1:505,dir:'v'},
        square:{x0:15,x1:285,y0:125,y1:395,dir:'v'},
-       circle:{cx:150,cy:260,r:138,dir:'c'} }
+       circle:{cx:150,cy:260,r:138,dir:'c'},
+       triangle:{ax:150,ay:40,y1:490,hw:145,dir:'t'} }
 };
 const NS = 'http://www.w3.org/2000/svg';
 function el(tag, attrs, parent){ const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
 function polar(g, f, r){ const a = 2*Math.PI*f; return [g.cx + r*Math.sin(a), g.cy - r*Math.cos(a)]; }
+function triY(g, f){ return g.ay + (g.y1 - g.ay) * Math.sqrt(clamp(1 - f, 0, 1)); }
+function triHalf(g, y){ return g.hw * (y - g.ay) / (g.y1 - g.ay); }
 function fracFromPoint(g, x, y){
+  if (g.dir === 't'){ const d = clamp((y - g.ay)/(g.y1 - g.ay), 0, 1); return 1 - d*d; }
   if (g.dir === 'h') return clamp((x - g.x0)/(g.x1 - g.x0), 0, 1);
   if (g.dir === 'v') return clamp((g.y1 - y)/(g.y1 - g.y0), 0, 1);
   let a = Math.atan2(x - g.cx, -(y - g.cy)); if (a < 0) a += 2*Math.PI; return a/(2*Math.PI);
@@ -354,6 +359,7 @@ function segment(g, a, b, color, parent){
   if (b <= a) return;
   if (g.dir === 'h'){ const w = g.x1-g.x0; el('rect',{x:g.x0+a*w, y:g.y0, width:(b-a)*w, height:g.y1-g.y0, fill:color}, parent); }
   else if (g.dir === 'v'){ const h = g.y1-g.y0; el('rect',{x:g.x0, y:g.y1-b*h, width:g.x1-g.x0, height:(b-a)*h, fill:color}, parent); }
+  else if (g.dir === 't'){ const yt = triY(g, b), yb = triY(g, a); el('rect',{x:g.ax-g.hw, y:yt, width:2*g.hw, height:yb-yt+.5, fill:color}, parent); }
   else {
     if (b - a >= 0.9999){ el('circle',{cx:g.cx, cy:g.cy, r:g.r, fill:color}, parent); return; }
     const [x1,y1] = polar(g,a,g.r), [x2,y2] = polar(g,b,g.r);
@@ -363,6 +369,7 @@ function segment(g, a, b, color, parent){
 function lineAt(g, f, attrs, parent, ext = 0){
   if (g.dir === 'h'){ const x = g.x0 + f*(g.x1-g.x0); return el('line', Object.assign({x1:x, x2:x, y1:g.y0-ext, y2:g.y1+ext}, attrs), parent); }
   if (g.dir === 'v'){ const y = g.y1 - f*(g.y1-g.y0); return el('line', Object.assign({x1:g.x0-ext, x2:g.x1+ext, y1:y, y2:y}, attrs), parent); }
+  if (g.dir === 't'){ const y = triY(g, f), w = triHalf(g, y); return el('line', Object.assign({x1:g.ax-w-ext, x2:g.ax+w+ext, y1:y, y2:y}, attrs), parent); }
   const [x,y] = polar(g, f, g.r + ext); return el('line', Object.assign({x1:g.cx, y1:g.cy, x2:x, y2:y}, attrs), parent);
 }
 function pill(svg, x, y, text, color, anchor = 'middle', W = 800){
@@ -397,6 +404,8 @@ function drawShape(svg, o){
     else el('rect',{x:(g.x0+g.x1)/2-42, y:g.y0-44, width:84, height:24, rx:7, fill:ink}, svg);
   } else if (o.shape === 'square'){
     out = {tag:'rect', a:{x:g.x0, y:g.y0, width:g.x1-g.x0, height:g.y1-g.y0}};
+  } else if (o.shape === 'triangle'){
+    out = {tag:'polygon', a:{points:`${g.ax},${g.ay} ${g.ax+g.hw},${g.y1} ${g.ax-g.hw},${g.y1}`, 'stroke-linejoin':'round'}};
   } else {
     out = {tag:'circle', a:{cx:g.cx, cy:g.cy, r:g.r}};
   }
@@ -415,6 +424,7 @@ function drawShape(svg, o){
         const m = (a+b)/2; let tx, ty;
         if (g.dir === 'h'){ tx = g.x0 + m*(g.x1-g.x0); ty = (g.y0+g.y1)/2 + 6; }
         else if (g.dir === 'v'){ tx = (g.x0+g.x1)/2; ty = g.y1 - m*(g.y1-g.y0) + 6; }
+        else if (g.dir === 't'){ tx = g.ax; ty = (triY(g, a) + triY(g, b))/2 + 6; }
         else { [tx,ty] = polar(g, m, g.r*.75); ty += 6; }
         const t = el('text',{x:tx, y:ty, 'text-anchor':'middle', 'font-size':16, 'font-weight':800, fill:'#fff', 'font-family':'system-ui,sans-serif'}, inner);
         t.textContent = '1/' + n;
@@ -429,6 +439,7 @@ function drawShape(svg, o){
         const f = k/n; let x, y, anchor = 'middle';
         if (g.dir === 'h'){ x = g.x0 + f*(g.x1-g.x0); y = g.y1 + 40; }
         else if (g.dir === 'v'){ x = g.x0 - 12; y = g.y1 - f*(g.y1-g.y0) + 6; anchor = 'end'; }
+        else if (g.dir === 't'){ y = triY(g, f); x = g.ax - triHalf(g, y) - 30; y += 6; anchor = 'end'; }
         else { [x,y] = polar(g, f, g.r*.55); y += 6; }
         const t = el('text',{x, y, 'text-anchor':anchor, 'font-size':17, 'font-weight':800, fill:ink, 'font-family':'system-ui,sans-serif'}, svg);
         t.textContent = splitLabel(n, k);
@@ -444,6 +455,7 @@ function drawShape(svg, o){
     let x, y, anchor = 'middle';
     if (g.dir === 'h'){ x = g.x0 + mk.f*(g.x1-g.x0); y = Math.max(20, g.y0 - 40 - (i%3)*36); }
     else if (g.dir === 'v'){ x = g.x1 + 22 + (i%2)*130; y = g.y1 - mk.f*(g.y1-g.y0); anchor = 'start'; }
+    else if (g.dir === 't'){ y = triY(g, mk.f); x = g.ax + triHalf(g, y) + 26 + (i%2)*130; anchor = 'start'; }
     else { [x,y] = polar(g, mk.f, g.r + 34 + (i%2)*34); }
     pill(svg, x, y, mk.label, mk.color, anchor, W);
   });
@@ -622,7 +634,7 @@ function hRoundMsg(){
     ms: H.time ? Math.max(0, H.endsAt - Date.now()) : 0};
 }
 function buildChips(){
-  const shapes = [['battery','🔋 Batterie'],['bar','▬ Balken'],['square','◼ Quadrat'],['circle','● Kreis']];
+  const shapes = [['battery','🔋 Batterie'],['bar','▬ Balken'],['square','◼ Quadrat'],['circle','● Kreis'],['triangle','▲ Dreieck']];
   const times = [[10,'10 s'],[20,'20 s'],[30,'30 s'],[45,'45 s'],[0,'∞']];
   const splits = [['2','Halbe'],['3','Drittel'],['4','Viertel'],['5','Fünftel'],['10','Zehntel'],['auto','Automatisch']];
   const mk = (rowIds, list, key, after) => rowIds.forEach(id => {
