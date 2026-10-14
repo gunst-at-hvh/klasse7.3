@@ -130,8 +130,8 @@ details li{margin:4px 0}
 button{box-shadow:0 3px 0 var(--line);transition:transform .08s, box-shadow .08s}
 button:active:not(:disabled){transform:translateY(3px);box-shadow:0 0 0 var(--line)}
 button.primary{box-shadow:0 4px 0 rgba(0,0,0,.28)}
-.ava{width:2.2em;height:2.2em;border-radius:50%;display:inline-grid;place-items:center;font-size:1.3rem;line-height:1;flex:none;
-  border:3px solid;background:var(--card);padding:0;box-shadow:none;cursor:pointer;transition:transform .15s}
+.ava{display:inline-grid;place-items:center;font-size:1.3rem;line-height:1;flex:none;padding:0 .05em;border:none;background:none;box-shadow:none;cursor:pointer;
+  transition:transform .15s;filter:drop-shadow(0 0 1.5px #fff) drop-shadow(0 0 1.5px #fff) drop-shadow(0 0 1px #fff) drop-shadow(0 0 7px var(--glow,#fff))}
 .ava:hover{transform:scale(1.12) rotate(-8deg)}
 #toasts{position:fixed;top:18px;left:50%;transform:translateX(-50%);z-index:40;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
 .toast{padding:10px 22px;border-radius:999px;font-weight:800;font-size:1.35rem;color:#fff;box-shadow:0 6px 18px rgba(0,0,0,.25);white-space:nowrap}
@@ -146,7 +146,7 @@ button.primary{box-shadow:0 4px 0 rgba(0,0,0,.28)}
 .lb .rows{width:min(960px,100%);display:flex;flex-direction:column;gap:12px}
 .lb .r{display:flex;align-items:center;gap:16px;background:rgba(255,255,255,.13);border-radius:16px;padding:10px 20px;animation:slideIn .45s both}
 .lb .r .pl{font-size:clamp(1.4rem,4vw,2.2rem);font-weight:900;min-width:1.6ch}
-.lb .r .ava{font-size:clamp(1.3rem,4vw,2.2rem);border-color:#fff;background:rgba(255,255,255,.18);cursor:default}
+.lb .r .ava{font-size:clamp(2rem,6vw,3.4rem);cursor:default}
 .lb .r .n{flex:1;font-size:clamp(1.6rem,5vw,3rem);font-weight:900;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .lb .r .s{font-size:clamp(1.3rem,4vw,2.4rem);font-weight:900;white-space:nowrap}
 .lb small{margin-top:20px;opacity:.7}
@@ -167,7 +167,7 @@ button.primary{box-shadow:0 4px 0 rgba(0,0,0,.28)}
 .band.on.big{font-size:1.4em}
 .sneaky{background:none;border:none;box-shadow:none;color:var(--muted);font-size:.85rem;text-decoration:underline;padding:2px}
 .sneaky:active:not(:disabled){transform:none}
-.team .ava{font-size:1.8rem}
+.team .ava{font-size:2.8rem}
 .picker{position:fixed;inset:0;z-index:45;background:rgba(0,0,0,.5);display:grid;place-items:center;padding:12px;animation:fadeIn .2s}
 .picker .pbox{background:var(--card);color:var(--ink);border-radius:20px;padding:18px;width:min(560px,100%);max-height:94vh;overflow:auto;
   animation:toastIn .35s cubic-bezier(.2,1.6,.4,1) both;box-shadow:0 12px 40px rgba(0,0,0,.35)}
@@ -518,7 +518,7 @@ function teamChip(t, i, removable){
   const d = document.createElement('div');
   d.className = 'team' + (G.phase==='play' && i===G.cur ? ' active' : '');
   const arr = t.arrows.map(ci => `<span style="color:${COLS[ci].hex}">➜</span>`).join('');
-  d.innerHTML = `<button class="ava" title="Smiley ändern" style="border-color:${t.color}">${t.avatar}</button><span class="nm"></span>
+  d.innerHTML = `<button class="ava" title="Smiley ändern" style="--glow:${t.color}">${t.avatar}</button><span class="nm"></span>
     ${removable ? '<button class="x" title="Entfernen">✕</button>' : `<span class="arr">${arr || '<span style="color:var(--muted)">–</span>'}</span>`}`;
   d.querySelector('.nm').textContent = t.name;
   d.querySelector('.ava').onclick = () => {
