@@ -182,6 +182,11 @@ button.primary{box-shadow:0 4px 0 rgba(0,0,0,.28)}
 .picker .own small{color:var(--muted);flex-basis:100%}
 .picker .foot{display:flex;justify-content:flex-end;margin-top:12px}
 
+.axis{align-items:center;gap:10px}
+.arrowwide{display:flex;align-items:center;gap:14px;padding:8px 30px;border-radius:14px;color:#fff;font-weight:900;
+  font-size:1.6rem;letter-spacing:.04em;box-shadow:0 3px 8px rgba(0,0,0,.25);margin-bottom:6px}
+.arrowwide .a{font-size:2.4rem;line-height:1}
+@media (max-width:640px){.arrowwide{font-size:1.1rem;padding:6px 16px}.arrowwide .a{font-size:1.6rem}}
 </style>
 </head>
 <body>
@@ -249,7 +254,7 @@ button.primary{box-shadow:0 4px 0 rgba(0,0,0,.28)}
     </div><!-- /side -->
 
     <div class="card-box rowbox">
-      <div class="axis"><span id="axisL">← wenig</span><span id="axisR">viel →</span></div>
+      <div class="axis"><span id="axisL">← wenig</span><div class="arrowwide" id="arrowWide"><span class="a">➜</span><span id="arrowWideName"></span></div><span id="axisR">viel →</span></div>
       <div class="rowwrap"><div class="cardrow" id="cardRow"></div></div>
     </div>
     </div><!-- /playarea -->
@@ -560,6 +565,8 @@ function render(){
   const col = COLS[G.color];
   $('arrowCard').style.background = col.hex;
   $('arrowName').textContent = col.name.toUpperCase();
+  $('arrowWide').style.background = col.hex;
+  $('arrowWideName').textContent = col.name.toUpperCase();
   $('axisL').textContent = `← wenig ${col.name}`;
   $('axisR').textContent = `viel ${col.name} →`;
 
