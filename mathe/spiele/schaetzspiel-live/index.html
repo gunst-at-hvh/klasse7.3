@@ -209,6 +209,35 @@ details.more[open] summary::before{content:'▾ ';}
 .pslider input[type=range]{flex:1;height:44px;accent-color:#864cbf}
 .pslider button{padding:8px 16px;font-size:1.4rem;background:var(--soft)}
 .roundinfo{text-align:center;color:var(--muted);font-weight:800;font-size:1rem;margin-top:2px}
+/* ---------- Raum-Modus (nur Handys) ---------- */
+.roomcard{background:#fff;color:var(--ink);border-radius:18px;padding:14px;text-align:center}
+.roomcard .rcode{font-size:3rem;font-weight:900;letter-spacing:.14em;color:var(--purple);line-height:1.1}
+.roomcard .rqr svg{width:min(190px,55vw);height:auto}
+.roomcard.settings{text-align:left}
+.roomwarn{background:#ffb703;color:var(--ink);border-radius:14px;padding:8px 12px;font-weight:800;font-size:.95rem;text-align:center}
+.plist.small{justify-content:center;gap:6px}
+.plist.small .pchip{font-size:1rem;padding:4px 12px 4px 6px}
+.plist.small .pchip .e{font-size:1.4rem}
+.hostbar{display:flex;gap:8px;padding:8px 14px calc(8px + env(safe-area-inset-bottom));background:rgba(0,0,0,.35)}
+.hostbar button{flex:1;padding:12px 8px;font-size:1.05rem}
+.hostbar .lbl{align-self:center;font-weight:800;font-size:.85rem;opacity:.8;flex:0 0 auto}
+#pResult:not(.room) #pResCard{order:-1}
+#pResult.room{justify-content:flex-start;gap:8px}
+#pResult.room .resultcard{padding:12px 16px}
+#pResult.room .resultcard h2{font-size:1.6rem}
+#pResult.room .resultcard .pts{font-size:2.2rem;margin:2px 0}
+#pResult.room .resultcard p{font-size:1rem;margin:3px 0}
+#pResult.room #pResSvgBox{height:min(30vh,300px)!important}
+.resq{font-weight:900;font-size:1.6rem}
+.resq b{color:#ffb703}
+.reslive{font-size:2.6rem;font-weight:900;font-variant-numeric:tabular-nums}
+.minirank{width:min(460px,100%);background:rgba(255,255,255,.12);border-radius:16px;padding:8px 10px;text-align:left;animation:popIn .5s both}
+.minirank h3{margin:4px 4px 6px;font-size:.85rem;text-transform:uppercase;letter-spacing:.05em;opacity:.8}
+.minirank .rr{display:flex;align-items:center;gap:8px;padding:4px 6px;border-radius:10px;font-weight:800}
+.minirank .rr.me{background:rgba(255,255,255,.22)}
+.minirank .rr .dot{width:12px;height:12px;border-radius:50%;flex:0 0 auto}
+.minirank .rr .nm{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.minirank .rr .v{font-variant-numeric:tabular-nums;white-space:nowrap}
 #bigNum .s{color:#cfc2f2;font-weight:800;font-size:clamp(1rem,2.5vw,1.6rem);text-align:center;margin-bottom:8px}
 </style>
 </head>
@@ -223,6 +252,7 @@ details.more[open] summary::before{content:'▾ ';}
     <div class="choices">
       <button class="blue" id="homeHost">🖥️ Spiel leiten (Beamer)</button>
       <button class="go" id="homeJoin">📱 Mitspielen</button>
+      <button id="homeRoom" style="background:#d89e00;color:#fff">📱 Raum erstellen &amp; mitspielen<br><span style="font-size:.85rem;font-weight:700">ohne Beamer – alle spielen übers Netz am Handy</span></button>
     </div>
   </div>
 </section>
@@ -372,6 +402,47 @@ details.more[open] summary::before{content:'▾ ';}
       <div class="bigemoji" id="pWaitE"></div>
       <div style="font-size:1.8rem;font-weight:900" id="pWaitT">Du bist dabei!</div>
       <div style="font-size:1.1rem;opacity:.85" id="pWaitS">Schau auf den Beamer – gleich geht's los.</div>
+      <div class="plist small" id="pWaitList"></div>
+      <button class="go hidden" id="pAgain" style="font-size:1.2rem;padding:14px 22px">🔄 Neues Spiel</button>
+    </div>
+    <!-- Raum-Lobby (Ersteller) -->
+    <div class="hidden" id="pRoom" style="display:flex;flex-direction:column;gap:10px">
+      <div class="roomcard">
+        <div class="muted" style="font-weight:800">Lade die anderen ein – Code:</div>
+        <div class="rcode" id="rCode">····</div>
+        <div class="rqr" id="rQr"></div>
+        <button class="blue" id="rShare" style="margin-top:6px">📤 Link teilen</button>
+        <div class="muted" id="rNet" style="margin-top:6px">Raum wird erstellt …</div>
+      </div>
+      <div class="roomwarn">⚠️ Dein Handy leitet das Spiel: Browser offen lassen, nicht sperren, nicht in andere Apps wechseln.</div>
+      <div class="roomcard">
+        <div style="font-weight:900" id="rCount">Dabei: 1 Gruppe</div>
+        <div class="plist small" id="rList" style="margin-top:6px"></div>
+      </div>
+      <div class="roomcard settings">
+        <label>Spielmodus</label>
+        <div class="row" id="rRandRow"></div>
+        <div class="randnote" id="rRandNote"></div>
+        <label>Form</label>
+        <div class="row" id="rShapeRow"></div>
+        <label>Zeit pro Runde</label>
+        <div class="row" id="rTimeRow"></div>
+        <label>Runden</label>
+        <div class="row" id="rRoundsRow"></div>
+        <details class="more"><summary>⚙️ Mehr Optionen</summary>
+          <label>Beitreten</label>
+          <div class="row" id="rLateRow"></div>
+          <label>Nach der Auflösung</label>
+          <div class="row" id="rNextRow"></div>
+          <label>Aufgabe</label>
+          <div class="row" id="rTypeRow"></div>
+          <label>Spielart</label>
+          <div class="row" id="rPlayRow"></div>
+          <label>Extras</label>
+          <div class="row" id="rExtraRow"></div>
+        </details>
+      </div>
+      <button class="go" id="rStart" style="font-size:1.4rem;padding:16px" disabled>Warte auf Mitspieler …</button>
     </div>
     <!-- Schätzen -->
     <div class="hidden" id="pPlay" style="flex:1;display:flex;flex-direction:column;gap:10px;min-height:0">
@@ -388,10 +459,19 @@ details.more[open] summary::before{content:'▾ ';}
     </div>
     <!-- Ergebnis -->
     <div class="center hidden" id="pResult">
+      <div class="resq hidden" id="pResQ"></div>
+      <div class="reslive hidden" id="pResLive"></div>
+      <div style="width:min(320px,80vw);height:min(42vh,420px);flex:0 0 auto" id="pResSvgBox"><svg id="pResSvg" style="width:100%;height:100%"></svg></div>
       <div class="resultcard" id="pResCard"></div>
-      <div style="width:min(320px,80vw);height:min(42vh,420px)"><svg id="pResSvg" style="width:100%;height:100%"></svg></div>
-      <div style="opacity:.85;font-weight:700">Warte auf die nächste Runde …</div>
+      <div class="minirank hidden" id="pRank"></div>
+      <div style="opacity:.85;font-weight:700" id="pResNote">Warte auf die nächste Runde …</div>
     </div>
+  </div>
+  <div class="hostbar hidden" id="pHostBar">
+    <span class="lbl">👑 Host</span>
+    <button class="red" id="pHLock">⏹ Auflösen</button>
+    <button class="go" id="pHNext">▶ Weiter</button>
+    <button class="ghost" id="pHEnd">🏆 Ende</button>
   </div>
 </section>
 
@@ -436,7 +516,7 @@ function keepRegistered(getPeer, lampId){
 }
 
 const PREFIX = 'hvh-schaetzlive-';
-const APP_VERSION = '2026-10-15b';
+const APP_VERSION = '2026-10-15c';
 const AUTOJOIN_KEY = 'schaetzspiel-live-autojoin';
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const EMOJIS = ['😀','😎','🤓','🥳','🤩','😜','🤠','🥸','😇','🤖','👻','👽','💩','🐱','🐶','🦊','🐼','🐸','🦁','🐯','🐵','🐙','🦄','🐝','🐢','🦖','🐧','🦉','🐬','🦈','🍕','🍩','🍉','⚽','🏀','🎮','🎸','🚀','🌈','🔥','⭐','💎','👑','🌵'];
@@ -690,6 +770,7 @@ const H = {
   peer:null, code:'', players:new Map(), phase:'lobby',
   shape:'battery', time:20, split:'2', showSplit:false,
   numMode:'auto', speed:true, streak:true, autoHelp:false, helpStage:0,
+  room:false, rounds:10, late:'1', autoNext:8, creatorPid:null, autoTimer:null, lobbySig:'',
   random:'0', type:'percent', play:'normal', rShape:null, rPlay:'normal', task:null, blitzMs:3000, blitzHidden:false,
   value:null, round:0, endsAt:0, startedAt:0, timer:null, lockTimer:null, animating:false
 };
@@ -792,6 +873,7 @@ function bigNumber(finalHtml, rolling, done, sub, ask){
   };
   step();
 }
+const hs = f => { if (!H.room) f(); };   // Beamer-Töne – im Raum-Modus spielt jedes Handy seine eigenen
 function hBroadcast(msg){ H.players.forEach(p => { if (p.conn && p.conn.open) try { p.conn.send(msg); } catch(e){} }); }
 function hSend(p, msg){ if (p.conn && p.conn.open) try { p.conn.send(msg); } catch(e){} }
 
@@ -830,6 +912,7 @@ function hOpenPeer(){
     } catch(e){ $('hQr').textContent = ''; }
     $('hNet').textContent = '✅ Bereit – Gruppen können beitreten.';
     netInfo('');
+    if (H.onReady) H.onReady(url);
   });
   peer.on('connection', conn => hOnConn(conn));
   if (!H.keep){ H.keep = true; keepRegistered(() => H.peer, 'hLamp'); }
@@ -848,17 +931,25 @@ function hOnMsg(conn, m){
   if (!m || typeof m !== 'object') return;
   if (m.t === 'hello'){
     let p = H.players.get(m.pid);
+    if (!p && H.room && H.late !== '1' && H.phase !== 'lobby'){
+      try { conn.send({t:'closed'}); } catch(e){}
+      setTimeout(() => { try { conn.close(); } catch(e){} }, 800);
+      return;
+    }
     const name = String(m.name || 'Gruppe').slice(0,16), avatar = String(m.avatar || '😀').slice(0,8);
     if (!p){
       const used = [...H.players.values()].map(x => x.color);
       p = {pid:m.pid, name, avatar, color: COLORS.find(c => !used.includes(c)) || COLORS[H.players.size % COLORS.length], score:0, crowns:0, est:null, done:false, streak:0, played:0};
-      H.players.set(m.pid, p); sBlip();
+      if (H.phase !== 'lobby') p.joinedRound = H.round + (H.phase === 'running' || H.phase === 'locked' ? 0 : 1);
+      H.players.set(m.pid, p); hs(sBlip);
     } else { p.name = name; p.avatar = avatar; }
     p.conn = conn; p.online = true;
-    hSend(p, {t:'welcome', v:APP_VERSION, name:p.name, avatar:p.avatar, color:p.color, score:p.score});
+    hSend(p, {t:'welcome', v:APP_VERSION, name:p.name, avatar:p.avatar, color:p.color, score:p.score, room:H.room, creator: H.room && m.pid === H.creatorPid});
     if (H.phase === 'running') hSend(p, hRoundMsg());
     else if (H.phase === 'reveal' && p.lastResult) hSend(p, p.lastResult);
-    else hSend(p, {t:'wait', text: H.phase === 'lobby' ? 'Schau auf den Beamer – gleich geht\'s los.' : 'Gleich geht\'s los!'});
+    else if (H.phase === 'end' && p.lastEnd) hSend(p, p.lastEnd);
+    else hSend(p, {t:'wait', lobby: H.phase === 'lobby', text: H.phase === 'lobby' ? (H.room ? `Warte, bis ${hCreatorName()} das Spiel startet …` : 'Schau auf den Beamer – gleich geht\'s los.') : 'Gleich geht\'s los!'});
+    if (H.room){ H.lobbySig = ''; }
     hRender();
   } else if (m.t === 'est'){
     const p = [...H.players.values()].find(x => x.conn === conn);
@@ -866,11 +957,20 @@ function hOnMsg(conn, m){
     if (p.done) return;
     p.est = clamp(Math.round(+m.v), 0, 100);
     p.estStage = H.helpStage;
-    if (m.done){ p.done = true; p.doneAt = Date.now() - H.startedAt; p.doneStage = H.helpStage; sTick(); }
+    if (m.done){ p.done = true; p.doneAt = Date.now() - H.startedAt; p.doneStage = H.helpStage; hs(sTick); }
     hRender();
     const active = [...H.players.values()].filter(x => x.online);
     if (active.length && active.every(x => x.done)) setTimeout(hLock, 400);
   }
+}
+function hCreatorName(){ const c = H.players.get(H.creatorPid); return c ? c.avatar + ' ' + c.name : 'der Host'; }
+/* Rangfolge: im Raum-Modus mit „jederzeit beitreten“ nach Ø pro Runde (fair für Nachzügler), sonst nach Punkten */
+function hRanked(){
+  const byAvg = H.room && H.late === '1';
+  const key = p => byAvg ? Math.round(p.score / Math.max(1, p.played)) : p.score;
+  const list = [...H.players.values()].sort((a,b) => key(b) - key(a) || b.score - a.score);
+  let place = 0, last = null; list.forEach((p,i) => { const k = key(p); if (k !== last){ place = i+1; last = k; } p.place = place; });
+  return list;
 }
 function hSplitN(){ return splitN(H.split, H.value ?? 50); }
 /* Striche, die gerade zu sehen sind: Hilfe vom Beamer oder Auto-Hilfe */
@@ -892,18 +992,21 @@ function buildChips(){
     const row = $(id); row.innerHTML = '';
     list.forEach(([v, label]) => {
       const b = document.createElement('button'); b.className = 'chip'; b.textContent = label; b.dataset.v = v;
-      b.onclick = () => { H[key] = (key === 'time') ? +v : v; syncChips(); after && after(); };
+      b.onclick = () => { H[key] = ['time','rounds','autoNext'].includes(key) ? +v : v; syncChips(); after && after(); };
       row.appendChild(b);
     });
   });
-  mk(['hShapeRow','hShapeRow2'], shapes, 'shape', () => hRender());
-  mk(['hTimeRow','hTimeRow2'], times, 'time');
+  mk(['hShapeRow','hShapeRow2','rShapeRow'], shapes, 'shape', () => hRender());
+  mk(['hTimeRow','hTimeRow2','rTimeRow'], times, 'time');
+  mk(['rRoundsRow'], [[5,'5'],[10,'10'],[15,'15'],[20,'20'],[0,'∞']], 'rounds');
+  mk(['rLateRow'], [['1','✅ Jederzeit (Rangliste nach Ø)'],['0','🔒 Nur vor dem Start']], 'late');
+  mk(['rNextRow'], [[8,'⏩ Automatisch nach 8 s'],[15,'⏩ nach 15 s'],[0,'👆 Host tippt']], 'autoNext');
   mk(['hSplitRow1','hSplitRow2'], splits, 'split', () => { hRender(); if (H.phase === 'running' && H.showSplit) hBroadcast({t:'split', split:hEffSplit()}); });
   mk(['hNumRow','hNumRow2'], [['auto','🎲 Automatisch'],['manual','✋ Manuell (Würfel)']], 'numMode', () => hRender());
-  mk(['hRandRow','hRandRow2'], [['0','🎯 Feste Einstellungen'],['1','🎲 Zufallsmodus']], 'random', () => hRender());
-  mk(['hTypeRow','hTypeRow2'], [['percent','% Prozent'],['fraction','½ Bruch'],['decimal','0,5 Dezimal'],['mixed','🔀 Gemischt']], 'type', () => hRender());
-  mk(['hPlayRow','hPlayRow2'], [['normal','Zahl → Fläche'],['reverse','Fläche → Zahl'],['blitz','⚡ Blitz']], 'play', () => hRender());
-  ['hExtraRow','hExtraRow2'].forEach(id => {
+  mk(['hRandRow','hRandRow2','rRandRow'], [['0','🎯 Feste Einstellungen'],['1','🎲 Zufallsmodus']], 'random', () => hRender());
+  mk(['hTypeRow','hTypeRow2','rTypeRow'], [['percent','% Prozent'],['fraction','½ Bruch'],['decimal','0,5 Dezimal'],['mixed','🔀 Gemischt']], 'type', () => hRender());
+  mk(['hPlayRow','hPlayRow2','rPlayRow'], [['normal','Zahl → Fläche'],['reverse','Fläche → Zahl'],['blitz','⚡ Blitz']], 'play', () => hRender());
+  ['hExtraRow','hExtraRow2','rExtraRow'].forEach(id => {
     const row = $(id); row.innerHTML = '';
     [['speed','⚡ Tempo-Bonus'],['streak','🔥 Streak'],['autoHelp','💡 Auto-Hilfe']].forEach(([k, label]) => {
       const b = document.createElement('button'); b.className = 'chip tog'; b.textContent = label; b.dataset.k = k;
@@ -915,12 +1018,13 @@ function buildChips(){
   syncChips();
 }
 function syncChips(){
-  ['hExtraRow','hExtraRow2'].forEach(id => $(id).querySelectorAll('button').forEach(b => { b.classList.toggle('on', !!H[b.dataset.k]); b.textContent = b.textContent.replace(/ ✓$/, '') + (H[b.dataset.k] ? ' ✓' : ''); b.disabled = H.phase === 'running'; }));
+  ['hExtraRow','hExtraRow2','rExtraRow'].forEach(id => $(id).querySelectorAll('button').forEach(b => { b.classList.toggle('on', !!H[b.dataset.k]); b.textContent = b.textContent.replace(/ ✓$/, '') + (H[b.dataset.k] ? ' ✓' : ''); b.disabled = H.phase === 'running'; }));
   const rnd = H.random === '1';
-  ['hShapeRow','hShapeRow2','hTypeRow','hTypeRow2','hPlayRow','hPlayRow2'].forEach(id => $(id).classList.toggle('locked', rnd));
-  ['hRandNote1','hRandNote2'].forEach(id => $(id).textContent = rnd ? 'Form, Aufgabe und Spielart wechseln jede Runde zufällig – am Anfang leicht, später kniffliger.' : '');
+  ['hShapeRow','hShapeRow2','hTypeRow','hTypeRow2','hPlayRow','hPlayRow2','rShapeRow','rTypeRow','rPlayRow'].forEach(id => $(id).classList.toggle('locked', rnd));
+  ['hRandNote1','hRandNote2','rRandNote'].forEach(id => $(id).textContent = rnd ? 'Form, Aufgabe und Spielart wechseln jede Runde zufällig – am Anfang leicht, später kniffliger.' : '');
   [['hShapeRow','shape'],['hShapeRow2','shape'],['hTimeRow','time'],['hTimeRow2','time'],['hSplitRow1','split'],['hSplitRow2','split'],['hNumRow','numMode'],['hNumRow2','numMode'],
-   ['hRandRow','random'],['hRandRow2','random'],['hTypeRow','type'],['hTypeRow2','type'],['hPlayRow','play'],['hPlayRow2','play']].forEach(([id,key]) => {
+   ['hRandRow','random'],['hRandRow2','random'],['hTypeRow','type'],['hTypeRow2','type'],['hPlayRow','play'],['hPlayRow2','play'],
+   ['rShapeRow','shape'],['rTimeRow','time'],['rRoundsRow','rounds'],['rLateRow','late'],['rNextRow','autoNext'],['rRandRow','random'],['rTypeRow','type'],['rPlayRow','play']].forEach(([id,key]) => {
     $(id).querySelectorAll('button').forEach(b => b.classList.toggle('on', String(H[key]) === b.dataset.v));
   });
   // Form & Zeit während einer laufenden Runde nicht ändern
@@ -951,9 +1055,11 @@ function hResetRound(){
   H.players.forEach(p => { p.est = null; p.done = false; p.doneAt = null; p.estStage = 0; p.doneStage = 0; p.lastResult = null; p.res = null; });
 }
 /* Würfel nur, wenn „Zahl ziehen: Manuell“, kein Zufallsmodus und Aufgabe Prozent */
-function hUsesDice(){ return H.numMode === 'manual' && H.random !== '1' && H.type === 'percent'; }
+function hUsesDice(){ return !H.room && H.numMode === 'manual' && H.random !== '1' && H.type === 'percent'; }
 function hNextRound(){
   if (H.animating) return;
+  clearTimeout(H.autoTimer);
+  if (H.room && H.rounds && H.round >= H.rounds){ hEndGame(); return; }
   clearPopups();
   hResetRound();
   if (!hUsesDice()){ hAutoRoll(); return; }
@@ -969,6 +1075,16 @@ function hPrepare(diceValue){
   const task = makeTask(cfg.play === 'normal' ? cfg.type : 'percent', diceValue);
   H.phase = 'rolling'; H.value = null; H.rShape = cfg.shape; H.rPlay = cfg.play; H.task = task;
   hRender();
+  if (H.room){
+    // Ansage auf allen Handys (gleiche Dauer wie die Animation), danach startet die Runde
+    const sub = `Runde ${n}${H.rounds ? ' / ' + H.rounds : ''} · ${SHAPE_NAMES[cfg.shape]}` + (cfg.play !== 'normal' ? ' · ' + PLAY_NAMES[cfg.play] : task.type !== 'percent' ? ' · ' + TYPE_NAMES[task.type] : '');
+    const normal = cfg.play === 'normal';
+    hBroadcast({t:'intro', rolling: normal, sub,
+      big: normal ? taskHtml(task) : (cfg.play === 'blitz' ? '⚡ Blitz!' : '🔄 Umgekehrt!'),
+      ask: normal ? taskAsk(task) : (cfg.play === 'blitz' ? 'Die Form ist nur 3 Sekunden zu sehen – merkt sie euch!' : 'Wie viel Prozent sind gefüllt?')});
+    setTimeout(() => { H.value = task.v; hStartRound(); }, normal ? 3800 : 1900);
+    return;
+  }
   hBroadcast({t:'wait', text: cfg.play === 'normal' ? '🎲 Die Zahl wird gezogen …' : '👀 Gleich geht\'s los – schau genau hin!'});
   const sub = `Runde ${n} · ${SHAPE_NAMES[cfg.shape]}` + (cfg.play !== 'normal' ? ' · ' + PLAY_NAMES[cfg.play] : task.type !== 'percent' ? ' · ' + TYPE_NAMES[task.type] : '');
   const go = () => { H.value = task.v; hStartRound(); };
@@ -987,20 +1103,20 @@ function hStartRound(){
   let lastSec = null;
   H.timer = setInterval(() => {
     const el = Date.now() - H.startedAt, left = H.endsAt - Date.now();
-    if (H.rPlay === 'blitz' && !H.blitzHidden && el >= H.blitzMs){ H.blitzHidden = true; hRender(); sBlip(); }
+    if (H.rPlay === 'blitz' && !H.blitzHidden && el >= H.blitzMs){ H.blitzHidden = true; hRender(); hs(sBlip); }
     // Auto-Hilfe: nach und nach Zerlegungs-Striche einblenden
     if (H.autoHelp){
       const frac = H.time ? el / (H.time*1000) : el / 32000;
       const st = frac >= .75 ? 3 : frac >= .5 ? 2 : frac >= .25 ? 1 : 0;
       if (st !== H.helpStage){
         H.helpStage = st; hBroadcast({t:'split', split:hEffSplit(), stage:st}); hRender();
-        toast(`💡 Hilfe: ${['','Halbe','Viertel','Zehntel'][st]} – ab jetzt ×${String(HELP_FACTOR[st]).replace('.', ',')} Punkte`, 'help', 2200);
+        if (!H.room) toast(`💡 Hilfe: ${['','Halbe','Viertel','Zehntel'][st]} – ab jetzt ×${String(HELP_FACTOR[st]).replace('.', ',')} Punkte`, 'help', 2200);
       }
     }
     if (H.time){
       hTimerUi(left);
       const sec = Math.ceil(left/1000);
-      if (sec <= 5 && sec > 0 && sec !== lastSec){ lastSec = sec; tone(sec === 1 ? 1000 : 700, .08, 'square', .06); }
+      if (!H.room && sec <= 5 && sec > 0 && sec !== lastSec){ lastSec = sec; tone(sec === 1 ? 1000 : 700, .08, 'square', .06); }
       if (left <= 0){ clearInterval(H.timer); hLock(); }
     }
   }, 150);
@@ -1023,7 +1139,7 @@ function hTimerUi(left){
 }
 function hLock(){
   if (H.phase !== 'running') return;
-  H.phase = 'locked'; clearInterval(H.timer); sBlip();
+  H.phase = 'locked'; clearInterval(H.timer); hs(sBlip);
   hBroadcast({t:'lock', round:H.round});
   // kurz warten, damit die letzten Werte noch ankommen
   setTimeout(hReveal, 700);
@@ -1037,7 +1153,8 @@ function hScore(){
   // Tempo: nur wer abgegeben hat UND höchstens 3 schlechter ist als die beste Schätzung
   const fast = H.speed ? ests.filter(p => p.done && p.doneAt != null && Math.abs(p.est - v) <= best + SPEED_WINDOW).sort((a,b) => a.doneAt - b.doneAt) : [];
   ps.forEach(p => {
-    p.played = (p.played || 0) + 1;
+    const skip = p.est == null && (p.joinedRound > H.round - 1 || !p.online);
+    if (!skip) p.played = (p.played || 0) + 1;
     if (p.est == null){ p.streak = 0; p.res = {pts:0, base:0, factor:1, speed:0, streak:0, has:false}; return; }
     const ad = Math.abs(p.est - v);
     const stage = p.done ? (p.doneStage || 0) : (p.estStage || 0);
@@ -1056,9 +1173,8 @@ function hReveal(){
   H.phase = 'reveal';
   const v = H.value;
   hScore();
-  const ps = [...H.players.values()];
-  const all = [...ps].sort((a,b) => b.score - a.score);
-  let place = 0, last = null; all.forEach((p,i) => { if (p.score !== last){ place = i+1; last = p.score; } p.place = place; });
+  const all = hRanked();
+  if (H.room){ H.animating = false; hAfterReveal(all); hRender(); return; }
   // Animation: Fläche läuft von 0 bis zum Wert voll
   H.animating = true; hRender();
   const dur = 900 + v * 18, t0 = performance.now(), filled = H.rPlay !== 'normal';
@@ -1079,13 +1195,28 @@ function hReveal(){
 }
 function hAfterReveal(all){
   const v = H.value, ps = [...H.players.values()];
+  let room = null;
+  if (H.room){
+    const last = !!(H.rounds && H.round >= H.rounds);
+    room = {room:true, play:H.rPlay, last, round:H.round, rounds:H.rounds, byAvg: H.late === '1', host: hCreatorName(),
+      solved: H.rPlay !== 'normal' ? `Gefüllt waren <b>${fmtNum(v)} %</b>` : (H.task.type !== 'percent' ? `<b>${taskHtml(H.task)}</b> = <b>${fmtNum(v)} %</b>` : `Gesucht war <b>${H.task.label}</b>`),
+      nextIn: H.autoNext ? 900 + v*18 + 1500 + H.autoNext*1000 : 0,
+      others: ps.filter(p => p.res && p.res.has).sort((a,b) => b.res.pts - a.res.pts || a.res.ad - b.res.ad)
+        .map(p => ({pid:p.pid, avatar:p.avatar, name:p.name, color:p.color, est:p.est, pts:p.res.pts, exact:p.res.exact, speed:p.res.speed})),
+      rank: all.map(p => ({pid:p.pid, avatar:p.avatar, name:p.name, color:p.color, score:p.score, avg:Math.round(p.score / Math.max(1, p.played)), place:p.place}))};
+  }
   ps.forEach(p => {
     const r = p.res || {pts:0, has:false};
     p.lastResult = {t:'result', round:H.round, value:v, valueText: taskSolved(H.task), est:p.est, diff: r.has ? p.est - v : null, pts:r.pts, base:r.base, factor:r.factor,
       speed:r.speed, streak:r.streak, streakN:r.streakN, total:p.score, place:p.place, of:all.length, crown: r.has && r.exact,
       shape:H.rShape, split: H.showSplit ? hSplitN() : 0, avg: Math.round(p.score / Math.max(1, p.played))};
+    if (H.room) Object.assign(p.lastResult, room);
     hSend(p, p.lastResult);
   });
+  if (H.room){
+    if (H.autoNext) H.autoTimer = setTimeout(() => { if (H.phase === 'reveal') hNextRound(); }, room.nextIn);
+    return;
+  }
   const ests = ps.filter(p => p.res && p.res.has);
   const exact = ests.filter(p => p.res.exact);
   if (exact.length){ showCrown(exact.map(p => p.avatar + ' ' + p.name).join(' & ')); sFanfare(); confetti(80); }
@@ -1103,15 +1234,35 @@ function hAfterReveal(all){
   });
 }
 function hEndGame(){
-  showPodium();
-  const all = [...H.players.values()].sort((a,b) => b.score - a.score);
-  let place = 0, last = null; all.forEach((p,i) => { if (p.score !== last){ place = i+1; last = p.score; } hSend(p, {t:'end', place, of:all.length, total:p.score}); });
+  clearTimeout(H.autoTimer); clearInterval(H.timer);
+  if (!H.room){
+    showPodium();
+    const all = [...H.players.values()].sort((a,b) => b.score - a.score);
+    let place = 0, last = null; all.forEach((p,i) => { if (p.score !== last){ place = i+1; last = p.score; } hSend(p, {t:'end', place, of:all.length, total:p.score}); });
+    return;
+  }
+  H.phase = 'end';
+  const all = hRanked();
+  const list = all.map(p => ({avatar:p.avatar, name:p.name, score:p.score, played:p.played, crowns:p.crowns, place:p.place}));
+  all.forEach(p => { p.lastEnd = {t:'end', place:p.place, of:all.length, total:p.score, list, byAvg: H.late === '1'}; hSend(p, p.lastEnd); });
+  hRender();
 }
-function showPodium(){
+/* Raum-Modus: neues Spiel mit denselben Gruppen */
+function hNewGame(){
+  clearTimeout(H.autoTimer); clearInterval(H.timer);
+  H.players.forEach(p => { p.score = 0; p.crowns = 0; p.streak = 0; p.played = 0; p.joinedRound = 0; p.lastResult = null; p.lastEnd = null; });
+  H.round = 0; H.phase = 'lobby'; H.task = null; H.value = null; H.rShape = null; H.lobbySig = '';
+  hResetRound();
+  H.players.forEach(p => hSend(p, {t:'welcome', v:APP_VERSION, name:p.name, avatar:p.avatar, color:p.color, score:0, room:true, creator: p.pid === H.creatorPid}));
+  hBroadcast({t:'wait', lobby:true, text:`Warte, bis ${hCreatorName()} das Spiel startet …`});
+  hRender();
+}
+function showPodium(src){
   clearPopups();
   document.querySelectorAll('#podiumOv').forEach(x => x.remove());
-  const list = [...H.players.values()].sort((a,b) => b.score - a.score);
-  let place = 0, last = null; list.forEach((p,i) => { if (p.score !== last){ place = i+1; last = p.score; } p.place = place; });
+  let list = src;
+  if (!list){ list = [...H.players.values()].sort((a,b) => b.score - a.score); let place = 0, last = null; list.forEach((p,i) => { if (p.score !== last){ place = i+1; last = p.score; } p.place = place; }); }
+  else if (list.length && list[0].place == null){ let place = 0, last = null; list.forEach((p,i) => { if (p.score !== last){ place = i+1; last = p.score; } p.place = place; }); }
   const ov = document.createElement('div'); ov.id = 'podiumOv';
   ov.innerHTML = `<h2>🏆 Siegerehrung</h2><button class="ghost close">✕</button><div class="pod"></div><div class="rest"></div>`;
   const pod = ov.querySelector('.pod');
@@ -1147,6 +1298,7 @@ function hChip(p, withPts){
 }
 function hRender(){
   const ps = [...H.players.values()];
+  if (H.room) rHostUpdate(ps);
   // Lobby
   $('hCount').textContent = ps.length === 1 ? '1 Gruppe' : ps.length + ' Gruppen';
   const ll = $('hLobbyList'); ll.innerHTML = ''; ps.forEach(p => ll.appendChild(hChip(p, false)));
@@ -1233,18 +1385,18 @@ function startPlayer(code){
     const aj = sessionStorage.getItem(AUTOJOIN_KEY);
     if (aj !== null){ sessionStorage.removeItem(AUTOJOIN_KEY); if (aj && $('pName').value.trim()){ $('pCode').value = aj; setTimeout(pJoin, 300); } }
   } catch(e){}
-  $('pName').addEventListener('keydown', e => { if (e.key === 'Enter') pJoin(); });
+  $('pName').addEventListener('keydown', e => { if (e.key === 'Enter') $('pJoinBtn').click(); });
   if (code && saved.name) $('pName').focus();
   pSetupInput();
 }
-function pScreen(id){ ['pJoin','pWait','pPlay','pResult'].forEach(x => show(x, x === id)); show('pTop', id !== 'pJoin'); }
+function pScreen(id){ ['pJoin','pWait','pPlay','pResult','pRoom'].forEach(x => show(x, x === id)); show('pTop', id !== 'pJoin'); }
 function pJoin(){
   const code = $('pCode').value.trim().toUpperCase(), name = $('pName').value.trim();
   if (code.length < 4){ $('pJoinMsg').textContent = 'Bitte den Code vom Beamer eingeben.'; return; }
   if (!name){ $('pJoinMsg').textContent = 'Bitte einen Gruppennamen eingeben.'; return; }
   C.name = name; C.code = code;
   try { localStorage.setItem('schaetzlive-me', JSON.stringify({name, avatar:C.avatar})); } catch(e){}
-  $('pJoinMsg').textContent = 'Verbinde …'; $('pJoinBtn').disabled = true;
+  $('pJoinMsg').textContent = 'Verbinde …'; $('pJoinBtn').disabled = true; ac();
   C.retry = 0; hideStuck(); pConnect();
 }
 function pConnect(){
@@ -1330,8 +1482,25 @@ function pOnMsg(m){
     let done = false; try { done = sessionStorage.getItem('vfix-' + m.v) === '1'; sessionStorage.setItem('vfix-' + m.v, '1'); sessionStorage.setItem(AUTOJOIN_KEY, C.code || ''); } catch(e){}
     if (!done){ netInfo('Neue Version – lade neu …'); location.replace(freshUrl()); return; }
   }
-  if (m.t === 'welcome'){ C.name = m.name; C.avatar = m.avatar; C.color = m.color; C.score = m.score; pTop(); }
-  else if (m.t === 'wait'){ pTop(); $('pWaitE').textContent = C.avatar; $('pWaitT').textContent = 'Du bist dabei!'; $('pWaitS').textContent = m.text; pScreen('pWait'); }
+  if (m.t === 'welcome'){ C.name = m.name; C.avatar = m.avatar; C.color = m.color; C.score = m.score; C.room = !!m.room; pTop(); }
+  else if (m.t === 'wait'){
+    pTop(); clearInterval(C.nextT); show('pAgain', false); document.querySelectorAll('#podiumOv').forEach(x => x.remove());
+    if (C.isCreator && m.lobby){ pScreen('pRoom'); return; }
+    $('pWaitE').textContent = C.avatar; $('pWaitT').textContent = 'Du bist dabei!'; $('pWaitS').textContent = m.text;
+    show('pWaitList', !!m.lobby); pScreen('pWait');
+  }
+  else if (m.t === 'lobby'){
+    const fill = id => { const l = $(id); l.innerHTML = ''; m.players.forEach(x => {
+      const d = document.createElement('div'); d.className = 'pchip' + (x.online ? '' : ' off'); d.style.borderLeft = '6px solid ' + x.color;
+      d.innerHTML = '<span class="e"></span><span class="n"></span>'; d.querySelector('.e').textContent = x.avatar; d.querySelector('.n').textContent = x.name; l.appendChild(d); }); };
+    fill('pWaitList'); if (C.isCreator) fill('rList');
+  }
+  else if (m.t === 'intro'){ clearInterval(C.nextT); bigNumber(m.big, m.rolling, null, m.sub, m.ask); }
+  else if (m.t === 'closed'){
+    C.gen++; clearTimeout(C.connTimer); clearTimeout(C.retryTimer); try { C.peer && C.peer.destroy(); } catch(e){}
+    netInfo(''); pScreen('pJoin'); $('pJoinBtn').disabled = false;
+    $('pJoinMsg').textContent = '🔒 Das Spiel läuft schon – Beitreten ist gerade gesperrt.';
+  }
   else if (m.t === 'round'){ pStartRound(m); }
   else if (m.t === 'split'){
     if (C.round){
@@ -1344,6 +1513,14 @@ function pOnMsg(m){
   }
   else if (m.t === 'lock'){ if (C.round && m.round === C.round.round){ pSendEst(true); pLock('⏱ Zeit um!'); } }
   else if (m.t === 'result'){ pResult(m); }
+  else if (m.t === 'end' && m.list){
+    clearInterval(C.nextT); C.score = m.total; pTop();
+    $('pWaitE').textContent = m.place === 1 ? '🏆' : m.place <= 3 ? ['','🥇','🥈','🥉'][m.place] : C.avatar;
+    $('pWaitT').textContent = `Platz ${m.place} von ${m.of}`;
+    $('pWaitS').textContent = `${m.total} Punkte` + (m.byAvg ? ' (Rangliste nach Ø pro Runde)' : '') + ' – super gespielt!';
+    show('pWaitList', false); show('pAgain', !!C.isCreator); pScreen('pWait');
+    showPodium(m.list);
+  }
   else if (m.t === 'end'){
     pTop(); $('pWaitE').textContent = m.place === 1 ? '🏆' : m.place <= 3 ? ['','🥇','🥈','🥉'][m.place] : C.avatar;
     $('pWaitT').textContent = `Platz ${m.place} von ${m.of}`; $('pWaitS').textContent = `${m.total} Punkte – super gespielt!`; pScreen('pWait');
@@ -1358,7 +1535,9 @@ function pStartRound(m){
   show('pSlider', rev); $('pRange').value = C.est == null ? 50 : C.est; $('pNum').textContent = C.est == null ? '– %' : C.est + ' %';
   $('pHint').textContent = rev ? 'Stelle die Prozentzahl mit dem Regler ein.' : 'Ziehe mit dem Finger, bis es passt.';
   clearTimeout(C.blitzT); C.blitzHidden = false;
-  if (m.play === 'blitz'){ if (m.blitzLeft > 0) C.blitzT = setTimeout(() => { C.blitzHidden = true; pDraw(); }, m.blitzLeft); else C.blitzHidden = true; }
+  if (m.play === 'blitz'){ if (m.blitzLeft > 0) C.blitzT = setTimeout(() => { C.blitzHidden = true; pDraw(); if (C.room) sBlip(); }, m.blitzLeft); else C.blitzHidden = true; }
+  clearInterval(C.nextT); document.getElementById('bigNum') && C.roundSeen === m.round && C.room && (document.getElementById('bigNum').style.display = 'none');
+  let lastSec = null;
   show('pLock', false); $('pDone').disabled = C.est == null; $('pDone').textContent = '✓ Fertig';
   show('pHelpNote', false);
   pScreen('pPlay'); pTop(); pDraw();
@@ -1367,6 +1546,8 @@ function pStartRound(m){
     C.tick = setInterval(() => {
       const left = C.deadline - Date.now();
       $('pTbar').style.width = clamp(left / (m.ms || 1) * 100, 0, 100) + '%';
+      const sec = Math.ceil(left/1000);
+      if (C.room && !C.locked && sec <= 5 && sec > 0 && sec !== lastSec){ lastSec = sec; tone(sec === 1 ? 1000 : 700, .08, 'square', .06); }
       if (left <= 0){ clearInterval(C.tick); pSendEst(true); pLock('⏱ Zeit um!'); }
     }, 200);
   } else $('pTbar').style.width = '100%';
@@ -1414,6 +1595,18 @@ function pLock(html){
   if (!C.done && C.est == null) $('pLock').innerHTML = '⏱ Zeit um!<br><span style="font-size:1rem;font-weight:700">Keine Schätzung abgegeben.</span>';
 }
 function pResult(m){
+  if (m.room) return pResultRoom(m);
+  $('pResult').classList.remove('room'); show('pResQ', false); show('pResLive', false); show('pRank', false); show('pResCard');
+  $('pResNote').textContent = 'Warte auf die nächste Runde …';
+  pResultFill(m);
+  drawShape($('pResSvg'), {shape:m.shape, orient:'v', uid:'res', target:m.value/100, split:m.split, markers: m.est != null ? [{f:m.est/100, color:C.color, label:''}] : [],
+    revealed:false});
+  // Markierungs-Pille ohne Text ausblenden
+  $('pResSvg').querySelectorAll('g > rect[rx="16"]').forEach(r => r.parentNode.remove());
+  pScreen('pResult');
+}
+/* Ergebniskarte (eigene Punkte) */
+function pResultFill(m){
   C.score = m.total; pTop();
   const card = $('pResCard');
   const has = m.est != null, ad = has ? Math.abs(m.diff) : null;
@@ -1425,13 +1618,109 @@ function pResult(m){
     ${bon.length ? `<div class="pbonus">${bon.map(b => `<span>${b}</span>`).join('')}</div>` : ''}
     ${has ? `<p>Ihr: ${m.est} % · Ziel: ${m.valueText || m.value + ' %'} · ${m.diff > 0 ? '+' : m.diff < 0 ? '−' : '±'}${fmtNum(ad)}</p>` : `<p>Ziel war ${m.valueText || m.value + ' %'}</p>`}
     <p>Platz ${m.place} von ${m.of} · ${m.total} Punkte · Ø ${m.avg}</p>`;
-  drawShape($('pResSvg'), {shape:m.shape, orient:'v', uid:'res', target:m.value/100, split:m.split, markers: has ? [{f:m.est/100, color:C.color, label:''}] : [],
-    revealed:false});
-  // Markierungs-Pille ohne Text ausblenden
-  $('pResSvg').querySelectorAll('g > rect[rx="16"]').forEach(r => r.parentNode.remove());
+}
+/* Raum-Modus: jedes Handy zeigt die komplette Auflösung (wie sonst der Beamer) */
+function pResultRoom(m){
+  const tok = C.resTok = (C.resTok || 0) + 1, recv = Date.now();
+  clearInterval(C.nextT); C.score = m.total; pTop();
+  $('pResult').classList.add('room');
+  $('pResQ').innerHTML = m.solved; show('pResQ');
+  show('pResCard', false); show('pRank', false); $('pResNote').textContent = '';
   pScreen('pResult');
+  const v = m.value, rev = m.play !== 'normal', dur = 900 + v*18, t0 = performance.now();
+  sweep(220, 220 + v*9, dur/1000); show('pResLive');
+  const frame = now => {
+    if (tok !== C.resTok) return;
+    const k = Math.min(1, (now - t0)/dur), cur = v * (1 - Math.pow(1 - k, 3));
+    $('pResLive').textContent = Math.round(cur) + ' %';
+    drawShape($('pResSvg'), {shape:m.shape, orient:'v', uid:'res', target: rev ? v/100 : cur/100, split:0});
+    if (k < 1){ requestAnimationFrame(frame); return; }
+    show('pResLive', false); sDing();
+    const mine = m.others.find(o => o.pid === C.pid);
+    const markers = m.others.filter(o => o.pid !== C.pid).map(o => ({f:o.est/100, color:o.color, label:''}));
+    if (mine) markers.push({f:mine.est/100, color:C.color, label:''});
+    drawShape($('pResSvg'), {shape:m.shape, orient:'v', uid:'res', target:v/100, split:m.split, markers});
+    $('pResSvg').querySelectorAll('g > rect[rx="16"]').forEach(r => r.parentNode.remove());
+    pResultFill(m); show('pResCard');
+    // Mini-Rangliste: diese Runde + gesamt
+    const row = (o, val, me) => `<div class="rr${me ? ' me' : ''}"><span class="dot" style="background:${o.color}"></span><span class="nm">${esc(o.avatar + ' ' + o.name)}</span><span class="v">${val}</span></div>`;
+    const top = (arr, n) => { const t = arr.slice(0, n); const i = arr.findIndex(o => o.pid === C.pid); if (i >= n) t.push(arr[i]); return t; };
+    $('pRank').innerHTML = `<h3>Diese Runde</h3>` + top(m.others, 5).map(o => row(o, `${o.exact ? '👑 ' : ''}${o.est} % · <b>+${o.pts}</b>${o.speed ? ' ⚡' : ''}`, o.pid === C.pid)).join('')
+      + `<h3 style="margin-top:8px">Gesamt${m.byAvg ? ' (nach Ø pro Runde)' : ''}</h3>` + top(m.rank, 5).map(o => row(o, `${o.place}. · ${o.score} P · Ø ${o.avg}`, o.pid === C.pid)).join('');
+    show('pRank');
+    const ex = m.others.filter(o => o.exact);
+    if (ex.length){ showCrown(ex.map(o => o.avatar + ' ' + o.name).join(' & ')); if (mine && mine.exact){ sFanfare(); confetti(100); } else sCoin(); setTimeout(dismissSticky, 2600); }
+    else if (mine && mine.speed) sCoin();
+    // Countdown bis zur nächsten Runde
+    const what = m.last ? 'Siegerehrung' : 'Nächste Runde';
+    if (m.nextIn){
+      const endAt = recv + m.nextIn;
+      const upd = () => { const s = Math.max(0, Math.ceil((endAt - Date.now())/1000)); $('pResNote').textContent = `${what} in ${s} s …`; if (!s) clearInterval(C.nextT); };
+      upd(); C.nextT = setInterval(upd, 250);
+    } else $('pResNote').textContent = C.isCreator ? `Tippe unten auf „Weiter“, wenn alle so weit sind.` : `${m.host} startet gleich ${m.last ? 'die Siegerehrung' : 'die nächste Runde'} …`;
+  };
+  requestAnimationFrame(frame);
 }
 
+/* =====================================================================
+   RAUM-MODUS: Ersteller-Handy leitet im Hintergrund und spielt selbst mit
+   ===================================================================== */
+let wakeLock = null;
+async function keepAwake(){ try { if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); } catch(e){} }
+document.addEventListener('visibilitychange', () => { if (H.room && document.visibilityState === 'visible') keepAwake(); });
+function startRoom(){
+  startPlayer('');
+  C.isCreator = true;
+  show('pCode', false);
+  document.querySelector('#pJoin .joinform div').textContent = '📱 Raum erstellen';
+  $('pJoinBtn').textContent = 'Raum erstellen ▶';
+  $('pJoinBtn').onclick = () => {
+    const name = $('pName').value.trim();
+    if (!name){ $('pJoinMsg').textContent = 'Bitte einen Gruppennamen eingeben.'; return; }
+    C.name = name; ac();
+    try { localStorage.setItem('schaetzlive-me', JSON.stringify({name, avatar:C.avatar})); } catch(e){}
+    $('pJoinBtn').disabled = true; $('pJoinMsg').textContent = 'Raum wird erstellt …';
+    H.room = true; H.creatorPid = C.pid;
+    buildChips();
+    H.onReady = url => {
+      H.onReady = null;
+      $('rCode').textContent = H.code; $('rNet').textContent = '✅ Bereit – lade die anderen ein!';
+      try { const qr = qrcode(0, 'M'); qr.addData(url); qr.make(); $('rQr').innerHTML = qr.createSvgTag({cellSize:5, margin:2, scalable:true}); } catch(e){}
+      $('rShare').onclick = async () => {
+        try { if (navigator.share){ await navigator.share({title:'Schätz-Live', text:'Spiel mit! Code: ' + H.code, url}); return; } } catch(e){ return; }
+        try { await navigator.clipboard.writeText(url); toast('Link kopiert ✓', 'green', 1500); } catch(e){ prompt('Link kopieren:', url); }
+      };
+      // eigene Gruppe direkt im Gerät verbinden (ohne Netzwerk)
+      const hostSide = {open:true, send: m => setTimeout(() => pOnMsg(m), 0)};
+      C.conn = {open:true, send: m => setTimeout(() => hOnMsg(hostSide, m), 0)};
+      C.conn.send({t:'hello', pid:C.pid, name:C.name, avatar:C.avatar, v:APP_VERSION});
+      keepAwake();
+    };
+    hOpenPeer();
+  };
+  $('rStart').onclick = () => { ac(); if (H.phase === 'lobby') hNextRound(); };
+  $('pHLock').onclick = () => hLock();
+  $('pHNext').onclick = () => { ac(); if (H.phase === 'reveal') hNextRound(); };
+  $('pHEnd').onclick = () => { if (H.phase !== 'end' && confirm('Spiel jetzt beenden und Siegerehrung zeigen?')) hEndGame(); };
+  $('pAgain').onclick = () => hNewGame();
+}
+/* Vom Host-Teil aufgerufen: Lobby an alle schicken, Host-Leiste des Erstellers anpassen */
+function rHostUpdate(ps){
+  if (H.phase === 'lobby'){
+    const list = ps.map(p => ({avatar:p.avatar, name:p.name, color:p.color, online:!!p.online}));
+    const sig = JSON.stringify(list);
+    if (sig !== H.lobbySig){ H.lobbySig = sig; hBroadcast({t:'lobby', players:list}); }
+    const n = ps.length;
+    $('rCount').textContent = `Dabei: ${n} ${n === 1 ? 'Gruppe' : 'Gruppen'}`;
+    $('rStart').disabled = n < 2;
+    $('rStart').textContent = n < 2 ? 'Warte auf Mitspieler …' : "▶ Los geht's";
+  }
+  const ph = H.phase, on = ['rolling','running','locked','reveal'].includes(ph);
+  show('pHostBar', on);
+  show('pHLock', ph === 'running');
+  show('pHNext', ph === 'reveal');
+  $('pHNext').textContent = H.rounds && H.round >= H.rounds ? '🏆 Siegerehrung' : '▶ Weiter';
+}
 if (Q.get('debug')) window.__dbg = C;   // nur zum Testen
 /* ================= Start ================= */
 if (typeof Peer === 'undefined'){
@@ -1441,6 +1730,8 @@ if (typeof Peer === 'undefined'){
 $('homeHost').onclick = startHost;
 { const v = document.createElement('div'); v.style.cssText = 'margin-top:14px;font-size:.8rem;color:#6b7280'; v.textContent = 'Version ' + APP_VERSION; document.querySelector('#home .card').appendChild(v); }
 $('homeJoin').onclick = () => startPlayer('');
+$('homeRoom').onclick = startRoom;
+if (Q.get('room') !== null) startRoom();
 if (Q.get('join') !== null) startPlayer(Q.get('join'));
 else if (Q.get('host') !== null) startHost();
 })();
