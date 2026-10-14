@@ -365,6 +365,15 @@ function render(){
         const a = k/n, b = (k+1)/n;
         if (b > f + 1e-9) break;
         segment(a, b, k % 2 ? fill2 : fill, inner);
+        // Bruch klein und weiß in das Teil schreiben
+        const m = (a + b) / 2;
+        let tx, ty;
+        if (g.dir === 'h'){ tx = g.x0 + m*(g.x1-g.x0); ty = (g.y0+g.y1)/2 + 5; }
+        else if (g.dir === 'v'){ tx = (g.x0+g.x1)/2; ty = g.y1 - m*(g.y1-g.y0) + 5; }
+        else { [tx, ty] = polar(g, m, g.r*0.78); ty += 5; }
+        const ft = el('text',{x:tx, y:ty, 'text-anchor':'middle', 'font-size':14, 'font-weight':700,
+          fill:'#fff', 'font-family':'system-ui,sans-serif'}, inner);
+        ft.textContent = `1/${n}`;
       }
     } else {
       segment(0, f, fill, inner);
