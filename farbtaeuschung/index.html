@@ -125,6 +125,49 @@ details li{margin:4px 0}
 @media (max-width:640px){
   .slot{width:28px}
 }
+
+/* ---------- Spaß-Elemente (Smileys, Pop-ups, Punktestand) ---------- */
+button{box-shadow:0 3px 0 var(--line);transition:transform .08s, box-shadow .08s}
+button:active:not(:disabled){transform:translateY(3px);box-shadow:0 0 0 var(--line)}
+button.primary{box-shadow:0 4px 0 rgba(0,0,0,.28)}
+.ava{width:2.2em;height:2.2em;border-radius:50%;display:inline-grid;place-items:center;font-size:1.3rem;line-height:1;flex:none;
+  border:3px solid;background:var(--card);padding:0;box-shadow:none;cursor:pointer;transition:transform .15s}
+.ava:hover{transform:scale(1.12) rotate(-8deg)}
+#toasts{position:fixed;top:18px;left:50%;transform:translateX(-50%);z-index:40;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
+.toast{padding:10px 22px;border-radius:999px;font-weight:800;font-size:1.35rem;color:#fff;box-shadow:0 6px 18px rgba(0,0,0,.25);white-space:nowrap}
+.toast.green{background:#26890c}.toast.yellow{background:#ffb703;color:#1d2433}.toast.red{background:#e21b3c}.toast.blue{background:#1368ce}
+@keyframes toastIn{from{transform:scale(.3);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes toastOut{to{opacity:0;transform:translateY(-14px)}}
+@keyframes fadeIn{from{opacity:0}}
+@keyframes slideIn{from{transform:translateX(-40px);opacity:0}}
+.lb{position:fixed;inset:0;z-index:35;background:linear-gradient(160deg,#46178f,#25104f);color:#fff;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;padding:24px;cursor:pointer;animation:fadeIn .3s;overflow:auto}
+.lb h2{font-size:clamp(1.8rem,5vw,3rem);margin:0 0 22px}
+.lb .rows{width:min(960px,100%);display:flex;flex-direction:column;gap:12px}
+.lb .r{display:flex;align-items:center;gap:16px;background:rgba(255,255,255,.13);border-radius:16px;padding:10px 20px;animation:slideIn .45s both}
+.lb .r .pl{font-size:clamp(1.4rem,4vw,2.2rem);font-weight:900;min-width:1.6ch}
+.lb .r .ava{font-size:clamp(1.3rem,4vw,2.2rem);border-color:#fff;background:rgba(255,255,255,.18);cursor:default}
+.lb .r .n{flex:1;font-size:clamp(1.6rem,5vw,3rem);font-weight:900;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb .r .s{font-size:clamp(1.3rem,4vw,2.4rem);font-weight:900;white-space:nowrap}
+.lb small{margin-top:20px;opacity:.7}
+.bigmsg{position:fixed;inset:0;z-index:36;display:grid;place-items:center;background:rgba(0,0,0,.45);cursor:pointer;animation:fadeIn .25s;transition:opacity .5s;padding:16px}
+.bigmsg.out{opacity:0}
+.bigmsg .box{color:#fff;border-radius:24px;padding:30px 38px;text-align:center;max-width:min(780px,94vw);
+  animation:toastIn .5s cubic-bezier(.2,1.6,.4,1) both;box-shadow:0 12px 40px rgba(0,0,0,.35)}
+.bigmsg h2{font-size:clamp(2rem,6vw,3.4rem);margin:0 0 12px}
+.bigmsg p{font-size:clamp(1.1rem,3vw,1.6rem);margin:0}
+.bigmsg small{display:block;margin-top:16px;opacity:.8}
+
+.gcard .back.barsmode{padding:0;gap:0;justify-content:flex-start}
+.bands{display:flex;flex-direction:column;width:100%;height:100%}
+.band{display:grid;place-items:center;color:#fff;font-weight:800;font-size:.95em;overflow:hidden;flex:none}
+.band.y{color:#1d2433}
+.band.white{color:#999;background:#fff}
+.band.on{box-shadow:inset 0 0 0 3px #1d2433}
+.band.on.big{font-size:1.4em}
+.sneaky{background:none;border:none;box-shadow:none;color:var(--muted);font-size:.85rem;text-decoration:underline;padding:2px}
+.sneaky:active:not(:disabled){transform:none}
+.team .ava{font-size:1.4rem}
 </style>
 </head>
 <body>
@@ -132,6 +175,7 @@ details li{margin:4px 0}
   <div class="topbar">
     <h1>🎨 Farb-Täuschung</h1>
     <div class="row">
+      <button id="boardBtn">🏅 Punktestand</button>
       <button id="themeBtn">🌙 Dunkel</button>
     </div>
   </div>
@@ -184,6 +228,7 @@ details li{margin:4px 0}
         <button class="big" id="challengeBtn" style="background:var(--bad);color:#fff;border-color:var(--bad);font-weight:800">⚡ Täuschung!</button>
         <div class="hint" id="challengeHint">Glaubst du, die Reihe stimmt nicht? Dann ruf „Täuschung!“ statt zu legen.</div>
         <div class="result hidden" id="result"></div>
+        <button class="sneaky hidden" id="barBtn" title="Zeigt die Anteile als Flächen – ohne Täuschung">▤ Flächen zeigen</button>
         <button class="primary big hidden" id="nextRoundBtn">Nächste Runde ▶</button>
       </div>
     </div>
@@ -211,6 +256,63 @@ details li{margin:4px 0}
 <script>
 (() => {
 const $ = id => document.getElementById(id);
+
+/* ---------- Spaß-Elemente ---------- */
+const AVATARS = ['😀','😎','🤓','🥳','🤩','🤖','👻','👽','🐱','🐶','🦊','🐼','🐸','🦁','🐵','🐙','🦄','🐝','🐢','🦖','🐧','🍕','⚽','🚀','🌈','🔥','⭐'];
+function pickAvatar(used){
+  const free = AVATARS.filter(a => !used.includes(a));
+  const pool = free.length ? free : AVATARS;
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+function nextAvatarOf(cur, used){
+  const i = AVATARS.indexOf(cur);
+  for (let k = 1; k <= AVATARS.length; k++){
+    const a = AVATARS[(i + k + AVATARS.length) % AVATARS.length];
+    if (!used.includes(a)) return a;
+  }
+  return cur;
+}
+function toast(text, cls, ms = 2600, delay = 0){
+  let box = document.getElementById('toasts');
+  if (!box){ box = document.createElement('div'); box.id = 'toasts'; document.body.appendChild(box); }
+  setTimeout(() => {
+    const t = document.createElement('div');
+    t.className = 'toast ' + cls; t.textContent = text;
+    t.style.animation = `toastIn .35s cubic-bezier(.2,1.6,.4,1) both, toastOut .6s ease-in ${ms}ms forwards`;
+    box.appendChild(t);
+    setTimeout(() => t.remove(), ms + 700);
+  }, delay);
+}
+function showBoard(title, rows){
+  document.querySelectorAll('.lb').forEach(x => x.remove());
+  const lb = document.createElement('div'); lb.className = 'lb';
+  const h = document.createElement('h2'); h.textContent = title; lb.appendChild(h);
+  const wrap = document.createElement('div'); wrap.className = 'rows';
+  const sorted = [...rows].sort((a,b) => b.score - a.score);
+  let place = 0, last = null;
+  sorted.forEach((r, i) => {
+    if (r.score !== last){ place = i + 1; last = r.score; }
+    const d = document.createElement('div'); d.className = 'r';
+    d.style.animationDelay = (i * 0.08) + 's'; d.style.borderLeft = '12px solid ' + r.color;
+    d.innerHTML = `<span class="pl">${place}</span><span class="ava">${r.avatar}</span><span class="n"></span><span class="s"></span>`;
+    d.querySelector('.n').textContent = r.name;
+    d.querySelector('.s').textContent = r.label;
+    wrap.appendChild(d);
+  });
+  lb.appendChild(wrap);
+  const s = document.createElement('small'); s.textContent = 'Tippen zum Schließen'; lb.appendChild(s);
+  lb.onclick = () => lb.remove();
+  document.body.appendChild(lb);
+}
+function bigMessage(title, text, color){
+  const m = document.createElement('div'); m.className = 'bigmsg';
+  m.innerHTML = `<div class="box" style="background:${color}"><h2></h2><p></p><small>Tippen zum Weiterspielen</small></div>`;
+  m.querySelector('h2').textContent = title;
+  m.querySelector('p').textContent = text;
+  m.onclick = () => { m.classList.add('out'); setTimeout(() => m.remove(), 500); };
+  document.body.appendChild(m);
+}
+
 
 /* ---------- Farben ---------- */
 const COLS = [
@@ -356,7 +458,7 @@ const G = {
 function addTeam(name){
   name = name.trim(); if (!name) return;
   const used = G.teams.map(t=>t.color);
-  G.teams.push({name, color: TEAM_COLORS.find(c=>!used.includes(c)) || TEAM_COLORS[0], arrows: []});
+  G.teams.push({name, color: TEAM_COLORS.find(c=>!used.includes(c)) || TEAM_COLORS[0], avatar: pickAvatar(G.teams.map(t=>t.avatar)), arrows: []});
   renderSetup();
 }
 
@@ -365,9 +467,13 @@ function teamChip(t, i, removable){
   const d = document.createElement('div');
   d.className = 'team' + (G.phase==='play' && i===G.cur ? ' active' : '');
   const arr = t.arrows.map(ci => `<span style="color:${COLS[ci].hex}">➜</span>`).join('');
-  d.innerHTML = `<span class="dot" style="background:${t.color}"></span><span class="nm"></span>
+  d.innerHTML = `<button class="ava" title="Smiley ändern" style="border-color:${t.color}">${t.avatar}</button><span class="nm"></span>
     ${removable ? '<button class="x" title="Entfernen">✕</button>' : `<span class="arr">${arr || '<span style="color:var(--muted)">–</span>'}</span>`}`;
   d.querySelector('.nm').textContent = t.name;
+  d.querySelector('.ava').onclick = () => {
+    t.avatar = nextAvatarOf(t.avatar, G.teams.map(x => x.avatar));
+    G.phase === 'setup' ? renderSetup() : render();
+  };
   if (removable) d.querySelector('.x').onclick = () => { G.teams.splice(i,1); renderSetup(); };
   return d;
 }
@@ -383,9 +489,17 @@ function cardEl(card, opts={}){
   const c = G.color;
   const others = card.pct.map((p,i) => i===c ? '' :
     `<div class="ln"><span class="sw" style="background:${COLS[i].hex}"></span>${COLS[i].name}: ${p} %</div>`).join('');
-  const lines = `<div class="main" style="background:${COLS[c].hex}"><b>${card.pct[c]} %</b><span>${COLS[c].name}</span></div>
+  let lines = `<div class="main" style="background:${COLS[c].hex}"><b>${card.pct[c]} %</b><span>${COLS[c].name}</span></div>
     <div class="others">${others}</div>`;
-  g.innerHTML = `<div class="inner"><div class="face"><img alt="Farbkarte"></div><div class="face back">${lines}</div></div>`;
+  const bars = G.barView && !opts.big;
+  if (bars){
+    // Flächenansicht: Anteile von oben nach unten als Streifen
+    const sum = card.pct.reduce((a,b) => a + b, 0), white = Math.max(0, 100 - sum);
+    lines = '<div class="bands">' + card.pct.map((p,i) => p > 0
+      ? `<div class="band ${i===1?'y':''} ${i===c?'on':''} ${p>=12?'big':''}" style="height:${p}%;background:${COLS[i].hex}">${p >= 7 ? p + ' %' : ''}</div>` : '').join('')
+      + (white > 0 ? `<div class="band white" style="height:${white}%">${white >= 7 ? 'weiß ' + white + ' %' : ''}</div>` : '') + '</div>';
+  }
+  g.innerHTML = `<div class="inner"><div class="face"><img alt="Farbkarte"></div><div class="face back ${bars ? 'barsmode' : ''}">${lines}</div></div>`;
   g.querySelector('img').src = card.img;
   return g;
 }
@@ -443,6 +557,8 @@ function render(){
     : 'Glaubst du, die Reihe stimmt nicht? Dann ruf „Täuschung!“ statt zu legen.';
   $('result').classList.toggle('hidden', !reveal);
   $('nextRoundBtn').classList.toggle('hidden', G.phase !== 'reveal');
+  $('barBtn').classList.toggle('hidden', !reveal);
+  $('barBtn').textContent = G.barView ? '🂠 Rückseiten zeigen' : '▤ Flächen zeigen';
   sizeCards();
 }
 
@@ -539,6 +655,10 @@ function challenge(){
   const lead = Math.max(...G.teams.map(x=>x.arrows.length));
   G.phase = (t.arrows.length >= G.target || G.arrowIdx >= 11) ? 'over' : 'reveal';
   render();
+  bigMessage(ok ? '✅ Die Reihe stimmt!' : '⚡ Täuschung entlarvt!',
+    ok ? `${G.teams[challenger].name} lag falsch – die Pfeilkarte geht an ${G.teams[winner].avatar} ${G.teams[winner].name}.`
+       : `Die Reihe war falsch! ${G.teams[winner].avatar} ${G.teams[winner].name} bekommt die Pfeilkarte.`,
+    ok ? '#26890c' : '#e21b3c');
   if (G.phase === 'over') setTimeout(showWin, 1600);
 }
 function showWin(){
@@ -547,7 +667,7 @@ function showWin(){
   const winners = list.filter(t => t.arrows.length === best).map(t => t.name);
   $('winTitle').textContent = `🏆 ${winners.join(' & ')} ${winners.length > 1 ? 'gewinnen' : 'gewinnt'}!`;
   const ol = $('winList'); ol.innerHTML = '';
-  list.forEach(t => { const li = document.createElement('li'); li.textContent = `${t.name} – ${t.arrows.length} Pfeilkarte(n)`; ol.appendChild(li); });
+  list.forEach(t => { const li = document.createElement('li'); li.textContent = `${t.avatar} ${t.name} – ${t.arrows.length} Pfeilkarte(n)`; ol.appendChild(li); });
   $('winOverlay').classList.remove('hidden');
 }
 
@@ -556,6 +676,9 @@ $('addBtn').onclick = () => { addTeam($('newName').value); $('newName').value=''
 $('newName').addEventListener('keydown', e => { if (e.key==='Enter'){ addTeam(e.target.value); e.target.value=''; } });
 $('startBtn').onclick = startGame;
 $('challengeBtn').onclick = challenge;
+$('barBtn').onclick = () => { G.barView = !G.barView; render(); };
+$('boardBtn').onclick = () => showBoard('🏅 Punktestand', G.teams.map(t => ({avatar:t.avatar, name:t.name, color:t.color,
+  score:t.arrows.length, label: t.arrows.length + ' ➜'})));
 $('nextRoundBtn').onclick = () => newRound(G.roundWinner);
 $('againBtn').onclick = () => { $('winOverlay').classList.add('hidden'); startGame(); };
 $('closeWin').onclick = () => $('winOverlay').classList.add('hidden');
