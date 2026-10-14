@@ -1,0 +1,640 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prozent-Schätzspiel</title>
+<style>
+:root{
+  --bg:#f5f3ee;--card:#ffffff;--ink:#1d2433;--muted:#6b7280;--line:#d6d2c7;
+  --accent:#2f6fde;--fill:#3fb37f;--fill2:#2e9a6a;--empty:#ebe8e1;--target:#1d2433;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#14171d;--card:#1e222a;--ink:#e8e9ec;--muted:#9aa1ad;--line:#363b46;
+    --accent:#6b9cff;--fill:#3fb37f;--fill2:#2b8a5e;--empty:#2a2f39;--target:#f2f2f2;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#14171d;--card:#1e222a;--ink:#e8e9ec;--muted:#9aa1ad;--line:#363b46;
+  --accent:#6b9cff;--fill:#3fb37f;--fill2:#2b8a5e;--empty:#2a2f39;--target:#f2f2f2;
+}
+*{box-sizing:border-box}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+.topbar h1{margin:4px 0}
+#themeBtn{font-size:.9rem;white-space:nowrap}
+html,body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:17px}
+main{max-width:1150px;margin:0 auto;padding:16px}
+h1{font-size:1.5rem;margin:4px 0 14px}
+.grid{display:grid;grid-template-columns:300px 1fr;gap:16px}
+@media (max-width:860px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px}
+.card h2{font-size:1rem;margin:0 0 10px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.stack>*+*{margin-top:14px}
+button,select,input{font:inherit;color:inherit}
+button{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 12px;cursor:pointer}
+button:hover{border-color:var(--accent)}
+button.primary{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:600}
+button.primary:disabled{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+/* Würfel */
+.dice{display:flex;gap:10px;align-items:center;justify-content:center}
+.die{width:84px;text-align:center}
+.die .face{width:84px;height:84px;display:grid;place-items:center;font-size:2rem;font-weight:800;
+  border-radius:16px;border:3px solid var(--ink);background:var(--card);
+  clip-path:polygon(50% 0,100% 38%,82% 100%,18% 100%,0 38%)}
+.die.tens .face{background:#ffe08a;color:#1d2433}
+.die.ones .face{background:#9fd3ff;color:#1d2433}
+.die select{width:100%;margin-top:6px;padding:4px;border-radius:8px;border:1px solid var(--line);background:var(--card)}
+.die small{display:block;color:var(--muted);font-size:.75rem}
+.plus{font-size:1.6rem;font-weight:700}
+.rolling .face{animation:shake .12s infinite}
+@keyframes shake{0%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}100%{transform:rotate(-8deg)}}
+.bigval{font-size:3.4rem;font-weight:900;text-align:center;line-height:1;margin-top:6px}
+.bigval span{font-size:1rem;color:var(--muted);display:block;font-weight:500;margin-top:4px}
+/* Formen */
+.shapes{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.shapes button{padding:8px 4px;font-size:.85rem}
+.shapes button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+/* Teilnehmer */
+.players{display:flex;flex-direction:column;gap:6px}
+.player{display:flex;align-items:center;gap:8px;padding:6px 8px;border:2px solid transparent;border-radius:10px;cursor:pointer;background:var(--bg)}
+.player.active{border-color:var(--accent)}
+.dot{width:18px;height:18px;border-radius:50%;flex:none}
+.player .name{flex:1;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.player .st{font-size:.8rem;color:var(--muted)}
+.player .pts{font-size:.8rem;font-weight:700;min-width:34px;text-align:right}
+.player .x{border:none;background:none;color:var(--muted);padding:0 4px}
+.addrow{display:flex;gap:6px}
+.addrow input{flex:1;min-width:0;padding:8px;border-radius:10px;border:1px solid var(--line);background:var(--card)}
+/* Spielfeld */
+.stage{position:relative}
+.task{font-size:1.4rem;text-align:center;margin:4px 0 8px}
+.task b{font-size:2rem;color:var(--accent)}
+.hint{text-align:center;color:var(--muted);min-height:1.4em}
+svg#board{width:100%;height:auto;display:block;touch-action:none;user-select:none;cursor:crosshair}
+.actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:8px}
+table{width:100%;border-collapse:collapse;font-size:.95rem}
+th,td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left}
+th{color:var(--muted);font-weight:600;font-size:.8rem;text-transform:uppercase}
+td.num{text-align:right;font-variant-numeric:tabular-nums}
+.split-ctrl{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:8px}
+.split-ctrl button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.decomp{text-align:center;font-size:1.35rem;font-weight:700;margin-top:10px}
+.decomp small{display:block;font-size:.9rem;color:var(--muted);font-weight:500;margin-top:4px}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<main>
+  <div class="topbar">
+    <h1>🎯 Prozent-Schätzspiel</h1>
+    <button id="themeBtn" title="Hell/Dunkel umschalten">🌙 Dunkel</button>
+  </div>
+  <div class="grid">
+    <!-- Seitenleiste -->
+    <div class="stack">
+      <section class="card">
+        <h2>1 · Würfeln (2 × W10)</h2>
+        <div class="dice">
+          <div class="die tens" id="dieT"><div class="face" id="faceT">–</div>
+            <select id="selT" aria-label="Zehner-Würfel"></select><small>Zehner</small></div>
+          <div class="plus">+</div>
+          <div class="die ones" id="dieO"><div class="face" id="faceO">–</div>
+            <select id="selO" aria-label="Einer-Würfel"></select><small>Einer</small></div>
+        </div>
+        <div class="row" style="justify-content:center;margin-top:10px">
+          <button id="rollBtn">🎲 Virtuell würfeln</button>
+        </div>
+        <div class="bigval" id="bigVal">– %<span>00 + 0 zählt als 100 %</span></div>
+      </section>
+
+      <section class="card">
+        <h2>2 · Form</h2>
+        <div class="shapes" id="shapes">
+          <button data-s="bar">Balken</button>
+          <button data-s="battery">Batterie</button>
+          <button data-s="square">Quadrat</button>
+          <button data-s="circle">Kreis</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>3 · Teilnehmer</h2>
+        <div class="players" id="players"></div>
+        <div class="addrow" style="margin-top:8px">
+          <input id="newName" placeholder="Name …" maxlength="16">
+          <button id="addBtn">+</button>
+        </div>
+      </section>
+    </div>
+
+    <!-- Spielfeld -->
+    <section class="card stage">
+      <div class="task" id="task">Würfle zuerst eine Prozentzahl.</div>
+      <div class="hint" id="hint"></div>
+      <svg id="board" viewBox="0 0 800 500" aria-label="Spielfeld"></svg>
+      <div class="actions">
+        <button class="primary" id="revealBtn" disabled>✅ Auflösen</button>
+        <button id="splitBtn" disabled>🧩 Zerlegen</button>
+        <button id="newRoundBtn">🔄 Neue Runde</button>
+      </div>
+      <div id="splitBox" class="hidden">
+        <div class="split-ctrl" id="splitCtrl">
+          <button data-n="auto">Automatisch</button>
+          <button data-n="3">Drittel (33⅓er)</button>
+          <button data-n="4">Viertel (25er)</button>
+          <button data-n="5">Fünftel (20er)</button>
+          <button data-n="10">Zehntel (10er)</button>
+        </div>
+        <div class="decomp" id="decomp"></div>
+      </div>
+      <div id="resultBox" class="hidden" style="margin-top:14px">
+        <table>
+          <thead><tr><th>Platz</th><th>Name</th><th class="num">Geschätzt</th><th class="num">Abweichung</th></tr></thead>
+          <tbody id="resultBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</main>
+
+<script>
+(() => {
+const COLORS = ['#e4572e','#2f6fde','#9b51e0','#f2a541','#17a398','#e0569b','#6b8e23','#8d6e63'];
+const S = {
+  value: null,
+  shape: 'bar',
+  players: [],
+  active: -1,
+  revealed: false,
+  showSplit: false,
+  split: 'auto',
+  nextId: 1
+};
+const NS = 'http://www.w3.org/2000/svg';
+const $ = id => document.getElementById(id);
+const board = $('board');
+
+/* ---------- Geometrie der Formen ---------- */
+const G = {
+  bar:     {x0:50,  x1:750, y0:215, y1:295, dir:'h'},
+  battery: {x0:85,  x1:665, y0:175, y1:335, dir:'h'},
+  square:  {x0:250, x1:550, y0:95,  y1:395, dir:'v'},
+  circle:  {cx:400, cy:265, r:170, dir:'c'}
+};
+const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
+
+function fracFromPoint(x, y){
+  const g = G[S.shape];
+  if (g.dir === 'h') return clamp((x - g.x0) / (g.x1 - g.x0), 0, 1);
+  if (g.dir === 'v') return clamp((g.y1 - y) / (g.y1 - g.y0), 0, 1);
+  let a = Math.atan2(x - g.cx, -(y - g.cy));
+  if (a < 0) a += 2 * Math.PI;
+  return a / (2 * Math.PI);
+}
+function polar(g, f, r){
+  const a = 2 * Math.PI * f;
+  return [g.cx + r * Math.sin(a), g.cy - r * Math.cos(a)];
+}
+
+function el(tag, attrs, parent){
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+
+/* Abschnitt von a bis b (Anteile 0..1) füllen */
+function segment(a, b, color, parent){
+  if (b <= a) return;
+  const g = G[S.shape];
+  if (g.dir === 'h'){
+    const w = g.x1 - g.x0;
+    el('rect',{x:g.x0 + a*w, y:g.y0, width:(b-a)*w, height:g.y1-g.y0, fill:color}, parent);
+  } else if (g.dir === 'v'){
+    const h = g.y1 - g.y0;
+    el('rect',{x:g.x0, y:g.y1 - b*h, width:g.x1-g.x0, height:(b-a)*h, fill:color}, parent);
+  } else {
+    if (b - a >= 0.9999){ el('circle',{cx:g.cx, cy:g.cy, r:g.r, fill:color}, parent); return; }
+    const [x1,y1] = polar(g, a, g.r), [x2,y2] = polar(g, b, g.r);
+    const large = (b - a) > 0.5 ? 1 : 0;
+    el('path',{d:`M${g.cx},${g.cy} L${x1},${y1} A${g.r},${g.r} 0 ${large} 1 ${x2},${y2} Z`, fill:color}, parent);
+  }
+}
+
+/* Linie an Position f */
+function lineAt(f, attrs, parent, ext=0){
+  const g = G[S.shape];
+  if (g.dir === 'h'){
+    const x = g.x0 + f*(g.x1-g.x0);
+    return el('line',Object.assign({x1:x, x2:x, y1:g.y0-ext, y2:g.y1+ext}, attrs), parent);
+  } else if (g.dir === 'v'){
+    const y = g.y1 - f*(g.y1-g.y0);
+    return el('line',Object.assign({x1:g.x0-ext, x2:g.x1+ext, y1:y, y2:y}, attrs), parent);
+  } else {
+    const [x,y] = polar(g, f, g.r + ext);
+    return el('line',Object.assign({x1:g.cx, y1:g.cy, x2:x, y2:y}, attrs), parent);
+  }
+}
+
+/* Beschriftung (Pille) */
+function pill(x, y, text, color, parent, anchor='middle', textColor='#fff'){
+  const w = text.length * 9.2 + 18, h = 26;
+  let rx = x - w/2;
+  if (anchor === 'start') rx = x;
+  if (anchor === 'end') rx = x - w;
+  rx = clamp(rx, 2, 798 - w);
+  const grp = el('g', {}, parent);
+  el('rect',{x:rx, y:y-h/2, width:w, height:h, rx:13, fill:color}, grp);
+  const t = el('text',{x:rx+w/2, y:y+5.5, 'text-anchor':'middle', 'font-size':15, 'font-weight':700, fill:textColor,
+    'font-family':'system-ui,sans-serif'}, grp);
+  t.textContent = text;
+  return grp;
+}
+
+function labelPos(f, i){
+  const g = G[S.shape];
+  if (g.dir === 'h'){
+    const x = g.x0 + f*(g.x1-g.x0);
+    return {x, y: g.y0 - 38 - (i%4)*30, anchor:'middle', lx:x, ly:g.y0-24 - (i%4)*30};
+  }
+  if (g.dir === 'v'){
+    const y = g.y1 - f*(g.y1-g.y0);
+    return {x: g.x1 + 22 + (i%3)*82, y, anchor:'start', lx:g.x1+22+(i%3)*82, ly:y};
+  }
+  const r = g.r + 32 + (i%2)*28;
+  const [x,y] = polar(g, f, r);
+  return {x, y, anchor:'middle', lx:x, ly:y};
+}
+
+function cssVar(n){ return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+
+/* ---------- Zerlegung ---------- */
+function gcd(a,b){ return b ? gcd(b, a%b) : a; }
+function splitN(){
+  if (S.split !== 'auto') return +S.split;
+  const v = S.value;
+  if (v % 25 === 0) return 4;
+  if (v % 20 === 0) return 5;
+  if (Math.abs(v - Math.round(3*v/100)*100/3) < 1) return 3;
+  return 10;
+}
+const NAMES = {3:'Drittel', 4:'Viertel', 5:'Fünftel', 10:'Zehntel'};
+/* Zahl in Dritteln schön schreiben: r3 = 3 × Wert */
+function fmtThird(r3){
+  const neg = r3 < 0; r3 = Math.abs(r3);
+  const w = Math.floor(r3/3), m = r3 % 3;
+  const s = (w || !m ? w : '') + ['','⅓','⅔'][m];
+  return (neg ? '−' : '') + s;
+}
+function splitLabel(n, k){
+  if (n === 3) return fmtThird(100*k) + '%';
+  return Math.round(100*k/n) + '%';
+}
+function decompText(){
+  const v = S.value, n = splitN(), step = 100/n;
+  if (n === 3){
+    const kn = Math.round(3*v/100), r3 = 3*v - 100*kn;
+    if (Math.abs(r3) < 3 && kn > 0){
+      return `${v} % ${r3 === 0 ? "=" : "≈"} ${kn}/3<small>${kn}/3 sind genau ${fmtThird(100*kn)} %. Unterschied: ${fmtThird(r3)} %.</small>`;
+    }
+    const k = Math.floor(3*v/100), rest3 = 3*v - 100*k;
+    return `${v} % = ${k} × 33⅓ % + ${fmtThird(rest3)} %<small>Zerlegt in Drittel (33⅓er-Schritte). Liegt zwischen ${k}/3 und ${k+1}/3.</small>`;
+  }
+  const k = Math.floor(v / step), rest = +(v - k*step).toFixed(2);
+  let main;
+  if (rest === 0){
+    const d = gcd(k, n);
+    const simp = d > 1 ? ` = ${k/d}/${n/d}` : '';
+    main = `${v} % = ${k} × ${step} % = ${k}/${n}${simp}`;
+  } else {
+    main = `${v} % = ${k} × ${step} % + ${rest} %`;
+  }
+  let note = `Zerlegt in ${NAMES[n]} (${step}er-Schritte).`;
+  if (rest !== 0){
+    note += ` Liegt zwischen ${k}/${n} und ${k+1}/${n}.`;
+  }
+  return main + `<small>${note}</small>`;
+}
+
+/* ---------- Zeichnen ---------- */
+function render(){
+  board.innerHTML = '';
+  const g = G[S.shape];
+  const empty = cssVar('--empty'), ink = cssVar('--ink'), fill = cssVar('--fill'), fill2 = cssVar('--fill2');
+  const target = cssVar('--target');
+
+  // Clip-Pfad für runde Ecken
+  const defs = el('defs', {}, board);
+  const cp = el('clipPath', {id:'clip'}, defs);
+  let outline;
+  if (S.shape === 'bar'){
+    el('rect',{x:g.x0, y:g.y0, width:g.x1-g.x0, height:g.y1-g.y0, rx:40}, cp);
+    outline = {tag:'rect', a:{x:g.x0, y:g.y0, width:g.x1-g.x0, height:g.y1-g.y0, rx:40}};
+  } else if (S.shape === 'battery'){
+    el('rect',{x:g.x0, y:g.y0, width:g.x1-g.x0, height:g.y1-g.y0, rx:8}, cp);
+    // Gehäuse + Pol
+    el('rect',{x:g.x0-16, y:g.y0-16, width:g.x1-g.x0+32, height:g.y1-g.y0+32, rx:22, fill:'none', stroke:ink, 'stroke-width':6}, board);
+    el('rect',{x:g.x1+22, y:(g.y0+g.y1)/2-38, width:30, height:76, rx:8, fill:ink}, board);
+    outline = {tag:'rect', a:{x:g.x0, y:g.y0, width:g.x1-g.x0, height:g.y1-g.y0, rx:8}};
+  } else if (S.shape === 'square'){
+    el('rect',{x:g.x0, y:g.y0, width:g.x1-g.x0, height:g.y1-g.y0}, cp);
+    outline = {tag:'rect', a:{x:g.x0, y:g.y0, width:g.x1-g.x0, height:g.y1-g.y0}};
+  } else {
+    el('circle',{cx:g.cx, cy:g.cy, r:g.r}, cp);
+    outline = {tag:'circle', a:{cx:g.cx, cy:g.cy, r:g.r}};
+  }
+
+  // leere Form
+  el(outline.tag, Object.assign({fill:empty}, outline.a), board);
+
+  const inner = el('g', {'clip-path':'url(#clip)'}, board);
+
+  // Füllung nach dem Auflösen
+  if (S.revealed && S.value != null){
+    const f = S.value / 100;
+    if (S.showSplit){
+      const n = splitN();
+      for (let k = 0; k < n; k++){
+        const a = k/n, b = Math.min((k+1)/n, f);
+        segment(a, b, k % 2 ? fill2 : fill, inner);
+      }
+    } else {
+      segment(0, f, fill, inner);
+    }
+  }
+
+  // Teilungslinien
+  if (S.showSplit && S.value != null){
+    const n = splitN();
+    for (let k = 1; k < n; k++){
+      lineAt(k/n, {stroke:ink, 'stroke-width':2.5, 'stroke-dasharray':'8 6', opacity:.7}, inner);
+    }
+    // Beschriftung der Teilstriche
+    for (let k = 1; k < n; k++){
+      const f = k/n, txt = splitLabel(n, k);
+      let x, y, anchor='middle';
+      if (g.dir === 'h'){ x = g.x0 + f*(g.x1-g.x0); y = g.y1 + 38; }
+      else if (g.dir === 'v'){ x = g.x0 - 12; y = g.y1 - f*(g.y1-g.y0) + 5; anchor='end'; }
+      else { [x,y] = polar(g, f, g.r*0.62); y += 5; }
+      const t = el('text',{x, y, 'text-anchor':anchor, 'font-size':15, 'font-weight':700, fill:ink, opacity:.8,
+        'font-family':'system-ui,sans-serif'}, board);
+      t.textContent = txt;
+    }
+  }
+
+  // Umriss
+  el(outline.tag, Object.assign({fill:'none', stroke:ink, 'stroke-width':4}, outline.a), board);
+
+  // 0 / 100 Hinweise
+  const tick = (x,y,t,anchor='middle') => { const e = el('text',{x,y,'text-anchor':anchor,'font-size':14,fill:cssVar('--muted'),'font-family':'system-ui,sans-serif'},board); e.textContent=t; };
+  if (g.dir === 'h' && !S.showSplit){ tick(g.x0, g.y1+30, '0 %'); tick(g.x1, g.y1+30, '100 %'); }
+  if (g.dir === 'v' && !S.showSplit){ tick(g.x0-10, g.y1+5, '0 %', 'end'); tick(g.x0-10, g.y0+5, '100 %', 'end'); }
+  if (g.dir === 'c'){ el('circle',{cx:g.cx, cy:g.cy-g.r, r:6, fill:ink}, board); tick(g.cx+12, g.cy-g.r-10, 'Start', 'start'); }
+
+  // Schätzungen
+  S.players.forEach((p, i) => {
+    if (p.est == null) return;
+    const f = p.est / 100;
+    lineAt(f, {stroke:p.color, 'stroke-width':5, 'stroke-linecap':'round'}, board, g.dir==='c' ? 12 : 14);
+    const pos = labelPos(f, i);
+    const txt = S.revealed ? `${p.name}: ${p.est} %` : p.name;
+    pill(pos.x, pos.y, txt, p.color, board, pos.anchor);
+  });
+
+  // Ziel-Linie nach Auflösen
+  if (S.revealed && S.value != null){
+    const f = S.value / 100;
+    lineAt(f, {stroke:target, 'stroke-width':7}, board, g.dir==='c' ? 0 : 22);
+    let x, y;
+    if (g.dir === 'h'){ x = g.x0 + f*(g.x1-g.x0); y = g.y1 + (S.showSplit ? 72 : 62); }
+    else if (g.dir === 'v'){ x = (g.x0+g.x1)/2; y = g.y1 - f*(g.y1-g.y0) - 22; if (f > .9) y += 44; }
+    else { x = g.cx; y = g.cy + 4; }
+    pill(x, y, `Ziel: ${S.value} %`, target, board, 'middle', cssVar('--bg'));
+  }
+}
+
+/* ---------- UI ---------- */
+function renderPlayers(){
+  const box = $('players');
+  box.innerHTML = '';
+  if (!S.players.length){
+    box.innerHTML = '<div style="color:var(--muted);font-size:.9rem">Noch niemand – unten Namen eintragen.</div>';
+  }
+  S.players.forEach((p, i) => {
+    const d = document.createElement('div');
+    d.className = 'player' + (i === S.active && !S.revealed ? ' active' : '');
+    d.innerHTML = `<span class="dot" style="background:${p.color}"></span>
+      <span class="name"></span>
+      <span class="st">${p.est == null ? '…' : (S.revealed ? p.est + ' %' : '✔')}</span>
+      <span class="pts" title="Punkte">${p.score} P</span>
+      <button class="x" title="Entfernen">✕</button>`;
+    d.querySelector('.name').textContent = p.name;
+    d.addEventListener('click', e => {
+      if (e.target.classList.contains('x')){
+        S.players.splice(i, 1);
+        if (S.active >= S.players.length) S.active = S.players.length - 1;
+        update(); return;
+      }
+      S.active = i; update();
+    });
+    box.appendChild(d);
+  });
+}
+
+function update(){
+  // Aufgabe / Hinweis
+  if (S.value == null){
+    $('task').innerHTML = 'Würfle zuerst eine Prozentzahl.';
+    $('hint').textContent = '';
+  } else {
+    $('task').innerHTML = `Wo liegen <b>${S.value} %</b>?`;
+    if (S.revealed) $('hint').textContent = 'Aufgelöst! Grün = der echte Wert.';
+    else if (!S.players.length) $('hint').textContent = 'Füge Teilnehmer hinzu.';
+    else if (S.active >= 0) $('hint').textContent = `${S.players[S.active].name} ist dran: tippe/ziehe in die Form.`;
+    else $('hint').textContent = 'Wähle links einen Teilnehmer.';
+  }
+  $('bigVal').firstChild.nodeValue = (S.value == null ? '–' : S.value) + ' %';
+  document.querySelectorAll('#shapes button').forEach(b => b.classList.toggle('on', b.dataset.s === S.shape));
+  document.querySelectorAll('#splitCtrl button').forEach(b => b.classList.toggle('on', b.dataset.n === String(S.split)));
+  const anyEst = S.players.some(p => p.est != null);
+  $('revealBtn').disabled = S.value == null || !anyEst || S.revealed;
+  $('splitBtn').disabled = S.value == null;
+  $('splitBtn').textContent = S.showSplit ? '🧩 Zerlegung aus' : '🧩 Zerlegen';
+  $('splitBox').classList.toggle('hidden', !S.showSplit || S.value == null);
+  if (S.showSplit && S.value != null) $('decomp').innerHTML = decompText();
+  renderPlayers();
+  renderResults();
+  render();
+}
+
+function renderResults(){
+  const box = $('resultBox');
+  if (!S.revealed){ box.classList.add('hidden'); return; }
+  box.classList.remove('hidden');
+  const list = S.players.filter(p => p.est != null)
+    .map(p => ({p, d: p.est - S.value}))
+    .sort((a,b) => Math.abs(a.d) - Math.abs(b.d));
+  const medals = ['🥇','🥈','🥉'];
+  let rank = 0, last = null;
+  $('resultBody').innerHTML = '';
+  list.forEach((r, i) => {
+    if (last === null || Math.abs(r.d) !== last){ rank = i; last = Math.abs(r.d); }
+    const tr = document.createElement('tr');
+    const sign = r.d > 0 ? '+' : (r.d < 0 ? '−' : '±');
+    tr.innerHTML = `<td>${medals[rank] || (rank+1)+'.'}</td>
+      <td><span class="dot" style="display:inline-block;vertical-align:middle;margin-right:6px;background:${r.p.color}"></span><span class="nm"></span></td>
+      <td class="num">${r.p.est} %</td>
+      <td class="num">${sign}${Math.abs(r.d)} Pp.</td>`;
+    tr.querySelector('.nm').textContent = r.p.name;
+    $('resultBody').appendChild(tr);
+  });
+}
+
+/* ---------- Würfel ---------- */
+const selT = $('selT'), selO = $('selO');
+selT.innerHTML = '<option value="">–</option>' + [...Array(10)].map((_,i)=>`<option value="${i*10}">${String(i*10).padStart(2,'0')}</option>`).join('');
+selO.innerHTML = '<option value="">–</option>' + [...Array(10)].map((_,i)=>`<option value="${i}">${i}</option>`).join('');
+
+function setDice(t, o){
+  selT.value = t; selO.value = o;
+  $('faceT').textContent = String(t).padStart(2,'0');
+  $('faceO').textContent = o;
+  const v = t + o;
+  newRound(false);
+  S.value = v === 0 ? 100 : v;
+  update();
+}
+function readSelects(){
+  if (selT.value === '' || selO.value === '') {
+    $('faceT').textContent = selT.value === '' ? '–' : String(selT.value).padStart(2,'0');
+    $('faceO').textContent = selO.value === '' ? '–' : selO.value;
+    return;
+  }
+  setDice(+selT.value, +selO.value);
+}
+selT.addEventListener('change', readSelects);
+selO.addEventListener('change', readSelects);
+
+$('rollBtn').addEventListener('click', () => {
+  const dT = $('dieT'), dO = $('dieO');
+  dT.classList.add('rolling'); dO.classList.add('rolling');
+  let n = 0;
+  const iv = setInterval(() => {
+    $('faceT').textContent = String(Math.floor(Math.random()*10)*10).padStart(2,'0');
+    $('faceO').textContent = Math.floor(Math.random()*10);
+    if (++n > 10){
+      clearInterval(iv);
+      dT.classList.remove('rolling'); dO.classList.remove('rolling');
+      setDice(Math.floor(Math.random()*10)*10, Math.floor(Math.random()*10));
+    }
+  }, 60);
+});
+
+/* ---------- Spielerverwaltung ---------- */
+function addPlayer(name){
+  name = name.trim();
+  if (!name) return;
+  const used = S.players.map(p => p.color);
+  const color = COLORS.find(c => !used.includes(c)) || COLORS[S.players.length % COLORS.length];
+  S.players.push({id:S.nextId++, name, color, est:null, score:0});
+  if (S.active < 0) S.active = 0;
+  update();
+}
+$('addBtn').addEventListener('click', () => { addPlayer($('newName').value); $('newName').value=''; $('newName').focus(); });
+$('newName').addEventListener('keydown', e => { if (e.key === 'Enter'){ addPlayer(e.target.value); e.target.value=''; } });
+
+/* ---------- Formwahl ---------- */
+document.querySelectorAll('#shapes button').forEach(b => b.addEventListener('click', () => {
+  S.shape = b.dataset.s; update();
+}));
+document.querySelectorAll('#splitCtrl button').forEach(b => b.addEventListener('click', () => {
+  S.split = b.dataset.n; update();
+}));
+
+/* ---------- Schätzen per Tippen/Ziehen ---------- */
+let dragging = false;
+function svgPoint(e){
+  const pt = board.createSVGPoint();
+  pt.x = e.clientX; pt.y = e.clientY;
+  return pt.matrixTransform(board.getScreenCTM().inverse());
+}
+function place(e){
+  if (S.revealed || S.value == null || S.active < 0 || !S.players[S.active]) return false;
+  const p = svgPoint(e);
+  let f = fracFromPoint(p.x, p.y);
+  // Kreis: nahe am Start oben links → 100 statt 0 korrekt behandeln
+  S.players[S.active].est = Math.round(f * 100);
+  render(); renderPlayers();
+  return true;
+}
+board.addEventListener('pointerdown', e => {
+  if (place(e)){ dragging = true; board.setPointerCapture(e.pointerId); }
+});
+board.addEventListener('pointermove', e => { if (dragging) place(e); });
+board.addEventListener('pointerup', () => {
+  if (!dragging) return;
+  dragging = false;
+  // automatisch zum nächsten ohne Schätzung
+  const n = S.players.length;
+  for (let k = 1; k <= n; k++){
+    const j = (S.active + k) % n;
+    if (S.players[j].est == null){ S.active = j; break; }
+  }
+  update();
+});
+
+/* ---------- Auflösen / Runde ---------- */
+$('revealBtn').addEventListener('click', () => {
+  S.revealed = true;
+  const ests = S.players.filter(p => p.est != null);
+  if (ests.length){
+    const best = Math.min(...ests.map(p => Math.abs(p.est - S.value)));
+    ests.forEach(p => { if (Math.abs(p.est - S.value) === best) p.score++; });
+  }
+  update();
+});
+$('splitBtn').addEventListener('click', () => { S.showSplit = !S.showSplit; update(); });
+
+function newRound(clearValue = true){
+  S.players.forEach(p => p.est = null);
+  S.revealed = false;
+  S.showSplit = false;
+  S.split = 'auto';
+  S.active = S.players.length ? 0 : -1;
+  if (clearValue){
+    S.value = null;
+    selT.value = ''; selO.value = '';
+    $('faceT').textContent = '–'; $('faceO').textContent = '–';
+  }
+}
+$('newRoundBtn').addEventListener('click', () => { newRound(true); update(); });
+
+/* ---------- Hell / Dunkel ---------- */
+const mq = matchMedia('(prefers-color-scheme: dark)');
+function isDark(){
+  const t = document.documentElement.dataset.theme;
+  return t ? t === 'dark' : mq.matches;
+}
+function syncThemeBtn(){
+  $('themeBtn').textContent = isDark() ? '☀️ Hell' : '🌙 Dunkel';
+}
+try { const t = localStorage.getItem('schaetz-theme'); if (t) document.documentElement.dataset.theme = t; } catch(e){}
+$('themeBtn').addEventListener('click', () => {
+  const t = isDark() ? 'light' : 'dark';
+  document.documentElement.dataset.theme = t;
+  try { localStorage.setItem('schaetz-theme', t); } catch(e){}
+  syncThemeBtn(); render();
+});
+mq.addEventListener('change', () => { syncThemeBtn(); render(); });
+syncThemeBtn();
+
+// Startbelegung
+['Team A','Team B'].forEach(addPlayer);
+update();
+})();
+</script>
+</body>
+</html>
