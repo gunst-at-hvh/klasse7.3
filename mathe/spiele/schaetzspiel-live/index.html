@@ -12,7 +12,7 @@
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;min-height:100%;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink)}
-body{background:linear-gradient(160deg,var(--purple),var(--purple2)) fixed;min-height:100dvh}
+body{background:radial-gradient(1200px 700px at 20% -10%,#3b1680 0%,transparent 60%),linear-gradient(160deg,#1c0a40,#0b0420) fixed;min-height:100dvh}
 button,input,select{font:inherit;color:inherit}
 button{cursor:pointer;border:none;border-radius:12px;padding:10px 16px;font-weight:800;background:#fff;color:var(--ink);
   box-shadow:0 4px 0 rgba(0,0,0,.25);transition:transform .08s, box-shadow .08s}
@@ -85,7 +85,7 @@ button.chip.on{background:var(--purple);color:#fff;box-shadow:0 3px 0 #2b0e5a}
   background:conic-gradient(var(--purple) var(--p,100%), #d6cfe6 0)}
 .timer span{width:68px;height:68px;border-radius:50%;background:var(--purple);display:grid;place-items:center}
 .status{text-align:center;font-weight:800;color:var(--muted);margin:4px 0}
-svg.shape{width:100%;height:auto;display:block;user-select:none}
+svg.shape{width:100%;height:auto;max-height:46vh;display:block;user-select:none}
 .actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:8px}
 .splitrow{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:8px}
 .decomp{text-align:center;font-size:1.35rem;font-weight:800;margin-top:8px}
@@ -150,6 +150,48 @@ td.num{text-align:right;font-variant-numeric:tabular-nums}
 #crownPop .c{font-size:7rem;line-height:1;display:block;animation:crown 1.2s ease-out}
 @keyframes crown{0%{transform:scale(.2) rotate(-20deg);opacity:0}60%{transform:scale(1.25) rotate(8deg);opacity:1}100%{transform:scale(1) rotate(0)}}
 .netinfo{position:fixed;bottom:8px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.55);color:#fff;padding:6px 14px;border-radius:999px;font-size:.9rem;z-index:50}
+
+/* ---------- Neu: Kopfleiste, Schalter, Animationen ---------- */
+.hbar .go, .hbar .red{font-size:1.15rem;padding:10px 20px}
+.hbar .go{animation:glow 1.6s ease-in-out infinite}
+@keyframes glow{50%{box-shadow:0 4px 0 rgba(0,0,0,.25),0 0 22px rgba(38,137,12,.8)}}
+.chip.tog{opacity:.6}
+.chip.tog.on{opacity:1}
+.card.main{box-shadow:0 10px 40px rgba(0,0,0,.45)}
+.timer{box-shadow:0 0 0 4px rgba(255,255,255,.15)}
+.timer.hurry span{background:#e21b3c;animation:pulse .5s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(1.08)}}
+.toast.gold{background:linear-gradient(135deg,#f7c948,#e09f00);color:#1d2433}
+.toast.fire{background:linear-gradient(135deg,#ff7a18,#e21b3c)}
+.toast.help{background:#864cbf}
+#bigNum{position:fixed;inset:0;z-index:38;display:grid;place-items:center;background:rgba(10,4,32,.82);animation:fadeIn .25s}
+#bigNum .n{font-size:clamp(7rem,26vw,20rem);font-weight:900;color:#fff;line-height:1;text-shadow:0 8px 40px rgba(134,76,191,.9);font-variant-numeric:tabular-nums}
+#bigNum .n.pop{animation:numPop .6s cubic-bezier(.2,1.8,.4,1)}
+#bigNum .l{color:#ffb703;font-weight:900;font-size:clamp(1.4rem,4vw,2.6rem);text-align:center;margin-top:10px}
+@keyframes numPop{0%{transform:scale(.6)}60%{transform:scale(1.18)}100%{transform:scale(1)}}
+.liveval{font-size:clamp(2rem,6vw,4rem);font-weight:900;color:var(--green);text-align:center;font-variant-numeric:tabular-nums}
+/* Treppchen */
+#podiumOv{position:fixed;inset:0;z-index:39;background:radial-gradient(900px 600px at 50% 20%,#4a1d9a,#120726);color:#fff;
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:20px;overflow:hidden;animation:fadeIn .4s}
+#podiumOv h2{position:absolute;top:22px;left:0;right:0;text-align:center;font-size:clamp(2rem,5vw,3.4rem);margin:0}
+.pod{display:flex;align-items:flex-end;gap:14px;width:min(1000px,100%)}
+.pod .col{flex:1;display:flex;flex-direction:column;align-items:center;opacity:0;transform:translateY(40px);transition:all .7s cubic-bezier(.2,1.4,.4,1)}
+.pod .col.on{opacity:1;transform:none}
+.pod .e{font-size:clamp(3rem,8vw,6rem);line-height:1;filter:drop-shadow(0 0 3px #fff) drop-shadow(0 0 3px #fff)}
+.pod .nm{font-size:clamp(1.3rem,3.5vw,2.4rem);font-weight:900;margin:6px 0 2px;text-align:center}
+.pod .sc{font-size:clamp(1rem,2.5vw,1.5rem);font-weight:800;opacity:.9;margin-bottom:8px}
+.pod .blk{width:100%;border-radius:14px 14px 0 0;display:grid;place-items:center;font-size:clamp(2.5rem,7vw,5rem);font-weight:900;
+  box-shadow:inset 0 -10px 0 rgba(0,0,0,.2)}
+.pod .p1 .blk{height:42vh;background:linear-gradient(#f7c948,#c98a00)}
+.pod .p2 .blk{height:30vh;background:linear-gradient(#e6e9ef,#9aa3b2);color:#1d2433}
+.pod .p3 .blk{height:21vh;background:linear-gradient(#e7a36b,#a85f2a)}
+#podiumOv .rest{margin-top:10px;font-weight:700;opacity:.85;text-align:center}
+#podiumOv .close{position:absolute;top:16px;right:16px}
+.confetti{position:fixed;top:-20px;width:10px;height:16px;z-index:41;pointer-events:none;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+.pbonus{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:6px}
+.pbonus span{background:rgba(0,0,0,.18);border-radius:999px;padding:3px 10px;font-weight:800}
+.helpnote{text-align:center;font-weight:800;color:#ffb703}
 </style>
 </head>
 <body>
@@ -174,7 +216,10 @@ td.num{text-align:right;font-variant-numeric:tabular-nums}
     <span class="codebox" id="hCodeSmall">····</span>
     <span id="hLamp" style="font-weight:800;font-size:.95rem">⚪ …</span>
     <button class="ghost" id="hBoardBtn">🏅 Punktestand</button>
+    <button class="ghost" id="hSndBtn" title="Ton an/aus">🔊</button>
     <button class="ghost" id="hFsBtn">⛶ Vollbild</button>
+    <button class="red hidden" id="hLockBtn">⏹ Jetzt auflösen</button>
+    <button class="go hidden" id="hNextBtn">▶ Nächste Runde</button>
   </div>
 
   <!-- Lobby -->
@@ -195,6 +240,10 @@ td.num{text-align:right;font-variant-numeric:tabular-nums}
         <div class="row" id="hTimeRow"></div>
         <label>Zerlegung</label>
         <div class="row" id="hSplitRow1"></div>
+        <label>Prozentzahl</label>
+        <div class="row" id="hNumRow"></div>
+        <label>Extras</label>
+        <div class="row" id="hExtraRow"></div>
       </div>
       <div class="waiting">
         <div class="big" id="hCount">0 Gruppen</div>
@@ -208,6 +257,7 @@ td.num{text-align:right;font-variant-numeric:tabular-nums}
   <div id="hGame" class="stage hidden">
     <div class="side">
       <div class="card">
+        <div id="hDiceParts">
         <div style="font-weight:900;margin-bottom:8px">🎲 Würfeln (2 × W10)</div>
         <div class="dice">
           <div class="die t" id="hDieT"><div class="face" id="hFaceT">–</div><select id="hSelT"></select></div>
@@ -218,6 +268,8 @@ td.num{text-align:right;font-variant-numeric:tabular-nums}
           <button class="chip" id="hRoll">🎲 Virtuell</button>
         </div>
         <div style="text-align:center;font-size:2.6rem;font-weight:900;margin-top:6px" id="hValue">– %</div>
+        </div>
+        <div id="hAutoNote" style="font-weight:800;text-align:center;margin-bottom:8px">🎲 Die Zahl wird automatisch gezogen.</div>
         <button class="go" id="hRoundBtn" style="width:100%;font-size:1.2rem;margin-top:6px" disabled>▶ Runde starten</button>
       </div>
       <div class="card settings">
@@ -225,6 +277,10 @@ td.num{text-align:right;font-variant-numeric:tabular-nums}
         <div class="row" id="hShapeRow2"></div>
         <label>Zeit</label>
         <div class="row" id="hTimeRow2"></div>
+        <label>Prozentzahl</label>
+        <div class="row" id="hNumRow2"></div>
+        <label>Extras</label>
+        <div class="row" id="hExtraRow2"></div>
       </div>
       <div class="card" style="color:var(--ink)">
         <div style="font-weight:900;margin-bottom:6px">Gruppen</div>
@@ -238,11 +294,10 @@ td.num{text-align:right;font-variant-numeric:tabular-nums}
         <div class="timer hidden" id="hTimer"><span id="hTimerNum">20</span></div>
       </div>
       <div class="status" id="hStatus"></div>
+      <div class="liveval hidden" id="hLiveVal"></div>
       <svg class="shape" id="hSvg"></svg>
       <div class="actions">
-        <button class="red hidden" id="hLockBtn">⏹ Jetzt auflösen</button>
-        <button class="chip" id="hSplitBtn">🧩 Zerlegen</button>
-        <button class="blue hidden" id="hNextBtn">▶ Nächste Runde</button>
+        <button class="chip" id="hSplitBtn">💡 Hilfe: Zerlegen</button>
         <button class="chip" id="hEndBtn">🏆 Spiel beenden</button>
       </div>
       <div id="hSplitBox" class="hidden">
@@ -251,7 +306,7 @@ td.num{text-align:right;font-variant-numeric:tabular-nums}
       </div>
       <div id="hResults" class="hidden">
         <table>
-          <thead><tr><th>Platz</th><th>Gruppe</th><th class="num">Geschätzt</th><th class="num">Abweichung</th><th class="num">Punkte</th></tr></thead>
+          <thead><tr><th>Platz</th><th>Gruppe</th><th class="num">Geschätzt</th><th class="num">Abweichung</th><th class="num">Punkte</th><th>Extras</th></tr></thead>
           <tbody id="hResBody"></tbody>
         </table>
       </div>
@@ -287,6 +342,7 @@ td.num{text-align:right;font-variant-numeric:tabular-nums}
       <div class="tbar"><i id="pTbar"></i></div>
       <div class="pshape" id="pShapeBox"><svg id="pSvg"></svg><div class="lockmsg hidden" id="pLock"></div></div>
       <div style="text-align:center;font-weight:700;opacity:.85" id="pHint">Ziehe mit dem Finger, bis es passt.</div>
+      <div class="helpnote hidden" id="pHelpNote"></div>
       <button class="go donebtn" id="pDone" disabled>✓ Fertig</button>
     </div>
     <!-- Ergebnis -->
@@ -339,7 +395,7 @@ function keepRegistered(getPeer, lampId){
 }
 
 const PREFIX = 'hvh-schaetzlive-';
-const APP_VERSION = '2026-10-14e';
+const APP_VERSION = '2026-10-15a';
 const AUTOJOIN_KEY = 'schaetzspiel-live-autojoin';
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const EMOJIS = ['😀','😎','🤓','🥳','🤩','😜','🤠','🥸','😇','🤖','👻','👽','💩','🐱','🐶','🦊','🐼','🐸','🦁','🐯','🐵','🐙','🦄','🐝','🐢','🦖','🐧','🦉','🐬','🦈','🍕','🍩','🍉','⚽','🏀','🎮','🎸','🚀','🌈','🔥','⭐','💎','👑','🌵'];
@@ -512,6 +568,11 @@ function dismissSticky(){
 }
 document.addEventListener('pointerdown', dismissSticky, true);
 document.addEventListener('keydown', dismissSticky, true);
+function clearPopups(){
+  stickyTimers.forEach(clearTimeout); stickyTimers = [];
+  document.querySelectorAll('.toast').forEach(t => t.remove());
+  const cr = $('crownPop'); if (cr) cr.classList.add('hidden');
+}
 function showCrown(names){
   $('crownNames').textContent = 'Volltreffer: ' + names + '!';
   const c = $('crownPop'); c.classList.remove('hidden'); stickyAt = Date.now();
@@ -577,8 +638,72 @@ function setupFs(btn){
 const H = {
   peer:null, code:'', players:new Map(), phase:'lobby',
   shape:'battery', time:20, split:'2', showSplit:false,
-  value:null, round:0, endsAt:0, timer:null, lockTimer:null
+  numMode:'auto', speed:true, streak:true, autoHelp:false, helpStage:0,
+  value:null, round:0, endsAt:0, startedAt:0, timer:null, lockTimer:null, animating:false
 };
+const HELP_SPLITS = [0, 2, 4, 10];
+const HELP_FACTOR = [1, 0.8, 0.6, 0.4];
+const SPEED_BONUS = [3, 2, 1];
+const SPEED_WINDOW = 3;
+
+/* ---------- Töne (ohne Dateien, direkt im Browser erzeugt) ---------- */
+const SND = {on:true, ctx:null};
+function ac(){
+  if (!SND.ctx){ try { SND.ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e){} }
+  if (SND.ctx && SND.ctx.state === 'suspended') SND.ctx.resume();
+  return SND.ctx;
+}
+function tone(f, dur = .12, type = 'sine', vol = .14, when = 0){
+  if (!SND.on) return; const c = ac(); if (!c) return;
+  const t = c.currentTime + when, o = c.createOscillator(), g = c.createGain();
+  o.type = type; o.frequency.setValueAtTime(f, t);
+  g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.001, t + dur);
+  o.connect(g).connect(c.destination); o.start(t); o.stop(t + dur + .03);
+}
+function sweep(f1, f2, dur){
+  if (!SND.on) return; const c = ac(); if (!c) return;
+  const t = c.currentTime, o = c.createOscillator(), g = c.createGain();
+  o.type = 'triangle'; o.frequency.setValueAtTime(f1, t); o.frequency.exponentialRampToValueAtTime(f2, t + dur);
+  g.gain.setValueAtTime(.001, t); g.gain.linearRampToValueAtTime(.12, t + .1); g.gain.setValueAtTime(.12, t + dur - .05); g.gain.linearRampToValueAtTime(.001, t + dur);
+  o.connect(g).connect(c.destination); o.start(t); o.stop(t + dur + .02);
+}
+const sTick = () => tone(1400, .03, 'square', .04);
+const sBlip = () => { tone(660, .08, 'sine', .12); tone(990, .1, 'sine', .1, .07); };
+const sDing = () => { tone(880, .25, 'triangle', .2); tone(1320, .45, 'triangle', .15, .12); };
+const sFanfare = () => { [523,659,784,1047].forEach((f,i) => tone(f, .22, 'square', .07, i*.13)); tone(1047, .9, 'triangle', .14, .55); tone(1319, .9, 'triangle', .1, .55); };
+const sDrum = dur => { for (let i = 0; i < dur/.045; i++) tone(70 + Math.random()*40, .04, 'square', .05 + i*.0015, i*.045); };
+const sCoin = () => { tone(988, .07, 'square', .07); tone(1319, .25, 'square', .07, .07); };
+
+function confetti(n = 140){
+  const cols = ['#e21b3c','#1368ce','#ffb703','#26890c','#864cbf','#f77f00','#fff'];
+  for (let i = 0; i < n; i++){
+    const d = document.createElement('div'); d.className = 'confetti';
+    d.style.left = Math.random()*100 + 'vw'; d.style.background = cols[i % cols.length];
+    d.style.animationDuration = (2.4 + Math.random()*2.4) + 's'; d.style.animationDelay = (Math.random()*1.2) + 's';
+    d.style.transform = `rotate(${Math.random()*360}deg)`;
+    document.body.appendChild(d); setTimeout(() => d.remove(), 6000);
+  }
+}
+/* Große Prozentzahl in der Bildschirmmitte (bei rolling = Glücksrad-Effekt) */
+function bigNumber(value, rolling, done){
+  let ov = document.getElementById('bigNum');
+  if (!ov){ ov = document.createElement('div'); ov.id = 'bigNum'; ov.innerHTML = '<div><div class="n"></div><div class="l"></div></div>'; document.body.appendChild(ov); }
+  const n = ov.querySelector('.n'), l = ov.querySelector('.l');
+  ov.style.display = ''; l.textContent = rolling ? 'Die Zahl wird gezogen …' : '';
+  const finish = () => {
+    n.textContent = value + ' %'; n.classList.remove('pop'); void n.offsetWidth; n.classList.add('pop');
+    l.textContent = `Wo liegen ${value} %?`; sDing();
+    setTimeout(() => { ov.style.display = 'none'; done && done(); }, 1500);
+  };
+  if (!rolling){ finish(); return; }
+  let delay = 40, total = 0;
+  const step = () => {
+    n.textContent = (1 + Math.floor(Math.random()*100)) + ' %'; sTick();
+    total += delay; delay *= 1.11;
+    if (total < 1900) setTimeout(step, delay); else finish();
+  };
+  step();
+}
 function hBroadcast(msg){ H.players.forEach(p => { if (p.conn && p.conn.open) try { p.conn.send(msg); } catch(e){} }); }
 function hSend(p, msg){ if (p.conn && p.conn.open) try { p.conn.send(msg); } catch(e){} }
 
@@ -591,13 +716,14 @@ function startHost(){
   $('hSelO').innerHTML = '<option value="">–</option>' + [...Array(10)].map((_,i)=>`<option value="${i}">${i}</option>`).join('');
   $('hSelT').onchange = $('hSelO').onchange = hReadDice;
   $('hRoll').onclick = hRollDice;
-  $('hStart').onclick = () => { H.phase = 'ready'; show('hLobby', false); show('hGame'); hRender(); hBroadcast({t:'wait', text:'Gleich geht\'s los!'}); };
-  $('hRoundBtn').onclick = hStartRound;
+  $('hStart').onclick = () => { ac(); show('hLobby', false); show('hGame'); hNextRound(); };
+  $('hRoundBtn').onclick = () => { ac(); if (H.numMode === 'auto') hAutoRoll(); else if (H.value != null) bigNumber(H.value, false, hStartRound); };
   $('hLockBtn').onclick = hLock;
-  $('hNextBtn').onclick = () => { H.phase = 'ready'; H.value = null; $('hSelT').value = ''; $('hSelO').value = ''; $('hFaceT').textContent = '–'; $('hFaceO').textContent = '–';
-    H.showSplit = false; H.players.forEach(p => { p.est = null; p.done = false; p.last = null; }); hRender(); hBroadcast({t:'wait', text:'Nächste Runde kommt gleich …'}); };
-  $('hSplitBtn').onclick = () => { H.showSplit = !H.showSplit; hRender(); if (H.phase === 'running') hBroadcast({t:'split', split: H.showSplit ? hSplitN() : 0}); };
-  $('hBoardBtn').onclick = () => showBoard('🏅 Punktestand', [...H.players.values()].map(p => ({avatar:p.avatar, name:p.name, color:p.color, score:p.score, label:p.score + ' P' + (p.crowns ? ' ' + '👑'.repeat(Math.min(3,p.crowns)) : '')})));
+  $('hNextBtn').onclick = () => { ac(); hNextRound(); };
+  $('hSplitBtn').onclick = () => { H.showSplit = !H.showSplit; hRender(); if (H.phase === 'running') hBroadcast({t:'split', split: hEffSplit()}); };
+  $('hBoardBtn').onclick = () => showBoard('🏅 Punktestand', [...H.players.values()].map(p => ({avatar:p.avatar, name:p.name, color:p.color, score:p.score,
+    label: p.score + ' P' + (p.played ? ' · Ø ' + Math.round(p.score / p.played) : '') + (p.crowns ? ' ' + '👑'.repeat(Math.min(3,p.crowns)) : '')})));
+  $('hSndBtn').onclick = () => { SND.on = !SND.on; $('hSndBtn').textContent = SND.on ? '🔊' : '🔇'; if (SND.on) sBlip(); };
   $('hEndBtn').onclick = hEndGame;
   hOpenPeer();
 }
@@ -637,8 +763,8 @@ function hOnMsg(conn, m){
     const name = String(m.name || 'Gruppe').slice(0,16), avatar = String(m.avatar || '😀').slice(0,8);
     if (!p){
       const used = [...H.players.values()].map(x => x.color);
-      p = {pid:m.pid, name, avatar, color: COLORS.find(c => !used.includes(c)) || COLORS[H.players.size % COLORS.length], score:0, crowns:0, est:null, done:false};
-      H.players.set(m.pid, p);
+      p = {pid:m.pid, name, avatar, color: COLORS.find(c => !used.includes(c)) || COLORS[H.players.size % COLORS.length], score:0, crowns:0, est:null, done:false, streak:0, played:0};
+      H.players.set(m.pid, p); sBlip();
     } else { p.name = name; p.avatar = avatar; }
     p.conn = conn; p.online = true;
     hSend(p, {t:'welcome', v:APP_VERSION, name:p.name, avatar:p.avatar, color:p.color, score:p.score});
@@ -651,16 +777,23 @@ function hOnMsg(conn, m){
     if (!p || H.phase !== 'running' || m.round !== H.round) return;
     if (p.done) return;
     p.est = clamp(Math.round(+m.v), 0, 100);
-    if (m.done) p.done = true;
+    p.estStage = H.helpStage;
+    if (m.done){ p.done = true; p.doneAt = Date.now() - H.startedAt; p.doneStage = H.helpStage; sTick(); }
     hRender();
     const active = [...H.players.values()].filter(x => x.online);
     if (active.length && active.every(x => x.done)) setTimeout(hLock, 400);
   }
 }
 function hSplitN(){ return splitN(H.split, H.value ?? 50); }
+/* Striche, die gerade zu sehen sind: Hilfe vom Beamer oder Auto-Hilfe */
+function hEffSplit(){
+  if (H.showSplit) return hSplitN();
+  if (H.phase === 'running' && H.autoHelp && H.helpStage) return HELP_SPLITS[H.helpStage];
+  return 0;
+}
 function hRoundMsg(){
-  return {t:'round', round:H.round, value:H.value, shape:H.shape, split: H.showSplit ? hSplitN() : 0,
-    ms: H.time ? Math.max(0, H.endsAt - Date.now()) : 0};
+  return {t:'round', round:H.round, value:H.value, shape:H.shape, split: hEffSplit(),
+    ms: H.time ? Math.max(0, H.endsAt - Date.now()) : 0, total: H.time*1000, autoHelp:H.autoHelp, stage:H.helpStage};
 }
 function buildChips(){
   const shapes = [['battery','🔋 Batterie'],['bar','▬ Balken'],['square','◼ Quadrat'],['circle','● Kreis'],['triangle','▲ Dreieck']];
@@ -676,11 +809,22 @@ function buildChips(){
   });
   mk(['hShapeRow','hShapeRow2'], shapes, 'shape', () => hRender());
   mk(['hTimeRow','hTimeRow2'], times, 'time');
-  mk(['hSplitRow1','hSplitRow2'], splits, 'split', () => { hRender(); if (H.phase === 'running' && H.showSplit) hBroadcast({t:'split', split:hSplitN()}); });
+  mk(['hSplitRow1','hSplitRow2'], splits, 'split', () => { hRender(); if (H.phase === 'running' && H.showSplit) hBroadcast({t:'split', split:hEffSplit()}); });
+  mk(['hNumRow','hNumRow2'], [['auto','🎲 Automatisch'],['manual','✋ Manuell (Würfel)']], 'numMode', () => hRender());
+  ['hExtraRow','hExtraRow2'].forEach(id => {
+    const row = $(id); row.innerHTML = '';
+    [['speed','⚡ Tempo-Bonus'],['streak','🔥 Streak'],['autoHelp','💡 Auto-Hilfe']].forEach(([k, label]) => {
+      const b = document.createElement('button'); b.className = 'chip tog'; b.textContent = label; b.dataset.k = k;
+      b.title = {speed:'Bis zu 3 Extrapunkte für schnelles UND gutes Schätzen', streak:'+1 Punkt, wenn man mehrmals hintereinander höchstens 2 daneben liegt', autoHelp:'Zerlegungs-Striche erscheinen nach und nach – wer sie nutzt, bekommt weniger Punkte'}[k];
+      b.onclick = () => { H[k] = !H[k]; syncChips(); };
+      row.appendChild(b);
+    });
+  });
   syncChips();
 }
 function syncChips(){
-  [['hShapeRow','shape'],['hShapeRow2','shape'],['hTimeRow','time'],['hTimeRow2','time'],['hSplitRow1','split'],['hSplitRow2','split']].forEach(([id,key]) => {
+  ['hExtraRow','hExtraRow2'].forEach(id => $(id).querySelectorAll('button').forEach(b => { b.classList.toggle('on', !!H[b.dataset.k]); b.textContent = b.textContent.replace(/ ✓$/, '') + (H[b.dataset.k] ? ' ✓' : ''); b.disabled = H.phase === 'running'; }));
+  [['hShapeRow','shape'],['hShapeRow2','shape'],['hTimeRow','time'],['hTimeRow2','time'],['hSplitRow1','split'],['hSplitRow2','split'],['hNumRow','numMode'],['hNumRow2','numMode']].forEach(([id,key]) => {
     $(id).querySelectorAll('button').forEach(b => b.classList.toggle('on', String(H[key]) === b.dataset.v));
   });
   // Form & Zeit während einer laufenden Runde nicht ändern
@@ -706,66 +850,180 @@ function hRollDice(){
     }
   }, 60);
 }
+function hResetRound(){
+  H.showSplit = false; H.helpStage = 0;
+  H.players.forEach(p => { p.est = null; p.done = false; p.doneAt = null; p.estStage = 0; p.doneStage = 0; p.lastResult = null; p.res = null; });
+}
+function hNextRound(){
+  if (H.animating) return;
+  clearPopups();
+  hResetRound();
+  if (H.numMode === 'auto'){ hAutoRoll(); return; }
+  H.phase = 'ready'; H.value = null;
+  $('hSelT').value = ''; $('hSelO').value = ''; $('hFaceT').textContent = '–'; $('hFaceO').textContent = '–';
+  hRender(); hBroadcast({t:'wait', text:'Nächste Runde kommt gleich …'});
+}
+function hAutoRoll(){
+  H.phase = 'rolling'; H.value = null; hRender();
+  hBroadcast({t:'wait', text:'🎲 Die Zahl wird gezogen …'});
+  const v = 1 + Math.floor(Math.random()*100);
+  bigNumber(v, true, () => { H.value = v; hStartRound(); });
+}
 function hStartRound(){
   if (H.value == null) return;
-  H.round++; H.phase = 'running';
-  H.players.forEach(p => { p.est = null; p.done = false; p.lastResult = null; });
-  H.endsAt = Date.now() + H.time*1000;
+  hResetRound();
+  H.round++; H.phase = 'running'; H.startedAt = Date.now();
+  H.endsAt = H.startedAt + H.time*1000;
   clearInterval(H.timer);
-  if (H.time){
-    H.timer = setInterval(() => {
-      const left = H.endsAt - Date.now();
+  let lastSec = null;
+  H.timer = setInterval(() => {
+    const el = Date.now() - H.startedAt, left = H.endsAt - Date.now();
+    // Auto-Hilfe: nach und nach Zerlegungs-Striche einblenden
+    if (H.autoHelp){
+      const frac = H.time ? el / (H.time*1000) : el / 32000;
+      const st = frac >= .75 ? 3 : frac >= .5 ? 2 : frac >= .25 ? 1 : 0;
+      if (st !== H.helpStage){
+        H.helpStage = st; hBroadcast({t:'split', split:hEffSplit(), stage:st}); hRender();
+        toast(`💡 Hilfe: ${['','Halbe','Viertel','Zehntel'][st]} – ab jetzt ×${String(HELP_FACTOR[st]).replace('.', ',')} Punkte`, 'help', 2200);
+      }
+    }
+    if (H.time){
       hTimerUi(left);
+      const sec = Math.ceil(left/1000);
+      if (sec <= 5 && sec > 0 && sec !== lastSec){ lastSec = sec; tone(sec === 1 ? 1000 : 700, .08, 'square', .06); }
       if (left <= 0){ clearInterval(H.timer); hLock(); }
-    }, 200);
-  }
+    }
+  }, 150);
   hBroadcast(hRoundMsg());
   hRender();
+}
+function toast(text, cls, ms = 2400){
+  let box = $('toasts'); if (!box){ box = document.createElement('div'); box.id = 'toasts'; document.body.appendChild(box); }
+  const t = document.createElement('div'); t.className = 'toast ' + cls; t.textContent = text;
+  t.style.animation = `toastIn .35s cubic-bezier(.2,1.6,.4,1) both, toastOut .6s ease-in ${ms}ms forwards`;
+  box.appendChild(t); setTimeout(() => t.remove(), ms + 700);
 }
 function hTimerUi(left){
   if (!H.time){ show('hTimer', false); return; }
   show('hTimer', H.phase === 'running');
   const s = Math.max(0, Math.ceil(left/1000));
+  $('hTimer').classList.toggle('hurry', s <= 5);
   $('hTimerNum').textContent = s;
   $('hTimer').style.setProperty('--p', clamp(left/(H.time*1000)*100, 0, 100) + '%');
 }
 function hLock(){
   if (H.phase !== 'running') return;
-  H.phase = 'locked'; clearInterval(H.timer);
+  H.phase = 'locked'; clearInterval(H.timer); sBlip();
   hBroadcast({t:'lock', round:H.round});
   // kurz warten, damit die letzten Werte noch ankommen
   setTimeout(hReveal, 700);
   hRender();
 }
+function hScore(){
+  const v = H.value;
+  const ps = [...H.players.values()];
+  const ests = ps.filter(p => p.est != null);
+  const best = ests.length ? Math.min(...ests.map(p => Math.abs(p.est - v))) : 0;
+  // Tempo: nur wer abgegeben hat UND höchstens 3 schlechter ist als die beste Schätzung
+  const fast = H.speed ? ests.filter(p => p.done && p.doneAt != null && Math.abs(p.est - v) <= best + SPEED_WINDOW).sort((a,b) => a.doneAt - b.doneAt) : [];
+  ps.forEach(p => {
+    p.played = (p.played || 0) + 1;
+    if (p.est == null){ p.streak = 0; p.res = {pts:0, base:0, factor:1, speed:0, streak:0, has:false}; return; }
+    const ad = Math.abs(p.est - v);
+    const stage = p.done ? (p.doneStage || 0) : (p.estStage || 0);
+    const factor = H.autoHelp ? HELP_FACTOR[stage] : 1;
+    const base = Math.round((100 - ad) * factor);                 // kaufmännisch gerundet
+    const fi = fast.indexOf(p), speed = fi >= 0 && fi < SPEED_BONUS.length ? SPEED_BONUS[fi] : 0;
+    if (ad <= 2) p.streak = (p.streak || 0) + 1; else p.streak = 0;
+    const streak = H.streak && p.streak >= 2 ? 1 : 0;
+    const pts = base + speed + streak;
+    p.score += pts;
+    if (ad === 0) p.crowns++;
+    p.res = {pts, base, factor, stage, speed, streak, streakN:p.streak, has:true, ad, d:p.est - v, fastRank: fi >= 0 ? fi + 1 : 0};
+  });
+}
 function hReveal(){
   H.phase = 'reveal';
   const v = H.value;
-  const ests = [...H.players.values()].filter(p => p.est != null);
-  ests.forEach(p => { p.roundPts = Math.max(0, 100 - Math.abs(p.est - v)); p.score += p.roundPts; });
-  const exact = ests.filter(p => p.est === v); exact.forEach(p => p.crowns++);
-  // Rangliste gesamt
-  const all = [...H.players.values()].sort((a,b) => b.score - a.score);
+  hScore();
+  const ps = [...H.players.values()];
+  const all = [...ps].sort((a,b) => b.score - a.score);
   let place = 0, last = null; all.forEach((p,i) => { if (p.score !== last){ place = i+1; last = p.score; } p.place = place; });
-  H.players.forEach(p => {
-    const has = p.est != null;
-    p.lastResult = {t:'result', round:H.round, value:v, est:p.est, diff: has ? p.est - v : null, pts: has ? p.roundPts : 0,
-      total:p.score, place:p.place, of:all.length, crown: has && p.est === v, shape:H.shape, split: H.showSplit ? hSplitN() : 0};
+  // Animation: Fläche läuft von 0 bis zum Wert voll
+  H.animating = true; hRender();
+  const dur = 900 + v * 18, t0 = performance.now();
+  sweep(220, 220 + v * 9, dur / 1000);
+  show('hLiveVal');
+  const frame = now => {
+    const k = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - k, 3);
+    const cur = v * e;
+    $('hLiveVal').textContent = Math.round(cur) + ' %';
+    drawShape($('hSvg'), {shape:H.shape, orient:'h', uid:'host', target: cur/100, split:0, revealed:false, markers:null});
+    if (k < 1){ requestAnimationFrame(frame); return; }
+    H.animating = false; show('hLiveVal', false);
+    sDing();
+    hRender();
+    hAfterReveal(all);
+  };
+  requestAnimationFrame(frame);
+}
+function hAfterReveal(all){
+  const v = H.value, ps = [...H.players.values()];
+  ps.forEach(p => {
+    const r = p.res || {pts:0, has:false};
+    p.lastResult = {t:'result', round:H.round, value:v, est:p.est, diff: r.has ? p.est - v : null, pts:r.pts, base:r.base, factor:r.factor,
+      speed:r.speed, streak:r.streak, streakN:r.streakN, total:p.score, place:p.place, of:all.length, crown: r.has && p.est === v,
+      shape:H.shape, split: H.showSplit ? hSplitN() : 0, avg: Math.round(p.score / Math.max(1, p.played))};
     hSend(p, p.lastResult);
   });
-  // Pop-ups am Beamer
-  if (exact.length) showCrown(exact.map(p => p.avatar + ' ' + p.name).join(' & '));
-  ests.filter(p => p.est !== v).sort((a,b) => Math.abs(a.est-v) - Math.abs(b.est-v)).forEach((p,i) => {
-    const d = p.est - v, ad = Math.abs(d);
+  const ests = ps.filter(p => p.res && p.res.has);
+  const exact = ests.filter(p => p.est === v);
+  if (exact.length){ showCrown(exact.map(p => p.avatar + ' ' + p.name).join(' & ')); sFanfare(); confetti(80); }
+  let delay = exact.length ? 1400 : 200;
+  ests.filter(p => p.est !== v).sort((a,b) => a.res.ad - b.res.ad).forEach(p => {
+    const ad = p.res.ad, d = p.res.d;
     const cls = ad < 5 ? 'green' : ad < 10 ? 'yellow' : 'red', word = ad < 5 ? 'super!' : ad < 10 ? 'knapp daneben' : 'daneben';
-    stickyToast(`${p.avatar} ${p.name}: ${d > 0 ? '+' : '−'}${ad} · ${word}`, cls, (exact.length ? 1400 : 200) + i*380);
+    stickyToast(`${p.avatar} ${p.name}: ${d > 0 ? '+' : '−'}${ad} · ${word}`, cls, delay); delay += 380;
   });
-  hRender();
+  ests.filter(p => p.res.speed).sort((a,b) => a.res.fastRank - b.res.fastRank).forEach(p => {
+    stickyToast(`⚡ Tempo-Bonus ${p.avatar} ${p.name}: +${p.res.speed}`, 'gold', delay); setTimeout(sCoin, delay); delay += 380;
+  });
+  ests.filter(p => p.res.streak).forEach(p => {
+    stickyToast(`🔥 ${p.res.streakN}er-Streak ${p.avatar} ${p.name}: +1`, 'fire', delay); setTimeout(sCoin, delay); delay += 380;
+  });
 }
 function hEndGame(){
-  const rows = [...H.players.values()].map(p => ({avatar:p.avatar, name:p.name, color:p.color, score:p.score, label:p.score + ' P' + (p.crowns ? ' ' + '👑'.repeat(Math.min(3,p.crowns)) : '')}));
-  showBoard('🏆 Endstand', rows);
+  showPodium();
   const all = [...H.players.values()].sort((a,b) => b.score - a.score);
   let place = 0, last = null; all.forEach((p,i) => { if (p.score !== last){ place = i+1; last = p.score; } hSend(p, {t:'end', place, of:all.length, total:p.score}); });
+}
+function showPodium(){
+  clearPopups();
+  document.querySelectorAll('#podiumOv').forEach(x => x.remove());
+  const list = [...H.players.values()].sort((a,b) => b.score - a.score);
+  let place = 0, last = null; list.forEach((p,i) => { if (p.score !== last){ place = i+1; last = p.score; } p.place = place; });
+  const ov = document.createElement('div'); ov.id = 'podiumOv';
+  ov.innerHTML = `<h2>🏆 Siegerehrung</h2><button class="ghost close">✕</button><div class="pod"></div><div class="rest"></div>`;
+  const pod = ov.querySelector('.pod');
+  const slot = (p, cls) => {
+    const c = document.createElement('div'); c.className = 'col ' + cls;
+    if (p){
+      c.innerHTML = `<div class="e"></div><div class="nm"></div><div class="sc"></div><div class="blk"></div>`;
+      c.querySelector('.e').textContent = p.avatar; c.querySelector('.nm').textContent = p.name;
+      c.querySelector('.sc').textContent = `${p.score} P · Ø ${Math.round(p.score / Math.max(1, p.played))}` + (p.crowns ? ' ' + '👑'.repeat(Math.min(3, p.crowns)) : '');
+      c.querySelector('.blk').textContent = p.place;
+    } else c.style.visibility = 'hidden';
+    pod.appendChild(c); return c;
+  };
+  const c2 = slot(list[1], 'p2'), c1 = slot(list[0], 'p1'), c3 = slot(list[2], 'p3');
+  const rest = list.slice(3).map(p => `${p.place}. ${p.avatar} ${p.name} ${p.score} P`).join('   ·   ');
+  ov.querySelector('.rest').textContent = rest;
+  ov.querySelector('.close').onclick = () => ov.remove();
+  document.body.appendChild(ov);
+  setTimeout(() => { c3.classList.add('on'); sBlip(); }, 700);
+  setTimeout(() => { c2.classList.add('on'); sBlip(); }, 2000);
+  setTimeout(() => sDrum(1.8), 3000);
+  setTimeout(() => { c1.classList.add('on'); sFanfare(); confetti(180); }, 4900);
 }
 const seenChips = new Set();
 function hChip(p, withPts){
@@ -773,7 +1031,7 @@ function hChip(p, withPts){
   const key = p.pid + (withPts ? 'g' : 'l');
   if (!seenChips.has(key)){ seenChips.add(key); d.classList.add('new'); }
   d.style.borderLeft = '8px solid ' + p.color;
-  d.innerHTML = `<span class="e"></span><span class="n"></span>${withPts ? `<span class="pts">${p.score} P</span>` : ''}`;
+  d.innerHTML = `<span class="e"></span><span class="n"></span>${withPts ? `<span class="pts">${p.score} P${p.played ? ' · Ø ' + Math.round(p.score / p.played) : ''}${p.streak >= 2 ? ' 🔥' + p.streak : ''}</span>` : ''}`;
   d.querySelector('.e').textContent = p.avatar; d.querySelector('.n').textContent = p.name;
   return d;
 }
@@ -786,42 +1044,48 @@ function hRender(){
   // Spiel
   const gl = $('hGameList'); gl.innerHTML = ''; ps.forEach(p => gl.appendChild(hChip(p, true)));
   $('hValue').textContent = (H.value == null ? '–' : H.value) + ' %';
-  $('hRoundBtn').disabled = H.value == null || H.phase === 'running' || H.phase === 'locked';
-  $('hRoundBtn').textContent = H.phase === 'reveal' ? '▶ Neue Runde mit diesem Wert' : '▶ Runde starten';
+  const manual = H.numMode === 'manual';
+  show('hDiceParts', manual); show('hAutoNote', !manual);
+  $('hRoundBtn').disabled = (manual && H.value == null) || ['running','locked','rolling'].includes(H.phase) || H.animating;
+  $('hRoundBtn').textContent = !manual ? '🎲 Zahl ziehen & starten' : H.phase === 'reveal' ? '▶ Neue Runde mit diesem Wert' : '▶ Runde starten';
   syncChips();
-  const running = H.phase === 'running', reveal = H.phase === 'reveal';
+  const running = H.phase === 'running', reveal = H.phase === 'reveal' && !H.animating;
   show('hLockBtn', running); show('hNextBtn', reveal);
   hTimerUi(H.endsAt - Date.now());
-  if (H.value == null && !running && !reveal) $('hQ').innerHTML = 'Würfle eine Prozentzahl und starte die Runde.';
+  if (H.value == null && !running && !reveal) $('hQ').innerHTML = H.numMode === 'manual' ? 'Würfle eine Prozentzahl und starte die Runde.' : '🎲 Gleich wird eine Prozentzahl gezogen …';
   else $('hQ').innerHTML = `Wo liegen <b>${H.value} %</b>?`;
   const done = ps.filter(p => p.done).length, online = ps.filter(p => p.online).length;
-  $('hStatus').textContent = running ? `✋ ${done} von ${online} Gruppen fertig` : H.phase === 'locked' ? '⏱ Zeit um – werte aus …' : reveal ? 'Aufgelöst! Grün = der echte Wert.' : (H.value != null ? 'Bereit – starte die Runde!' : '');
+  $('hStatus').textContent = running ? `✋ ${done} von ${online} Gruppen fertig` + (H.autoHelp && H.helpStage ? ` · 💡 Hilfe: ${['','Halbe','Viertel','Zehntel'][H.helpStage]}` : '')
+    : H.phase === 'locked' ? '⏱ Zeit um – werte aus …' : H.animating ? '' : reveal ? 'Aufgelöst! Grün = der echte Wert.' : H.phase === 'rolling' ? '🎲 Die Zahl wird gezogen …' : (H.value != null ? 'Bereit – starte die Runde!' : '');
+  if (H.animating){ show('hResults', false); return; }
   // Zerlegung
-  $('hSplitBtn').textContent = H.showSplit ? '🧩 Zerlegung aus' : '🧩 Zerlegen';
+  $('hSplitBtn').textContent = H.showSplit ? '💡 Hilfe aus' : '💡 Hilfe: Zerlegen';
   show('hSplitBox', H.showSplit);
   $('hDecomp').innerHTML = (H.showSplit && reveal) ? decompText(H.value, hSplitN()) : '';
   // Form
   const markers = reveal ? ps.filter(p => p.est != null).map(p => ({f:p.est/100, color:p.color,
     label:`${p.est === H.value ? '👑' : p.avatar} ${p.name}: ${p.est} %`})) : [];
   drawShape($('hSvg'), {shape:H.shape, orient:'h', uid:'host', target: reveal ? H.value/100 : null,
-    split: H.showSplit && H.value != null ? hSplitN() : 0, revealed: reveal, markers: reveal ? markers : null});
+    split: H.value != null ? (reveal ? (H.showSplit ? hSplitN() : 0) : hEffSplit()) : 0, revealed: reveal, markers: reveal ? markers : null});
   // Ergebnisse
   show('hResults', reveal);
   if (reveal){
-    const list = ps.filter(p => p.est != null).sort((a,b) => Math.abs(a.est-H.value) - Math.abs(b.est-H.value));
+    const list = ps.filter(p => p.res && p.res.has).sort((a,b) => b.res.pts - a.res.pts || a.res.ad - b.res.ad);
     const medals = ['🥇','🥈','🥉']; let rank = 0, last = null;
     $('hResBody').innerHTML = '';
     list.forEach((p, i) => {
       const d = p.est - H.value, ad = Math.abs(d);
       if (last === null || ad !== last){ rank = i; last = ad; }
       const tr = document.createElement('tr');
-      tr.innerHTML = `<td>${d === 0 ? '👑' : (medals[rank] || (rank+1) + '.')}</td><td class="nm"></td><td class="num">${p.est} %</td>
-        <td class="num">${d > 0 ? '+' : d < 0 ? '−' : '±'}${ad} Pp.</td><td class="num"><b>+${100 - ad}</b></td>`;
+      const r = p.res;
+      const extras = [r.factor < 1 ? `💡 ×${String(r.factor).replace('.', ',')}` : '', r.speed ? `⚡ +${r.speed}` : '', r.streak ? `🔥 +1` : ''].filter(Boolean).join('  ');
+      tr.innerHTML = `<td>${d === 0 ? '👑' : (medals[i] || (i+1) + '.')}</td><td class="nm"></td><td class="num">${p.est} %</td>
+        <td class="num">${d > 0 ? '+' : d < 0 ? '−' : '±'}${ad} Pp.</td><td class="num"><b>+${r.pts}</b></td><td>${extras}</td>`;
       tr.querySelector('.nm').textContent = p.avatar + ' ' + p.name;
       $('hResBody').appendChild(tr);
     });
-    ps.filter(p => p.est == null).forEach(p => {
-      const tr = document.createElement('tr'); tr.innerHTML = `<td>–</td><td class="nm"></td><td class="num">–</td><td class="num">–</td><td class="num">+0</td>`;
+    ps.filter(p => !(p.res && p.res.has)).forEach(p => {
+      const tr = document.createElement('tr'); tr.innerHTML = `<td>–</td><td class="nm"></td><td class="num">–</td><td class="num">–</td><td class="num">+0</td><td></td>`;
       tr.querySelector('.nm').textContent = p.avatar + ' ' + p.name + ' (keine Schätzung)'; $('hResBody').appendChild(tr);
     });
   }
@@ -954,7 +1218,15 @@ function pOnMsg(m){
   if (m.t === 'welcome'){ C.name = m.name; C.avatar = m.avatar; C.color = m.color; C.score = m.score; pTop(); }
   else if (m.t === 'wait'){ pTop(); $('pWaitE').textContent = C.avatar; $('pWaitT').textContent = 'Du bist dabei!'; $('pWaitS').textContent = m.text; pScreen('pWait'); }
   else if (m.t === 'round'){ pStartRound(m); }
-  else if (m.t === 'split'){ if (C.round){ C.round.split = m.split; pDraw(); } }
+  else if (m.t === 'split'){
+    if (C.round){
+      C.round.split = m.split; pDraw();
+      if (C.round.autoHelp && m.stage && !C.done && !C.locked){
+        $('pHelpNote').textContent = `💡 Hilfe: ${['','Halbe','Viertel','Zehntel'][m.stage]} – jetzt nur noch ×${String([1,.8,.6,.4][m.stage]).replace('.', ',')} Punkte`;
+        show('pHelpNote'); if (navigator.vibrate) try { navigator.vibrate(60); } catch(e){}
+      }
+    }
+  }
   else if (m.t === 'lock'){ if (C.round && m.round === C.round.round){ pSendEst(true); pLock('⏱ Zeit um!'); } }
   else if (m.t === 'result'){ pResult(m); }
   else if (m.t === 'end'){
@@ -968,6 +1240,7 @@ function pStartRound(m){
   C.deadline = m.ms ? Date.now() + m.ms : 0;
   $('pVal').textContent = m.value + ' %';
   show('pLock', false); $('pDone').disabled = C.est == null; $('pDone').textContent = '✓ Fertig';
+  show('pHelpNote', false);
   $('pHint').textContent = 'Ziehe mit dem Finger, bis es passt.';
   pScreen('pPlay'); pTop(); pDraw();
   clearInterval(C.tick);
@@ -1019,9 +1292,11 @@ function pResult(m){
   const cls = !has ? 'bg-red' : m.crown ? 'bg-gold' : ad < 5 ? 'bg-green' : ad < 10 ? 'bg-yellow' : 'bg-red';
   const title = !has ? '😴 Keine Schätzung' : m.crown ? '👑 Volltreffer!' : ad < 5 ? '🎉 Super!' : ad < 10 ? '👍 Knapp daneben' : '😬 Daneben';
   card.className = 'resultcard ' + cls;
+  const bon = [m.factor < 1 ? `💡 Hilfe ×${String(m.factor).replace('.', ',')}` : '', m.speed ? `⚡ Tempo +${m.speed}` : '', m.streak ? `🔥 ${m.streakN}er-Streak +1` : ''].filter(Boolean);
   card.innerHTML = `<h2>${title}</h2><div class="pts">+${m.pts}</div>
+    ${bon.length ? `<div class="pbonus">${bon.map(b => `<span>${b}</span>`).join('')}</div>` : ''}
     ${has ? `<p>Ihr: ${m.est} % · Ziel: ${m.value} % · ${m.diff > 0 ? '+' : m.diff < 0 ? '−' : '±'}${ad}</p>` : `<p>Ziel war ${m.value} %</p>`}
-    <p>Platz ${m.place} von ${m.of} · ${m.total} Punkte</p>`;
+    <p>Platz ${m.place} von ${m.of} · ${m.total} Punkte · Ø ${m.avg}</p>`;
   drawShape($('pResSvg'), {shape:m.shape, orient:'v', uid:'res', target:m.value/100, split:m.split, markers: has ? [{f:m.est/100, color:C.color, label:''}] : [],
     revealed:false});
   // Markierungs-Pille ohne Text ausblenden
