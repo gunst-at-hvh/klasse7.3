@@ -126,6 +126,21 @@ button.sneaky{background:none;box-shadow:none;color:var(--muted);text-decoration
 .prow .axis{font-size:.85rem;margin:0 6px 4px}
 .pbtns{display:flex;flex-direction:column;gap:10px}
 .pbtns button{font-size:1.3rem;padding:14px}
+/* Handy/hochkant: alles untereinander */
+.playgrid{display:flex;flex-direction:column;gap:10px}
+.pside,.pmain{display:contents}
+.o1{order:1}.o2{order:2}.o3{order:3}.o4{order:4}.o5{order:5}.o6{order:6}.o7{order:7}.o8{order:8}
+/* PC/Querformat: links Infos + neue Karte, rechts die Reihe groß */
+@media (min-width:900px) and (min-aspect-ratio:1/1){
+  .playgrid{display:grid;grid-template-columns:minmax(260px,330px) 1fr;gap:18px;align-items:stretch;flex:1;min-height:0}
+  .pside{display:flex;flex-direction:column;gap:12px;min-height:0}
+  .pmain{display:flex;flex-direction:column;min-width:0;min-height:0}
+  .pmain .prow{flex:1;display:flex;flex-direction:column;overflow:auto;padding:14px}
+  .pmain .prow .axis{font-size:1rem}
+  .pmain .cardrow{margin:auto}
+  #pTeams{justify-content:flex-start!important}
+  .pside .pturn{font-size:1.25rem}
+}
 #pTeams .pchip{font-size:.95rem;padding:3px 10px 3px 6px}
 #pTeams .pchip .e{font-size:1.4rem}
 #pTeams .pchip .arr{font-size:.9rem}
@@ -277,25 +292,31 @@ button.sneaky{background:none;box-shadow:none;color:var(--muted);text-decoration
       <div style="font-size:1.8rem;font-weight:900" id="pWaitT">Du bist dabei!</div>
       <div style="font-size:1.1rem;opacity:.85" id="pWaitS">Schau auf den Beamer – gleich geht's los.</div>
     </div>
-    <div class="hidden" id="pGame" style="display:flex;flex-direction:column;gap:10px">
-      <div class="plist" id="pTeams" style="gap:6px;justify-content:center"></div>
-      <div style="text-align:center"><span class="arrowwide" id="pArrow"><span class="a">➜</span><span id="pArrowName"></span></span></div>
-      <div class="pturn" id="pTurn"></div>
-      <div class="pnext" id="pNext"></div>
-      <div class="prow">
-        <div class="axis"><span id="pAxisL">← wenig</span><span id="pAxisR">viel →</span></div>
-        <div class="cardrow" id="pRow"></div>
-      </div>
-      <div class="pbtns" id="pBtns">
+    <div class="hidden" id="pGame" style="display:flex;flex-direction:column;gap:10px;flex:1;min-height:0">
+     <div class="playgrid">
+      <div class="pside">
+      <div class="plist o1" id="pTeams" style="gap:6px;justify-content:center"></div>
+      <div class="o2" style="text-align:center"><span class="arrowwide" id="pArrow"><span class="a">➜</span><span id="pArrowName"></span></span></div>
+      <div class="pturn o3" id="pTurn"></div>
+      <div class="pnext o4" id="pNext"></div>
+      <div class="pbtns o6" id="pBtns">
         <button class="go" id="pPlace" disabled>Tippe auf eine Lücke ＋</button>
         <button class="red" id="pChallenge">⚡ Täuschung!</button>
       </div>
-      <div class="pturn" id="pResult" style="font-size:1.2rem"></div>
-      <div class="pbtns hidden" id="pHostCtl">
+      <div class="pturn o7" id="pResult" style="font-size:1.2rem"></div>
+      <div class="pbtns hidden o8" id="pHostCtl">
         <button class="blue" id="pNextRound">▶ Nächste Runde</button>
         <button class="go" id="pAgain">🔄 Neues Spiel</button>
         <button class="sneaky" id="pBars" style="color:#fff">▤ Flächen zeigen</button>
       </div>
+      </div>
+      <div class="pmain">
+      <div class="prow o5">
+        <div class="axis"><span id="pAxisL">← wenig</span><span id="pAxisR">viel →</span></div>
+        <div class="cardrow" id="pRow"></div>
+      </div>
+      </div>
+     </div>
     </div>
   </div>
 </section>
@@ -896,6 +917,22 @@ function pOnMsg(m){
     setTimeout(() => pScreen('pWait'), 2500);
   }
 }
+/* Breitbild: Kartengröße wie in der Beamer-Version – Reihe darf umbrechen, größte Anordnung gewinnt */
+function pSizeWide(row, count){
+  const box = row.parentElement; if (!box || !box.clientWidth) return;
+  const n = Math.max(count, 1), slotW = 34, gap = 4;
+  const availW = box.clientWidth - 32;
+  const availH = Math.max(200, innerHeight - box.getBoundingClientRect().top - 60);
+  let best = 0, bestPer = n;
+  for (let k = 1; k <= 4; k++){
+    const per = Math.ceil(n/k), lines = Math.ceil(n/per);
+    const w = (availW - per*(slotW + 2*gap) - slotW - gap)/per, h = ((availH - (lines-1)*18)/lines)/1.4;
+    const c = Math.min(w, h, 320); if (c > best + 1){ best = c; bestPer = per; }
+  }
+  const cw = Math.max(70, Math.floor(best));
+  row.classList.add('wrap'); row.style.maxWidth = (bestPer*(cw + slotW + 2*gap) + slotW + gap + 2) + 'px';
+  row.style.setProperty('--cw', cw + 'px');
+}
 function pRender(){
   const s = P.state; if (!s) return;
   const reveal = s.phase !== 'play';
@@ -917,11 +954,17 @@ function pRender(){
   // neue Karte groß
   const nx = $('pNext'); nx.innerHTML = '';
   const vw = Math.min(innerWidth, 520);
-  if (!reveal && s.next != null) nx.appendChild(cardEl(s.next, {cw: Math.round(Math.min(vw*0.45, (innerHeight*0.30)/1.4))}));
+  const wide = matchMedia('(min-width:900px) and (min-aspect-ratio:1/1)').matches;
+  if (!reveal && s.next != null){
+    const nw = wide ? Math.min(300, ($('pNext').clientWidth || 300) - 10, (innerHeight*0.42)/1.4) : Math.min(vw*0.45, (innerHeight*0.30)/1.4);
+    nx.appendChild(cardEl(s.next, {cw: Math.round(Math.max(110, nw))}));
+  }
   // Reihe
   const row = $('pRow'); row.innerHTML = '';
-  const cw = Math.round(Math.max(64, Math.min(110, vw*0.22)));
-  row.style.setProperty('--cw', cw + 'px');
+  if (!wide){
+    const cw = Math.round(Math.max(64, Math.min(110, vw*0.22)));
+    row.style.setProperty('--cw', cw + 'px'); row.classList.remove('wrap'); row.style.maxWidth = '';
+  }
   const slot = i => {
     const b = document.createElement('button'); b.className = 'slot' + (P.sel === i ? ' sel' : ''); b.textContent = P.sel === i ? '✓' : '＋';
     b.disabled = reveal || !s.mine;
@@ -937,6 +980,7 @@ function pRender(){
     pair.appendChild(el); row.appendChild(pair);
   });
   row.appendChild(slot(s.row.length));
+  if (wide) pSizeWide(row, s.row.length);
   if (P.sel != null){ const sel = row.querySelector('.slot.sel'); if (sel) sel.scrollIntoView({inline:'center', block:'nearest'}); }
   else { const nw = row.querySelector('.newest'); if (nw) nw.scrollIntoView({inline:'center', block:'nearest'}); }
   // Knöpfe
