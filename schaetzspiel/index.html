@@ -64,7 +64,9 @@ button.primary:disabled{opacity:.45;cursor:not-allowed}
 .dot{width:18px;height:18px;border-radius:50%;flex:none}
 .player .name{flex:1;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .player .st{font-size:.8rem;color:var(--muted)}
-.player .pts{font-size:.8rem;font-weight:700;min-width:34px;text-align:right}
+.player .pts{font-size:1rem;font-weight:800;min-width:40px;text-align:right}
+.newgame{text-align:center;margin-top:18px}
+.newgame a{color:var(--muted);font-size:.8rem;text-decoration:underline;cursor:pointer}
 .player .x{border:none;background:none;color:var(--muted);padding:0 4px}
 .addrow{display:flex;gap:6px}
 .addrow input{flex:1;min-width:0;padding:8px;border-radius:10px;border:1px solid var(--line);background:var(--card)}
@@ -158,6 +160,7 @@ td.num{text-align:right;font-variant-numeric:tabular-nums}
       </div>
     </section>
   </div>
+  <div class="newgame"><a id="newGameLink" title="Punkte auf 0 setzen">Neues Spiel (Punkte zurücksetzen)</a></div>
 </main>
 
 <script>
@@ -180,7 +183,7 @@ const board = $('board');
 /* ---------- Geometrie der Formen ---------- */
 const G = {
   bar:     {x0:50,  x1:750, y0:215, y1:295, dir:'h'},
-  battery: {x0:85,  x1:665, y0:175, y1:335, dir:'h'},
+  battery: {x0:85,  x1:665, y0:155, y1:355, dir:'h'},
   square:  {x0:250, x1:550, y0:95,  y1:395, dir:'v'},
   circle:  {cx:400, cy:265, r:170, dir:'c'}
 };
@@ -374,7 +377,8 @@ function render(){
     for (let k = 1; k < n; k++){
       lineAt(k/n, {stroke:ink, 'stroke-width':2.5, 'stroke-dasharray':'8 6', opacity:.7}, inner);
     }
-    // Beschriftung der Teilstriche
+    // Beschriftung der Teilstriche (erst nach dem Auflösen)
+    if (S.revealed)
     for (let k = 1; k < n; k++){
       const f = k/n, txt = splitLabel(n, k);
       let x, y, anchor='middle';
@@ -392,8 +396,8 @@ function render(){
 
   // 0 / 100 Hinweise
   const tick = (x,y,t,anchor='middle') => { const e = el('text',{x,y,'text-anchor':anchor,'font-size':14,fill:cssVar('--muted'),'font-family':'system-ui,sans-serif'},board); e.textContent=t; };
-  if (g.dir === 'h' && !S.showSplit){ tick(g.x0, g.y1+30, '0 %'); tick(g.x1, g.y1+30, '100 %'); }
-  if (g.dir === 'v' && !S.showSplit){ tick(g.x0-10, g.y1+5, '0 %', 'end'); tick(g.x0-10, g.y0+5, '100 %', 'end'); }
+  if (g.dir === 'h' && !(S.showSplit && S.revealed)){ tick(g.x0, g.y1+30, '0 %'); tick(g.x1, g.y1+30, '100 %'); }
+  if (g.dir === 'v' && !(S.showSplit && S.revealed)){ tick(g.x0-10, g.y1+5, '0 %', 'end'); tick(g.x0-10, g.y0+5, '100 %', 'end'); }
   if (g.dir === 'c'){ el('circle',{cx:g.cx, cy:g.cy-g.r, r:6, fill:ink}, board); tick(g.cx+12, g.cy-g.r-10, 'Start', 'start'); }
 
   // Schätzungen
@@ -466,7 +470,7 @@ function update(){
   $('splitBtn').disabled = S.value == null;
   $('splitBtn').textContent = S.showSplit ? '🧩 Zerlegung aus' : '🧩 Zerlegen';
   $('splitBox').classList.toggle('hidden', !S.showSplit || S.value == null);
-  if (S.showSplit && S.value != null) $('decomp').innerHTML = decompText();
+  if (S.showSplit && S.value != null) $('decomp').innerHTML = S.revealed ? decompText() : '';
   renderPlayers();
   renderResults();
   render();
@@ -613,6 +617,9 @@ function newRound(clearValue = true){
   }
 }
 $('newRoundBtn').addEventListener('click', () => { newRound(true); update(); });
+$('newGameLink').addEventListener('click', () => {
+  if (confirm('Neues Spiel starten? Alle Punkte werden auf 0 gesetzt.')) location.reload();
+});
 
 /* ---------- Hell / Dunkel ---------- */
 const mq = matchMedia('(prefers-color-scheme: dark)');
