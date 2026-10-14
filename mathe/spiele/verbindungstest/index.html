@@ -27,8 +27,11 @@ input{font:inherit;font-size:1.6rem;letter-spacing:.2em;text-transform:uppercase
   <div style="margin-top:10px">
     <input id="joinCode" placeholder="CODE" maxlength="6"> <button id="joinBtn">📱 Verbinden</button>
   </div>
-  <label style="display:block;margin-top:10px;font-weight:700"><input type="checkbox" id="relayOnly" style="width:auto;font-size:1rem;letter-spacing:0"> Nur über Metered (Umleitungs-Server) verbinden</label>
-  <div style="font-size:.85rem;color:#6b7280">Zum Prüfen, ob Metered funktioniert: Haken auf <b>beiden</b> Geräten setzen, dann testen.</div>
+  <div style="margin-top:12px;font-weight:700">Verbindungsweg:</div>
+  <label style="display:block"><input type="radio" name="mode" value="auto" checked style="width:auto"> Automatisch (wie im Spiel)</label>
+  <label style="display:block"><input type="radio" name="mode" value="relay" style="width:auto"> Nur über Metered (Umleitungs-Server)</label>
+  <label style="display:block"><input type="radio" name="mode" value="direct" style="width:auto"> Ohne Metered (nur direkt)</label>
+  <div style="font-size:.85rem;color:#6b7280">Für einen sauberen Test auf <b>beiden</b> Geräten dieselbe Auswahl treffen.</div>
   <div class="sum" id="sum"></div>
 </div>
 <div class="card">
@@ -54,7 +57,10 @@ const PREFIX = 'hvh-verbtest-';
 const t0 = Date.now();
 function opts(){
   const o = Object.assign({}, OPTS, {config: Object.assign({}, OPTS.config)});
-  if ($('relayOnly').checked){ o.config.iceTransportPolicy = 'relay'; log('Modus: NUR Umleitungs-Server (Metered)', 'mid'); }
+  const mode = document.querySelector('input[name=mode]:checked').value;
+  if (mode === 'relay'){ o.config.iceTransportPolicy = 'relay'; log('Modus: NUR über Metered', 'mid'); }
+  else if (mode === 'direct'){ o.config.iceServers = ICE_SERVERS.filter(x => String(x.urls).startsWith('stun:')); log('Modus: OHNE Metered (nur direkt)', 'mid'); }
+  else log('Modus: automatisch (wie im Spiel)');
   return o;
 }
 function log(msg, cls){ const s = ((Date.now()-t0)/1000).toFixed(1).padStart(5) + 's  ' + msg; const d = document.createElement('div'); d.textContent = s; if (cls) d.className = cls; $('log').appendChild(d); }
