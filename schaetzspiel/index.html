@@ -357,8 +357,10 @@ function render(){
     const f = S.value / 100;
     if (S.showSplit){
       const n = splitN();
+      // nur ganze Teile füllen – der angebrochene letzte Teil bleibt leer
       for (let k = 0; k < n; k++){
-        const a = k/n, b = Math.min((k+1)/n, f);
+        const a = k/n, b = (k+1)/n;
+        if (b > f + 1e-9) break;
         segment(a, b, k % 2 ? fill2 : fill, inner);
       }
     } else {
