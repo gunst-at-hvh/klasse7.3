@@ -113,7 +113,8 @@ td.num{text-align:right;font-variant-numeric:tabular-nums}
   animation:bob 2s ease-in-out infinite}
 @keyframes bob{50%{transform:translateY(-8px)}}
 .pq{text-align:center;font-weight:800;font-size:1.3rem}
-.pq b{font-size:2.6rem;display:block;line-height:1.1}
+.pq b{font-size:2.6rem;line-height:1.1;vertical-align:middle;white-space:nowrap}
+.pq .rq{display:block;font-size:1.9rem;line-height:1.15}
 .tbar{height:10px;background:rgba(255,255,255,.25);border-radius:999px;overflow:hidden}
 .tbar i{display:block;height:100%;background:#fff;width:100%;transition:width .25s linear}
 .pshape{flex:1 1 0;min-height:0;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#fff;border-radius:18px;padding:8px;position:relative;touch-action:none}
@@ -192,6 +193,23 @@ td.num{text-align:right;font-variant-numeric:tabular-nums}
 .pbonus{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:6px}
 .pbonus span{background:rgba(0,0,0,.18);border-radius:999px;padding:3px 10px;font-weight:800}
 .helpnote{text-align:center;font-weight:800;color:#ffb703}
+details.more{margin-top:6px;border-top:2px dashed var(--line);padding-top:8px}
+details.more summary{cursor:pointer;font-weight:900;color:var(--purple);list-style:none;margin-bottom:6px}
+details.more summary::-webkit-details-marker{display:none}
+details.more summary::before{content:'▸ ';}
+details.more[open] summary::before{content:'▾ ';}
+.settings .row.locked button{opacity:.35;pointer-events:none}
+.randnote{font-size:.85rem;color:var(--muted);margin:-6px 0 10px}
+.frac{display:inline-flex;flex-direction:column;align-items:center;line-height:1;vertical-align:middle;margin:0 .05em;font-size:.8em}
+.frac span{display:block;padding:0 .12em}
+.frac span:first-child{border-bottom:.08em solid currentColor}
+.pslider{background:#fff;color:var(--ink);border-radius:18px;padding:12px 14px;text-align:center}
+.pslider .num{font-size:3rem;font-weight:900;line-height:1;color:var(--purple);font-variant-numeric:tabular-nums}
+.pslider .rowx{display:flex;align-items:center;gap:10px;margin-top:8px}
+.pslider input[type=range]{flex:1;height:44px;accent-color:#864cbf}
+.pslider button{padding:8px 16px;font-size:1.4rem;background:var(--soft)}
+.roundinfo{text-align:center;color:var(--muted);font-weight:800;font-size:1rem;margin-top:2px}
+#bigNum .s{color:#cfc2f2;font-weight:800;font-size:clamp(1rem,2.5vw,1.6rem);text-align:center;margin-bottom:8px}
 </style>
 </head>
 <body>
@@ -234,16 +252,25 @@ td.num{text-align:right;font-variant-numeric:tabular-nums}
     </div>
     <div style="display:flex;flex-direction:column;gap:16px">
       <div class="card settings">
+        <label>Spielmodus</label>
+        <div class="row" id="hRandRow"></div>
+        <div class="randnote" id="hRandNote1"></div>
         <label>Form</label>
         <div class="row" id="hShapeRow"></div>
         <label>Zeit pro Runde</label>
         <div class="row" id="hTimeRow"></div>
-        <label>Zerlegung</label>
-        <div class="row" id="hSplitRow1"></div>
-        <label>Prozentzahl</label>
-        <div class="row" id="hNumRow"></div>
-        <label>Extras</label>
-        <div class="row" id="hExtraRow"></div>
+        <details class="more"><summary>⚙️ Mehr Optionen</summary>
+          <label>Aufgabe</label>
+          <div class="row" id="hTypeRow"></div>
+          <label>Spielart</label>
+          <div class="row" id="hPlayRow"></div>
+          <label>Zahl ziehen</label>
+          <div class="row" id="hNumRow"></div>
+          <label>Zerlegung (Hilfe)</label>
+          <div class="row" id="hSplitRow1"></div>
+          <label>Extras</label>
+          <div class="row" id="hExtraRow"></div>
+        </details>
       </div>
       <div class="waiting">
         <div class="big" id="hCount">0 Gruppen</div>
@@ -273,14 +300,23 @@ td.num{text-align:right;font-variant-numeric:tabular-nums}
         <button class="go" id="hRoundBtn" style="width:100%;font-size:1.2rem;margin-top:6px" disabled>▶ Runde starten</button>
       </div>
       <div class="card settings">
+        <label>Spielmodus</label>
+        <div class="row" id="hRandRow2"></div>
+        <div class="randnote" id="hRandNote2"></div>
         <label>Form</label>
         <div class="row" id="hShapeRow2"></div>
         <label>Zeit</label>
         <div class="row" id="hTimeRow2"></div>
-        <label>Prozentzahl</label>
-        <div class="row" id="hNumRow2"></div>
-        <label>Extras</label>
-        <div class="row" id="hExtraRow2"></div>
+        <details class="more"><summary>⚙️ Mehr Optionen</summary>
+          <label>Aufgabe</label>
+          <div class="row" id="hTypeRow2"></div>
+          <label>Spielart</label>
+          <div class="row" id="hPlayRow2"></div>
+          <label>Zahl ziehen</label>
+          <div class="row" id="hNumRow2"></div>
+          <label>Extras</label>
+          <div class="row" id="hExtraRow2"></div>
+        </details>
       </div>
       <div class="card" style="color:var(--ink)">
         <div style="font-weight:900;margin-bottom:6px">Gruppen</div>
@@ -293,6 +329,7 @@ td.num{text-align:right;font-variant-numeric:tabular-nums}
         <div class="qtext" id="hQ">Würfle eine Prozentzahl und starte die Runde.</div>
         <div class="timer hidden" id="hTimer"><span id="hTimerNum">20</span></div>
       </div>
+      <div class="roundinfo" id="hRoundInfo"></div>
       <div class="status" id="hStatus"></div>
       <div class="liveval hidden" id="hLiveVal"></div>
       <svg class="shape" id="hSvg"></svg>
@@ -338,9 +375,13 @@ td.num{text-align:right;font-variant-numeric:tabular-nums}
     </div>
     <!-- Schätzen -->
     <div class="hidden" id="pPlay" style="flex:1;display:flex;flex-direction:column;gap:10px;min-height:0">
-      <div class="pq">Wo liegen <b id="pVal">– %</b></div>
+      <div class="pq" id="pQ">Wo liegen <b id="pVal">– %</b></div>
       <div class="tbar"><i id="pTbar"></i></div>
       <div class="pshape" id="pShapeBox"><svg id="pSvg"></svg><div class="lockmsg hidden" id="pLock"></div></div>
+      <div class="pslider hidden" id="pSlider">
+        <div class="num" id="pNum">– %</div>
+        <div class="rowx"><button id="pMinus">−</button><input type="range" id="pRange" min="0" max="100" step="1" value="50"><button id="pPlus">+</button></div>
+      </div>
       <div style="text-align:center;font-weight:700;opacity:.85" id="pHint">Ziehe mit dem Finger, bis es passt.</div>
       <div class="helpnote hidden" id="pHelpNote"></div>
       <button class="go donebtn" id="pDone" disabled>✓ Fertig</button>
@@ -395,7 +436,7 @@ function keepRegistered(getPeer, lampId){
 }
 
 const PREFIX = 'hvh-schaetzlive-';
-const APP_VERSION = '2026-10-15a';
+const APP_VERSION = '2026-10-15b';
 const AUTOJOIN_KEY = 'schaetzspiel-live-autojoin';
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const EMOJIS = ['😀','😎','🤓','🥳','🤩','😜','🤠','🥸','😇','🤖','👻','👽','💩','🐱','🐶','🦊','🐼','🐸','🦁','🐯','🐵','🐙','🦄','🐝','🐢','🦖','🐧','🦉','🐬','🦈','🍕','🍩','🍉','⚽','🏀','🎮','🎸','🚀','🌈','🔥','⭐','💎','👑','🌵'];
@@ -420,12 +461,14 @@ const GEO = {
        battery:{x0:80,x1:680,y0:120,y1:320,dir:'h'},
        square:{x0:270,x1:530,y0:80,y1:340,dir:'v'},
        circle:{cx:400,cy:225,r:160,dir:'c'},
+       pizza:{cx:400,cy:225,r:165,dir:'c'},
        triangle:{ax:400,ay:35,y1:400,hw:230,dir:'t'} },
   v: { vb:[300,520],
        bar:{x0:105,x1:195,y0:20,y1:500,dir:'v'},
        battery:{x0:45,x1:255,y0:62,y1:505,dir:'v'},
        square:{x0:15,x1:285,y0:125,y1:395,dir:'v'},
        circle:{cx:150,cy:260,r:138,dir:'c'},
+       pizza:{cx:150,cy:260,r:138,dir:'c'},
        triangle:{ax:150,ay:40,y1:490,hw:145,dir:'t'} }
 };
 const NS = 'http://www.w3.org/2000/svg';
@@ -475,7 +518,7 @@ function drawShape(svg, o){
   const G = GEO[o.orient], g = G[o.shape], [W,H] = G.vb;
   svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
   svg.innerHTML = '';
-  const ink = '#1d2433', empty = '#ebe8e1';
+  const ink = '#1d2433', pizza = o.shape === 'pizza', empty = pizza ? '#f6d28b' : '#ebe8e1';
   const defs = el('defs', {}, svg), cp = el('clipPath', {id:'clip-'+o.uid}, defs);
   let out;
   if (o.shape === 'bar'){
@@ -516,6 +559,14 @@ function drawShape(svg, o){
     } else segment(g, 0, o.target, '#26890c', inner);
   }
   if (o.fill != null) segment(g, 0, o.fill, o.fillColor || '#864cbf', inner);
+  if (pizza){ for (let k = 0; k < 8; k++){ const [x,y] = polar(g, k/8, g.r); el('line',{x1:g.cx, y1:g.cy, x2:x, y2:y, stroke:'#fff', 'stroke-width':3, opacity:.75}, inner); } }
+  if (o.cover){
+    el(out.tag, Object.assign({fill:'#3b2a6b'}, out.a), inner);
+    const cx = g.dir === 'c' ? g.cx : g.dir === 't' ? g.ax : (g.x0 + g.x1)/2;
+    const cy = g.dir === 'c' ? g.cy : g.dir === 't' ? (g.ay + 2*g.y1)/3 : (g.y0 + g.y1)/2;
+    const t = el('text',{x:cx, y:cy + 32, 'text-anchor':'middle', 'font-size':96, 'font-weight':900, fill:'#fff', 'font-family':'system-ui,sans-serif'}, svg);
+    t.textContent = '?';
+  }
   if (n){
     for (let k = 1; k < n; k++) lineAt(g, k/n, {stroke:ink, 'stroke-width':3, 'stroke-dasharray':'9 7', opacity:.7}, inner);
     if (o.revealed && o.orient === 'h'){
@@ -530,7 +581,7 @@ function drawShape(svg, o){
       }
     }
   }
-  el(out.tag, Object.assign({fill:'none', stroke:ink, 'stroke-width':o.orient === 'v' ? 5 : 4}, out.a), svg);
+  el(out.tag, Object.assign({fill:'none', stroke: pizza ? '#c77b30' : ink, 'stroke-width': pizza ? 16 : o.orient === 'v' ? 5 : 4}, out.a), svg);
   if (g.dir === 'c'){ el('circle',{cx:g.cx, cy:g.cy-g.r, r:7, fill:ink}, svg); }
 
   // Markierungen (Beamer)
@@ -639,9 +690,45 @@ const H = {
   peer:null, code:'', players:new Map(), phase:'lobby',
   shape:'battery', time:20, split:'2', showSplit:false,
   numMode:'auto', speed:true, streak:true, autoHelp:false, helpStage:0,
+  random:'0', type:'percent', play:'normal', rShape:null, rPlay:'normal', task:null, blitzMs:3000, blitzHidden:false,
   value:null, round:0, endsAt:0, startedAt:0, timer:null, lockTimer:null, animating:false
 };
 const HELP_SPLITS = [0, 2, 4, 10];
+const FRACTIONS = (() => { const out = []; [2,3,4,5,6,8,10].forEach(d => { for (let n = 1; n < d; n++) if (gcd(n, d) === 1) out.push([n, d]); }); return out; })();
+const rint = (a, b) => a + Math.floor(Math.random()*(b - a + 1));
+function pickW(obj){
+  const tot = Object.values(obj).reduce((a,b) => a + b, 0); let r = Math.random()*tot;
+  for (const [k, w] of Object.entries(obj)){ if ((r -= w) < 0) return k; }
+  return Object.keys(obj)[0];
+}
+const fmtNum = x => Math.abs(x - Math.round(x)) < 1e-9 ? String(Math.round(x)) : (Math.round(x*10)/10).toFixed(1).replace('.', ',');
+function makeTask(type, v){
+  if (type === 'mixed') type = pickW({percent:5, fraction:4, decimal:2});
+  if (type === 'fraction'){ const [n, d] = FRACTIONS[rint(0, FRACTIONS.length - 1)]; return {type, v:n/d*100, n, d, label:`${n}/${d}`}; }
+  if (v == null) v = rint(1, 100);
+  if (type === 'decimal') return {type, v, label: v === 100 ? '1,00' : '0,' + String(v).padStart(2, '0')};
+  return {type:'percent', v, label: v + ' %'};
+}
+const taskHtml = t => t.type === 'fraction' ? `<span class="frac"><span>${t.n}</span><span>${t.d}</span></span>` : t.label;
+const taskAsk = t => (t.type === 'percent' ? 'Wo liegen ' : 'Wo liegt ') + `<b>${taskHtml(t)}?</b>`;
+const taskSolved = t => t.type === 'percent' ? t.label : `${t.label} = ${fmtNum(t.v)} %`;
+const SHAPE_NAMES = {battery:'🔋 Batterie', bar:'▬ Balken', square:'◼ Quadrat', circle:'● Kreis', pizza:'🍕 Pizza', triangle:'▲ Dreieck'};
+const TYPE_NAMES = {percent:'Prozent', fraction:'Bruch', decimal:'Dezimalzahl'};
+const PLAY_NAMES = {normal:'Zahl → Fläche', reverse:'Fläche → Zahl', blitz:'⚡ Blitz'};
+/* Zufallsmodus: am Anfang leicht, später mehr Abwechslung; Dreieck selten und erst ab Runde 5 */
+function randomRound(n){
+  if (n <= 2) return {shape: pickW({battery:3, bar:2}), type:'percent', play:'normal'};
+  const shapes = {battery:28, bar:22, square:14, circle:12, pizza:14};
+  if (n >= 5) shapes.triangle = 5;
+  const types = {percent:50, fraction:35}; if (n >= 4) types.decimal = 15;
+  const plays = {normal:65, reverse:25}; if (n >= 5) plays.blitz = 10;
+  const play = pickW(plays);
+  const type = play === 'normal' ? pickW(types) : 'percent';
+  let shape = pickW(shapes);
+  if (type === 'fraction' && Math.random() < .3) shape = 'pizza';
+  if (shape === 'triangle' && H.rShape === 'triangle') shape = 'battery';
+  return {shape, type, play};
+}
 const HELP_FACTOR = [1, 0.8, 0.6, 0.4];
 const SPEED_BONUS = [3, 2, 1];
 const SPEED_WINDOW = 3;
@@ -685,15 +772,16 @@ function confetti(n = 140){
   }
 }
 /* Große Prozentzahl in der Bildschirmmitte (bei rolling = Glücksrad-Effekt) */
-function bigNumber(value, rolling, done){
+/* Große Anzeige in der Mitte: rollende Zahl (Glücksrad) oder Ansage */
+function bigNumber(finalHtml, rolling, done, sub, ask){
   let ov = document.getElementById('bigNum');
-  if (!ov){ ov = document.createElement('div'); ov.id = 'bigNum'; ov.innerHTML = '<div><div class="n"></div><div class="l"></div></div>'; document.body.appendChild(ov); }
-  const n = ov.querySelector('.n'), l = ov.querySelector('.l');
-  ov.style.display = ''; l.textContent = rolling ? 'Die Zahl wird gezogen …' : '';
+  if (!ov){ ov = document.createElement('div'); ov.id = 'bigNum'; ov.innerHTML = '<div><div class="s"></div><div class="n"></div><div class="l"></div></div>'; document.body.appendChild(ov); }
+  const n = ov.querySelector('.n'), l = ov.querySelector('.l'), sb = ov.querySelector('.s');
+  ov.style.display = ''; sb.innerHTML = sub || ''; l.innerHTML = rolling ? 'Die Zahl wird gezogen …' : '';
   const finish = () => {
-    n.textContent = value + ' %'; n.classList.remove('pop'); void n.offsetWidth; n.classList.add('pop');
-    l.textContent = `Wo liegen ${value} %?`; sDing();
-    setTimeout(() => { ov.style.display = 'none'; done && done(); }, 1500);
+    n.innerHTML = finalHtml; n.classList.remove('pop'); void n.offsetWidth; n.classList.add('pop');
+    l.innerHTML = ask || ''; sDing();
+    setTimeout(() => { ov.style.display = 'none'; done && done(); }, 1600);
   };
   if (!rolling){ finish(); return; }
   let delay = 40, total = 0;
@@ -717,7 +805,7 @@ function startHost(){
   $('hSelT').onchange = $('hSelO').onchange = hReadDice;
   $('hRoll').onclick = hRollDice;
   $('hStart').onclick = () => { ac(); show('hLobby', false); show('hGame'); hNextRound(); };
-  $('hRoundBtn').onclick = () => { ac(); if (H.numMode === 'auto') hAutoRoll(); else if (H.value != null) bigNumber(H.value, false, hStartRound); };
+  $('hRoundBtn').onclick = () => { ac(); if (hUsesDice()) { if (H.value != null) hPrepare(H.value); } else hAutoRoll(); };
   $('hLockBtn').onclick = hLock;
   $('hNextBtn').onclick = () => { ac(); hNextRound(); };
   $('hSplitBtn').onclick = () => { H.showSplit = !H.showSplit; hRender(); if (H.phase === 'running') hBroadcast({t:'split', split: hEffSplit()}); };
@@ -792,11 +880,12 @@ function hEffSplit(){
   return 0;
 }
 function hRoundMsg(){
-  return {t:'round', round:H.round, value:H.value, shape:H.shape, split: hEffSplit(),
+  return {t:'round', round:H.round, value:H.value, shape:H.rShape || H.shape, play:H.rPlay, html:taskHtml(H.task), ask:taskAsk(H.task),
+    blitzLeft: H.rPlay === 'blitz' ? Math.max(0, H.startedAt + H.blitzMs - Date.now()) : 0, split: hEffSplit(),
     ms: H.time ? Math.max(0, H.endsAt - Date.now()) : 0, total: H.time*1000, autoHelp:H.autoHelp, stage:H.helpStage};
 }
 function buildChips(){
-  const shapes = [['battery','🔋 Batterie'],['bar','▬ Balken'],['square','◼ Quadrat'],['circle','● Kreis'],['triangle','▲ Dreieck']];
+  const shapes = [['battery','🔋 Batterie'],['bar','▬ Balken'],['square','◼ Quadrat'],['circle','● Kreis'],['pizza','🍕 Pizza'],['triangle','▲ Dreieck']];
   const times = [[10,'10 s'],[20,'20 s'],[30,'30 s'],[45,'45 s'],[0,'∞']];
   const splits = [['2','Halbe'],['3','Drittel'],['4','Viertel'],['5','Fünftel'],['10','Zehntel'],['auto','Automatisch']];
   const mk = (rowIds, list, key, after) => rowIds.forEach(id => {
@@ -811,6 +900,9 @@ function buildChips(){
   mk(['hTimeRow','hTimeRow2'], times, 'time');
   mk(['hSplitRow1','hSplitRow2'], splits, 'split', () => { hRender(); if (H.phase === 'running' && H.showSplit) hBroadcast({t:'split', split:hEffSplit()}); });
   mk(['hNumRow','hNumRow2'], [['auto','🎲 Automatisch'],['manual','✋ Manuell (Würfel)']], 'numMode', () => hRender());
+  mk(['hRandRow','hRandRow2'], [['0','🎯 Feste Einstellungen'],['1','🎲 Zufallsmodus']], 'random', () => hRender());
+  mk(['hTypeRow','hTypeRow2'], [['percent','% Prozent'],['fraction','½ Bruch'],['decimal','0,5 Dezimal'],['mixed','🔀 Gemischt']], 'type', () => hRender());
+  mk(['hPlayRow','hPlayRow2'], [['normal','Zahl → Fläche'],['reverse','Fläche → Zahl'],['blitz','⚡ Blitz']], 'play', () => hRender());
   ['hExtraRow','hExtraRow2'].forEach(id => {
     const row = $(id); row.innerHTML = '';
     [['speed','⚡ Tempo-Bonus'],['streak','🔥 Streak'],['autoHelp','💡 Auto-Hilfe']].forEach(([k, label]) => {
@@ -824,11 +916,15 @@ function buildChips(){
 }
 function syncChips(){
   ['hExtraRow','hExtraRow2'].forEach(id => $(id).querySelectorAll('button').forEach(b => { b.classList.toggle('on', !!H[b.dataset.k]); b.textContent = b.textContent.replace(/ ✓$/, '') + (H[b.dataset.k] ? ' ✓' : ''); b.disabled = H.phase === 'running'; }));
-  [['hShapeRow','shape'],['hShapeRow2','shape'],['hTimeRow','time'],['hTimeRow2','time'],['hSplitRow1','split'],['hSplitRow2','split'],['hNumRow','numMode'],['hNumRow2','numMode']].forEach(([id,key]) => {
+  const rnd = H.random === '1';
+  ['hShapeRow','hShapeRow2','hTypeRow','hTypeRow2','hPlayRow','hPlayRow2'].forEach(id => $(id).classList.toggle('locked', rnd));
+  ['hRandNote1','hRandNote2'].forEach(id => $(id).textContent = rnd ? 'Form, Aufgabe und Spielart wechseln jede Runde zufällig – am Anfang leicht, später kniffliger.' : '');
+  [['hShapeRow','shape'],['hShapeRow2','shape'],['hTimeRow','time'],['hTimeRow2','time'],['hSplitRow1','split'],['hSplitRow2','split'],['hNumRow','numMode'],['hNumRow2','numMode'],
+   ['hRandRow','random'],['hRandRow2','random'],['hTypeRow','type'],['hTypeRow2','type'],['hPlayRow','play'],['hPlayRow2','play']].forEach(([id,key]) => {
     $(id).querySelectorAll('button').forEach(b => b.classList.toggle('on', String(H[key]) === b.dataset.v));
   });
   // Form & Zeit während einer laufenden Runde nicht ändern
-  ['hShapeRow2','hTimeRow2'].forEach(id => $(id).querySelectorAll('button').forEach(b => b.disabled = H.phase === 'running'));
+  ['hShapeRow2','hTimeRow2','hTypeRow2','hPlayRow2','hRandRow2'].forEach(id => $(id).querySelectorAll('button').forEach(b => b.disabled = H.phase === 'running'));
 }
 function hReadDice(){
   const t = $('hSelT').value, o = $('hSelO').value;
@@ -854,30 +950,44 @@ function hResetRound(){
   H.showSplit = false; H.helpStage = 0;
   H.players.forEach(p => { p.est = null; p.done = false; p.doneAt = null; p.estStage = 0; p.doneStage = 0; p.lastResult = null; p.res = null; });
 }
+/* Würfel nur, wenn „Zahl ziehen: Manuell“, kein Zufallsmodus und Aufgabe Prozent */
+function hUsesDice(){ return H.numMode === 'manual' && H.random !== '1' && H.type === 'percent'; }
 function hNextRound(){
   if (H.animating) return;
   clearPopups();
   hResetRound();
-  if (H.numMode === 'auto'){ hAutoRoll(); return; }
+  if (!hUsesDice()){ hAutoRoll(); return; }
   H.phase = 'ready'; H.value = null;
   $('hSelT').value = ''; $('hSelO').value = ''; $('hFaceT').textContent = '–'; $('hFaceO').textContent = '–';
   hRender(); hBroadcast({t:'wait', text:'Nächste Runde kommt gleich …'});
 }
-function hAutoRoll(){
-  H.phase = 'rolling'; H.value = null; hRender();
-  hBroadcast({t:'wait', text:'🎲 Die Zahl wird gezogen …'});
-  const v = 1 + Math.floor(Math.random()*100);
-  bigNumber(v, true, () => { H.value = v; hStartRound(); });
+function hAutoRoll(){ hPrepare(null); }
+/* Runde vorbereiten: Form/Aufgabe/Spielart festlegen, Ansage zeigen, dann starten */
+function hPrepare(diceValue){
+  const n = H.round + 1;
+  const cfg = H.random === '1' ? randomRound(n) : {shape:H.shape, type:H.type, play:H.play};
+  const task = makeTask(cfg.play === 'normal' ? cfg.type : 'percent', diceValue);
+  H.phase = 'rolling'; H.value = null; H.rShape = cfg.shape; H.rPlay = cfg.play; H.task = task;
+  hRender();
+  hBroadcast({t:'wait', text: cfg.play === 'normal' ? '🎲 Die Zahl wird gezogen …' : '👀 Gleich geht\'s los – schau genau hin!'});
+  const sub = `Runde ${n} · ${SHAPE_NAMES[cfg.shape]}` + (cfg.play !== 'normal' ? ' · ' + PLAY_NAMES[cfg.play] : task.type !== 'percent' ? ' · ' + TYPE_NAMES[task.type] : '');
+  const go = () => { H.value = task.v; hStartRound(); };
+  if (cfg.play === 'normal') bigNumber(taskHtml(task), diceValue == null, go, sub, taskAsk(task));
+  else bigNumber(cfg.play === 'blitz' ? '⚡ Blitz!' : '🔄 Umgekehrt!', false, go, sub,
+    cfg.play === 'blitz' ? 'Die Form ist nur 3 Sekunden zu sehen – merkt sie euch!' : 'Wie viel Prozent sind gefüllt?');
 }
 function hStartRound(){
   if (H.value == null) return;
   hResetRound();
-  H.round++; H.phase = 'running'; H.startedAt = Date.now();
+  H.round++; H.phase = 'running'; H.startedAt = Date.now(); H.blitzHidden = false;
+  if (!H.task || Math.abs(H.task.v - H.value) > 1e-9){ H.task = makeTask('percent', H.value); }
+  if (!H.rShape) H.rShape = H.shape;
   H.endsAt = H.startedAt + H.time*1000;
   clearInterval(H.timer);
   let lastSec = null;
   H.timer = setInterval(() => {
     const el = Date.now() - H.startedAt, left = H.endsAt - Date.now();
+    if (H.rPlay === 'blitz' && !H.blitzHidden && el >= H.blitzMs){ H.blitzHidden = true; hRender(); sBlip(); }
     // Auto-Hilfe: nach und nach Zerlegungs-Striche einblenden
     if (H.autoHelp){
       const frac = H.time ? el / (H.time*1000) : el / 32000;
@@ -938,8 +1048,8 @@ function hScore(){
     const streak = H.streak && p.streak >= 2 ? 1 : 0;
     const pts = base + speed + streak;
     p.score += pts;
-    if (ad === 0) p.crowns++;
-    p.res = {pts, base, factor, stage, speed, streak, streakN:p.streak, has:true, ad, d:p.est - v, fastRank: fi >= 0 ? fi + 1 : 0};
+    if (ad < .5) p.crowns++;
+    p.res = {pts, base, factor, stage, speed, streak, streakN:p.streak, has:true, ad, d:p.est - v, exact: ad < .5, fastRank: fi >= 0 ? fi + 1 : 0};
   });
 }
 function hReveal(){
@@ -951,14 +1061,14 @@ function hReveal(){
   let place = 0, last = null; all.forEach((p,i) => { if (p.score !== last){ place = i+1; last = p.score; } p.place = place; });
   // Animation: Fläche läuft von 0 bis zum Wert voll
   H.animating = true; hRender();
-  const dur = 900 + v * 18, t0 = performance.now();
+  const dur = 900 + v * 18, t0 = performance.now(), filled = H.rPlay !== 'normal';
   sweep(220, 220 + v * 9, dur / 1000);
   show('hLiveVal');
   const frame = now => {
     const k = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - k, 3);
     const cur = v * e;
     $('hLiveVal').textContent = Math.round(cur) + ' %';
-    drawShape($('hSvg'), {shape:H.shape, orient:'h', uid:'host', target: cur/100, split:0, revealed:false, markers:null});
+    drawShape($('hSvg'), {shape:H.rShape, orient:'h', uid:'host', target: filled ? v/100 : cur/100, split:0, revealed:false, markers:null});
     if (k < 1){ requestAnimationFrame(frame); return; }
     H.animating = false; show('hLiveVal', false);
     sDing();
@@ -971,18 +1081,18 @@ function hAfterReveal(all){
   const v = H.value, ps = [...H.players.values()];
   ps.forEach(p => {
     const r = p.res || {pts:0, has:false};
-    p.lastResult = {t:'result', round:H.round, value:v, est:p.est, diff: r.has ? p.est - v : null, pts:r.pts, base:r.base, factor:r.factor,
-      speed:r.speed, streak:r.streak, streakN:r.streakN, total:p.score, place:p.place, of:all.length, crown: r.has && p.est === v,
-      shape:H.shape, split: H.showSplit ? hSplitN() : 0, avg: Math.round(p.score / Math.max(1, p.played))};
+    p.lastResult = {t:'result', round:H.round, value:v, valueText: taskSolved(H.task), est:p.est, diff: r.has ? p.est - v : null, pts:r.pts, base:r.base, factor:r.factor,
+      speed:r.speed, streak:r.streak, streakN:r.streakN, total:p.score, place:p.place, of:all.length, crown: r.has && r.exact,
+      shape:H.rShape, split: H.showSplit ? hSplitN() : 0, avg: Math.round(p.score / Math.max(1, p.played))};
     hSend(p, p.lastResult);
   });
   const ests = ps.filter(p => p.res && p.res.has);
-  const exact = ests.filter(p => p.est === v);
+  const exact = ests.filter(p => p.res.exact);
   if (exact.length){ showCrown(exact.map(p => p.avatar + ' ' + p.name).join(' & ')); sFanfare(); confetti(80); }
   let delay = exact.length ? 1400 : 200;
-  ests.filter(p => p.est !== v).sort((a,b) => a.res.ad - b.res.ad).forEach(p => {
-    const ad = p.res.ad, d = p.res.d;
-    const cls = ad < 5 ? 'green' : ad < 10 ? 'yellow' : 'red', word = ad < 5 ? 'super!' : ad < 10 ? 'knapp daneben' : 'daneben';
+  ests.filter(p => !p.res.exact).sort((a,b) => a.res.ad - b.res.ad).forEach(p => {
+    const ad = fmtNum(p.res.ad), d = p.res.d;
+    const cls = p.res.ad < 5 ? 'green' : p.res.ad < 10 ? 'yellow' : 'red', word = p.res.ad < 5 ? 'super!' : p.res.ad < 10 ? 'knapp daneben' : 'daneben';
     stickyToast(`${p.avatar} ${p.name}: ${d > 0 ? '+' : '−'}${ad} · ${word}`, cls, delay); delay += 380;
   });
   ests.filter(p => p.res.speed).sort((a,b) => a.res.fastRank - b.res.fastRank).forEach(p => {
@@ -1043,8 +1153,8 @@ function hRender(){
   $('hStart').disabled = ps.length < 1;
   // Spiel
   const gl = $('hGameList'); gl.innerHTML = ''; ps.forEach(p => gl.appendChild(hChip(p, true)));
-  $('hValue').textContent = (H.value == null ? '–' : H.value) + ' %';
-  const manual = H.numMode === 'manual';
+  $('hValue').textContent = (H.value == null ? '–' : fmtNum(H.value)) + ' %';
+  const manual = hUsesDice();
   show('hDiceParts', manual); show('hAutoNote', !manual);
   $('hRoundBtn').disabled = (manual && H.value == null) || ['running','locked','rolling'].includes(H.phase) || H.animating;
   $('hRoundBtn').textContent = !manual ? '🎲 Zahl ziehen & starten' : H.phase === 'reveal' ? '▶ Neue Runde mit diesem Wert' : '▶ Runde starten';
@@ -1052,8 +1162,11 @@ function hRender(){
   const running = H.phase === 'running', reveal = H.phase === 'reveal' && !H.animating;
   show('hLockBtn', running); show('hNextBtn', reveal);
   hTimerUi(H.endsAt - Date.now());
-  if (H.value == null && !running && !reveal) $('hQ').innerHTML = H.numMode === 'manual' ? 'Würfle eine Prozentzahl und starte die Runde.' : '🎲 Gleich wird eine Prozentzahl gezogen …';
-  else $('hQ').innerHTML = `Wo liegen <b>${H.value} %</b>?`;
+  const rev = H.rPlay !== 'normal';
+  if ((H.value == null || !H.task) && !running && !reveal) $('hQ').innerHTML = manual ? 'Würfle eine Prozentzahl und starte die Runde.' : '🎲 Gleich geht\'s los …';
+  else if (reveal || H.phase === 'locked') $('hQ').innerHTML = rev ? `Gefüllt waren <b>${fmtNum(H.value)} %</b>` : (H.task.type !== 'percent' ? `<b>${taskHtml(H.task)}</b> = <b>${fmtNum(H.value)} %</b>` : `Gesucht war <b>${H.task.label}</b>`);
+  else $('hQ').innerHTML = rev ? (H.rPlay === 'blitz' ? '⚡ Wie viel war gefüllt?' : 'Wie viel ist gefüllt?') : taskAsk(H.task);
+  $('hRoundInfo').textContent = H.task && H.phase !== 'ready' ? `Runde ${H.round || 1} · ${SHAPE_NAMES[H.rShape || H.shape]}` + (rev ? ' · ' + PLAY_NAMES[H.rPlay] : H.task.type !== 'percent' ? ' · ' + TYPE_NAMES[H.task.type] : '') + (H.random === '1' ? ' · 🎲 Zufall' : '') : '';
   const done = ps.filter(p => p.done).length, online = ps.filter(p => p.online).length;
   $('hStatus').textContent = running ? `✋ ${done} von ${online} Gruppen fertig` + (H.autoHelp && H.helpStage ? ` · 💡 Hilfe: ${['','Halbe','Viertel','Zehntel'][H.helpStage]}` : '')
     : H.phase === 'locked' ? '⏱ Zeit um – werte aus …' : H.animating ? '' : reveal ? 'Aufgelöst! Grün = der echte Wert.' : H.phase === 'rolling' ? '🎲 Die Zahl wird gezogen …' : (H.value != null ? 'Bereit – starte die Runde!' : '');
@@ -1061,11 +1174,13 @@ function hRender(){
   // Zerlegung
   $('hSplitBtn').textContent = H.showSplit ? '💡 Hilfe aus' : '💡 Hilfe: Zerlegen';
   show('hSplitBox', H.showSplit);
-  $('hDecomp').innerHTML = (H.showSplit && reveal) ? decompText(H.value, hSplitN()) : '';
+  $('hDecomp').innerHTML = (H.showSplit && reveal) ? (H.task && H.task.type === 'fraction' ? `${H.task.n}/${H.task.d} = ${fmtNum(H.value)} %<small>${H.task.n} von ${H.task.d} gleich großen Teilen</small>` : decompText(Math.round(H.value), hSplitN())) : '';
   // Form
   const markers = reveal ? ps.filter(p => p.est != null).map(p => ({f:p.est/100, color:p.color,
-    label:`${p.est === H.value ? '👑' : p.avatar} ${p.name}: ${p.est} %`})) : [];
-  drawShape($('hSvg'), {shape:H.shape, orient:'h', uid:'host', target: reveal ? H.value/100 : null,
+    label:`${p.res && p.res.exact ? '👑' : p.avatar} ${p.name}: ${p.est} %`})) : [];
+  const showFill = reveal || ((running || H.phase === 'locked') && rev && !(H.rPlay === 'blitz' && H.blitzHidden));
+  drawShape($('hSvg'), {shape: (H.phase === 'ready' || H.phase === 'lobby') ? H.shape : (H.rShape || H.shape), orient:'h', uid:'host', target: showFill && H.value != null ? H.value/100 : null,
+    cover: running && H.rPlay === 'blitz' && H.blitzHidden,
     split: H.value != null ? (reveal ? (H.showSplit ? hSplitN() : 0) : hEffSplit()) : 0, revealed: reveal, markers: reveal ? markers : null});
   // Ergebnisse
   show('hResults', reveal);
@@ -1079,8 +1194,8 @@ function hRender(){
       const tr = document.createElement('tr');
       const r = p.res;
       const extras = [r.factor < 1 ? `💡 ×${String(r.factor).replace('.', ',')}` : '', r.speed ? `⚡ +${r.speed}` : '', r.streak ? `🔥 +1` : ''].filter(Boolean).join('  ');
-      tr.innerHTML = `<td>${d === 0 ? '👑' : (medals[i] || (i+1) + '.')}</td><td class="nm"></td><td class="num">${p.est} %</td>
-        <td class="num">${d > 0 ? '+' : d < 0 ? '−' : '±'}${ad} Pp.</td><td class="num"><b>+${r.pts}</b></td><td>${extras}</td>`;
+      tr.innerHTML = `<td>${r.exact ? '👑' : (medals[i] || (i+1) + '.')}</td><td class="nm"></td><td class="num">${p.est} %</td>
+        <td class="num">${d > 0 ? '+' : d < 0 ? '−' : '±'}${fmtNum(ad)} Pp.</td><td class="num"><b>+${r.pts}</b></td><td>${extras}</td>`;
       tr.querySelector('.nm').textContent = p.avatar + ' ' + p.name;
       $('hResBody').appendChild(tr);
     });
@@ -1238,10 +1353,14 @@ function pStartRound(m){
   C.round = m; C.done = false; C.locked = false;
   if (C.roundSeen !== m.round){ C.est = null; C.roundSeen = m.round; }
   C.deadline = m.ms ? Date.now() + m.ms : 0;
-  $('pVal').textContent = m.value + ' %';
+  const rev = m.play && m.play !== 'normal';
+  $('pQ').innerHTML = rev ? (m.play === 'blitz' ? '<span class="rq">⚡ Wie viel war gefüllt?</span>' : '<span class="rq">Wie viel ist gefüllt?</span>') : (m.ask || `Wo liegen <b>${m.value} %</b>?`);
+  show('pSlider', rev); $('pRange').value = C.est == null ? 50 : C.est; $('pNum').textContent = C.est == null ? '– %' : C.est + ' %';
+  $('pHint').textContent = rev ? 'Stelle die Prozentzahl mit dem Regler ein.' : 'Ziehe mit dem Finger, bis es passt.';
+  clearTimeout(C.blitzT); C.blitzHidden = false;
+  if (m.play === 'blitz'){ if (m.blitzLeft > 0) C.blitzT = setTimeout(() => { C.blitzHidden = true; pDraw(); }, m.blitzLeft); else C.blitzHidden = true; }
   show('pLock', false); $('pDone').disabled = C.est == null; $('pDone').textContent = '✓ Fertig';
   show('pHelpNote', false);
-  $('pHint').textContent = 'Ziehe mit dem Finger, bis es passt.';
   pScreen('pPlay'); pTop(); pDraw();
   clearInterval(C.tick);
   if (C.deadline){
@@ -1254,14 +1373,15 @@ function pStartRound(m){
 }
 function pDraw(){
   if (!C.round) return;
-  C.geo = drawShape($('pSvg'), {shape:C.round.shape, orient:'v', uid:'pl', fill: C.est == null ? null : C.est/100,
-    fillColor:C.color, split:C.round.split || 0});
+  const rev = C.round.play && C.round.play !== 'normal';
+  C.geo = drawShape($('pSvg'), {shape:C.round.shape, orient:'v', uid:'pl', fill: rev || C.est == null ? null : C.est/100,
+    fillColor:C.color, split:C.round.split || 0, target: rev && !C.blitzHidden ? C.round.value/100 : null, cover: rev && C.blitzHidden});
 }
 function pSetupInput(){
   const box = $('pShapeBox'), svg = $('pSvg');
   let drag = false;
   const at = e => {
-    if (!C.round || C.done || C.locked || !C.geo) return false;
+    if (!C.round || C.done || C.locked || !C.geo || (C.round.play && C.round.play !== 'normal')) return false;
     const pt = svg.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY;
     const p = pt.matrixTransform(svg.getScreenCTM().inverse());
     C.est = Math.round(fracFromPoint(C.geo, p.x, p.y) * 100);
@@ -1272,6 +1392,14 @@ function pSetupInput(){
   box.addEventListener('pointermove', e => { if (drag) at(e); });
   box.addEventListener('pointerup', () => drag = false);
   box.addEventListener('pointercancel', () => drag = false);
+  const setEst = v => {
+    if (!C.round || C.done || C.locked) return;
+    C.est = clamp(Math.round(v), 0, 100); $('pRange').value = C.est; $('pNum').textContent = C.est + ' %';
+    $('pDone').disabled = false; pSendEst(false);
+  };
+  $('pRange').addEventListener('input', e => setEst(+e.target.value));
+  $('pMinus').onclick = () => setEst((C.est ?? +$('pRange').value) - 1);
+  $('pPlus').onclick = () => setEst((C.est ?? +$('pRange').value) + 1);
   $('pDone').onclick = () => { if (C.est == null) return; C.done = true; pSendEst(true); pLock('✓ Abgegeben!<br><span style="font-size:1rem;font-weight:700">Warte auf die anderen …</span>'); };
 }
 function pSendEst(final){
@@ -1295,7 +1423,7 @@ function pResult(m){
   const bon = [m.factor < 1 ? `💡 Hilfe ×${String(m.factor).replace('.', ',')}` : '', m.speed ? `⚡ Tempo +${m.speed}` : '', m.streak ? `🔥 ${m.streakN}er-Streak +1` : ''].filter(Boolean);
   card.innerHTML = `<h2>${title}</h2><div class="pts">+${m.pts}</div>
     ${bon.length ? `<div class="pbonus">${bon.map(b => `<span>${b}</span>`).join('')}</div>` : ''}
-    ${has ? `<p>Ihr: ${m.est} % · Ziel: ${m.value} % · ${m.diff > 0 ? '+' : m.diff < 0 ? '−' : '±'}${ad}</p>` : `<p>Ziel war ${m.value} %</p>`}
+    ${has ? `<p>Ihr: ${m.est} % · Ziel: ${m.valueText || m.value + ' %'} · ${m.diff > 0 ? '+' : m.diff < 0 ? '−' : '±'}${fmtNum(ad)}</p>` : `<p>Ziel war ${m.valueText || m.value + ' %'}</p>`}
     <p>Platz ${m.place} von ${m.of} · ${m.total} Punkte · Ø ${m.avg}</p>`;
   drawShape($('pResSvg'), {shape:m.shape, orient:'v', uid:'res', target:m.value/100, split:m.split, markers: has ? [{f:m.est/100, color:C.color, label:''}] : [],
     revealed:false});
