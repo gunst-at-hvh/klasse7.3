@@ -313,7 +313,7 @@ const Q = new URLSearchParams(location.search);
 const PEER_OPTS = Q.get('ph') ? {host: Q.get('ph'), port: +(Q.get('pp') || 9000), path: Q.get('ppath') || '/', secure: Q.get('ps') === '1'} : {};
 PEER_OPTS.debug = 1;
 const PREFIX = 'hvh-schaetzlive-';
-const APP_VERSION = '2026-10-14c';
+const APP_VERSION = '2026-10-14d';
 const AUTOJOIN_KEY = 'schaetzspiel-live-autojoin';
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const EMOJIS = ['😀','😎','🤓','🥳','🤩','😜','🤠','🥸','😇','🤖','👻','👽','💩','🐱','🐶','🦊','🐼','🐸','🦁','🐯','🐵','🐙','🦄','🐝','🐢','🦖','🐧','🦉','🐬','🦈','🍕','🍩','🍉','⚽','🏀','🎮','🎸','🚀','🌈','🔥','⭐','💎','👑','🌵'];
@@ -853,12 +853,15 @@ function pConnect(){
     if (msg) netInfo(msg);
     C.retryTimer = setTimeout(() => { if (gen === C.gen) pConnect(); }, ms);
   };
-  // Zeitgrenze: steht die Verbindung nach 12 s nicht, neu versuchen
+  // Langsame Netze brauchen Zeit: laufenden Versuch NICHT abbrechen, nur Hinweise zeigen
   C.connTimer = setTimeout(() => {
     if (gen !== C.gen || (C.conn && C.conn.open)) return;
-    if (++C.retry >= 4){ pStuck(); return; }
-    retryLater(0, 'Verbindung hakt – neuer Versuch (' + C.retry + ') …');
-  }, 12000);
+    netInfo('Verbindung dauert etwas länger … bitte warten');
+    C.connTimer = setTimeout(() => {
+      if (gen !== C.gen || (C.conn && C.conn.open)) return;
+      pStuck('dauert ungewöhnlich lange');
+    }, 40000);
+  }, 15000);
   peer.on('open', () => {
     if (gen !== C.gen) return;
     const conn = peer.connect(PREFIX + C.code, {reliable:true}); C.conn = conn;
