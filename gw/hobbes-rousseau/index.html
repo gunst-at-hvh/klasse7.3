@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hobbes vs. Rousseau</title>
+<style>
+:root{
+  --bg:#f5f3ee;--card:#fff;--ink:#1d2433;--muted:#6b7280;--line:#d6d2c7;--accent:#2f6fde;
+  --hob:#b8432f;--hob-bg:#fbeee9;--rou:#2b8a3e;--rou-bg:#eaf6ec;--mix:#5f4bb6;--mix-bg:#efecfa;
+  --cover:#ece8df;--cover-ink:#8a8478;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#14171d;--card:#1e222a;--ink:#e8e9ec;--muted:#9aa1ad;--line:#363b46;--accent:#6b9cff;
+  --hob:#ff8a70;--hob-bg:#3a2420;--rou:#6fd38a;--rou-bg:#1e3326;--mix:#a998ff;--mix-bg:#2a2540;
+  --cover:#262a33;--cover-ink:#7d8492;
+}}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  font-size:clamp(14px,1.05vw + 1.1vh,27px);line-height:1.25;display:flex;flex-direction:column}
+header{display:flex;align-items:center;gap:.6em;padding:.45em .9em;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.crumb{color:var(--muted);font-weight:700;font-size:.7em}
+.crumb a{color:inherit}
+h1{font-size:1.05em;margin:0 .4em 0 0}
+.tabs{display:flex;gap:.3em;flex-wrap:wrap}
+.tabs button,.tools button{font:inherit;font-size:.68em;padding:.35em .8em;border-radius:999px;border:1px solid var(--line);
+  background:var(--card);color:var(--ink);cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.tools{margin-left:auto;display:flex;gap:.3em;align-items:center;flex-wrap:wrap}
+.count{font-size:.62em;color:var(--muted);min-width:4.5em;text-align:right}
+main{flex:1;min-height:0;padding:.7em .9em .5em;display:flex;flex-direction:column}
+.board{display:none;flex:1;min-height:0;flex-direction:column}
+.board.on{display:flex}
+.q{font-weight:800;font-size:1.15em;margin:0 0 .45em;text-align:center}
+.q small{display:block;font-weight:500;font-size:.62em;color:var(--muted);margin-top:.15em}
+
+/* Vergleichstabelle */
+.cmp{flex:1;min-height:0;display:grid;grid-template-columns:minmax(7em,.62fr) 1fr 1fr;grid-auto-rows:1fr;gap:.32em}
+.head{display:flex;align-items:center;justify-content:center;gap:.4em;font-weight:800;font-size:1.05em;border-radius:.45em;padding:.15em}
+.head.h{color:var(--hob);background:var(--hob-bg)} .head.r{color:var(--rou);background:var(--rou-bg)}
+.lab{display:flex;align-items:center;font-weight:700;font-size:.82em;color:var(--muted);padding:0 .3em;line-height:1.15}
+
+.c{position:relative;border-radius:.45em;padding:.3em .55em;display:flex;align-items:center;cursor:pointer;
+  border:2px solid transparent;transition:background .25s,border-color .25s;user-select:none;min-height:2.4em}
+.c .txt{transition:opacity .35s, transform .35s}
+.c.hidden{background:var(--cover);border:2px dashed var(--line)}
+.c.hidden .txt{opacity:0;transform:translateY(.25em)}
+.c.hidden::after{content:"?";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:1.2em;color:var(--cover-ink)}
+.c.h:not(.hidden){background:var(--hob-bg);border-color:var(--hob)}
+.c.r:not(.hidden){background:var(--rou-bg);border-color:var(--rou)}
+.c.m:not(.hidden){background:var(--mix-bg);border-color:var(--mix)}
+.c.next.hidden{border-color:var(--accent)}
+.c b{font-weight:800}
+.c i{font-style:italic}
+
+/* Kartentafeln */
+.cards{flex:1;min-height:0;display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:1fr;gap:.45em}
+.cards .c{flex-direction:column;align-items:flex-start;justify-content:flex-start;padding:.5em .7em}
+.cards .c .t{font-weight:800;font-size:1.08em;margin-bottom:.25em;display:flex;gap:.35em;align-items:center}
+.cards .c .txt{width:100%}
+.cards .c .txt p{margin:0 0 .35em;font-size:1em}
+.cards .c .tag{font-size:.65em;font-weight:700;padding:.1em .55em;border-radius:999px;display:inline-block;margin-top:.1em}
+.tag.h{background:var(--hob);color:#fff}.tag.r{background:var(--rou);color:#fff}.tag.m{background:var(--mix);color:#fff}
+.cards .c.hidden::after{content:attr(data-cover);font-size:.9em;padding:.6em;text-align:center}
+
+footer{font-size:.55em;color:var(--muted);text-align:center;padding:.2em .5em .5em}
+kbd{font:inherit;border:1px solid var(--line);border-bottom-width:2px;border-radius:.3em;padding:0 .35em;background:var(--card)}
+
+@media (max-width:760px){
+  body{font-size:16px}
+  main{overflow:auto}
+  .cmp{grid-template-columns:1fr 1fr;grid-auto-rows:auto}
+  .cmp .lab{grid-column:1 / -1;padding-top:.5em}
+  .cmp .corner{display:none}
+  .cards{grid-template-columns:1fr;grid-auto-rows:auto}
+  .cards .c{min-height:5em}
+  .tools{margin-left:0}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="crumb"><a href="../../">Klasse 7.3</a> › <a href="../">GW</a></div>
+  <h1>Hobbes vs. Rousseau</h1>
+  <div class="tabs" role="tablist" id="tabs"></div>
+  <div class="tools">
+    <span class="count" id="count"></span>
+    <button id="back" title="Letztes Feld verdecken (←)">◀</button>
+    <button id="next" title="Nächstes Feld aufdecken (Leertaste / →)">Weiter ▶</button>
+    <button id="all" title="Alle aufdecken (A)">Alle</button>
+    <button id="reset" title="Alle verdecken (R)">Verdecken</button>
+    <button id="fs" title="Vollbild (F)">⛶</button>
+  </div>
+</header>
+<main id="main"></main>
+<footer><kbd>Leertaste</kbd>/<kbd>→</kbd> aufdecken · <kbd>←</kbd> zurück · Klick auf ein Feld deckt es einzeln auf · <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> Tafel wechseln · <kbd>F</kbd> Vollbild</footer>
+
+<script>
+// ---------- Inhalte ----------
+const TAFEL1 = {
+  name: "1 · Vergleich",
+  frage: "Ist der Mensch ein Wolf – oder wird er zu einem?",
+  sub: "Zwei Denker – zwei Menschenbilder",
+  rows: [
+    ["Wer?", "<b>Thomas Hobbes</b><br>England · 1588–1679", "<b>Jean-Jacques Rousseau</b><br>Genf / Frankreich · 1712–1778"],
+    ["Menschenbild", "<i>„Der Mensch ist dem Menschen ein Wolf.“</i> Jeder denkt zuerst an sich.", "<i>„Der Mensch ist von Natur aus gut.“</i>"],
+    ["Wichtigstes Gefühl", "<b>Angst</b> vor den anderen", "<b>Mitleid</b>: Ich leide mit, wenn andere leiden."],
+    ["Ohne Staat und Regeln …", "Krieg aller gegen alle. Niemand ist sicher.", "Menschen leben frei und friedlich."],
+    ["Was macht Menschen schlecht?", "Ihre <b>Natur</b>: Gier, Misstrauen, Angst", "Die <b>Gesellschaft</b>: Besitz, Neid, sich vergleichen"],
+    ["Gesellschafts&shy;vertrag", "Alle geben ihre Macht an einen <b>starken Herrscher</b>. Er sorgt für Ordnung.", "<b>Alle bestimmen gemeinsam</b>. Das Volk macht die Gesetze selbst."],
+    ["Am wichtigsten ist …", "<b>Sicherheit</b>", "<b>Freiheit</b> und <b>Gleichheit</b>"],
+    ["Goldene Regel, weil …", "… ich Angst habe, dass mir sonst dasselbe passiert.", "… ich mitfühle, wenn es anderen schlecht geht."]
+  ]
+};
+
+const TAFEL2 = {
+  name: "2 · Mehr Rousseau",
+  frage: "Rousseau – noch mehr Ideen",
+  sub: "Seine Gedanken wirken bis heute",
+  cards: [
+    ["r", "🚧 Der Zaun", "<p><i>„Der Erste, der ein Stück Land einzäunte und sagte: ‚Das gehört mir‘, …“</i></p><p>… begann die <b>Ungleichheit</b>. Mit dem Besitz kamen Neid und Streit.</p>", "Was hat ein Zaun mit Streit zu tun?"],
+    ["r", "⛓️ Frei geboren", "<p><i>„Der Mensch ist frei geboren, und überall liegt er in Ketten.“</i></p><p>Schlechte Regeln und Herrscher nehmen den Menschen die Freiheit.</p>", "Was heißt „in Ketten“?"],
+    ["r", "🗳️ Mitbestimmen", "<p>Wer sich an Gesetze halten muss, soll sie auch <b>mitbestimmen</b>.</p><p>Das Ziel ist das, was für <b>alle</b> gut ist.</p>", "Wer soll die Gesetze machen?"],
+    ["r", "🇫🇷 Revolution", "<p>Rousseaus Ideen halfen bei der <b>Französischen Revolution</b> 1789: Freiheit, Gleichheit, Brüderlichkeit.</p><p><span class=\"tag m\">Geschichte Klasse 8</span></p>", "Wo wirkte Rousseau später?"],
+    ["r", "🌳 Erziehung", "<p>Kinder sollen durch <b>eigene Erfahrung</b> lernen, nicht nur aus Büchern.</p><p>Buch: „Émile“</p>", "Wie sollen Kinder lernen?"],
+    ["m", "🤔 Ein Widerspruch", "<p>Rousseau schrieb über gute Erziehung. Seine <b>eigenen fünf Kinder</b> gab er aber ins Waisenhaus.</p><p>Darf man ihm trotzdem glauben? <b>Darüber kann man streiten.</b></p>", "Passt das zusammen?"]
+  ]
+};
+
+const TAFEL3 = {
+  name: "3 · Wer hat recht?",
+  frage: "Wer hat recht – Hobbes oder Rousseau?",
+  sub: "Was Forschung, Religion und Grundgesetz dazu sagen",
+  cards: [
+    ["r", "🐺 Echte Wölfe", "<p>Wölfe leben in <b>Rudeln</b>. Sie jagen zusammen und kümmern sich um ihre Jungen.</p><p>Passt der Vergleich von Hobbes überhaupt?</p>", "Wie leben echte Wölfe?"],
+    ["r", "🎁 Gegenseitigkeit", "<p>Ethnologen fanden: In allen Gesellschaften schenken und helfen Menschen sich.</p><p>Wer etwas bekommt, will etwas <b>zurückgeben</b>.</p>", "Was haben Forscher überall entdeckt?"],
+    ["m", "🧪 Das Gemeinschafts-Spiel", "<p>Forscher (Fehr &amp; Gächter): Spieler zahlen in eine <b>gemeinsame Kasse</b>. Am Anfang helfen viele mit.</p><p>Schummeln einige, hören alle auf. Dürfen Schummler <b>bestraft</b> werden, machen fast alle wieder mit.</p>", "Was passiert im Experiment?"],
+    ["r", "☪️ Eine Vorstellung im Islam", "<p>Jedes Kind wird mit einer <b>guten Natur</b> geboren (<i>Fitra</i>).</p><p>Das ist näher an Rousseau.</p>", "Gut oder böse geboren?"],
+    ["m", "📜 Unser Grundgesetz", "<p><i>„Alle Staatsgewalt geht vom Volke aus.“</i> (Art. 20) <span class=\"tag r\">Rousseau</span></p><p>Nur der Staat darf Gewalt anwenden, z. B. die Polizei. <span class=\"tag h\">Hobbes</span></p>", "Wo stecken die beiden im Grundgesetz?"],
+    ["m", "⚖️ Und du?", "<p>Viele Menschen helfen gern – wenn andere es auch tun. Regeln schützen vor Schummlern.</p><p><b>Wem stimmst du eher zu – Hobbes oder Rousseau? Begründe.</b></p>", "Wem stimmst du zu?"]
+  ]
+};
+const TAFELN = [TAFEL1, TAFEL2, TAFEL3];
+
+// ---------- Aufbau ----------
+const main = document.getElementById("main"), tabs = document.getElementById("tabs");
+const boards = [];
+TAFELN.forEach((T, ti) => {
+  const b = document.createElement("section");
+  b.className = "board"; b.setAttribute("role", "tabpanel");
+  b.innerHTML = `<div class="q">${T.frage}<small>${T.sub}</small></div>`;
+  const cells = [];
+  if (T.rows) {
+    const g = document.createElement("div"); g.className = "cmp";
+    g.innerHTML = `<div class="corner"></div><div class="head h">🐺 Hobbes</div><div class="head r">🤝 Rousseau</div>`;
+    T.rows.forEach(([lab, h, r]) => {
+      const l = document.createElement("div"); l.className = "lab"; l.innerHTML = lab; g.appendChild(l);
+      [["h", h], ["r", r]].forEach(([k, html]) => {
+        const c = document.createElement("div"); c.className = `c ${k} hidden`;
+        c.innerHTML = `<div class="txt">${html}</div>`; g.appendChild(c); cells.push(c);
+      });
+    });
+    b.appendChild(g);
+  } else {
+    const g = document.createElement("div"); g.className = "cards";
+    T.cards.forEach(([k, title, html, cover]) => {
+      const c = document.createElement("div"); c.className = `c ${k} hidden`; c.dataset.cover = cover;
+      c.innerHTML = `<div class="txt"><div class="t">${title}</div>${html}</div>`;
+      g.appendChild(c); cells.push(c);
+    });
+    b.appendChild(g);
+  }
+  main.appendChild(b);
+  boards.push({ el: b, cells, history: [] });
+  const tb = document.createElement("button"); tb.textContent = T.name; tb.setAttribute("role", "tab");
+  tb.onclick = () => show(ti); tabs.appendChild(tb);
+});
+
+let cur = 0;
+function B() { return boards[cur]; }
+function update() {
+  const { cells } = B();
+  const open = cells.filter(c => !c.classList.contains("hidden")).length;
+  document.getElementById("count").textContent = `${open} / ${cells.length}`;
+  cells.forEach(c => c.classList.remove("next"));
+  const n = cells.find(c => c.classList.contains("hidden")); if (n) n.classList.add("next");
+}
+function show(i) {
+  cur = i;
+  boards.forEach((b, j) => b.el.classList.toggle("on", j === i));
+  [...tabs.children].forEach((t, j) => t.setAttribute("aria-selected", j === i));
+  try { localStorage.setItem("hr-tafel", i); } catch (e) {}
+  update();
+}
+function reveal(c) { if (!c.classList.contains("hidden")) return; c.classList.remove("hidden"); B().history.push(c); update(); }
+function next() { const c = B().cells.find(c => c.classList.contains("hidden")); if (c) reveal(c); }
+function back() { const c = B().history.pop(); if (c) { c.classList.add("hidden"); update(); } }
+function all() { B().cells.forEach(reveal); }
+function reset() { B().cells.forEach(c => c.classList.add("hidden")); B().history = []; update(); }
+boards.forEach((b, bi) => b.cells.forEach(c => c.addEventListener("click", () => {
+  if (c.classList.contains("hidden")) reveal(c);
+  else { c.classList.add("hidden"); b.history = b.history.filter(x => x !== c); update(); }
+})));
+document.getElementById("next").onclick = next;
+document.getElementById("back").onclick = back;
+document.getElementById("all").onclick = all;
+document.getElementById("reset").onclick = reset;
+function fs() {
+  if (document.fullscreenElement) document.exitFullscreen?.();
+  else document.documentElement.requestFullscreen?.().catch(() => {});
+}
+document.getElementById("fs").onclick = fs;
+document.addEventListener("keydown", e => {
+  if (e.altKey || e.ctrlKey || e.metaKey) return;
+  const k = e.key;
+  if (k === " " || k === "ArrowRight" || k === "PageDown" || k === "Enter") { e.preventDefault(); next(); }
+  else if (k === "ArrowLeft" || k === "PageUp" || k === "Backspace") { e.preventDefault(); back(); }
+  else if (k === "a" || k === "A") all();
+  else if (k === "r" || k === "R") reset();
+  else if (k === "f" || k === "F") fs();
+  else if (["1", "2", "3"].includes(k)) show(+k - 1);
+});
+let start = 0;
+try { start = +localStorage.getItem("hr-tafel") || 0; } catch (e) {}
+show(Math.min(Math.max(start, 0), boards.length - 1));
+</script>
+</body>
+</html>
