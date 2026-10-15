@@ -262,32 +262,33 @@ details.more[open] summary::before{content:'▾ ';}
 .mrow.hunter{background:#fff3cf;animation:huntGlow 1s ease-in-out infinite}
 .mrow.gain2{background:#fff3cf}
 @keyframes huntGlow{50%{box-shadow:0 0 0 4px #ffb703}}
-.tc{width:40px;height:54px;border-radius:8px;display:grid;place-items:center;position:relative;background:var(--cc,#ddd);box-shadow:0 2px 0 rgba(0,0,0,.25);font-size:1.5rem;flex:0 0 auto}
-.tc i{position:absolute;top:1px;left:4px;font-style:normal;font-size:.7rem;font-weight:900;color:#fff}
+.tc{width:44px;height:60px;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;position:relative;background:var(--cc,#ddd);box-shadow:0 2px 0 rgba(0,0,0,.25);font-size:1.35rem;line-height:1;flex:0 0 auto}
+.tc i{font-style:normal;font-size:1.05rem;font-weight:900;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.4)}
 .tc.back{background:repeating-linear-gradient(45deg,#46178f 0 6px,#5a2aa8 6px 12px);color:#fff;font-size:1.1rem;font-weight:900}
 .tc.empty{background:transparent;border:2px dashed #cfc8de;box-shadow:none}
 .tc.flip{animation:flip .6s cubic-bezier(.2,1.4,.4,1)}
-.tc.dead::after{content:'✖';position:absolute;inset:0;display:grid;place-items:center;color:#fff;font-size:2rem;font-weight:900;text-shadow:0 0 4px #e21b3c,0 0 8px #e21b3c}
+.tc.dead{outline:3px solid #e21b3c}
+.tc.dead::after{content:'✖';position:absolute;right:-6px;bottom:-6px;width:18px;height:18px;border-radius:50%;background:#e21b3c;color:#fff;font-size:.7rem;font-weight:900;display:grid;place-items:center}
 @keyframes flip{0%{transform:rotateY(90deg) scale(.5)}100%{transform:none}}
 .rev .line{margin-top:6px;font-weight:800;font-size:1.05rem;min-height:1.35em;text-align:center}
 .rev .res{margin-top:6px;font-weight:800;font-size:.95rem;background:#fff8e6;border-radius:10px;padding:6px 8px}
 .callbar{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;margin:4px 0}
 .callbar .cs{display:flex;gap:8px}
 .callbar .cs span{width:56px;height:56px;border-radius:14px;display:grid;place-items:center;font-size:2rem;background:var(--cc);opacity:.3;transition:all .3s;position:relative}
-.callbar .cs span b{position:absolute;top:1px;left:5px;font-size:.75rem;color:#fff}
+.callbar .cs span b{position:absolute;top:2px;left:6px;font-size:1rem;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.5)}
 .callbar .cs span.now{opacity:1;transform:scale(1.25);box-shadow:0 0 0 4px #ffb703}
 .callbar .cs span.past{opacity:.75}
 .calltext{font-size:clamp(1.3rem,2.6vw,2rem);font-weight:900;text-align:center}
 .compact .mrow .nm{font-size:1.05rem}
 .compact .mrow .av{font-size:1.4rem}
-.compact .tc{width:30px;height:42px;font-size:1.1rem;border-radius:6px}
-.compact .tc i{font-size:.6rem}
+.compact .tc{width:32px;height:46px;font-size:1rem;border-radius:6px}
+.compact .tc i{font-size:.85rem}
 .compact.rev{padding:8px}
 .hand{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
 .hcard{border-radius:14px;padding:8px 0 6px;color:#fff;background:var(--cc);display:flex;flex-direction:column;align-items:center;font-weight:900;box-shadow:0 4px 0 rgba(0,0,0,.3);transition:transform .15s}
 .hcard .e{font-size:2.3rem;line-height:1.1}
 .hcard .n{font-size:.72rem}
-.hcard .r{font-size:.75rem;opacity:.9}
+.hcard .r{font-size:1.5rem;line-height:1;text-shadow:0 1px 2px rgba(0,0,0,.4)}
 .hcard.sel{outline:4px solid #ffb703;transform:translateY(-8px)}
 .hcard:disabled{opacity:.2}
 .pbanner{text-align:center;font-weight:900;font-size:1.35rem;line-height:1.2}
@@ -341,13 +342,13 @@ details.more[open] summary::before{content:'▾ ';}
     <div style="display:flex;flex-direction:column;gap:16px">
       <div class="card settings">
         <div class="rules" id="hRules"></div>
-        <label>Karten</label>
-        <div class="row" id="hThemeRow"></div>
         <label>Ziel: Futter 🍖</label>
         <div class="row" id="hGoalRow"></div>
         <label>Zeit zum Legen</label>
         <div class="row" id="hTimeRow"></div>
         <details class="more"><summary>⚙️ Mehr Optionen</summary>
+          <label>Karten</label>
+          <div class="row" id="hThemeRow"></div>
           <label>Spieler pro Revier (höchstens)</label>
           <div class="row" id="hRevRow"></div>
           <label>Reviere</label>
@@ -428,13 +429,13 @@ details.more[open] summary::before{content:'▾ ';}
       </div>
       <div class="roomcard settings">
         <div class="rules" id="rRules"></div>
-        <label>Karten</label>
-        <div class="row" id="rThemeRow"></div>
         <label>Ziel: Futter 🍖</label>
         <div class="row" id="rGoalRow"></div>
         <label>Zeit zum Legen</label>
         <div class="row" id="rTimeRow"></div>
         <details class="more"><summary>⚙️ Mehr Optionen</summary>
+          <label>Karten</label>
+          <div class="row" id="rThemeRow"></div>
           <label>Spieler pro Revier (höchstens)</label>
           <div class="row" id="rRevRow"></div>
           <label>Reviere</label>
@@ -503,7 +504,7 @@ function keepRegistered(getPeer, lampId){
 }
 
 const PREFIX = 'hvh-revier-';
-const APP_VERSION = '2026-10-15r1';
+const APP_VERSION = '2026-10-15r2';
 const AUTOJOIN_KEY = 'revier-jagd-autojoin';
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const EMOJIS = ['😀','😎','🤓','🥳','🤩','😜','🤠','🥸','😇','🤖','👻','👽','💩','🐱','🐶','🦊','🐼','🐸','🦁','🐯','🐵','🐙','🦄','🐝','🐢','🦖','🐧','🦉','🐬','🦈','🍕','🍩','🍉','⚽','🏀','🎮','🎸','🚀','🌈','🔥','⭐','💎','👑','🌵'];
@@ -663,15 +664,16 @@ let THEME = 'wald';
 const FEM = ['Eule','Schlange','Maus','Robbe','Garnele','Echse','Grille'];
 const A = r => { const x = THEMES[THEME].a[r-1]; return {e:x[0], n:x[1], c:x[2], r, d: FEM.includes(x[1]) ? 'die' : 'der'}; };
 const chainHtml = () => '<div class="chain">' + [1,2,3,4,5].map(r => `<span style="--cc:${A(r).c}">${r} ${A(r).e} ${A(r).n}</span>`).join('<i>›</i>') + '</div>';
-const rulesHtml = () => `<b>So geht's:</b> Alle legen gleichzeitig verdeckt ein Tier. Aufgedeckt wird von <b>1</b> (stark) bis <b>5</b> (schwach).
+const rulesHtml = () => `<b>Die Zahl ist Rangfolge UND Punkte:</b> 1 ${A(1).e} ist am stärksten, bringt aber am wenigsten – 5 ${A(5).e} ist am schwächsten, bringt aber am meisten.<br>
+  <b>So geht's:</b> Alle legen gleichzeitig verdeckt ein Tier. Aufgedeckt wird von <b>1</b> bis <b>5</b>.
   Liegt ein Tier <b>genau einmal</b>, darf es ein schwächeres Tier jagen – alle, die dieses Tier gelegt haben, sind raus.
   Liegt es <b>mehrfach</b>: blockiert! Bis zu 3 Jagden pro Runde.<br>
-  <b>Futter:</b> allein überlebt 🍖🍖 · sonst höchste Kartensumme 🍖🍖, andere Überlebende 🍖.` + chainHtml();
+  <b>Futter:</b> allein überlebt 🍖🍖 · sonst: höchste Summe der eigenen Kartenzahlen 🍖🍖, andere Überlebende 🍖.` + chainHtml();
 function cardHtml(c, key, seen){
   if (!c) return '<span class="tc empty"></span>';
   if (c.r == null) return `<span class="tc back">?</span>`;
   const a = A(c.r), flip = key && seen && !seen.has(key); if (flip) seen.add(key);
-  return `<span class="tc${flip ? ' flip' : ''}${c.dead ? ' dead' : ''}" style="--cc:${a.c}"><i>${a.r}</i>${a.e}</span>`;
+  return `<span class="tc${flip ? ' flip' : ''}${c.dead ? ' dead' : ''}" style="--cc:${a.c}"><i>${a.r}</i><span>${a.e}</span></span>`;
 }
 /* Ein Revier zeichnen (Beamer: groß, Handy: kompakt) */
 function revHtml(rv, o){
