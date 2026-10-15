@@ -19,7 +19,8 @@
 html,body{height:100%}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   font-size:clamp(14px,1.05vw + 1.1vh,27px);line-height:1.25;display:flex;flex-direction:column}
-header{display:flex;align-items:center;gap:.6em;padding:.45em .9em;border-bottom:1px solid var(--line);flex-wrap:wrap}
+header{display:flex;align-items:center;gap:.5em;padding:.4em .8em;border-bottom:1px solid var(--line);flex-wrap:nowrap;font-size:min(1em,22px)}
+header>*{flex-shrink:0}
 .crumb{color:var(--muted);font-weight:700;font-size:.7em}
 .crumb a{color:inherit}
 h1{font-size:1.05em;margin:0 .4em 0 0}
@@ -37,11 +38,11 @@ main{flex:1;min-height:0;padding:.7em .9em .5em;display:flex;flex-direction:colu
 
 /* Vergleichstabelle */
 .cmp{flex:1;min-height:0;display:grid;grid-template-columns:minmax(7em,.62fr) 1fr 1fr;grid-auto-rows:1fr;gap:.32em}
-.head{display:flex;align-items:center;justify-content:center;gap:.4em;font-weight:800;font-size:1.05em;border-radius:.45em;padding:.15em}
+.head{display:flex;align-items:center;justify-content:center;gap:.4em;font-weight:800;font-size:1.05em;border-radius:.45em;padding:.3em}
 .head.h{color:var(--hob);background:var(--hob-bg)} .head.r{color:var(--rou);background:var(--rou-bg)}
 .lab{display:flex;align-items:center;font-weight:700;font-size:.82em;color:var(--muted);padding:0 .3em;line-height:1.15}
 
-.c{position:relative;border-radius:.45em;padding:.3em .55em;display:flex;align-items:center;cursor:pointer;
+.c{position:relative;border-radius:.45em;padding:.2em .55em;line-height:1.18;display:flex;align-items:center;cursor:pointer;
   border:2px solid transparent;transition:background .25s,border-color .25s;user-select:none;min-height:2.4em}
 .c .txt{transition:opacity .35s, transform .35s}
 .c.hidden{background:var(--cover);border:2px dashed var(--line)}
@@ -63,6 +64,10 @@ main{flex:1;min-height:0;padding:.7em .9em .5em;display:flex;flex-direction:colu
 .cards .c .txt p{margin:0 0 .35em;font-size:1em}
 .cards .c .tag{font-size:.65em;font-weight:700;padding:.1em .55em;border-radius:999px;display:inline-block;margin-top:.1em}
 .tag.h{background:var(--hob);color:#fff}.tag.r{background:var(--rou);color:#fff}.tag.m{background:var(--mix);color:#fff}
+.cards .c.wide{grid-column:1 / -1}
+.cards .c.wide .txt p{font-size:1.08em}
+.c .fr{font-weight:500;font-style:italic;font-size:.8em;color:var(--muted)}
+.cmp .c.span{grid-column:2 / span 2;justify-content:center;text-align:center;font-size:1.05em}
 .cards .c.hidden::after{content:attr(data-cover);font-size:.9em;padding:.6em;text-align:center}
 
 footer{font-size:.55em;color:var(--muted);text-align:center;padding:.2em .5em .5em}
@@ -71,12 +76,17 @@ kbd{font:inherit;border:1px solid var(--line);border-bottom-width:2px;border-rad
 @media (max-width:760px){
   body{font-size:16px}
   main{overflow:auto}
-  .cmp{grid-template-columns:1fr 1fr;grid-auto-rows:auto}
+  .cmp{grid-template-columns:1fr 1fr;grid-auto-rows:auto;grid-template-rows:none!important}
   .cmp .lab{grid-column:1 / -1;padding-top:.5em}
   .cmp .corner{display:none}
   .cards{grid-template-columns:1fr;grid-auto-rows:auto}
   .cards .c{min-height:5em}
+  .cards{grid-template-rows:none!important}
+  .cmp .c.span{grid-column:1 / -1}
   .tools{margin-left:0}
+  header{flex-wrap:wrap}
+  header>*{flex-shrink:1;min-width:0}
+  .tabs{flex-basis:100%}
 }
 </style>
 </head>
@@ -90,17 +100,17 @@ kbd{font:inherit;border:1px solid var(--line);border-bottom-width:2px;border-rad
     <button id="back" title="Letztes Feld verdecken (←)">◀</button>
     <button id="next" title="Nächstes Feld aufdecken (Leertaste / →)">Weiter ▶</button>
     <button id="all" title="Alle aufdecken (A)">Alle</button>
-    <button id="reset" title="Alle verdecken (R)">Verdecken</button>
+    <button id="reset" title="Alle verdecken (R)">↺</button>
     <button id="fs" title="Vollbild (F)">⛶</button>
   </div>
 </header>
 <main id="main"></main>
-<footer><kbd>Leertaste</kbd>/<kbd>→</kbd> aufdecken · <kbd>←</kbd> zurück · Klick auf ein Feld deckt es einzeln auf · <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> Tafel wechseln · <kbd>F</kbd> Vollbild</footer>
+<footer><kbd>Leertaste</kbd>/<kbd>→</kbd> aufdecken · <kbd>←</kbd> zurück · Klick auf ein Feld deckt es einzeln auf · <kbd>1</kbd>–<kbd>4</kbd> Tafel wechseln · <kbd>F</kbd> Vollbild</footer>
 
 <script>
 // ---------- Inhalte ----------
-const TAFEL1 = {
-  name: "1 · Vergleich",
+const VERGLEICH = {
+  name: "1 Vergleich",
   frage: "Ist der Mensch ein Wolf – oder wird er zu einem?",
   sub: "Zwei Denker – zwei Menschenbilder",
   rows: [
@@ -109,28 +119,45 @@ const TAFEL1 = {
     ["Wichtigstes Gefühl", "<b>Angst</b> vor den anderen", "<b>Mitleid</b>: Ich leide mit, wenn andere leiden."],
     ["Ohne Staat und Regeln …", "Krieg aller gegen alle. Niemand ist sicher.", "Menschen leben frei und friedlich."],
     ["Was macht Menschen schlecht?", "Ihre <b>Natur</b>: Gier, Misstrauen, Angst", "Die <b>Gesellschaft</b>: Besitz, Neid, sich vergleichen"],
-    ["Gesellschafts&shy;vertrag", "Alle geben ihre Macht an einen <b>starken Herrscher</b>. Er sorgt für Ordnung.", "<b>Alle bestimmen gemeinsam</b>. Das Volk macht die Gesetze selbst."],
+    ["Gesellschafts&shy;vertrag", "Alle geben ihre Macht an einen <b>starken Herrscher</b>. Er sorgt für Ordnung.", "Alle bestimmen gemeinsam nach dem <b>Gemeinwillen</b>. Das Volk macht die Gesetze selbst."],
     ["Am wichtigsten ist …", "<b>Sicherheit</b>", "<b>Freiheit</b> und <b>Gleichheit</b>"],
-    ["Goldene Regel, weil …", "… ich Angst habe, dass mir sonst dasselbe passiert.", "… ich mitfühle, wenn es anderen schlecht geht."]
+    ["Goldene Regel, weil …", "… ich Angst habe, dass mir sonst dasselbe passiert.", "… ich mitfühle, wenn es anderen schlecht geht."],
+    ["Kurz gesagt", "Ein <b>starker Staat</b>", "Die <b>Herrschaft des Volkes</b>"]
   ]
 };
 
-const TAFEL2 = {
-  name: "2 · Mehr Rousseau",
-  frage: "Rousseau – noch mehr Ideen",
-  sub: "Seine Gedanken wirken bis heute",
+const IDEEN = {
+  name: "2 Rousseaus Ideen",
+  frage: "Rousseau: Das Volk soll herrschen",
+  sub: "Sein wichtigster Begriff und weitere Positionen",
+  rowsLayout: "minmax(5.5em,auto) 1fr 1fr",
   cards: [
-    ["r", "🚧 Der Zaun", "<p><i>„Der Erste, der ein Stück Land einzäunte und sagte: ‚Das gehört mir‘, …“</i></p><p>… begann die <b>Ungleichheit</b>. Mit dem Besitz kamen Neid und Streit.</p>", "Was hat ein Zaun mit Streit zu tun?"],
-    ["r", "⛓️ Frei geboren", "<p><i>„Der Mensch ist frei geboren, und überall liegt er in Ketten.“</i></p><p>Schlechte Regeln und Herrscher nehmen den Menschen die Freiheit.</p>", "Was heißt „in Ketten“?"],
-    ["r", "🗳️ Mitbestimmen", "<p>Wer sich an Gesetze halten muss, soll sie auch <b>mitbestimmen</b>.</p><p>Das Ziel ist das, was für <b>alle</b> gut ist.</p>", "Wer soll die Gesetze machen?"],
-    ["r", "🇫🇷 Revolution", "<p>Rousseaus Ideen halfen bei der <b>Französischen Revolution</b> 1789: Freiheit, Gleichheit, Brüderlichkeit.</p><p><span class=\"tag m\">Geschichte Klasse 8</span></p>", "Wo wirkte Rousseau später?"],
-    ["r", "🌳 Erziehung", "<p>Kinder sollen durch <b>eigene Erfahrung</b> lernen, nicht nur aus Büchern.</p><p>Buch: „Émile“</p>", "Wie sollen Kinder lernen?"],
-    ["m", "🤔 Ein Widerspruch", "<p>Rousseau schrieb über gute Erziehung. Seine <b>eigenen fünf Kinder</b> gab er aber ins Waisenhaus.</p><p>Darf man ihm trotzdem glauben? <b>Darüber kann man streiten.</b></p>", "Passt das zusammen?"]
+    ["r wide", "🤝 Der Gemeinwille <span class=\"fr\">(volonté générale)</span>", "<p>Gemeint ist das, was <b>für alle gut</b> ist – nicht einfach die Summe dessen, was jeder Einzelne will.</p><p><b>Gesetze gelten nur, wenn sie dem Gemeinwillen entsprechen.</b></p>", "Rousseaus wichtigster Begriff: der Ge…?"],
+    ["r", "① Gegen Vertreter", "<p>Das Volk soll <b>selbst</b> entscheiden. <i>„Die Engländer glauben, sie seien frei. Sie sind es nur am Wahltag.“</i></p><p>Und bei uns? Wir wählen <b>Vertreter</b>.</p>", "Was hält er von Vertretern?"],
+    ["r", "② Das Volk ist der Herrscher", "<p>Die Regierung arbeitet nur <b>im Auftrag</b> des Volkes.</p><p>Das Volk kann sie wieder <b>absetzen</b>.</p>", "Wer hat die Macht?"],
+    ["r", "③ Freiheit", "<p>Frei ist, wer Gesetzen folgt, die er <b>selbst mitbestimmt</b> hat.</p><p><i>„Der Mensch ist frei geboren, und überall liegt er in Ketten.“</i></p>", "Wann ist man frei?"],
+    ["r", "④ Gleichheit", "<p>Niemand soll so <b>reich</b> sein, dass er andere kaufen kann.</p><p>Niemand soll so <b>arm</b> sein, dass er sich verkaufen muss.</p>", "Wie reich, wie arm?"],
+    ["r", "⑤ Stärke ist kein Recht", "<p>Nur weil jemand <b>stärker</b> ist, muss man ihm nicht gehorchen.</p><p>Gehorchen muss man nur <b>gerechten</b> Gesetzen.</p>", "Muss man dem Stärkeren gehorchen?"],
+    ["r", "⑥ Der Zaun", "<p><i>„Der Erste, der ein Stück Land einzäunte und sagte: ‚Das gehört mir‘ …“</i></p><p>… begann die <b>Ungleichheit</b>. Mit dem Besitz kamen Neid und Streit.</p>", "Was hat ein Zaun mit Streit zu tun?"]
   ]
 };
 
-const TAFEL3 = {
-  name: "3 · Wer hat recht?",
+const GESCHICHTE = {
+  name: "3 Geschichte",
+  frage: "Wann und wo lebten sie?",
+  sub: "Ihre Zeit erklärt ihre Ideen",
+  rows: [
+    ["Herkunft", "🇬🇧 England, 1588. Spaniens Flotte greift an. Hobbes: <i>„Meine Mutter bekam Zwillinge: mich und die Angst.“</i>", "🇨🇭 Genf, 1712. Eine kleine <b>Republik</b>: Die Bürger stimmen selbst ab."],
+    ["Was erlebte er?", "⚔️ <b>Bürgerkrieg</b>: König gegen Parlament. 1649 wird der König hingerichtet. Hobbes flieht nach Paris.", "👑 In Frankreich herrscht der <b>König allein</b>. Adlige leben im Luxus, viele Bauern hungern."],
+    ["Sein Buch", "📖 <b>„Leviathan“</b> (1651): Lieber ein strenger Herrscher als Krieg und Chaos.", "📖 <b>„Der Gesellschaftsvertrag“</b> (1762): Das Buch wird verboten und verbrannt. Rousseau muss fliehen."],
+    ["Erziehung", "🎓 Hobbes war <b>Hauslehrer</b>, sogar für den späteren König Karl II.", "🌳 <b>„Émile“</b>: Kinder sollen durch Erfahrung lernen. Seine fünf Kinder gab er aber ins <b>Waisenhaus</b>. Darüber kann man streiten."],
+    ["Danach", "🏰 1660 bekommt England wieder einen König. Hobbes wird 91 Jahre alt.", "🇫🇷 11 Jahre nach seinem Tod: <b>Französische Revolution</b> 1789. Er bekommt ein Ehrengrab in Paris."]
+  ],
+  merke: ["Merke", "Wer <b>Krieg</b> erlebt, wünscht sich vor allem <b>Sicherheit</b>. Wer <b>Ungerechtigkeit</b> erlebt, wünscht sich <b>Freiheit und Gleichheit</b>."]
+};
+
+const RECHT = {
+  name: "4 Wer hat recht?",
   frage: "Wer hat recht – Hobbes oder Rousseau?",
   sub: "Was Forschung, Religion und Grundgesetz dazu sagen",
   cards: [
@@ -142,7 +169,7 @@ const TAFEL3 = {
     ["m", "⚖️ Und du?", "<p>Viele Menschen helfen gern – wenn andere es auch tun. Regeln schützen vor Schummlern.</p><p><b>Wem stimmst du eher zu – Hobbes oder Rousseau? Begründe.</b></p>", "Wem stimmst du zu?"]
   ]
 };
-const TAFELN = [TAFEL1, TAFEL2, TAFEL3];
+const TAFELN = [VERGLEICH, IDEEN, GESCHICHTE, RECHT];
 
 // ---------- Aufbau ----------
 const main = document.getElementById("main"), tabs = document.getElementById("tabs");
@@ -162,9 +189,16 @@ TAFELN.forEach((T, ti) => {
         c.innerHTML = `<div class="txt">${html}</div>`; g.appendChild(c); cells.push(c);
       });
     });
+    if (T.merke) {
+      const l = document.createElement("div"); l.className = "lab"; l.innerHTML = T.merke[0]; g.appendChild(l);
+      const c = document.createElement("div"); c.className = "c m span hidden";
+      c.innerHTML = `<div class="txt">${T.merke[1]}</div>`; g.appendChild(c); cells.push(c);
+    }
+    g.style.gridTemplateRows = `auto repeat(${T.rows.length + (T.merke ? 1 : 0)}, 1fr)`;
     b.appendChild(g);
   } else {
     const g = document.createElement("div"); g.className = "cards";
+    if (T.rowsLayout) g.style.gridTemplateRows = T.rowsLayout;
     T.cards.forEach(([k, title, html, cover]) => {
       const c = document.createElement("div"); c.className = `c ${k} hidden`; c.dataset.cover = cover;
       c.innerHTML = `<div class="txt"><div class="t">${title}</div>${html}</div>`;
@@ -187,12 +221,23 @@ function update() {
   cells.forEach(c => c.classList.remove("next"));
   const n = cells.find(c => c.classList.contains("hidden")); if (n) n.classList.add("next");
 }
+function fit() {
+  const g = B().el.querySelector(".cmp,.cards");
+  g.style.fontSize = "";
+  if (innerWidth <= 760) return;
+  const over = () => g.scrollHeight > g.clientHeight + 1 ||
+    [...g.querySelectorAll(".c")].some(c => c.scrollHeight > c.clientHeight + 1);
+  let f = 1;
+  while (over() && f > 0.55) { f -= 0.03; g.style.fontSize = f + "em"; }
+}
+addEventListener("resize", fit);
+document.addEventListener("fullscreenchange", () => setTimeout(fit, 150));
 function show(i) {
   cur = i;
   boards.forEach((b, j) => b.el.classList.toggle("on", j === i));
   [...tabs.children].forEach((t, j) => t.setAttribute("aria-selected", j === i));
-  try { localStorage.setItem("hr-tafel", i); } catch (e) {}
-  update();
+  try { localStorage.setItem("hr-tafel2", i); } catch (e) {}
+  update(); fit();
 }
 function reveal(c) { if (!c.classList.contains("hidden")) return; c.classList.remove("hidden"); B().history.push(c); update(); }
 function next() { const c = B().cells.find(c => c.classList.contains("hidden")); if (c) reveal(c); }
@@ -220,10 +265,10 @@ document.addEventListener("keydown", e => {
   else if (k === "a" || k === "A") all();
   else if (k === "r" || k === "R") reset();
   else if (k === "f" || k === "F") fs();
-  else if (["1", "2", "3"].includes(k)) show(+k - 1);
+  else if (["1", "2", "3", "4"].includes(k)) show(+k - 1);
 });
 let start = 0;
-try { start = +localStorage.getItem("hr-tafel") || 0; } catch (e) {}
+try { start = +localStorage.getItem("hr-tafel2") || 0; } catch (e) {}
 show(Math.min(Math.max(start, 0), boards.length - 1));
 </script>
 </body>
