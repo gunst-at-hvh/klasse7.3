@@ -403,6 +403,8 @@ details.more[open] summary::before{content:'▾ ';}
         <div class="row" id="hGoalRow"></div>
         <label>Zeit zum Legen</label>
         <div class="row" id="hTimeRow"></div>
+        <label>🤖 Bots (Computer-Gegner)</label>
+        <div class="row" id="hBotRow"></div>
         <details class="more"><summary>⚙️ Mehr Optionen</summary>
           <label>Karten</label>
           <div class="row" id="hThemeRow"></div>
@@ -490,6 +492,8 @@ details.more[open] summary::before{content:'▾ ';}
         <div class="row" id="rGoalRow"></div>
         <label>Zeit zum Legen</label>
         <div class="row" id="rTimeRow"></div>
+        <label>🤖 Bots (Computer-Gegner)</label>
+        <div class="row" id="rBotRow"></div>
         <details class="more"><summary>⚙️ Mehr Optionen</summary>
           <label>Karten</label>
           <div class="row" id="rThemeRow"></div>
@@ -562,7 +566,7 @@ function keepRegistered(getPeer, lampId){
 }
 
 const PREFIX = 'hvh-revier-';
-const APP_VERSION = '2026-10-15r3';
+const APP_VERSION = '2026-10-15r4';
 const AUTOJOIN_KEY = 'revier-jagd-autojoin';
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const EMOJIS = ['😀','😎','🤓','🥳','🤩','😜','🤠','🥸','😇','🤖','👻','👽','💩','🐱','🐶','🦊','🐼','🐸','🦁','🐯','🐵','🐙','🦄','🐝','🐢','🦖','🐧','🦉','🐬','🦈','🍕','🍩','🍉','⚽','🏀','🎮','🎸','🚀','🌈','🔥','⭐','💎','👑','🌵'];
@@ -852,7 +856,7 @@ function callBarHtml(call, phase){
 const H = {
   peer:null, code:'', players:new Map(), phase:'lobby',
   theme:'wald', goal:6, time:20, maxRev:5, mix:'1', chooseMs:12000,
-  room:false, late:'1', autoNext:8, creatorPid:null, autoTimer:null, lobbySig:'',
+  room:false, late:'1', autoNext:8, bots:0, creatorPid:null, autoTimer:null, lobbySig:'',
   round:0, hunt:0, call:0, revs:[], timer:null, stepT:null, endsAt:0, evId:0, ev:[], anims:[]
 };
 const hs = f => { if (!H.room) f(); };
@@ -961,7 +965,7 @@ function buildChips(){
     const row = $(id); row.innerHTML = '';
     list.forEach(([v, label]) => {
       const b = document.createElement('button'); b.className = 'chip'; b.textContent = label; b.dataset.v = v;
-      b.onclick = () => { H[key] = ['time','goal','maxRev','autoNext'].includes(key) ? +v : v; syncChips(); after && after(); };
+      b.onclick = () => { H[key] = ['time','goal','maxRev','autoNext','bots'].includes(key) ? +v : v; syncChips(); after && after(); };
       row.appendChild(b);
     });
   });
@@ -972,11 +976,12 @@ function buildChips(){
   mk(['hMixRow','rMixRow'], [['1','🔀 Jede Runde neu mischen'],['0','📌 Fest bleiben']], 'mix');
   mk(['rLateRow'], [['1','✅ Jederzeit (ab nächster Runde)'],['0','🔒 Nur vor dem Start']], 'late');
   mk(['rNextRow'], [[8,'⏩ Automatisch nach 8 s'],[15,'⏩ nach 15 s'],[0,'👆 Host tippt']], 'autoNext');
+  mk(['hBotRow','rBotRow'], [[0,'Keine'],[1,'1'],[2,'2'],[3,'3'],[4,'4'],[6,'6']], 'bots', hSyncBots);
   syncChips(); hRulesUi();
 }
 function syncChips(){
   [['hThemeRow','theme'],['rThemeRow','theme'],['hGoalRow','goal'],['hGoalRow2','goal'],['rGoalRow','goal'],['hTimeRow','time'],['hTimeRow2','time'],['rTimeRow','time'],
-   ['hRevRow','maxRev'],['rRevRow','maxRev'],['hMixRow','mix'],['rMixRow','mix'],['rLateRow','late'],['rNextRow','autoNext']].forEach(([id,key]) => {
+   ['hRevRow','maxRev'],['rRevRow','maxRev'],['hMixRow','mix'],['rMixRow','mix'],['rLateRow','late'],['rNextRow','autoNext'],['hBotRow','bots'],['rBotRow','bots']].forEach(([id,key]) => {
     $(id).querySelectorAll('button').forEach(b => b.classList.toggle('on', String(H[key]) === b.dataset.v));
   });
 }
@@ -1021,6 +1026,7 @@ function hStartHunt(){
   if (H.time) H.timer = setTimeout(hPickTimeout, H.time*1000);
   hTick();
   hPush();
+  hBotsPick();
 }
 /* Countdown-Anzeige am Beamer */
 function hTick(){
@@ -1082,8 +1088,57 @@ function hNextCall(){
   if (hunters){
     H.phase = 'choose'; H.endsAt = Date.now() + H.chooseMs;
     clearTimeout(H.timer); H.timer = setTimeout(hChooseTimeout, H.chooseMs);
+    hBotsHunt();
   } else { H.phase = 'reveal'; hAt(any ? 2300 : 900, hNextCall); }
   hPush();
+}
+/* ---------- Bots (Computer-Gegner) ---------- */
+const BOT_NAMES = ['Robbi','Bleep','Pixel','Bolt','Zippo','Kiki-3'];
+const BOT_AV = ['🤖','👾','🦾','🛸','🧠','🎰'];
+function hSyncBots(){
+  if (!['lobby','roundEnd'].includes(H.phase)){ toast('Bots kann man nur vor dem Start oder zwischen den Runden ändern', 'yellow'); H.bots = [...H.players.values()].filter(p => p.bot).length; syncChips(); return; }
+  let bots = [...H.players.values()].filter(p => p.bot);
+  while (bots.length > H.bots){ const b = bots.pop(); H.players.delete(b.pid); }
+  for (let i = 0; bots.length < H.bots && i < BOT_NAMES.length; i++){
+    const pid = 'bot-' + i; if (H.players.has(pid)) continue;
+    const used = [...H.players.values()].map(x => x.color);
+    const b = {pid, bot:true, online:true, conn:null, name:BOT_NAMES[i], avatar:BOT_AV[i], color: COLORS.find(c => !used.includes(c)) || COLORS[i],
+      markers:0, rev:null, hand:[], played:[], pick:null, locked:false, eaten:false, shown:false, gain:0, rounds:0};
+    H.players.set(pid, b); bots.push(b);
+  }
+  H.lobbySig = ''; hRender();
+}
+const wPick = (items, w) => { const tot = items.reduce((a, x) => a + w(x), 0); let r = Math.random()*tot; for (const x of items){ if ((r -= w(x)) < 0) return x; } return items[0]; };
+/* Bot legt eine Karte: etwas Zufall, später lieber hohe Zahlen (Punkte) */
+function botPick(p){
+  const late = H.hunt >= 2;
+  return wPick(p.hand, r => ({1:1.3, 2:1.1, 3:1, 4: late ? 1.6 : 1.1, 5: late ? 1.8 : 1.2})[r] * (0.6 + Math.random()*0.8));
+}
+/* Bot jagt: rät das Tier, das die verdeckten Gegner am ehesten noch auf der Hand haben (öffentlich sichtbar) */
+function botTarget(rv, hunter){
+  const hidden = hMembers(rv).filter(q => q !== hunter && !q.eaten && !q.shown);
+  let best = H.call + 1, bestS = -1;
+  for (let t = H.call + 1; t <= 5; t++){
+    const sc = hidden.reduce((a, q) => a + (q.hand.includes(t) ? 1 / q.hand.length : 0), 0) + Math.random()*0.25;
+    if (sc > bestS){ bestS = sc; best = t; }
+  }
+  return best;
+}
+function hBotsPick(){
+  const key = H.round + '-' + H.hunt;
+  hActive().filter(p => p.bot && !p.locked).forEach(p => setTimeout(() => {
+    if (H.phase !== 'pick' || H.round + '-' + H.hunt !== key || p.locked || p.eaten) return;
+    p.pick = botPick(p); p.locked = true; hs(sTick); hPush();
+    if (hActive().every(q => q.locked || !q.online)) hAt(600, hBeginReveal);
+  }, 1200 + Math.random()*3500));
+}
+function hBotsHunt(){
+  const key = H.round + '-' + H.hunt + '-' + H.call;
+  H.revs.filter(rv => rv.hunter && H.players.get(rv.hunter).bot).forEach(rv => setTimeout(() => {
+    const h = H.players.get(rv.hunter);
+    if (H.phase !== 'choose' || H.round + '-' + H.hunt + '-' + H.call !== key || !h || !h.bot) return;
+    hResolve(rv, botTarget(rv, h));
+  }, 1600 + Math.random()*1800));
 }
 function hChooseTimeout(){
   if (H.phase !== 'choose') return;
