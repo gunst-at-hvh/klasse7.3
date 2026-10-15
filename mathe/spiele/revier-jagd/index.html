@@ -566,7 +566,7 @@ function keepRegistered(getPeer, lampId){
 }
 
 const PREFIX = 'hvh-revier-';
-const APP_VERSION = '2026-10-15r4';
+const APP_VERSION = '2026-10-15r5';
 const AUTOJOIN_KEY = 'revier-jagd-autojoin';
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const EMOJIS = ['😀','😎','🤓','🥳','🤩','😜','🤠','🥸','😇','🤖','👻','👽','💩','🐱','🐶','🦊','🐼','🐸','🦁','🐯','🐵','🐙','🦄','🐝','🐢','🦖','🐧','🦉','🐬','🦈','🍕','🍩','🍉','⚽','🏀','🎮','🎸','🚀','🌈','🔥','⭐','💎','👑','🌵'];
@@ -730,7 +730,7 @@ const rulesHtml = () => `<b>Die Zahl ist Rangfolge UND Punkte:</b> 1 ${A(1).e} i
   <b>So geht's:</b> Alle legen gleichzeitig verdeckt ein Tier. Aufgedeckt wird von <b>1</b> bis <b>5</b>.
   Liegt ein Tier <b>genau einmal</b>, darf es <b>irgendein schwächeres</b> Tier jagen (geraten!) – alle, die dieses Tier gelegt haben, sind raus.
   Liegt es <b>mehrfach</b>: blockiert! Bis zu 3 Jagden pro Runde.<br>
-  <b>Futter:</b> allein überlebt 🍖🍖 · sonst: höchste Summe der eigenen Kartenzahlen 🍖🍖, andere Überlebende 🍖.` + chainHtml();
+  <b>Futter:</b> allein überlebt 🍖🍖 · sonst: höchste Summe der eigenen Kartenzahlen 🍖🍖 (Gleichstand: alle 🍖🍖), andere Überlebende 🍖. Wer zuerst das Ziel erreicht, gewinnt – bei Gleichstand wird weitergespielt.` + chainHtml();
 function faceHtml(r){ const a = A(r); return `<span class="num">${r}</span><span class="em">${a.e}</span><span class="an">${a.n}</span>`; }
 const SEAT_HTML = `<div class="slot"><div class="fc"><div class="fi"><div class="ff"></div><div class="fb">?</div></div></div><div class="skull">💀</div></div><div class="who"><span class="av"></span><span class="nm"></span></div><div class="sub"><span class="hist"></span><span class="mk"></span></div>`;
 /* Ein Revier als Tisch: jede Gruppe hat einen Platz mit Karte, Name, gespielten Karten und Futter.
@@ -855,7 +855,7 @@ function callBarHtml(call, phase){
    ===================================================================== */
 const H = {
   peer:null, code:'', players:new Map(), phase:'lobby',
-  theme:'wald', goal:6, time:20, maxRev:5, mix:'1', chooseMs:12000,
+  theme:'wald', goal:5, time:20, maxRev:5, mix:'1', chooseMs:12000,
   room:false, late:'1', autoNext:8, bots:0, creatorPid:null, autoTimer:null, lobbySig:'',
   round:0, hunt:0, call:0, revs:[], timer:null, stepT:null, endsAt:0, evId:0, ev:[], anims:[]
 };
@@ -970,7 +970,7 @@ function buildChips(){
     });
   });
   mk(['hThemeRow','rThemeRow'], Object.entries(THEMES).map(([k,t]) => [k, t.name]), 'theme', () => { THEME = H.theme; hRulesUi(); H.lobbySig = ''; hRender(); });
-  mk(['hGoalRow','hGoalRow2','rGoalRow'], [[4,'4 🍖'],[6,'6 🍖'],[8,'8 🍖'],[10,'10 🍖']], 'goal');
+  mk(['hGoalRow','hGoalRow2','rGoalRow'], [[4,'4 🍖'],[5,'5 🍖'],[6,'6 🍖'],[8,'8 🍖'],[10,'10 🍖']], 'goal');
   mk(['hTimeRow','hTimeRow2','rTimeRow'], [[15,'15 s'],[20,'20 s'],[30,'30 s'],[0,'∞']], 'time');
   mk(['hRevRow','rRevRow'], [[4,'4'],[5,'5'],[6,'6']], 'maxRev', () => hRender());
   mk(['hMixRow','rMixRow'], [['1','🔀 Jede Runde neu mischen'],['0','📌 Fest bleiben']], 'mix');
@@ -1198,7 +1198,11 @@ function hScoreRev(rv){
 function hEndRound(){
   H.phase = 'roundEnd'; H.endsAt = 0;
   const best = Math.max(0, ...[...H.players.values()].map(p => p.markers));
-  H.over = best >= H.goal;
+  const leaders = [...H.players.values()].filter(p => p.markers === best);
+  // Originalregel: Erreichen mehrere gleichzeitig das Ziel, wird weitergespielt, bis einer allein vorne liegt
+  H.tie = best >= H.goal && leaders.length > 1 ? leaders.map(p => p.avatar + ' ' + p.name) : null;
+  H.over = best >= H.goal && leaders.length === 1;
+  if (H.tie) hEv(`⚖️ Gleichstand bei ${best} 🍖: ${H.tie.join(' & ')} – Stechen, es geht weiter!`, 'yellow', null);
   hs(sFanfare); hs(() => confetti(60));
   hPush();
   if (H.room && H.autoNext) H.autoTimer = setTimeout(hNext, 3000 + H.autoNext*1000);
@@ -1219,7 +1223,7 @@ function hEndGame(){
 function hNewGame(){
   clearTimeout(H.autoTimer); clearTimeout(H.timer); clearTimeout(H.stepT);
   H.players.forEach(p => { p.markers = 0; p.rounds = 0; p.rev = null; p.lastEnd = null; p.hand = []; p.played = []; p.eaten = false; p.gain = 0; });
-  H.round = 0; H.hunt = 0; H.revs = []; H.phase = 'lobby'; H.over = false; H.lobbySig = ''; H.ev = []; H.anims = [];
+  H.round = 0; H.hunt = 0; H.revs = []; H.phase = 'lobby'; H.over = false; H.tie = null; H.lobbySig = ''; H.ev = []; H.anims = [];
   H.players.forEach(p => hSend(p, {t:'welcome', v:APP_VERSION, name:p.name, avatar:p.avatar, color:p.color, score:0, room:H.room, creator: p.pid === H.creatorPid, theme:H.theme}));
   hBroadcast({t:'wait', lobby:true, theme:H.theme, text:`Warte, bis ${hCreatorName()} das Spiel startet …`});
   hRender();
@@ -1246,7 +1250,7 @@ function revView(rv, viewer){
 function hView(p){
   const rv = p.rev != null ? H.revs[p.rev] : null;
   const rank = hRankList();
-  return {t:'state', phase:H.phase, round:H.round, hunt:H.hunt, call:H.call, theme:H.theme, goal:H.goal, over:!!H.over,
+  return {t:'state', phase:H.phase, round:H.round, hunt:H.hunt, call:H.call, theme:H.theme, goal:H.goal, over:!!H.over, tie:H.tie || null,
     ends: H.endsAt ? Math.max(0, H.endsAt - Date.now()) : 0, total: H.phase === 'choose' ? H.chooseMs : H.time*1000,
     me:{pid:p.pid, markers:p.markers, hand:p.hand, pick:p.pick, locked:p.locked, eaten:p.eaten, gain:p.gain, inRound: !!rv, hunter: !!(rv && rv.hunter === p.pid)},
     rev: rv ? revView(rv, p.pid) : null,
@@ -1310,7 +1314,7 @@ function hRender(){
   const a = H.call >= 1 && H.call <= 5 ? A(H.call) : null;
   $('hCallText').innerHTML = ph === 'pick' ? `Runde ${H.round} · Jagd ${H.hunt}/3 – legt verdeckt ein Tier!`
     : ph === 'reveal' && a ? `Aufruf ${a.r}: ${a.e} ${a.n}?` : ph === 'choose' && a ? `${a.e} Die Jäger wählen ihre Beute …`
-    : ph === 'huntEnd' ? `Jagd ${H.hunt} vorbei` : ph === 'roundEnd' ? (H.over ? '🏆 Ziel erreicht!' : `Runde ${H.round} vorbei – Futter verteilt!`) : ph === 'intro' ? `Runde ${H.round}` : '';
+    : ph === 'huntEnd' ? `Jagd ${H.hunt} vorbei` : ph === 'roundEnd' ? (H.over ? '🏆 Ziel erreicht!' : H.tie ? `⚖️ Gleichstand: ${esc(H.tie.join(' & '))} – Stechen!` : `Runde ${H.round} vorbei – Futter verteilt!`) : ph === 'intro' ? `Runde ${H.round}` : '';
   const act = hActive();
   $('hStatus').textContent = ph === 'pick' ? `🃏 ${act.filter(p => p.locked).length} von ${act.length} haben gelegt` : ph === 'choose' ? '⏳ Die Jäger wählen ihre Beute …' : '';
   const wrap = $('hRevs');
@@ -1532,7 +1536,7 @@ function pRender(){
   } else if (s.phase === 'huntEnd'){
     ban = me.eaten ? '💀 Gefressen – für diese Runde raus.' : `Jagd ${s.hunt} vorbei!<small>Gleich die nächste Jagd …</small>`;
   } else if (s.phase === 'roundEnd'){
-    ban = s.over ? '🏆 Ziel erreicht – gleich Siegerehrung!' : `Runde ${s.round} vorbei!`;
+    ban = s.over ? '🏆 Ziel erreicht – gleich Siegerehrung!' : s.tie ? `⚖️ Gleichstand!<small>${esc(s.tie.join(' & '))} liegen vorne – es geht weiter, bis einer allein führt.</small>` : `Runde ${s.round} vorbei!`;
     const g = me.gain;
     act = `<div class="gaincard ${g === 2 ? 'bg-gold' : g === 1 ? 'bg-green' : 'bg-red'}"><div class="g">${g ? '+' + g + ' 🍖' : '0 🍖'}</div>${g === 2 ? 'Spitze!' : g === 1 ? 'Überlebt!' : 'Gefressen – nächstes Mal!'} · jetzt ${me.markers} 🍖 (Ziel ${s.goal})</div>`;
     const myI = s.rank.findIndex(x => x.pid === C.pid);
