@@ -245,7 +245,7 @@ details.more[open] summary::before{content:'▾ ';}
 .chain{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:6px}
 .chain span{border-radius:10px;padding:3px 8px;color:#fff;font-weight:900;background:var(--cc)}
 .chain i{font-style:normal;font-weight:900;color:var(--muted)}
-.revgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:12px;margin-top:8px}
+.revgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(470px,1fr));gap:12px;margin-top:8px}
 .rev{background:#fff;color:var(--ink);border-radius:16px;padding:10px 12px;border-top:8px solid var(--rc);box-shadow:0 6px 18px rgba(0,0,0,.25)}
 .rev h3{margin:0 0 4px;display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:1.15rem}
 .rev h3 .st{font-size:.85rem;color:var(--muted);font-weight:800}
@@ -302,6 +302,63 @@ details.more[open] summary::before{content:'▾ ';}
 .toast.blue{background:#1368ce}
 .pl #toasts{top:auto;bottom:120px}
 .pl .toast{font-size:1.05rem;white-space:normal;max-width:92vw;text-align:center;padding:8px 16px}
+/* Arena mit Karten zum Umdrehen */
+.arena{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;padding:8px 0 4px}
+.seat{width:100px;display:flex;flex-direction:column;align-items:center;gap:4px;position:relative}
+.seat .slot{width:78px;height:108px;position:relative}
+.seat .slot.empty{border:3px dashed #cfc8de;border-radius:12px;display:grid;place-items:center;font-size:1.6rem}
+.fc{position:absolute;inset:0;perspective:700px}
+.fi{position:absolute;inset:0;transition:transform .75s cubic-bezier(.3,1.45,.5,1);transform-style:preserve-3d;transform:rotateY(180deg)}
+.fc.up .fi{transform:rotateY(0deg)}
+.ff,.fb{position:absolute;inset:0;border-radius:12px;backface-visibility:hidden;-webkit-backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 4px 0 rgba(0,0,0,.3);color:#fff;font-weight:900}
+.ff{background:var(--cc)}
+.ff .num{font-size:2rem;line-height:1;text-shadow:0 2px 3px rgba(0,0,0,.35)}
+.ff .em{font-size:2.4rem;line-height:1.1}
+.ff .an{font-size:.75rem}
+.fb{transform:rotateY(180deg);background:repeating-linear-gradient(45deg,#46178f 0 8px,#5a2aa8 8px 16px);font-size:2.2rem}
+.ff.flyer{position:fixed;inset:auto;z-index:60;pointer-events:none;transition:transform .65s cubic-bezier(.5,-.35,.5,1.2),opacity .3s;box-shadow:0 10px 30px rgba(0,0,0,.45)}
+.fc.tense{animation:tense .5s ease-in-out}
+@keyframes tense{25%{transform:rotate(-7deg) scale(1.06)}75%{transform:rotate(7deg) scale(1.06)}}
+.fc.clash{animation:clash .8s ease-in-out}
+@keyframes clash{15%{transform:translateY(-10px) rotate(-10deg) scale(1.08)}35%{transform:rotate(10deg)}55%{transform:translateX(-6px) rotate(-4deg)}75%{transform:translateX(6px)}}
+.fc.clash .ff{box-shadow:0 0 0 4px #ffb703,0 0 20px #ffb703}
+.fc.gone{animation:gone .75s ease-in forwards}
+@keyframes gone{30%{transform:scale(1.1) rotate(-6deg);filter:brightness(1.6)}100%{transform:scale(.15) rotate(30deg);opacity:0;filter:blur(8px)}}
+.stamp{position:absolute;left:50%;top:45%;transform:translate(-50%,-50%) rotate(-14deg);background:#ffb703;color:#1d2433;font-weight:900;padding:3px 8px;border-radius:8px;font-size:.85rem;z-index:5;white-space:nowrap;box-shadow:0 4px 10px rgba(0,0,0,.35);animation:stamp .45s cubic-bezier(.2,1.8,.4,1) both;pointer-events:none}
+.stamp.miss{background:#1368ce;color:#fff}
+@keyframes stamp{from{transform:translate(-50%,-50%) rotate(-14deg) scale(3);opacity:0}}
+.seat .skull{position:absolute;inset:0;display:none;place-items:center;font-size:3rem}
+.seat.dead .skull{display:grid;animation:popIn .5s cubic-bezier(.2,1.6,.4,1) both}
+.seat.dead .who,.seat.dead .sub{opacity:.4}
+.seat.dead .who .nm{text-decoration:line-through}
+.seat.hunter .ff{box-shadow:0 0 0 5px #ffb703,0 0 26px #ffb703}
+.seat.hunter .fc{animation:huntPulse .8s ease-in-out infinite}
+@keyframes huntPulse{50%{transform:scale(1.08)}}
+.seat .who{display:flex;align-items:center;gap:4px;max-width:100%;padding:2px 9px;border-radius:999px;background:var(--pc);color:#fff;box-shadow:0 2px 0 rgba(0,0,0,.2)}
+.seat.me .who{outline:3px solid #ffb703}
+.seat .who .av{font-size:1.3rem;line-height:1}
+.seat .who .nm{font-weight:900;font-size:1.05rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.seat .sub{display:flex;gap:6px;align-items:center;font-size:.85rem;font-weight:900;color:#8a5a00;min-height:1.2em}
+.seat .hist{display:flex;gap:2px}
+.seat .hist b{background:var(--cc);color:#fff;border-radius:5px;padding:0 3px;font-size:.72rem}
+.seat .ready{position:absolute;top:-8px;right:-8px;font-size:1.2rem;z-index:3}
+.seat.cheer{animation:cheer .9s ease-in-out 2}
+@keyframes cheer{0%,100%{transform:none}20%{transform:translateY(-16px) rotate(-7deg)}40%{transform:rotate(7deg)}60%{transform:translateY(-10px) rotate(-4deg)}80%{transform:rotate(3deg)}}
+.seat .party{position:absolute;top:-30px;left:50%;transform:translateX(-50%);font-size:1.8rem;animation:popIn .5s both;pointer-events:none}
+.tok{position:fixed;z-index:61;font-size:2rem;pointer-events:none;transition:transform .9s cubic-bezier(.3,-.2,.3,1),opacity .25s .85s}
+.bump{display:inline-block;animation:bump .45s}
+@keyframes bump{50%{transform:scale(1.5)}}
+.compact .arena{gap:4px}
+.compact .seat{width:60px}
+.compact .seat .slot{width:54px;height:76px}
+.compact .ff .num{font-size:1.45rem}.compact .ff .em{font-size:1.65rem}.compact .ff .an{font-size:.58rem}
+.compact .seat .who{padding:1px 5px;max-width:62px}.compact .seat .who .nm{font-size:.74rem}.compact .seat .who .av{display:none}
+.compact .seat .slot::before{content:attr(data-av);position:absolute;left:-6px;top:-8px;font-size:1.15rem;z-index:4;filter:drop-shadow(0 0 2px #fff)}
+.compact .seat .sub{font-size:.72rem}
+#pArena{flex:1 1 auto;min-height:0;overflow:auto}
+#pHand .hcard{min-height:104px;justify-content:center}
+#pHand .hcard.used{opacity:.18}
+#pHand.off .hcard{filter:saturate(.35) brightness(.85)}
 </style>
 </head>
 <body>
@@ -451,8 +508,9 @@ details.more[open] summary::before{content:'▾ ';}
     <div class="hidden" id="pPlay" style="flex:1;display:flex;flex-direction:column;gap:8px;min-height:0">
       <div class="pbanner" id="pBanner"></div>
       <div class="tbar"><i id="pTbar"></i></div>
-      <div id="pRevBox"></div>
+      <div id="pArena"></div>
       <div class="paction" id="pAction"></div>
+      <div class="hand" id="pHand"></div>
     </div>
     <div class="hidden" id="pResult"></div>
   </div>
@@ -504,7 +562,7 @@ function keepRegistered(getPeer, lampId){
 }
 
 const PREFIX = 'hvh-revier-';
-const APP_VERSION = '2026-10-15r2';
+const APP_VERSION = '2026-10-15r3';
 const AUTOJOIN_KEY = 'revier-jagd-autojoin';
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const EMOJIS = ['😀','😎','🤓','🥳','🤩','😜','🤠','🥸','😇','🤖','👻','👽','💩','🐱','🐶','🦊','🐼','🐸','🦁','🐯','🐵','🐙','🦄','🐝','🐢','🦖','🐧','🦉','🐬','🦈','🍕','🍩','🍉','⚽','🏀','🎮','🎸','🚀','🌈','🔥','⭐','💎','👑','🌵'];
@@ -654,7 +712,7 @@ function toast(text, cls, ms = 2600){
    KARTEN & DARSTELLUNG
    ===================================================================== */
 const THEMES = {
-  wald:    {name:'🌲 Wald',    a:[['🐻','Bär','#7a4a2a'],['🐺','Wolf','#55657d'],['🦉','Eule','#b07a1a'],['🐍','Schlange','#2f8a3a'],['🐭','Maus','#c2549a']]},
+  wald:    {name:'🌲 Wald',    a:[['🐻','Bär','#7a4a2a'],['🐺','Wolf','#55657d'],['🦊','Fuchs','#d35400'],['🦉','Eule','#8e6a1f'],['🐭','Maus','#c2549a']]},
   meer:    {name:'🌊 Meer',    a:[['🦈','Hai','#2f5a96'],['🦭','Robbe','#6b7c8f'],['🐙','Krake','#c0392b'],['🐟','Fisch','#1690b8'],['🦐','Garnele','#e07a3f']]},
   savanne: {name:'🦁 Savanne', a:[['🦁','Löwe','#c98a00'],['🐆','Leopard','#a0602a'],['🦅','Adler','#5e4b8b'],['🦎','Echse','#3f8f3f'],['🦗','Grille','#7da32a']]}
 };
@@ -666,29 +724,123 @@ const A = r => { const x = THEMES[THEME].a[r-1]; return {e:x[0], n:x[1], c:x[2],
 const chainHtml = () => '<div class="chain">' + [1,2,3,4,5].map(r => `<span style="--cc:${A(r).c}">${r} ${A(r).e} ${A(r).n}</span>`).join('<i>›</i>') + '</div>';
 const rulesHtml = () => `<b>Die Zahl ist Rangfolge UND Punkte:</b> 1 ${A(1).e} ist am stärksten, bringt aber am wenigsten – 5 ${A(5).e} ist am schwächsten, bringt aber am meisten.<br>
   <b>So geht's:</b> Alle legen gleichzeitig verdeckt ein Tier. Aufgedeckt wird von <b>1</b> bis <b>5</b>.
-  Liegt ein Tier <b>genau einmal</b>, darf es ein schwächeres Tier jagen – alle, die dieses Tier gelegt haben, sind raus.
+  Liegt ein Tier <b>genau einmal</b>, darf es <b>irgendein schwächeres</b> Tier jagen (geraten!) – alle, die dieses Tier gelegt haben, sind raus.
   Liegt es <b>mehrfach</b>: blockiert! Bis zu 3 Jagden pro Runde.<br>
   <b>Futter:</b> allein überlebt 🍖🍖 · sonst: höchste Summe der eigenen Kartenzahlen 🍖🍖, andere Überlebende 🍖.` + chainHtml();
-function cardHtml(c, key, seen){
-  if (!c) return '<span class="tc empty"></span>';
-  if (c.r == null) return `<span class="tc back">?</span>`;
-  const a = A(c.r), flip = key && seen && !seen.has(key); if (flip) seen.add(key);
-  return `<span class="tc${flip ? ' flip' : ''}${c.dead ? ' dead' : ''}" style="--cc:${a.c}"><i>${a.r}</i><span>${a.e}</span></span>`;
+function faceHtml(r){ const a = A(r); return `<span class="num">${r}</span><span class="em">${a.e}</span><span class="an">${a.n}</span>`; }
+const SEAT_HTML = `<div class="slot"><div class="fc"><div class="fi"><div class="ff"></div><div class="fb">?</div></div></div><div class="skull">💀</div></div><div class="who"><span class="av"></span><span class="nm"></span></div><div class="sub"><span class="hist"></span><span class="mk"></span></div>`;
+/* Ein Revier als Tisch: jede Gruppe hat einen Platz mit Karte, Name, gespielten Karten und Futter.
+   Die DOM-Elemente bleiben bestehen, damit Umdrehen und Animationen sauber laufen. */
+function arenaUpdate(box, rv, o){
+  const key = `${o.round}:${rv.id}:${rv.members.map(m => m.pid).join(',')}`;
+  const anims = o.anims || [];
+  if (box.__animSeen == null) box.__animSeen = anims.reduce((m, a) => Math.max(m, a.id), 0);
+  let st = box.__ar;
+  if (!st || st.key !== key){
+    box.innerHTML = `<div class="rev${o.compact ? ' compact' : ''}"><h3><span class="rn"></span><span class="st"></span></h3><div class="arena"></div><div class="line"></div><div class="res hidden"></div></div>`;
+    const ar = box.querySelector('.arena'), seats = new Map();
+    rv.members.forEach(m => { const d = document.createElement('div'); d.className = 'seat'; d.innerHTML = SEAT_HTML; ar.appendChild(d); seats.set(m.pid, {el:d, cardKey:null, r:null, dead:false}); });
+    st = box.__ar = {key, seats, call:o.call, box};
+  }
+  const R = box.querySelector('.rev'); R.style.setProperty('--rc', rv.color);
+  R.querySelector('.rn').textContent = rv.name;
+  R.querySelector('.st').textContent = rv.done ? '✔ fertig' : o.phase === 'pick' ? `${rv.members.filter(m => m.locked || m.out).length}/${rv.members.length} gelegt` : '';
+  R.querySelector('.line').textContent = rv.line || '';
+  const res = R.querySelector('.res'); res.classList.toggle('hidden', !(rv.done && rv.result));
+  if (rv.done && rv.result) res.innerHTML = rv.result.map(esc).join('<br>');
+  const callChanged = st.call !== o.call && (o.phase === 'reveal' || o.phase === 'choose');
+  st.call = o.call;
+  const fresh = anims.filter(a => a.id > box.__animSeen);
+  const pendingDead = new Set(fresh.filter(a => a.kind === 'eat').flatMap(a => a.victims));
+  rv.members.forEach(m => updateSeat(st.seats.get(m.pid), m, rv, o, callChanged, pendingDead));
+  fresh.forEach(a => playAnim(st, a, o));
+  if (fresh.length) box.__animSeen = Math.max(...fresh.map(a => a.id));
 }
-/* Ein Revier zeichnen (Beamer: groß, Handy: kompakt) */
-function revHtml(rv, o){
-  const st = rv.done ? (rv.result ? '✔ fertig' : '') : o.phase === 'pick' ? `${rv.members.filter(m => m.locked || m.eaten).length}/${rv.members.length} gelegt` : '';
-  let h = `<div class="rev${o.compact ? ' compact' : ''}" style="--rc:${rv.color}"><h3><span>${esc(rv.name)}</span><span class="st">${st}</span></h3>`;
-  rv.members.forEach(m => {
-    const cls = ['mrow', m.eaten ? 'dead' : '', m.pid === o.me ? 'me' : '', rv.hunter && rv.hunter.pid === m.pid ? 'hunter' : '', m.drew ? 'drew' : '', m.gain === 2 && rv.done ? 'gain2' : ''].join(' ');
-    const ok = o.phase === 'pick' && !rv.done && !m.eaten ? (m.locked ? '✅' : '🤔') : m.eaten ? '💀' : rv.done && m.gain ? '🍖'.repeat(m.gain) : '';
-    h += `<div class="${cls}" style="--pc:${m.color}"><span class="av">${esc(m.avatar)}</span><span class="nm">${esc(m.name)}</span>`
-      + `<span class="mk">${m.markers} 🍖</span><span class="ok">${ok}</span><span class="cards">`
-      + [0,1,2].map(i => cardHtml(m.cards[i], `${o.round}-${rv.id}-${m.pid}-${i}`, o.seen)).join('') + `</span></div>`;
-  });
-  if (rv.line) h += `<div class="line">${esc(rv.line)}</div>`;
-  if (rv.done && rv.result) h += `<div class="res">${rv.result.map(esc).join('<br>')}</div>`;
-  return h + '</div>';
+function updateSeat(S, m, rv, o, callChanged, pendingDead){
+  if (!S) return;
+  const el = S.el, slot = el.querySelector('.slot'), fc = el.querySelector('.fc'), fi = el.querySelector('.fi'), ff = el.querySelector('.ff');
+  el.style.setProperty('--pc', m.color);
+  el.querySelector('.av').textContent = m.avatar; el.querySelector('.nm').textContent = m.name; slot.dataset.av = m.avatar;
+  el.querySelector('.mk').textContent = m.markers + ' 🍖';
+  el.querySelector('.hist').innerHTML = (m.hist || []).map(r => `<b style="--cc:${A(r).c}">${A(r).e}${r}</b>`).join('');
+  el.classList.toggle('me', m.pid === o.me);
+  el.classList.toggle('hunter', !!(rv.hunter && rv.hunter.pid === m.pid));
+  let rd = el.querySelector('.ready');
+  const ready = o.phase === 'pick' && !rv.done && m.locked && !m.out;
+  if (ready && !rd){ rd = document.createElement('span'); rd.className = 'ready'; rd.textContent = '✅'; el.appendChild(rd); }
+  if (!ready && rd) rd.remove();
+  if (!m.cur || m.cur.empty){
+    fc.style.visibility = 'hidden'; S.cardKey = null; S.r = null;
+    slot.classList.toggle('empty', !m.out && !!m.cur);
+    slot.querySelector('.thinking')?.remove();
+    if (m.cur && m.cur.empty && o.phase === 'pick'){ const t = document.createElement('span'); t.className = 'thinking'; t.textContent = '🤔'; slot.appendChild(t); }
+  } else {
+    slot.classList.remove('empty'); slot.querySelector('.thinking')?.remove(); fc.style.visibility = '';
+    if (S.cardKey !== m.cur.key){   // neue Karte: verdeckt hinlegen, ohne Animation
+      fi.style.transition = 'none'; fc.className = 'fc'; ff.innerHTML = ''; void fc.offsetWidth; fi.style.transition = '';
+      S.cardKey = m.cur.key; S.r = null; S.dead = false; el.classList.remove('dead');
+    }
+    if (m.cur.r != null && S.r == null){
+      S.r = m.cur.r;
+      ff.style.setProperty('--cc', A(m.cur.r).c); ff.innerHTML = faceHtml(m.cur.r);
+      if (callChanged && !(m.pid === o.me && false)){ fc.classList.add('tense'); setTimeout(() => { fc.classList.remove('tense'); fc.classList.add('up'); }, 520); }
+      else fc.classList.add('up');
+    }
+  }
+  if (m.out){ el.classList.add('dead'); S.dead = true; }
+  else if (m.eaten && !S.dead){
+    S.dead = true;
+    if (!pendingDead.has(m.pid)){ el.classList.add('dead'); if (m.cur && !m.cur.empty) fc.classList.add('gone'); }
+  } else if (!m.eaten && S.dead){ S.dead = false; el.classList.remove('dead'); }
+}
+function stamp(el, text, cls){
+  const s = document.createElement('div'); s.className = 'stamp ' + (cls || ''); s.textContent = text;
+  el.querySelector('.slot').appendChild(s); setTimeout(() => s.remove(), 1700);
+}
+function playAnim(st, a, o){
+  const seat = pid => st.seats.get(pid) && st.seats.get(pid).el;
+  if (a.kind === 'block'){
+    setTimeout(() => a.pids.forEach(pid => { const el = seat(pid); if (!el) return; const fc = el.querySelector('.fc'); fc.classList.remove('clash'); void fc.offsetWidth; fc.classList.add('clash'); stamp(el, 'BLOCKIERT!'); }), 1250);
+  } else if (a.kind === 'miss'){
+    setTimeout(() => { const el = seat(a.hunter); if (!el) return; const fc = el.querySelector('.fc'); fc.classList.remove('clash'); void fc.offsetWidth; fc.classList.add('clash'); stamp(el, 'daneben!', 'miss'); }, 200);
+  } else if (a.kind === 'eat'){
+    setTimeout(() => {
+      const hs = seat(a.hunter), hff = hs && hs.querySelector('.ff');
+      a.victims.forEach((v, i) => {
+        const vs = seat(v); if (!vs) return;
+        const vfc = vs.querySelector('.fc');
+        const kill = () => { vfc.classList.add('gone'); vs.classList.add('dead'); };
+        if (!hff || !hff.getClientRects().length || !vfc.getClientRects().length){ kill(); return; }
+        const r1 = hff.getBoundingClientRect(), r2 = vfc.getBoundingClientRect();
+        const fl = document.createElement('div'); fl.className = 'ff flyer'; fl.innerHTML = hff.innerHTML;
+        fl.style.cssText = `left:${r1.left}px;top:${r1.top}px;width:${r1.width}px;height:${r1.height}px;background:${getComputedStyle(hff).backgroundColor}`;
+        document.body.appendChild(fl);
+        setTimeout(() => { fl.style.transform = `translate(${r2.left - r1.left}px,${r2.top - r1.top - 12}px) scale(1.2) rotate(-10deg)`; }, 40 + i*300);
+        setTimeout(kill, 680 + i*300);
+        setTimeout(() => { fl.style.transform = 'none'; fl.style.opacity = '0'; setTimeout(() => fl.remove(), 700); }, 1150 + i*300);
+      });
+    }, 850);
+  } else if (a.kind === 'cheer'){
+    Object.entries(a.gains || {}).forEach(([pid, g], k) => {
+      const el = seat(pid); if (!el || !g) return;
+      setTimeout(() => {
+        el.classList.remove('cheer'); void el.offsetWidth; el.classList.add('cheer');
+        const party = document.createElement('span'); party.className = 'party'; party.textContent = g >= 2 ? '🎉' : '🙌'; el.appendChild(party); setTimeout(() => party.remove(), 2200);
+        const from = el.querySelector('.slot').getBoundingClientRect();
+        const tgt = (o.target && o.target(pid)) || el.querySelector('.mk');
+        for (let t = 0; t < g; t++){
+          const tok = document.createElement('span'); tok.className = 'tok'; tok.textContent = '🍖';
+          tok.style.left = (from.left + from.width/2 - 16) + 'px'; tok.style.top = (from.top + 10) + 'px';
+          document.body.appendChild(tok);
+          setTimeout(() => {
+            const to = tgt.getBoundingClientRect();
+            tok.style.transform = `translate(${to.left + to.width/2 - from.left - from.width/2}px,${to.top - from.top - 10}px) scale(.7)`; tok.style.opacity = '0';
+          }, 350 + t*220);
+          setTimeout(() => { tok.remove(); tgt.classList.remove('bump'); void tgt.offsetWidth; tgt.classList.add('bump'); }, 1300 + t*220);
+        }
+      }, 300 + k*150);
+    });
+  }
 }
 function callBarHtml(call, phase){
   return [1,2,3,4,5].map(r => `<span class="${r === call && (phase === 'reveal' || phase === 'choose') ? 'now' : r < call || phase === 'huntEnd' || phase === 'roundEnd' ? 'past' : ''}" style="--cc:${A(r).c}"><b>${r}</b>${A(r).e}</span>`).join('');
@@ -701,7 +853,7 @@ const H = {
   peer:null, code:'', players:new Map(), phase:'lobby',
   theme:'wald', goal:6, time:20, maxRev:5, mix:'1', chooseMs:12000,
   room:false, late:'1', autoNext:8, creatorPid:null, autoTimer:null, lobbySig:'',
-  round:0, hunt:0, call:0, revs:[], timer:null, stepT:null, endsAt:0, evId:0, ev:[], seen:new Set()
+  round:0, hunt:0, call:0, revs:[], timer:null, stepT:null, endsAt:0, evId:0, ev:[], anims:[]
 };
 const hs = f => { if (!H.room) f(); };
 function hBroadcast(msg){ H.players.forEach(p => { if (p.conn && p.conn.open) try { p.conn.send(msg); } catch(e){} }); }
@@ -798,6 +950,7 @@ function hEv(text, cls, rv, toastIt = true){
   if (H.ev.length > 60) H.ev.shift();
   if (!H.room && toastIt) toast((rv && H.revs.length > 1 ? rv.name.replace('Revier ', '') + ': ' : '') + text, cls);
 }
+function hAnim(rv, a){ a.id = ++H.evId; a.rev = rv.id; H.anims.push(a); if (H.anims.length > 40) H.anims.shift(); }
 function hRankList(){
   const list = [...H.players.values()].sort((a,b) => b.markers - a.markers);
   let place = 0, last = null; list.forEach((p,i) => { if (p.markers !== last){ place = i+1; last = p.markers; } p.place = place; });
@@ -917,7 +1070,7 @@ function hNextCall(){
     if (!callers.length){ rv.line = `${a.e} ${a.n}? – keiner`; return; }
     any = true;
     const names = callers.map(p => p.avatar + ' ' + p.name).join(', ');
-    if (callers.length > 1){ rv.line = `${a.e} ${names} – blockiert!`; hEv(`${callers.length}× ${a.e} ${a.n} – blockiert!`, 'yellow', rv, false); return; }
+    if (callers.length > 1){ hAnim(rv, {kind:'block', pids:callers.map(p => p.pid)}); rv.line = `${a.e} ${names} – blockiert!`; hEv(`${callers.length}× ${a.e} ${a.n} – blockiert!`, 'yellow', rv, false); return; }
     const hidden = alive.filter(p => p !== callers[0] && !p.shown);
     if (r < 5 && hidden.length){
       rv.hunter = callers[0].pid; hunters++;
@@ -929,7 +1082,7 @@ function hNextCall(){
   if (hunters){
     H.phase = 'choose'; H.endsAt = Date.now() + H.chooseMs;
     clearTimeout(H.timer); H.timer = setTimeout(hChooseTimeout, H.chooseMs);
-  } else { H.phase = 'reveal'; hAt(any ? 1700 : 800, hNextCall); }
+  } else { H.phase = 'reveal'; hAt(any ? 2300 : 900, hNextCall); }
   hPush();
 }
 function hChooseTimeout(){
@@ -942,22 +1095,24 @@ function hResolve(rv, target, auto){
   const victims = hMembers(rv).filter(p => !p.eaten && !p.shown && p.pick === target);
   if (victims.length){
     victims.forEach(v => { v.eaten = true; v.shown = true; });
+    hAnim(rv, {kind:'eat', hunter:h.pid, victims:victims.map(v => v.pid)});
     const names = victims.map(v => v.avatar + ' ' + v.name).join(', ');
     rv.line = `${a.e} ${h.name} frisst ${t.e} ${t.n}: ${names} ${victims.length > 1 ? 'sind' : 'ist'} raus!`;
-    hEv(`${a.e} ${h.name} frisst ${t.e} ${names}!`, 'red', rv);
+    hEv(`${a.e} ${h.name} frisst ${t.e} ${t.n}: ${names}!`, 'red', rv);
     hs(() => { sweep(500, 90, .5); sDrum(.35); });
   } else {
+    hAnim(rv, {kind:'miss', hunter:h.pid});
     rv.line = `${a.e} ${h.name} jagt ${t.e} ${t.n}${auto ? ' (Zufall)' : ''} – daneben!`;
     hEv(`${a.e} ${h.name} jagt ${t.e} ${t.n} – daneben!`, 'blue', rv, false);
     hs(() => tone(220, .25, 'sawtooth', .08));
   }
-  if (!H.revs.some(x => x.hunter)){ clearTimeout(H.timer); H.endsAt = 0; H.phase = 'reveal'; hAt(1900, hNextCall); }
+  if (!H.revs.some(x => x.hunter)){ clearTimeout(H.timer); H.endsAt = 0; H.phase = 'reveal'; hAt(victims.length ? 3000 : 1900, hNextCall); }
   hPush();
 }
 function hEndHunt(){
   H.revs.filter(rv => !rv.done).forEach(rv => {
     const ms = hMembers(rv);
-    ms.forEach(p => { if (p.pick != null){ p.played.push({r:p.pick, dead:p.eaten}); p.hand = p.hand.filter(x => x !== p.pick); p.pick = null; } p.drew = false; });
+    ms.forEach(p => { if (p.pick != null){ p.played.push({r:p.pick, dead:p.eaten, h:H.hunt}); p.hand = p.hand.filter(x => x !== p.pick); p.pick = null; } p.drew = false; });
     const alive = ms.filter(p => !p.eaten);
     if (alive.length <= 1 || H.hunt >= 3){ rv.done = true; hScoreRev(rv); }
     else rv.line = `Jagd ${H.hunt} vorbei – ${alive.length} überleben, weiter geht's!`;
@@ -983,6 +1138,7 @@ function hScoreRev(rv){
   ms.filter(p => p.eaten).forEach(p => { p.gain = 0; });
   ms.forEach(p => p.markers += p.gain);
   rv.result = res; rv.line = '';
+  hAnim(rv, {kind:'cheer', gains:Object.fromEntries(ms.filter(p => p.gain).map(p => [p.pid, p.gain]))});
 }
 function hEndRound(){
   H.phase = 'roundEnd'; H.endsAt = 0;
@@ -1008,20 +1164,28 @@ function hEndGame(){
 function hNewGame(){
   clearTimeout(H.autoTimer); clearTimeout(H.timer); clearTimeout(H.stepT);
   H.players.forEach(p => { p.markers = 0; p.rounds = 0; p.rev = null; p.lastEnd = null; p.hand = []; p.played = []; p.eaten = false; p.gain = 0; });
-  H.round = 0; H.hunt = 0; H.revs = []; H.phase = 'lobby'; H.over = false; H.lobbySig = ''; H.ev = [];
+  H.round = 0; H.hunt = 0; H.revs = []; H.phase = 'lobby'; H.over = false; H.lobbySig = ''; H.ev = []; H.anims = [];
   H.players.forEach(p => hSend(p, {t:'welcome', v:APP_VERSION, name:p.name, avatar:p.avatar, color:p.color, score:0, room:H.room, creator: p.pid === H.creatorPid, theme:H.theme}));
   hBroadcast({t:'wait', lobby:true, theme:H.theme, text:`Warte, bis ${hCreatorName()} das Spiel startet …`});
   hRender();
 }
 /* Sicht eines Reviers – verdeckte Karten werden NICHT verraten */
 function revView(rv, viewer){
+  const act = ['pick','reveal','choose'].includes(H.phase) && !rv.done, key = `${H.round}-${H.hunt}`;
   return {id:rv.id, name:rv.name, color:rv.color, done:rv.done, line:rv.line, result:rv.result,
     hunter: rv.hunter ? (() => { const h = H.players.get(rv.hunter); return {pid:h.pid, name:h.name, avatar:h.avatar}; })() : null,
     members: hMembers(rv).map(q => {
-      const cards = q.played.map(c => ({r:c.r, dead:c.dead}));
-      if (q.pick != null && ['pick','reveal','choose'].includes(H.phase)) cards.push({r: q.shown || q.pid === viewer ? q.pick : null, dead: q.eaten && q.shown});
-      else if (q.locked && H.phase === 'pick') cards.push({r:null});
-      return {pid:q.pid, name:q.name, avatar:q.avatar, color:q.color, markers:q.markers, eaten:q.eaten, locked:q.locked, drew:q.drew, gain:q.gain, cards};
+      let cur = null, hist = q.played.map(c => c.r), out = false;
+      if (act){
+        if (q.eaten && q.pick == null) out = true;
+        else if (q.pick != null) cur = {key, r: q.shown || q.pid === viewer ? q.pick : null};
+        else cur = {key, empty:true};
+      } else if (H.phase !== 'intro'){
+        const last = q.played[q.played.length - 1];
+        if (last && (rv.done || last.h === H.hunt)){ cur = {key:`${H.round}-${last.h}`, r:last.r}; hist = q.played.slice(0, -1).map(c => c.r); }
+        else out = q.eaten;
+      }
+      return {pid:q.pid, name:q.name, avatar:q.avatar, color:q.color, markers:q.markers, eaten:q.eaten, locked:q.locked, gain:q.gain, cur, hist, out};
     })};
 }
 function hView(p){
@@ -1032,6 +1196,7 @@ function hView(p){
     me:{pid:p.pid, markers:p.markers, hand:p.hand, pick:p.pick, locked:p.locked, eaten:p.eaten, gain:p.gain, inRound: !!rv, hunter: !!(rv && rv.hunter === p.pid)},
     rev: rv ? revView(rv, p.pid) : null,
     ev: H.ev.filter(e => e.rev == null || (rv && e.rev === rv.id)).slice(-6),
+    anims: rv ? H.anims.filter(a => a.rev === rv.id).slice(-8) : [],
     rank: rank.map(q => ({pid:q.pid, avatar:q.avatar, name:q.name, color:q.color, markers:q.markers, place:q.place})),
     room:H.room, host: hCreatorName(), autoNext:H.autoNext};
 }
@@ -1077,10 +1242,10 @@ function hRender(){
   ps.forEach(p => { const d = document.createElement('div'); d.className = 'pchip' + (p.online ? '' : ' off'); d.style.borderLeft = '8px solid ' + p.color;
     d.innerHTML = '<span class="e"></span><span class="n"></span>'; d.querySelector('.e').textContent = p.avatar; d.querySelector('.n').textContent = p.name; ll.appendChild(d); });
   const on = ps.filter(p => p.online).length;
-  $('hStart').disabled = on < 3;
-  $('hStartNote').textContent = on < 3 ? 'Mindestens 3 Gruppen' : `→ ${hRevCount(on)} ${hRevCount(on) === 1 ? 'Revier' : 'Reviere'}`;
+  $('hStart').disabled = on < 2;
+  $('hStartNote').textContent = on < 2 ? 'Mindestens 2 Gruppen' : `→ ${hRevCount(on)} ${hRevCount(on) === 1 ? 'Revier' : 'Reviere'}`;
   // Rangliste
-  $('hRankList').innerHTML = hRankList().map(p => `<div class="mrow" style="--pc:${p.color};margin:3px 0"><span class="av" style="font-size:1.3rem">${esc(p.avatar)}</span><span class="nm" style="font-size:1.05rem">${p.place}. ${esc(p.name)}</span><span class="mk">${p.markers} 🍖</span></div>`).join('');
+  $('hRankList').innerHTML = hRankList().map(p => `<div class="mrow" data-pid="${p.pid}" style="--pc:${p.color};margin:3px 0"><span class="av" style="font-size:1.3rem">${esc(p.avatar)}</span><span class="nm" style="font-size:1.05rem">${p.place}. ${esc(p.name)}</span><span class="mk">${p.markers} 🍖</span></div>`).join('');
   syncChips();
   const ph = H.phase;
   show('hLockBtn', ph === 'pick');
@@ -1093,7 +1258,11 @@ function hRender(){
     : ph === 'huntEnd' ? `Jagd ${H.hunt} vorbei` : ph === 'roundEnd' ? (H.over ? '🏆 Ziel erreicht!' : `Runde ${H.round} vorbei – Futter verteilt!`) : ph === 'intro' ? `Runde ${H.round}` : '';
   const act = hActive();
   $('hStatus').textContent = ph === 'pick' ? `🃏 ${act.filter(p => p.locked).length} von ${act.length} haben gelegt` : ph === 'choose' ? '⏳ Die Jäger wählen ihre Beute …' : '';
-  $('hRevs').innerHTML = H.revs.map(rv => revHtml(revView(rv, null), {phase:ph, round:H.round, seen:H.seen})).join('');
+  const wrap = $('hRevs');
+  while (wrap.children.length > H.revs.length) wrap.lastChild.remove();
+  while (wrap.children.length < H.revs.length) wrap.appendChild(document.createElement('div'));
+  H.revs.forEach((rv, i) => arenaUpdate(wrap.children[i], revView(rv, null), {phase:ph, round:H.round, call:H.call, anims:H.anims.filter(a => a.rev === rv.id),
+    target: pid => document.querySelector(`#hRankList [data-pid="${pid}"] .mk`)}));
 }
 
 /* =====================================================================
@@ -1284,6 +1453,7 @@ function pRender(){
   const s = C.st; if (!s) return;
   const me = s.me, a = s.call >= 1 && s.call <= 5 ? A(s.call) : null;
   let ban = '', act = '';
+  const canPick = !!(s.rev && s.phase === 'pick' && !me.locked && !me.eaten && !s.rev.done);
   if (!s.rev){
     ban = `🕐 Du bist ab der nächsten Runde dabei!<small>Runde ${s.round} läuft gerade.</small>`;
   } else if (s.phase === 'intro'){
@@ -1293,18 +1463,16 @@ function pRender(){
     else if (s.rev.done) ban = `✔ Euer Revier ist fertig.<small>Warte auf die anderen Reviere …</small>`;
     else if (me.locked) ban = `🃏 Verdeckt gelegt!<small>Warte auf die anderen …</small>`;
     else {
-      ban = `Runde ${s.round} · Jagd ${s.hunt}/3<small>Lege verdeckt ein Tier!</small>`;
-      act = `<div class="hand">` + [1,2,3,4,5].map(r => { const x = A(r); const has = me.hand.includes(r);
-        return `<button class="hcard${C.sel === r ? ' sel' : ''}" data-r="${r}" style="--cc:${x.c}" ${has ? '' : 'disabled'}><span class="r">${r}</span><span class="e">${x.e}</span><span class="n">${x.n}</span></button>`; }).join('') + `</div>`
-        + `<button class="go donebtn" id="pLay" ${C.sel ? '' : 'disabled'}>${C.sel ? `🃏 ${A(C.sel).e} ${A(C.sel).n} verdeckt legen` : 'Tippe ein Tier an'}</button>`;
+      ban = `Runde ${s.round} · Jagd ${s.hunt}/3<small>Wähle unten ein Tier und lege es verdeckt!</small>`;
+      act = `<button class="go donebtn" id="pLay" ${C.sel ? '' : 'disabled'}>${C.sel ? `🃏 ${C.sel} ${A(C.sel).e} ${A(C.sel).n} verdeckt legen` : '👇 Tippe ein Tier an'}</button>`;
     }
   } else if (s.phase === 'choose' && me.hunter){
     ban = `${a.e} Du bist ${a.d} einzige ${a.n}!<small>Wen frisst du? Wer dieses Tier gelegt hat, ist raus.</small>`;
-    act = `<div class="choose">` + [1,2,3,4,5].filter(r => r > s.call).map(r => { const x = A(r); return `<button data-t="${r}" style="--cc:${x.c}">${x.e} ${x.n}</button>`; }).join('') + `</div>`;
+    act = `<div class="choose">` + [1,2,3,4,5].filter(r => r > s.call).map(r => { const x = A(r); return `<button data-t="${r}" style="--cc:${x.c}">${r} ${x.e} ${x.n}</button>`; }).join('') + `</div>`;
   } else if (s.phase === 'choose'){
     ban = s.rev.hunter ? `${a.e} ${esc(s.rev.hunter.avatar + ' ' + s.rev.hunter.name)} jagt …<small>Wen wird es treffen?</small>` : `⏳ In anderen Revieren wird gejagt …`;
   } else if (s.phase === 'reveal'){
-    ban = a ? `Aufruf ${a.r}: ${a.e} ${a.n}?` : 'Aufdecken …';
+    ban = a ? `Aufruf ${a.r}: ${a.e} ${a.n}?` : 'Gleich wird aufgedeckt …';
     if (me.eaten) ban += '<small>💀 Du wurdest gefressen.</small>';
   } else if (s.phase === 'huntEnd'){
     ban = me.eaten ? '💀 Gefressen – für diese Runde raus.' : `Jagd ${s.hunt} vorbei!<small>Gleich die nächste Jagd …</small>`;
@@ -1313,14 +1481,23 @@ function pRender(){
     const g = me.gain;
     act = `<div class="gaincard ${g === 2 ? 'bg-gold' : g === 1 ? 'bg-green' : 'bg-red'}"><div class="g">${g ? '+' + g + ' 🍖' : '0 🍖'}</div>${g === 2 ? 'Spitze!' : g === 1 ? 'Überlebt!' : 'Gefressen – nächstes Mal!'} · jetzt ${me.markers} 🍖 (Ziel ${s.goal})</div>`;
     const myI = s.rank.findIndex(x => x.pid === C.pid);
-    const top = s.rank.slice(0, 5); if (myI >= 5) top.push(s.rank[myI]);
+    const top = s.rank.slice(0, 3); if (myI >= 3) top.push(s.rank[myI]);
     act += `<div class="minirank"><h3>Futter-Rangliste</h3>` + top.map(o => `<div class="rr${o.pid === C.pid ? ' me' : ''}"><span class="dot" style="background:${o.color}"></span><span class="nm">${esc(o.avatar + ' ' + o.name)}</span><span class="v">${o.place}. · ${o.markers} 🍖</span></div>`).join('') + `</div>`;
     act += `<div style="text-align:center;opacity:.85;font-weight:700">${s.room ? (C.isCreator ? 'Tippe unten auf „Weiter“.' + (s.autoNext ? ' (oder warte kurz)' : '') : `${esc(s.host)} startet gleich die nächste Runde …`) : 'Gleich geht\'s weiter …'}</div>`;
   }
   $('pBanner').innerHTML = ban;
-  $('pRevBox').innerHTML = s.rev ? revHtml(s.rev, {compact:true, me:C.pid, phase:s.phase, round:s.round, seen:C.seen}) : '';
+  if (s.rev) arenaUpdate($('pArena'), s.rev, {compact:true, me:C.pid, phase:s.phase, round:s.round, call:s.call, anims:s.anims, target: pid => pid === C.pid ? $('pTopS') : null});
+  else { $('pArena').innerHTML = ''; $('pArena').__ar = null; }
   $('pAction').innerHTML = act;
-  $('pAction').querySelectorAll('.hcard').forEach(b => b.onclick = () => { C.sel = +b.dataset.r; pRender(); });
+  // Handkarten: immer groß unten sichtbar
+  const showHand = !!s.rev && s.phase !== 'roundEnd' && !(s.phase === 'choose' && me.hunter);
+  show('pHand', showHand);
+  if (showHand){
+    $('pHand').classList.toggle('off', !canPick);
+    $('pHand').innerHTML = [1,2,3,4,5].map(r => { const x = A(r); const has = me.hand.includes(r) || me.pick === r;
+      return `<button class="hcard${C.sel === r && canPick ? ' sel' : ''}${has ? '' : ' used'}" data-r="${r}" style="--cc:${x.c}" ${canPick && has ? '' : 'disabled'}><span class="r">${r}</span><span class="e">${x.e}</span><span class="n">${x.n}</span></button>`; }).join('');
+    $('pHand').querySelectorAll('.hcard').forEach(b => b.onclick = () => { C.sel = +b.dataset.r; pRender(); });
+  }
   const lay = document.getElementById('pLay');
   if (lay) lay.onclick = () => { if (!C.sel) return; C.conn && C.conn.open && C.conn.send({t:'pick', r:C.sel}); lay.disabled = true; lay.textContent = '🃏 Gelegt …'; };
   $('pAction').querySelectorAll('[data-t]').forEach(b => b.onclick = () => { C.conn && C.conn.open && C.conn.send({t:'choose', r:+b.dataset.t}); $('pAction').innerHTML = '<div class="pbanner">⏳ …</div>'; });
@@ -1375,8 +1552,8 @@ function rHostUpdate(ps){
     if (sig !== H.lobbySig){ H.lobbySig = sig; hBroadcast({t:'lobby', players:list, theme:H.theme}); }
     const n = ps.filter(p => p.online).length;
     $('rCount').textContent = `Dabei: ${n} ${n === 1 ? 'Gruppe' : 'Gruppen'} → ${hRevCount(n)} ${hRevCount(n) === 1 ? 'Revier' : 'Reviere'}`;
-    $('rStart').disabled = n < 3;
-    $('rStart').textContent = n < 3 ? 'Warte auf Mitspieler (mind. 3) …' : "▶ Los geht's";
+    $('rStart').disabled = n < 2;
+    $('rStart').textContent = n < 2 ? 'Warte auf Mitspieler …' : "▶ Los geht's";
   }
   const ph = H.phase;
   show('pHostBar', !['lobby','end'].includes(ph));
