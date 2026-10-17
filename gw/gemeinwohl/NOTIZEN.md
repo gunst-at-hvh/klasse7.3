@@ -67,3 +67,4 @@ Gemeinsames Projekt + Bedrohung mit Countdown – optisch könnten Projekt und C
 - v2b: Timer-Knopf im Spiel (Beamer oben, Host-Leiste): ⏸ Timer aus → 🙋 Gemeinschaftszeit (mehr als die Hälfte der Nicht-Bots tippt Weiter) → ⏱️ Autotimer; wirkt sofort
 - v2b: Handy-Ausschüttung: groß „💰 diese Runde dazugewonnen +X €“ (bekommen − eingezahlt, Ø aller), dann nur Smiley: 😇 „mehr als der Durchschnitt eingezahlt (und weniger bekommen 😢)“ / 😈 „mehr als der Durchschnitt bekommen (und weniger eingezahlt 😊)“
 - v2e: Handy-Sequenz in einem Bild ohne Weiter: Topf → teilt sich in zwei (×2 = …) → beide werden ein Geldberg → „÷ N“ → Berg zerfällt in Stapel, die zu jedem fliegen (+X €) → groß „jede/r bekommt“ → danach persönliche Analyse
+- v2g: Analyse am Handy mit Rangliste der Runde (eingezahlt / dazugewonnen, Ø-Linie, „du“ markiert; ohne 👁️ anonym „?“); eigener Einsatz „🪙 gesetzt …“ dauerhaft oben in der Kopfzeile

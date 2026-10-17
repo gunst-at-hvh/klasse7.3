@@ -117,6 +117,7 @@ table.res .n{text-align:right}
 #player{min-height:100dvh;display:flex;flex-direction:column}
 .ptop{display:flex;align-items:center;gap:10px;padding:8px 12px;border-bottom:2.5px solid var(--ink);background:#fff}
 .ptop .e{font-size:1.8rem}.ptop .n{flex:1;font-size:1.3rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ptop .s2{font-size:1.05rem;padding:0 10px;border:2px dashed var(--ink);border-radius:10px 4px 12px 4px;background:#fff3bf;white-space:nowrap}.ptop .s2 b{font-family:"Gochi Hand",cursive;font-weight:400;font-size:1.3rem}
 .ptop .s{font-family:"Gochi Hand",cursive;font-size:1.35rem;padding:0 10px;border:2.5px solid var(--ink);border-radius:10px 4px 12px 4px;background:#fff}
 .pbody{flex:1;padding:10px 12px 90px;overflow:auto}
 .center2{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px;min-height:60vh}
@@ -386,6 +387,14 @@ svg .stk{animation:stkFly .8s cubic-bezier(.4,0,.6,1) both}
 @keyframes stkFly{0%{transform:translate(0,0) scale(1.2);opacity:0}15%{opacity:1}85%{opacity:1}100%{transform:translate(var(--tx),var(--ty)) scale(.6);opacity:0}}
 svg .amt{animation:popIn .4s cubic-bezier(.2,1.8,.4,1) both}
 svg .big{animation:popIn .55s cubic-bezier(.2,1.8,.4,1) 4.6s both}
+.beat.rank{padding:6px 8px 8px}
+.beats .beat.gain{padding:4px 12px 6px}.beats .beat.gain .huge{font-size:3.6rem}.beats .beat .avgline{font-size:1.2rem;margin-top:0}
+.beats .beat.role{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:4px 10px;text-align:left;padding:6px 12px}
+.beats .beat.role .roleE{grid-row:span 2;font-size:3.8rem}.beats .beat.role .roleS{font-size:1.2rem}.beats .beat.role .roleS2{font-size:1.05rem}
+table.rk{width:100%;border-collapse:collapse;font-size:1.05rem;text-align:left}
+table.rk th{font-weight:400;color:#666;font-size:.85rem}table.rk td{padding:2px 6px;border-bottom:1px solid #eee}
+table.rk .n{text-align:right;white-space:nowrap}table.rk tr.me td{background:#fff3bf;font-weight:600}
+table.rk tr.avgrow td{text-align:center;color:#1c7ed6;font-family:"Gochi Hand",cursive;font-size:1.15rem;border:none;padding:0}
 .gbar{width:320px;height:26px;border:2.5px solid var(--ink);border-radius:12px 4px 14px 4px;background:#fff;overflow:hidden;margin:8px auto}
 .gbar i{display:block;height:100%;background:repeating-linear-gradient(-45deg,#8ce99a 0 10px,#b2f2bb 10px 20px);transition:width 1.6s cubic-bezier(.3,1.3,.5,1)}
 .bigval{font-family:"Gochi Hand",cursive;font-size:4.2rem;line-height:1.05}
@@ -475,7 +484,7 @@ svg .big{animation:popIn .55s cubic-bezier(.2,1.8,.4,1) 4.6s both}
 </section>
 
 <section id="player" class="hidden">
-  <div class="ptop hidden" id="pTop"><span class="e" id="pTopE"></span><span class="n" id="pTopN"></span><span class="s" id="pTopS">100 €</span></div>
+  <div class="ptop hidden" id="pTop"><span class="e" id="pTopE"></span><span class="n" id="pTopN"></span><span class="s2 hidden" id="pTopP"></span><span class="s" id="pTopS">100 €</span></div>
   <div class="pbody">
     <div class="center2" id="pJoin">
       <div class="joinform sk">
@@ -569,7 +578,7 @@ function keepRegistered(getPeer, lampId){
 }
 
 const PREFIX = 'hvh-gemeinwohl2-';
-const APP_VERSION = 'v2-2026-10-17f';
+const APP_VERSION = 'v2-2026-10-17g';
 const AUTOJOIN_KEY = 'gemeinwohl2-autojoin';
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const EMOJIS = ['😀','😎','🤓','🥳','🤩','😜','🤠','🥸','😇','🤖','👻','👽','💩','🐱','🐶','🦊','🐼','🐸','🦁','🐯','🐵','🐙','🦄','🐝','🐢','🦖','🐧','🦉','🐬','🦈','🍕','🍩','🍉','⚽','🏀','🎮','🎸','🚀','🌈','🔥','⭐','💎','👑','🌵'];
@@ -1390,6 +1399,10 @@ function hView(p){
       penTotal:c.penTotal, bonusTotal:c.bonusTotal, exclN:c.excluded.length, total0:c.total0, total1:c.total1,
       top: H.phase !== 'showdown' && H.phase !== 'double' ? top.map(t => t.avatar + ' ' + t.name) : []};
   }
+  if (v.cur && ['double','payout','build'].includes(H.phase)){
+    v.cur.dist = inGame().map(q => ({a:c.a[q.pid] || 0, bal:(c.got[q.pid] || 0) - (c.a[q.pid] || 0) - (c.pen[q.pid] || 0), me: !!p && q.pid === p.pid,
+      who: einz || end ? {avatar:q.avatar, name:q.name} : null})).sort((x, y) => y.bal - x.bal || x.a - y.a);
+  }
   if (H.prop){ const pp = H.players.get(H.prop.pid); v.prop = {pid:pp.pid, name:pp.name, avatar:pp.avatar, kind:H.prop.kind, rule:H.prop.rule}; }
   if (H.verdict) v.verdict = H.verdict;
   v.votedN = Object.keys(H.votes).length;
@@ -1943,6 +1956,7 @@ function pRender(fresh){
       <div class="beat role ${k}" style="animation-delay:1.5s;${na}"><div class="roleE">${k === 'angel' ? '😇' : k === 'devil' ? '😈' : '😐'}</div>
         <div class="roleS">${rel > 0 ? `Du hast <b>${eur(rel)} mehr</b> als der Durchschnitt bekommen` : rel < 0 ? `Du hast <b>${eur(-rel)} weniger</b> als der Durchschnitt bekommen` : 'Du hast genau so viel wie der Durchschnitt bekommen'}</div>
         <div class="roleS2">(${k === 'angel' ? 'und mehr eingezahlt' : k === 'devil' ? 'und weniger eingezahlt' : 'und genau den Durchschnitt eingezahlt'} ${rel > 0 ? '😊' : rel < 0 ? '😢' : '😐'})</div></div>
+      ${rankHtml(s, na)}
       <button class="chip" id="pDet" style="margin:4px auto 0">${C.det ? '▴ Details zu' : '📊 Details'}</button>
       ${C.det ? `<div class="muted">Alle bekommen ${eur(c.share)} · Ø eingezahlt ${eur(c.avg)} · du ${eur(m.a)} · jetzt ${eur(me.money)}</div>` + potSplit(s, false) : ''}</div>` + pWaitNote(s);
     $('pDet').onclick = () => { C.det = !C.det; pRender(false); };
@@ -1988,6 +2002,20 @@ function miniStand(s){
   return `<div class="ministand"><span>🌊</span><div class="mb"><i style="width:${r*100}%;background:${rc}"></i></div><span>${s.round}/${s.maxRounds}</span>
     <span>🏗️</span><div class="mb"><i style="width:${f*100}%;background:repeating-linear-gradient(-45deg,#8ce99a 0 6px,#b2f2bb 6px 12px)"></i></div><span>${pct(f)}</span></div>`;
 }
+/* Rangliste der Runde: alle Beträge untereinander, Ø-Linie, „du“ markiert (anonym ohne 👁️) */
+function rankHtml(s, na){
+  const D = s.cur && s.cur.dist; if (!D || !D.length) return '';
+  const av = s.cur.avgBal, sg = v => (v > 0 ? '+' : v < 0 ? '−' : '±') + eur(Math.abs(v));
+  let rows = '', avgDone = false;
+  D.forEach((d, i) => {
+    if (!avgDone && d.bal < av){ rows += `<tr class="avgrow"><td colspan="3">┄┄ Ø ${sg(av)} ┄┄</td></tr>`; avgDone = true; }
+    const who = d.who ? `<span class="ae">${esc(d.who.avatar)}</span> ${esc(d.who.name)}` : d.me ? '<b>du</b>' : '<span class="muted">?</span>';
+    rows += `<tr class="${d.me ? 'me' : ''}"><td>${i + 1}. ${who}${d.me && d.who ? ' <b>(du)</b>' : ''}</td><td class="n">${eur(d.a)}</td><td class="n">${sg(d.bal)}</td></tr>`;
+  });
+  if (!avgDone) rows += `<tr class="avgrow"><td colspan="3">┄┄ Ø ${sg(av)} ┄┄</td></tr>`;
+  return `<div class="beat rank" style="animation-delay:2.7s;${na}"><div class="lbl">📊 So stehen alle diese Runde</div>
+    <table class="rk"><tr><th></th><th class="n">eingezahlt</th><th class="n">dazugewonnen</th></tr>${rows}</table></div>`;
+}
 function pReady(s){
   let b = document.getElementById('pReady');
   const on = s && s.next && s.next.mode === 'vote' && !C.isCreator && s.me && s.me.inGame && $('pPlay') && !$('pPlay').classList.contains('hidden') && !(s.phase === 'payout' && C.seqDone !== s.round);
@@ -2020,7 +2048,9 @@ function standInto(el, s, w){
       : `<div class="muted">Kontostände der anderen sind geheim. Du hast ${eur(C.score)}, der Durchschnitt liegt bei ${eur(s.total / Math.max(1, s.players.length))}.</div>`}`;
   drawHouse(el.querySelector('.sth'), s.stage, {flood:s.outcome === 'flood', round:s.round, max:s.maxRounds});
 }
-function pTop(){ $('pTopE').textContent = C.avatar; $('pTopN').textContent = C.name; $('pTopS').textContent = eur(C.score); }
+function pTop(){ $('pTopE').textContent = C.avatar; $('pTopN').textContent = C.name; $('pTopS').textContent = eur(C.score);
+  const st = C.st, me = st && st.me, on = !!(me && me.locked && me.pay != null && st.phase !== 'lobby' && st.phase !== 'end');
+  show('pTopP', on); if (on) $('pTopP').innerHTML = `🪙 gesetzt <b>${eur(me.pay)}</b>`; }
 function pSetupInput(){}
 
 /* =====================================================================
