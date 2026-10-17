@@ -69,3 +69,5 @@ Gemeinsames Projekt + Bedrohung mit Countdown – optisch könnten Projekt und C
 - v2e: Handy-Sequenz in einem Bild ohne Weiter: Topf → teilt sich in zwei (×2 = …) → beide werden ein Geldberg → „÷ N“ → Berg zerfällt in Stapel, die zu jedem fliegen (+X €) → groß „jede/r bekommt“ → danach persönliche Analyse
 - v2g: Analyse am Handy mit Rangliste der Runde (eingezahlt / dazugewonnen, Ø-Linie, „du“ markiert; ohne 👁️ anonym „?“); eigener Einsatz „🪙 gesetzt …“ dauerhaft oben in der Kopfzeile
 - v2i: Beamer-Rangliste neben der Torten-Teilung (anonym ohne 👁️); Beamer passt sich an 16:9 an (getestet 1280×720, 1366×768, 1920×1080: nie scrollen) – Größen nach Bildschirmhöhe, Timer in der Statuszeile, Spielende zweispaltig
+- v2k: Anleitung (7 Folien, groß & knapp, mit Spielbildern/Animationen) vor dem Start – Option in der Lobby, synchron auf Beamer + Handys, „Weiter“/Timer/Mehrheit, „Anleitung überspringen ⏭“ (Beamer, Ersteller-Handy, Esc), ◀ zurück; zusätzlich jederzeit in der Lobby „📖 Anleitung ansehen“ / „📖 So geht's“
+- v2k: Handy-Verteil-Sequenz passt immer komplett auf den Bildschirm (Höhe wird gemessen, Kopfzeilen während der Sequenz ausgeblendet)

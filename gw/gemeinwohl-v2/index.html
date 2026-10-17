@@ -420,6 +420,20 @@ table.rk.big{font-size:1.1rem}table.rk.big td{padding:2px 6px}
 #hCenter .endgrid .box{margin:4px 0!important;padding:8px 12px}
 #hCenter .waves{font-size:1.5rem;letter-spacing:2px;line-height:1.2}#hCenter .endgrid .ti{line-height:1.1}#hCenter .endgrid table.res td{padding:2px 6px}
 @media (max-height:800px){#host .top h1 small{display:none}#hCenter .lawcard{margin:6px auto}#hCenter .voters{margin-top:6px}}
+/* Anleitung */
+.guide{max-width:1100px;margin:0 auto;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px}
+.guide .gtitle{font-family:"Gochi Hand",cursive;font-size:clamp(2.4rem, 6vh, 4rem);line-height:1.05;animation:popIn .5s cubic-bezier(.2,1.8,.4,1) both}
+.guide .gimg{display:flex;gap:18px;align-items:flex-end;justify-content:center;flex-wrap:nowrap;width:100%}
+.guide .gimg svg.seq,.guide .gimg svg.dbl{width:auto;max-width:100%}
+.guide .gline{font-size:clamp(1.5rem, 4vh, 2.4rem);line-height:1.25}
+.guide .gsub{font-size:clamp(1.15rem, 2.8vh, 1.7rem);color:#555}
+.guide .gemo{display:flex;gap:22px;justify-content:center;font-size:clamp(3rem, 10vh, 6rem);line-height:1.1}
+.guide .gemo span{animation:popIn .5s cubic-bezier(.2,1.8,.4,1) both}.guide .gemo span:nth-child(2){animation-delay:.3s}.guide .gemo span:nth-child(3){animation-delay:.6s}.guide .gemo span:nth-child(4){animation-delay:.9s}
+.guide .gdots{display:flex;gap:8px;margin-top:4px}.guide .gdots i{width:12px;height:12px;border-radius:50%;border:2px solid var(--ink);background:#fff}.guide .gdots i.on{background:var(--ink)}
+.guide.ph .gtitle{font-size:2.1rem}.guide.ph .gline{font-size:1.35rem}.guide.ph .gsub{font-size:1.05rem}.guide.ph .gemo{font-size:3.4rem}.guide.ph .gimg{gap:6px}
+.gnav{display:flex;gap:10px;justify-content:center;margin-top:8px;flex-wrap:wrap}.gnav button{font-size:1.2rem}
+.guideov{position:fixed;inset:0;z-index:44;background:var(--paper);overflow:auto;padding:14px 12px}
+#hGame.guidemode{grid-template-columns:1fr}#hGame.guidemode .rules,#hGame.guidemode .side{display:none}
 .gbar{width:320px;height:26px;border:2.5px solid var(--ink);border-radius:12px 4px 14px 4px;background:#fff;overflow:hidden;margin:8px auto}
 .gbar i{display:block;height:100%;background:repeating-linear-gradient(-45deg,#8ce99a 0 10px,#b2f2bb 10px 20px);transition:width 1.6s cubic-bezier(.3,1.3,.5,1)}
 .bigval{font-family:"Gochi Hand",cursive;font-size:4.2rem;line-height:1.05}
@@ -471,10 +485,11 @@ table.rk.big{font-size:1.1rem}table.rk.big td{padding:2px 6px}
     </div>
     <div>
       <div class="settings sk">
-        <div class="ti" style="font-size:1.5rem">So geht's</div>
-        <div style="line-height:1.35">Jede Runde zahlt jede/r geheim etwas in den Topf. Der Topf wird <b>verdoppelt</b> und an <b>alle gleich</b> verteilt.
+        <div class="ti" style="font-size:1.5rem">So geht's: 🤫 geheim einzahlen · ✖️2 · ➗ an alle · 🏠 vor der 🌊 Flut</div>
+        <div style="line-height:1.35;display:none">Jede Runde zahlt jede/r geheim etwas in den Topf. Der Topf wird <b>verdoppelt</b> und an <b>alle gleich</b> verteilt.
           Wächst das Gemeinwohl auf das Ziel, ist das Haus fertig – dann gewinnt, wer am meisten Geld hat. Schafft ihr es nicht bis zur letzten Runde, kommt die <b>Flut</b>: dann gibt es nur einen Trostpreis für den Zweitreichsten. 👏 Publikumspreis für den, der insgesamt am meisten einzahlt.
           Wer am meisten einzahlt, darf eine neue Regel vorschlagen.</div>
+        <label>Anleitung vor dem Start</label><div class="row" id="hGuideRow"></div>
         <label>Spiellänge</label><div class="row" id="hPresetRow"></div>
         <label>Zeit zum Einzahlen</label><div class="row" id="hTimeRow"></div>
         <label>Weiter zur nächsten Phase</label><div class="row" id="hPaceRow"></div>
@@ -490,7 +505,7 @@ table.rk.big{font-size:1.1rem}table.rk.big td{padding:2px 6px}
         </details>
       </div>
       <div style="margin-top:12px"><span class="ti" style="font-size:1.6rem" id="hCount">0 Spieler</span><div class="plist" id="hLobbyList"></div></div>
-      <div style="margin-top:12px"><button class="go" id="hStart" style="font-size:1.4rem;padding:10px 26px" disabled>▶ Los geht's</button> <span class="muted" id="hStartNote"></span></div>
+      <div style="margin-top:12px"><button class="chip" id="hGuideBtn" style="font-size:1.2rem">📖 Anleitung ansehen</button> <button class="go" id="hStart" style="font-size:1.4rem;padding:10px 26px" disabled>▶ Los geht's</button> <span class="muted" id="hStartNote"></span></div>
     </div>
   </div>
   <div class="game hidden" id="hGame">
@@ -526,6 +541,7 @@ table.rk.big{font-size:1.1rem}table.rk.big td{padding:2px 6px}
       <div class="ti" style="font-size:2rem" id="pWaitT">Du bist dabei!</div>
       <div id="pWaitS">Gleich geht's los.</div>
       <div class="plist" id="pWaitList" style="justify-content:center"></div>
+      <button class="chip" id="pGuideBtn" style="font-size:1.15rem;margin-top:8px">📖 So geht's</button>
       <button class="go hidden" id="pAgain" style="font-size:1.2rem">🔄 Neues Spiel</button>
     </div>
     <div class="hidden" id="pRoom">
@@ -534,6 +550,7 @@ table.rk.big{font-size:1.1rem}table.rk.big td{padding:2px 6px}
       <div class="roomwarn sk2">⚠️ Dein Handy leitet das Spiel: Browser offen lassen, nicht sperren, nicht in andere Apps wechseln.</div>
       <div class="roomcard sk"><b id="rCount">Dabei: 1 Spieler</b><div class="plist" id="rList" style="justify-content:center"></div></div>
       <div class="settings sk">
+        <label>Anleitung vor dem Start</label><div class="row" id="rGuideRow"></div>
         <label>Spiellänge</label><div class="row" id="rPresetRow"></div>
         <label>Zeit zum Einzahlen</label><div class="row" id="rTimeRow"></div>
         <label>Weiter zur nächsten Phase</label><div class="row" id="rPaceRow"></div>
@@ -602,7 +619,7 @@ function keepRegistered(getPeer, lampId){
 }
 
 const PREFIX = 'hvh-gemeinwohl2-';
-const APP_VERSION = 'v2-2026-10-17i';
+const APP_VERSION = 'v2-2026-10-17k';
 const AUTOJOIN_KEY = 'gemeinwohl2-autojoin';
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const EMOJIS = ['😀','😎','🤓','🥳','🤩','😜','🤠','🥸','😇','🤖','👻','👽','💩','🐱','🐶','🦊','🐼','🐸','🦁','🐯','🐵','🐙','🦄','🐝','🐢','🦖','🐧','🦉','🐬','🦈','🍕','🍩','🍉','⚽','🏀','🎮','🎸','🚀','🌈','🔥','⭐','💎','👑','🌵'];
@@ -1019,7 +1036,7 @@ const RULE_IDS = Object.keys(RULES);
    ===================================================================== */
 const H = {
   peer:null, code:'', players:new Map(), phase:'lobby',
-  time:30, bots:0, goalMul:25, maxRounds:8, transp:'0', ruleEvery:1, factor:'2', fx:2, prog:'0', need:.5, pace:'host', autoMul:1, next:null, phaseAt:0, ready:new Set(), goAt:0,
+  time:30, bots:0, goalMul:25, maxRounds:8, transp:'0', ruleEvery:1, factor:'2', fx:2, prog:'0', need:.5, pace:'host', autoMul:1, guide:'1', gi:0, next:null, phaseAt:0, ready:new Set(), goAt:0,
   room:false, late:'1', creatorPid:null, lobbySig:'',
   round:0, goal:0, startTotal:0, rules:[], hist:[], cur:null, prop:null, votes:{}, verdict:null, outcome:null,
   timer:null, stepT:null, endsAt:0, evId:0, ev:[]
@@ -1070,6 +1087,7 @@ function startHost(){
   $('hSkipBtn').onclick = hSkip;
   $('hLogBtn').onclick = () => { if (H.phase !== 'lobby') showLog(hView(null)); };
   $('hPaceBtn').onclick = hCyclePace;
+  $('hGuideBtn').onclick = guideOverlay;
   $('hSndBtn').onclick = () => { SND.on = !SND.on; $('hSndBtn').textContent = SND.on ? '🔊' : '🔇'; };
   $('hBoardBtn').onclick = () => { if (!has('konto') && H.phase !== 'end') { toast('Kontostände sind geheim – erst mit 💰 Kontostand-Transparenz', 'yellow'); return; }
     showBoard('💰 Kontostände', inGame().map(p => ({avatar:p.avatar, name:p.name, color:p.color, score:p.money, label:eur(p.money)}))); };
@@ -1157,6 +1175,7 @@ function buildChips(){
   mk2(['hFactorRow','rFactorRow'], [['2','×2 (Standard)'],['1.5','×1,5 (schwerer)'],['3','×3 (leichter)']], 'factor');
   mk2(['hTranspRow','rTranspRow'], [['0','🔒 geheim'],['1','💰 sichtbar (Regel gilt ab Start)']], 'transp');
   mk2(['hRuleRow','rRuleRow'], [[1,'jede Runde'],[2,'jede 2. Runde']], 'ruleEvery');
+  mk2(['hGuideRow','rGuideRow'], [['1','📖 ja, kurz zeigen'],['0','nein']], 'guide');
   mk2(['rLateRow'], [['1','✅ jederzeit (ab nächster Runde)'],['0','🔒 nur vor dem Start']], 'late');
   ['hPresetRow','rPresetRow'].forEach(id => { const row = $(id); row.innerHTML = '';
     [['⚡ sehr kurz (~5 min)', {goalMul:5, maxRounds:4, time:20, factor:'2', transp:'1'}], ['🙂 kurz (~10 min)', {goalMul:12, maxRounds:6, time:30, factor:'2', transp:'0'}], ['🏗️ normal (~15 min)', {goalMul:25, maxRounds:8, time:30, factor:'2', transp:'0'}]]
@@ -1170,7 +1189,7 @@ function syncChips(){
   ['hAutoWrap','rAutoWrap'].forEach(id => { const e = document.getElementById(id); if (e) e.style.display = H.pace === 'auto' ? '' : 'none'; });
   ['hPresetRow','rPresetRow'].forEach(id => $(id).querySelectorAll('button').forEach(b => { const c = JSON.parse(b.dataset.cfg); b.classList.toggle('on', Object.keys(c).every(k => H[k] === c[k])); }));
   [['hTimeRow','time'],['rTimeRow','time'],['hBotRow','bots'],['rBotRow','bots'],['hGoalRow','goalMul'],['rGoalRow','goalMul'],['hRoundsRow','maxRounds'],['rRoundsRow','maxRounds'],
-   ['hTranspRow','transp'],['rTranspRow','transp'],['hFactorRow','factor'],['rFactorRow','factor'],['hProgRow','prog'],['rProgRow','prog'],['hRuleRow','ruleEvery'],['rRuleRow','ruleEvery'],['rLateRow','late'],['hPaceRow','pace'],['rPaceRow','pace'],['hAutoRow','autoMul'],['rAutoRow','autoMul']].forEach(([id, key]) =>
+   ['hTranspRow','transp'],['rTranspRow','transp'],['hFactorRow','factor'],['rFactorRow','factor'],['hProgRow','prog'],['rProgRow','prog'],['hRuleRow','ruleEvery'],['rRuleRow','ruleEvery'],['rLateRow','late'],['hPaceRow','pace'],['rPaceRow','pace'],['hGuideRow','guide'],['rGuideRow','guide'],['hAutoRow','autoMul'],['rAutoRow','autoMul']].forEach(([id, key]) =>
     $(id).querySelectorAll('button').forEach(b => b.classList.toggle('on', String(H[key]) === b.dataset.v)));
 }
 
@@ -1229,8 +1248,12 @@ function hStartGame(){
   H.rules = H.transp === '1' ? [{id:'konto', round:0, yes:'Start', no:''}] : [];
   H.round = 0; H.hist = []; H.outcome = null; H.ev = [];
   show('hLobby', false); show('hGame');
-  hNextRound();
+  if (H.guide === '1'){ H.phase = 'guide'; H.gi = 0; hStep(9000, hGuideNext); hPush(); }
+  else hNextRound();
 }
+function hGuideNext(){ H.gi++; if (H.gi >= GUIDE.length) return hGuideSkip(); hStep(H.gi === 3 ? 10000 : 9000, hGuideNext); hPush(); }
+function hGuidePrev(){ if (H.phase !== 'guide' || !H.gi) return; H.gi--; hStep(9000, hGuideNext); hPush(); }
+function hGuideSkip(){ if (H.phase !== 'guide') return; clearTimeout(H.stepT); H.next = null; hNextRound(); }
 function hNextRound(){
   clearTimeout(H.timer); clearTimeout(H.stepT);
   H.players.forEach(p => { if (!p.inGame && (p.online || p.bot)) p.inGame = true; p.pay = null; p.locked = false; });
@@ -1386,6 +1409,8 @@ function hSkip(){
 }
 /* Beamer: Leertaste, Enter, → oder Presenter-Klicker (Bild ↓) = Weiter */
 document.addEventListener('keydown', e => {
+  if (!H.room && H.phase === 'guide' && e.key === 'ArrowLeft'){ hGuidePrev(); return; }
+  if (!H.room && H.phase === 'guide' && e.key === 'Escape'){ hGuideSkip(); return; }
   if (H.room || !H.next || H.phase === 'lobby' || /INPUT|TEXTAREA/.test((e.target || {}).tagName || '')) return;
   if ([' ', 'Enter', 'ArrowRight', 'PageDown'].includes(e.key)){ e.preventDefault(); hSkip(); }
 });
@@ -1413,6 +1438,7 @@ function hView(p){
     rules: H.rules.map((r, i) => ({id:r.id, no:4 + i, round:r.round, yes:r.yes, no2:r.no})), opts: hOptions(),
     konto, einz, players: pub, outcome:H.outcome, fx:H.fx, prizes: end ? hPrizes() : null, need: end ? H.need : null, goalMul:H.goalMul, room:H.room, host:hCreatorName(),
     hist: end ? H.hist.map(h => ({round:h.round, rate:h.rate, rules:h.rules})) : null,
+    gi: H.phase === 'guide' ? H.gi : null,
     next: H.next ? {mode:H.pace, ready: H.ready ? H.ready.size : 0, need: hNeedReady(), go: H.goAt ? Math.max(0, H.goAt - Date.now()) : 0} : null,
     /* Verlauf: Topf und Ø immer; wer was gezahlt hat nur für Runden mit 👁️ Einzahlungs-Transparenz */
     log: H.hist.map(h => { const ids = Object.keys(h.a), open = h.rules.includes('einzahl') || end;
@@ -1478,7 +1504,59 @@ function showPodium(src){
    DARSTELLUNG (gemeinsam für Beamer + Handy)
    ===================================================================== */
 const fxs = s => '×' + String(s.fx || 2).replace('.', ',');
-const PH_NAME = {pay:'① Einzahlen', showdown:'② Showdown: der Topf', double:'③ Vervielfachung!', payout:'④ Ausschüttung', build:'⑤ Bau-Update', propose:'⑥ § Regelrunde', vote:'⑥ § Abstimmung', verdict:'⑥ § Ergebnis', end:'🏁 Spielende'};
+/* ===== Anleitung (Folien, knapp & groß) ===== */
+const GUIDE = [
+  {t:'🏠 Euer Ziel', l:'Baut <b>zusammen</b> ein Haus –<br>bevor die 🌊 <b>Flut</b> kommt.', s:'Jede/r startet mit 100 €.'},
+  {t:'🤫 Geheim einzahlen', l:'Jede Runde: Wie viel wirfst du<br>in den <b>Topf</b>?', s:'0 € … alles – keiner sieht es.'},
+  {t:'×2 Der Topf verdoppelt sich', l:'Alles im Topf wird <b>verdoppelt</b>.', s:''},
+  {t:'➗ Alle bekommen gleich viel', l:'Der Topf wird auf <b>alle</b> verteilt –', s:'auch auf die, die nichts eingezahlt haben!'},
+  {t:'🏗️ Das Haus wächst', l:'Alles Geld zusammen = <b>Gemeinwohl</b>.<br>Je mehr, desto höher das Haus.', s:'🌊 Nach {R} Runden kommt die Flut.'},
+  {t:'🏆 Wer gewinnt?', l:'🏠 Haus fertig → <b>wer am meisten Geld hat</b>.<br>🌊 Flut → die Reichsten gehen leer aus,<br>🥈 Platz 2 bekommt den Trostpreis.', s:'👏 Wer insgesamt am meisten einzahlt: Publikumspreis'},
+  {t:'👑 Regeln ändern', l:'Wer am meisten einzahlt,<br>darf eine <b>Regel</b> vorschlagen.', s:'Alle stimmen geheim ab 👍 👎'}
+];
+function guideHtml(i, o = {}){
+  const g = GUIDE[i], R = o.rounds || 8;
+  return `<div class="guide${o.phone ? ' ph' : ''}"><div class="gtitle">${g.t}</div><div class="gimg"></div>
+    <div class="gline">${g.l}</div>${g.s ? `<div class="gsub">${g.s.replace('{R}', R)}</div>` : ''}
+    <div class="gdots">${GUIDE.map((_, k) => `<i class="${k === i ? 'on' : ''}"></i>`).join('')}</div></div>`;
+}
+function guideDraw(el, i, o = {}){
+  const box = el.querySelector('.gimg'); if (!box) return;
+  const sv = (w, h) => { const x = document.createElementNS(NS, 'svg'); x.setAttribute('width', w); x.setAttribute('height', h); box.appendChild(x); return x; };
+  const fake = {round:0, fx:2, cur:{pot:120, doubled:240, share:60, n:4, exclN:0, max:400},
+    players:[['🦊','Ali'],['🐼','Ben'],['🐸','Cem'],['🦄','Dana']].map((a, k) => ({avatar:a[0], name:a[1], color:COLORS[k], got:60}))};
+  if (i === 0){ const h = sv(160, 300); drawHouse(h, 4, {round:1, max:4}); const w = sv(170, 123); w.dataset.k = .45; drawWallet(w, 100, {k:'g'}); }
+  else if (i === 1){ const a = sv(170, 123); drawSafe(a, {k:'g1', drop:true}); const b = sv(170, 123); drawSafe(b, {k:'g2'}); const c = sv(170, 123); drawSafe(c, {k:'g3', drop:true}); }
+  else if (i === 2){ const d = sv(300, 380); d.classList.add('dbl'); drawDouble(d, .3, 120, 240, '×2', {k:'g', anim:true}); }
+  else if (i === 3){ const q = sv('100%', 380); q.classList.add('seq'); drawSeq(q, fake); }
+  else if (i === 4){ const h = sv(170, 319); let L = 1; drawHouse(h, L, {round:1, max:4}); const t = setInterval(() => { if (!h.isConnected || L >= 9){ clearInterval(t); return; } L += 2; drawHouse(h, L, {round:Math.ceil(L / 2.5), max:4}); h.style.animation = 'none'; void h.offsetWidth; h.style.animation = 'grow .6s both'; }, 900); }
+  else if (i === 5){ box.innerHTML = '<div class="gemo"><span>🏠</span><span>→</span><span>🏆</span></div><div class="gemo"><span>🌊</span><span>→</span><span>🥈</span></div>'; }
+  else if (i === 6){ box.innerHTML = '<div class="gemo"><span>👑</span><span>📜</span><span>👍</span><span>👎</span></div>'; }
+}
+/* Anleitung ansehen (lokal, ohne Spiel – Lobby) */
+function guideOverlay(){
+  document.querySelectorAll('.guideov').forEach(x => x.remove());
+  const d = document.createElement('div'); d.className = 'guideov'; let i = 0; document.body.appendChild(d);
+  const phone = innerWidth < 700;
+  const draw = () => { d.innerHTML = guideHtml(i, {phone, rounds:(C.st && C.st.maxRounds) || H.maxRounds}) +
+      `<div class="gnav"><button class="chip" id="gPrev" ${i ? '' : 'disabled'}>◀</button><button class="gold" id="gNext">${i < GUIDE.length - 1 ? 'Weiter ▶' : 'Fertig ✓'}</button><button class="chip" id="gClose">Schließen ✕</button></div>`;
+    guideDraw(d, i, {phone}); fitGuide(d);
+    d.querySelector('#gPrev').onclick = () => { i--; draw(); };
+    d.querySelector('#gNext').onclick = () => { if (i < GUIDE.length - 1){ i++; draw(); } else d.remove(); };
+    d.querySelector('#gClose').onclick = () => d.remove(); };
+  draw();
+}
+/* Bild so groß wie möglich, aber nie abgeschnitten */
+function fitGuide(root){
+  requestAnimationFrame(() => { const im = [...root.querySelectorAll('.gimg')].find(e => !e.closest('.ghost')); if (!im) return;
+    const rest = [...root.querySelectorAll('.gline,.gsub,.gdots,.gnav')].filter(e => !e.closest('.ghost')).reduce((a, e) => a + e.offsetHeight + 8, 0);
+    const bars = document.getElementById('pTabs'), bottom = bars && !bars.classList.contains('hidden') && bars.offsetParent ? bars.getBoundingClientRect().top : innerHeight;
+    const h = Math.max(140, bottom - im.getBoundingClientRect().top - rest - 12), sv = [...im.querySelectorAll('svg')];
+    const avW = im.clientWidth - 20 * Math.max(0, sv.length - 1);
+    sv.forEach(x => { const vb = (x.getAttribute('viewBox') || '0 0 1 1').split(/\s+/).map(Number), r = vb[2] / vb[3] || 1, tot = sv.reduce((a, y) => { const v = (y.getAttribute('viewBox') || '0 0 1 1').split(/\s+/).map(Number); return a + (v[2] / v[3] || 1); }, 0);
+      const hh = Math.min(h, avW / tot) * (+x.dataset.k || 1); x.style.height = hh + 'px'; x.style.width = hh * r + 'px'; x.style.maxHeight = 'none'; x.style.maxWidth = 'none'; }); });
+}
+const PH_NAME = {guide:'📖 So geht\'s', pay:'① Einzahlen', showdown:'② Showdown: der Topf', double:'③ Vervielfachung!', payout:'④ Ausschüttung', build:'⑤ Bau-Update', propose:'⑥ § Regelrunde', vote:'⑥ § Abstimmung', verdict:'⑥ § Ergebnis', end:'🏁 Spielende'};
 const pct = x => Math.round(x * 100) + ' %';
 const roundsLeft = s => s.maxRounds - s.round + (['pay','showdown','double'].includes(s.phase) ? 1 : 0);
 function statusLine(s){
@@ -1545,6 +1623,12 @@ function hRender(){
   $('hRulesHead').onclick = () => { hRulesOpen = !hRulesOpen; hRender(); };
   if (!hRulesOpen) rp.onclick = () => { hRulesOpen = true; hRender(); }; else rp.onclick = null;
   const cb = document.getElementById('hCatBtn'); if (cb) cb.onclick = e => { e.stopPropagation(); hCatOpen = !hCatOpen; hRender(); };
+  $('hGame').classList.toggle('guidemode', s.phase === 'guide');
+  if (s.phase === 'guide') show('hStatus', false);
+  if (s.phase === 'guide'){ const gkey = 'g' + s.gi; if (gkey !== hLastKey){ hLastKey = gkey; const el = $('hCenter');
+      withTrans(el, true, 'pay', () => { el.innerHTML = guideHtml(s.gi, {rounds:s.maxRounds}) + `<div class="gnav"><button class="chip" id="gPrevB" ${s.gi ? '' : 'disabled'}>◀ zurück</button><button class="chip" id="gSkipB">Anleitung überspringen ⏭</button></div>`;
+        guideDraw(el, s.gi); fitGuide(el); $('gPrevB').onclick = hGuidePrev; $('gSkipB').onclick = () => { ac(); hGuideSkip(); }; }); }
+    return; }
   // Haus + Runden
   drawHouse($('hHouse'), s.stage, {flood: s.outcome === 'flood', round:s.round, max:s.maxRounds});
   $('hHouseInfo').innerHTML = `<b>${eur(s.total)}</b> von ${eur(s.goal)}<br>🏗️ ${pct(buildFrac(s.total, s.startTotal, s.goal))} gebaut`;
@@ -1910,12 +1994,12 @@ function pState(s){
   const prev = C.st; C.st = s; if (s.goalMul) WALLET_M = s.goalMul;
   if (s.me){ C.score = s.me.money; }
   pTop(); pScreen('pPlay'); show('pTabs'); $('pTabs').classList.toggle('withhost', !!C.isCreator); document.body.classList.toggle('withhost', !!C.isCreator); pWide();
-  const key = s.phase + s.round, fresh = key !== pLastKey; pLastKey = key;
+  const key = s.phase + s.round + (s.phase === 'guide' ? 'g' + s.gi : ''), fresh = key !== pLastKey; pLastKey = key;
   if (fresh && s.phase === 'pay') C.amt = null;
   const inSeq = ['double','payout'].includes(s.phase) && C.seqRound === s.round;
   if (C.room && fresh && !['double','payout'].includes(s.phase)) phaseFx(s);
   if (fresh && s.phase === 'end' && s.outcome === 'win' && C.room) setTimeout(() => showPodium([...s.players].sort((a, b) => a.place - b.place).map(p => ({avatar:p.avatar, name:p.name, score:p.money, place:p.place, label:eur(p.money)}))), 1500);
-  if (fresh && !['end','double','payout'].includes(s.phase)) phaseBanner(s);
+  if (fresh && !['end','double','payout','guide'].includes(s.phase)) phaseBanner(s);
   pReady(s);
   if (fresh){ C.det = false; try { window.scrollTo(0, 0); document.querySelector('#player .pbody').scrollTop = 0; } catch(e){} }
   withTrans($('pMain'), fresh && !inSeq, s.phase, () => pRender(fresh));
@@ -1925,6 +2009,11 @@ function pRender(fresh){
   const me = s.me || {}, el = $('pMain');
   const head = `<div class="pphase">${PH_NAME[s.phase] || ''}</div><div class="tip">${statusLine(s)}</div>${miniStand(s)}`;
   if (me.inGame === false){ el.innerHTML = head + '<div class="center2"><div class="bigemoji">🕐</div><div class="ti" style="font-size:1.6rem">Du bist ab der nächsten Runde dabei – mit 100 €.</div></div>'; pTabs(); return; }
+  if (s.phase === 'guide'){
+    if (fresh || C.gi !== s.gi){ C.gi = s.gi; el.innerHTML = guideHtml(s.gi, {phone:true, rounds:s.maxRounds}) + (C.isCreator ? '<div class="gnav"><button class="chip" id="gSkipP">Anleitung überspringen ⏭</button></div>' : '');
+      guideDraw(el, s.gi, {phone:true}); fitGuide(el); if (C.isCreator) $('gSkipP').onclick = () => { ac(); hGuideSkip(); }; }
+    pTabs(); return;
+  }
   if (s.phase === 'pay'){
     if (!me.locked){
       const minis = s.players.map(p => `<span><span class="ae">${esc(p.avatar)}</span>${p.locked ? '✅' : '🤔'}</span>`).join('');
@@ -1967,9 +2056,9 @@ function pRender(fresh){
       if (C.room) seqSounds(s.players.length);
     } else if (el.querySelector('svg.seq')){ pTabs(); return; }   // laufende Sequenz nicht unterbrechen
     const c = s.cur;
-    el.innerHTML = head.replace(PH_NAME[s.phase], '💶 Topf wird verteilt') + `<div class="seqhead"><span class="h1">🪙 ${eur(c.pot)} im Topf</span><span class="h2">${fxs(s)} = ${eur(c.doubled)}</span><span class="h3">${eur(c.doubled)} ÷ ${c.n - c.exclN} = ${eur(c.share)}</span></div>
+    el.innerHTML = `<div class="seqhead"><span class="h1">🪙 ${eur(c.pot)} im Topf</span><span class="h2">${fxs(s)} = ${eur(c.doubled)}</span><span class="h3">${eur(c.doubled)} ÷ ${c.n - c.exclN} = ${eur(c.share)}</span></div>
       <svg class="seq" width="100%"></svg>`;
-    drawSeq(el.querySelector('svg.seq'), s);
+    drawSeq(el.querySelector('svg.seq'), s); fitSvg(el.querySelector('svg.seq'));
   } else if ((s.phase === 'payout' || s.phase === 'double') && me.mine){
     fresh = !!C.beatsAnim;
     const m = me.mine, c = s.cur, bal = m.got - m.a - m.pen, dA = m.a - c.avg, rel = bal - c.avgBal;
@@ -2054,6 +2143,9 @@ function pReady(s){
   b.innerHTML = (s.me.ready ? '✓ bereit' : '🙋 Weiter') + ` <small>${s.next.ready}/${s.next.need}${s.next.go ? ' · gleich …' : ''}</small>`;
   b.onclick = () => { ac(); sTick(); C.conn && C.conn.open && C.conn.send({t:'ready'}); b.disabled = true; };
 }
+function fitSvg(svg){ requestAnimationFrame(() => { if (!svg.isConnected) return; const bars = document.getElementById('pTabs');
+  const bottom = bars && !bars.classList.contains('hidden') && bars.offsetParent ? bars.getBoundingClientRect().top : innerHeight;
+  svg.style.maxHeight = Math.max(220, bottom - svg.getBoundingClientRect().top - 6) + 'px'; }); }
 function pWaitNote(s){
   if (s.next && s.next.mode === 'vote' && !C.isCreator) return '';
   if (s.next && s.next.mode === 'auto') return '<div class="waitnote">⏱️ geht gleich automatisch weiter</div>';
@@ -2140,6 +2232,7 @@ if (typeof Peer === 'undefined'){ document.body.innerHTML = '<div style="padding
 $('homeHost').onclick = startHost;
 { const v = document.createElement('div'); v.className = 'muted'; v.style.cssText = 'margin-top:14px;font-size:.8rem'; v.textContent = 'Prototyp · Version ' + APP_VERSION; document.querySelector('#home .box').appendChild(v); }
 $('homeJoin').onclick = () => startPlayer('');
+$('pGuideBtn').onclick = guideOverlay;
 $('homeRoom').onclick = startRoom;
 if (Q.get('join') !== null) startPlayer(Q.get('join'));
 else if (Q.get('host') !== null) startHost();
