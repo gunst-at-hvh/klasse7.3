@@ -3,277 +3,459 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Gemeinwohl – Skizze</title>
+<title>Gemeinwohl – Skizze 2</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Gochi+Hand&display=swap" rel="stylesheet">
 <style>
-:root{--paper:#fdfbf4;--ink:#1e1e1e;--muted:#6b6b6b;--gold:#f6c945;--green:#8fd18f;--blue:#a5d8ff;--red:#ff8787;--violet:#d0bfff}
+:root{--paper:#fdfbf4;--ink:#1e1e1e;--muted:#6b6b6b}
 *{box-sizing:border-box}
 body{margin:0;background:var(--paper);color:var(--ink);font-family:"Patrick Hand","Comic Sans MS",cursive;font-size:20px;
   background-image:radial-gradient(#e7e1cf 1px,transparent 1px);background-size:22px 22px}
-main{max-width:1280px;margin:0 auto;padding:20px 16px 60px}
+main{max-width:1320px;margin:0 auto;padding:20px 16px 60px}
 h1{font-family:"Gochi Hand",cursive;font-size:2.6rem;margin:6px 0}
-h2{font-family:"Gochi Hand",cursive;font-size:2rem;margin:34px 0 6px}
-.note{color:var(--muted);max-width:900px;line-height:1.35}
-.grid{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end}
-.cell{text-align:center}
-.cell .lab{font-size:1.05rem;color:var(--muted);margin-top:-4px}
+h2{font-family:"Gochi Hand",cursive;font-size:2rem;margin:40px 0 4px}
+h3{font-family:"Gochi Hand",cursive;font-size:1.5rem;margin:22px 0 2px}
+.note{color:#444;max-width:980px;line-height:1.4}
+.note b{color:var(--ink)}
+.grid{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end}
 svg{display:block;overflow:visible}
-.row{display:flex;gap:26px;flex-wrap:wrap;align-items:flex-start}
-.slider{display:flex;align-items:center;gap:14px;font-size:1.4rem;margin:8px 0}
-input[type=range]{width:min(520px,80vw);accent-color:#1e1e1e;height:36px}
-.tag{display:inline-block;border:2px solid var(--ink);border-radius:10px 14px 9px 13px;padding:2px 10px;margin:2px;background:#fff}
+svg.frame{width:100%;height:auto;max-width:1280px}
+.row{display:flex;gap:22px;flex-wrap:wrap;align-items:flex-start}
+.flow{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.flow span{border:2px solid var(--ink);border-radius:12px 9px 14px 10px;padding:2px 12px;background:#fff}
+.flow i{font-style:normal;align-self:center}
+ol.ph{line-height:1.45;max-width:1000px}
+ol.ph li{margin:6px 0}
 </style>
 </head>
 <body>
 <main>
-  <h1>🏗️ Gemeinwohl-Spiel – Skizze</h1>
-  <div class="note">Noch kein spielbares Spiel – nur der Look zum Abstimmen: krakeliger Comic-Stil (wie Excalidraw), Geldberg in 10 Stufen,
-    Gemeinschafts-Hochhaus in 10 Stufen, dazu je ein Beispiel-Bildschirm für Beamer und Handy. Jede Zeichnung wird live gekrakelt – darum sieht sie bei jedem Laden minimal anders aus.</div>
+  <h1>🏗️ Gemeinwohl-Spiel – Skizze 2 (Storyboard)</h1>
+  <div class="note">Noch nicht spielbar – zum Abstimmen von Ablauf und Look. Alle Zeichnungen werden live „gekrakelt“.
+    <b>Startgeld 100 € pro Gruppe</b>, Topf ×2, an alle gleich verteilt, kein Höchstbetrag.
+    <b>Ziel:</b> Gemeinwohl (= alles Geld zusammen) erreicht das 10-Fache vom Start → Haus fertig → reichste Gruppe gewinnt. <b>Nach Runde 15 kommt die Flut.</b></div>
 
-  <h2>▶ Zum Ausprobieren</h2>
-  <div class="slider">Stufe <input type="range" id="lv" min="1" max="10" value="4"> <b id="lvT">4</b></div>
+  <h2>🎬 Ablauf einer Runde</h2>
+  <div class="flow"><span>① Einzahlen (geheim)</span><i>→</i><span>② Showdown: der Topf</span><i>→</i><span>③ ×2</span><i>→</i><span>④ Ausschüttung</span><i>→</i><span>⑤ Bau-Update</span><i>→</i><span>⑥ § Regelrunde</span><i>→</i><span>nächste Runde</span></div>
+  <ol class="ph">
+    <li><b>① Einzahlen</b> – Trommelwirbel-Timer. Jede Gruppe wirft geheim Geld in den Topf. Auf dem Beamer fällt bei jeder Abgabe eine Münze „klonk!“ in den Tresor der Gruppe. <i>Ohne Transparenz:</i> nur Tresore mit „? €“. <i>Mit Transparenz:</i> man sieht die Geldberge – und rätselt, wer wohl wie viel setzt.</li>
+    <li><b>② Showdown</b> – In der Mitte steht ein leerer Münzturm mit Skala: unten „alle zahlen nichts“ (nur der Sockel), oben „alle zahlen alles“. Er füllt sich langsam mit Trommelwirbel bis zum echten Topf. Dazu: Ø pro Gruppe und in % vom Möglichen.</li>
+    <li><b>③ ×2</b> – Der Turm wird geklont, „KLONK ×2“, beide Türme zusammen = neuer Topf.</li>
+    <li><b>④ Ausschüttung</b> – Der Topf zerspringt in gleich große Kacheln (eine pro Gruppe), die zu den Gruppen fliegen. Für alle: „Jede Gruppe bekommt X €“. Individuell (Handy; mit Transparenz auch am Beamer): eingezahlt − / erhalten + / Bilanz.</li>
+    <li><b>⑤ Bau-Update</b> – Das Gemeinwohl wird neu gezählt, das Haus wächst (Kran-Animation), der Runden-Balken rückt vor. Kurzer <b>Zwischenstand</b> mit Prognose: „Bei diesem Tempo: fertig in ~4 Runden – Flut in 10 Runden“.</li>
+    <li><b>⑥ § Regelrunde</b> – Die Gruppe mit der größten Einzahlung (wird verraten, der Betrag nicht) wählt am Handy eine Regel aus dem Katalog. Groß als §-Karte am Beamer, alle stimmen geheim 👍/👎, Stimmen werden aufgedeckt → Stempel <b>BESCHLOSSEN</b> (Karte fliegt in die Regeltafel) oder <b>ABGELEHNT</b>.</li>
+  </ol>
+  <div class="note"><b>Immer sichtbar:</b> oben die Spielstand-Leiste, rechts Haus + Runden-Balken, links die Regeltafel (einklappbar zu einem §-Reiter).</div>
+
+  <h3>① Einzahlen – geheim (ohne Transparenz)</h3><svg class="frame" id="f1" viewBox="0 0 1280 720"></svg>
+  <h3>① Einzahlen – mit Regel „Transparenz“ (Regeltafel eingeklappt)</h3><svg class="frame" id="f1b" viewBox="0 0 1280 720"></svg>
+  <h3>② Showdown – wie viel ist im Topf?</h3><svg class="frame" id="f2" viewBox="0 0 1280 720"></svg>
+  <h3>③ Verdopplung</h3><svg class="frame" id="f3" viewBox="0 0 1280 720"></svg>
+  <h3>④ Ausschüttung + ⑤ Bau-Update</h3><svg class="frame" id="f4" viewBox="0 0 1280 720"></svg>
+  <h3>⑥ § Regelrunde – Abstimmung</h3><svg class="frame" id="f5" viewBox="0 0 1280 720"></svg>
+
+  <h2>📱 Handy</h2>
+  <div class="note">Unten drei Reiter: <b>💰 Ich</b> · <b>§ Regeln</b> (geltende Regeln + Katalog zum Nachschlagen) · <b>🏢 Stand</b> (Haus, Runden, Rangliste falls transparent).</div>
   <div class="row">
-    <svg id="tryWallet" width="300" height="284"></svg>
-    <svg id="tryHouse" width="220" height="470"></svg>
+    <svg id="p1" width="380" height="760"></svg>
+    <svg id="p2" width="380" height="760"></svg>
+    <svg id="p3" width="380" height="760"></svg>
   </div>
 
-  <h2>🏢 Das Gemeinschafts-Hochhaus (10 Stufen)</h2>
-  <div class="note">Wächst mit dem Gemeinwohl (= alles Geld im Dorf zusammen). Stufe 10 = fertig → Spielende, wer den höchsten Geldberg hat, gewinnt.</div>
+  <h2>🏢 Gemeinschaftshaus – 10 Stufen</h2>
   <div class="grid" id="houses"></div>
-
-  <h2>💰 Der Geldberg (10 Stufen)</h2>
-  <div class="note">Wie beim Online-Poker: oben Münzen, in der Mitte groß der Wert, unten Scheine. Von „mickrig“ bis „Münztürme und Scheinberg“.</div>
+  <h2>💰 Geldberg – 10 Stufen (+ verdeckt)</h2>
+  <div class="note">Münzen und Scheine dicht beieinander, der Betrag in der Mitte mit Textmarker-Balken. Ohne Transparenz sehen die anderen nur den Tresor.</div>
   <div class="grid" id="wallets"></div>
-
-  <h2>🖥️ Beamer-Ansicht (Beispiel)</h2>
-  <svg id="beamer" width="1220" height="660"></svg>
-
-  <h2>📱 Handy-Ansicht (Beispiel)</h2>
-  <div class="row">
-    <svg id="phone1" width="380" height="760"></svg>
-    <svg id="phone2" width="380" height="760"></svg>
-  </div>
 </main>
 <script src="rough.js"></script>
 <script>
-const NS = 'http://www.w3.org/2000/svg';
-const INK = '#1e1e1e';
-let SEED = 1;
+const NS = 'http://www.w3.org/2000/svg', INK = '#1e1e1e';
+const HAND = '"Patrick Hand","Comic Sans MS",cursive', TITLE = '"Gochi Hand","Patrick Hand",cursive';
+let SEED = 7;
 const sd = () => (SEED = (SEED * 9301 + 49297) % 233280) + 1;
-function G(parent, tf){ const g = document.createElementNS(NS, 'g'); if (tf) g.setAttribute('transform', tf); parent.appendChild(g); return g; }
-function T(parent, x, y, text, size = 20, opt = {}){
+const rnd = (() => { let x = 12345; return () => (x = (x * 16807) % 2147483647) / 2147483647; })();
+const eur = v => v.toLocaleString('de-DE') + ' €';
+function G(p, tf){ const g = document.createElementNS(NS, 'g'); if (tf) g.setAttribute('transform', tf); p.appendChild(g); return g; }
+function T(p, x, y, text, size = 20, o = {}){
   const t = document.createElementNS(NS, 'text');
   t.setAttribute('x', x); t.setAttribute('y', y); t.setAttribute('font-size', size);
-  t.setAttribute('font-family', opt.font || '"Gochi Hand","Patrick Hand",cursive');
-  t.setAttribute('text-anchor', opt.anchor || 'middle'); t.setAttribute('fill', opt.fill || INK);
-  if (opt.weight) t.setAttribute('font-weight', opt.weight);
-  t.textContent = text; parent.appendChild(t); return t;
+  t.setAttribute('font-family', o.font || TITLE); t.setAttribute('text-anchor', o.anchor || 'middle'); t.setAttribute('fill', o.fill || INK);
+  if (o.rot) t.setAttribute('transform', `rotate(${o.rot} ${x} ${y})`);
+  t.textContent = text; p.appendChild(t); return t;
 }
-/* kleine Helfer für krakelige Formen */
 function mk(svg){
   const rc = rough.svg(svg);
-  const base = o => Object.assign({stroke:INK, strokeWidth:1.6, roughness:1.4, bowing:1.2, seed:sd()}, o);
+  const b = o => Object.assign({stroke:INK, strokeWidth:1.7, roughness:1.6, bowing:1.4, seed:sd()}, o);
   return {
-    rect:(g,x,y,w,h,o={}) => g.appendChild(rc.rectangle(x,y,w,h,base(o))),
-    ell:(g,x,y,w,h,o={}) => g.appendChild(rc.ellipse(x,y,w,h,base(o))),
-    line:(g,x1,y1,x2,y2,o={}) => g.appendChild(rc.line(x1,y1,x2,y2,base(o))),
-    poly:(g,pts,o={}) => g.appendChild(rc.polygon(pts,base(o))),
-    path:(g,d,o={}) => g.appendChild(rc.path(d,base(o))),
-    circ:(g,x,y,d,o={}) => g.appendChild(rc.circle(x,y,d,base(o)))
+    rect:(g,x,y,w,h,o={}) => g.appendChild(rc.rectangle(x,y,w,h,b(o))),
+    ell:(g,x,y,w,h,o={}) => g.appendChild(rc.ellipse(x,y,w,h,b(o))),
+    line:(g,x1,y1,x2,y2,o={}) => g.appendChild(rc.line(x1,y1,x2,y2,b(o))),
+    poly:(g,pts,o={}) => g.appendChild(rc.polygon(pts,b(o))),
+    path:(g,d,o={}) => g.appendChild(rc.path(d,b(o))),
+    circ:(g,x,y,d,o={}) => g.appendChild(rc.circle(x,y,d,b(o)))
   };
 }
-
-/* ================= GELDBERG ================= */
-const COINS = [[],[3],[5],[5,3],[6,5,3],[8,6,5],[9,8,7,5],[12,10,9,8,6],[14,13,12,10,9],[17,16,15,14,13,12]];
-const LOOSE = [2,0,1,0,1,1,2,2,3,4];
-const BILLS = [0,0,0,1,2,3,4,6,9,13];   // Anzahl Scheine (ab 3 als Bündel)
-const LEVEL_NAME = ['mickrig','ein Häufchen','ein Stapel','Startgeld','ganz ordentlich','gut gefüllt','reich','sehr reich','Münztürme','Geldberg!'];
-function coinStack(R, g, x, base, n, r = 14){
-  for (let i = 0; i < n; i++){
-    const y = base - i*5;
-    R.ell(g, x, y, 2*r, r*.75, {fill:'#f6c945', fillStyle:'solid', roughness:1, strokeWidth:1.2});
-  }
-  if (n) T(g, x, base - (n-1)*5 + 4, 'T', 10, {fill:'#9a6b00'});
+/* Textmarker-Balken hinter einem Text */
+function HL(R, g, x, y, text, size, color = '#ffe066', o = {}){
+  const w = text.length * size * .5 + 18, h = size * .78;
+  R.rect(g, x - w/2, y - h*.82, w, h, {fill:color, fillStyle:'solid', stroke:'none', roughness:2.4, seed:sd()});
+  const t = T(g, x, y, text, size, o); return t;
 }
+function arrow(R, g, x1, y1, x2, y2, o = {}){
+  R.path(g, `M${x1} ${y1} Q${(x1+x2)/2 + (o.bend||0)} ${(y1+y2)/2 - (o.lift||30)} ${x2} ${y2}`, {strokeWidth:2});
+  const a = Math.atan2(y2 - (y1+y2)/2 + (o.lift||30), x2 - (x1+x2)/2 - (o.bend||0));
+  R.line(g, x2, y2, x2 - 14*Math.cos(a - .5), y2 - 14*Math.sin(a - .5), {strokeWidth:2});
+  R.line(g, x2, y2, x2 - 14*Math.cos(a + .5), y2 - 14*Math.sin(a + .5), {strokeWidth:2});
+}
+
+/* ================= GELDBERG (kompakt, 210 x 150) ================= */
+const COINS = [[],[3],[5,2],[5,4],[6,5,3],[8,7,5],[9,8,7,5],[11,10,9,8,6],[13,12,11,10,9],[16,15,14,13,12,11]];
+const LOOSE = [2,1,1,1,1,1,2,2,3,4];
+const BILLS = [0,0,0,1,2,3,4,6,9,13];
+const LV = [0,25,50,100,150,225,350,500,750,1250];
+const levelOf = v => { let l = 1; LV.forEach((t, i) => { if (v >= t) l = i + 1; }); return l; };
+const LEVEL_NAME = ['mickrig','ein Häufchen','ein Stapel','Startgeld','ganz ordentlich','gut gefüllt','reich','sehr reich','Münztürme','Geldberg!'];
+function coinStack(R, g, x, base, n){ for (let i = 0; i < n; i++) R.ell(g, x, base - i*4.6, 26, 10, {fill:'#f6c945', fillStyle:'solid', roughness:1.1, strokeWidth:1.15}); }
 function bill(R, g, x, y, rot = 0){
-  const gg = G(g, `rotate(${rot} ${x+34} ${y+16})`);
-  R.rect(gg, x, y, 68, 32, {fill:'#8fd18f', fillStyle:'hachure', hachureGap:5, fillWeight:1.2, roughness:1.3});
-  R.ell(gg, x+34, y+16, 20, 18, {fill:'#d3f9d8', fillStyle:'solid', roughness:1});
-  T(gg, x+34, y+21, '10', 13);
+  const gg = G(g, `rotate(${rot} ${x+30} ${y+14})`);
+  R.rect(gg, x, y, 60, 28, {fill:'#8fd18f', fillStyle:'hachure', hachureGap:5, roughness:1.4});
+  R.ell(gg, x+30, y+14, 18, 16, {fill:'#d3f9d8', fillStyle:'solid', roughness:1}); T(gg, x+30, y+19, '€', 12);
 }
 function bundle(R, g, x, y, rot = 0){
-  const gg = G(g, `rotate(${rot} ${x+34} ${y+16})`);
-  for (let i = 3; i >= 0; i--) R.rect(gg, x + i*2, y - i*3, 68, 32, {fill:'#8fd18f', fillStyle:i ? 'solid' : 'hachure', hachureGap:5, roughness:1.2, strokeWidth:1.2});
-  R.rect(gg, x+28, y-10, 12, 44, {fill:'#ffd8a8', fillStyle:'solid', roughness:1});
-  T(gg, x+34, y+21, '100', 12);
+  const gg = G(g, `rotate(${rot} ${x+30} ${y+14})`);
+  for (let i = 3; i >= 0; i--) R.rect(gg, x + i*2, y - i*2.5, 60, 28, {fill:'#8fd18f', fillStyle:i ? 'solid' : 'hachure', hachureGap:5, roughness:1.2, strokeWidth:1.15});
+  R.rect(gg, x+25, y-8, 10, 38, {fill:'#ffd8a8', fillStyle:'solid', roughness:1});
 }
-function goldBar(R, g, x, y){
-  R.poly(g, [[x,y],[x+46,y],[x+38,y-16],[x+8,y-16]], {fill:'#fcc419', fillStyle:'cross-hatch', hachureGap:4, roughness:1.1});
-}
-/* Geldberg einer Stufe (1..10) mit Wert in der Mitte; Fläche 240 x 230 */
-function drawWallet(svg, parent, level, value, opt = {}){
-  const R = mk(svg), L = level - 1, g = G(parent, opt.tf);
-  if (!opt.bare) R.rect(g, 0, 0, 240, 244, {fill:'#fff9db', fillStyle:'solid', roughness:2, strokeWidth:2});
-  // Münzen oben
-  const st = COINS[L], gap = 34, x0 = 120 - (st.length - 1)*gap/2;
-  st.forEach((n, i) => coinStack(R, g, x0 + i*gap, 98, n));
-  for (let i = 0; i < LOOSE[L]; i++) R.ell(g, 28 + i*24 + (i%2)*8, 104 - (i%2)*4, 26, 10, {fill:'#f6c945', fillStyle:'solid', roughness:1, strokeWidth:1.1});
-  if (L >= 9){ T(g, 26, 30, '✨', 22); T(g, 214, 22, '✨', 18); }
-  // Wert groß in der Mitte
-  T(g, 120, 144, value + ' T', L >= 8 ? 42 : 40);
-  // Scheine unten
+function goldBar(R, g, x, y){ R.poly(g, [[x,y],[x+40,y],[x+33,y-14],[x+7,y-14]], {fill:'#fcc419', fillStyle:'cross-hatch', hachureGap:4, roughness:1.2}); }
+function drawWallet(svg, parent, value, o = {}){
+  const R = mk(svg), L = levelOf(value) - 1, g = G(parent, o.tf);
+  if (!o.bare) R.rect(g, 0, 0, 210, 150, {fill:'#fff9db', fillStyle:'solid', roughness:2.2, strokeWidth:2});
+  // Münzen (Basis y=74) und Scheine (ab y=78) dicht beieinander
+  const st = COINS[L], gap = 28, x0 = 105 - (st.length - 1)*gap/2;
+  st.forEach((n, i) => coinStack(R, g, x0 + i*gap, 74, n));
+  for (let i = 0; i < LOOSE[L]; i++) R.ell(g, Math.min(196, (st.length ? x0 + st.length*gap - 8 : 120) + i*13), 80 - (i%2)*3, 22, 9, {fill:'#f6c945', fillStyle:'solid', roughness:1, strokeWidth:1.1});
   const nb = BILLS[L];
-  if (nb <= 2) for (let i = 0; i < nb; i++) bill(R, g, 52 + i*72, 176, (i ? 6 : -5));
+  if (nb <= 2) for (let i = 0; i < nb; i++) bill(R, g, 48 + i*58, 92, (i ? 7 : -6));
   else {
-    const bundles = Math.ceil(nb / 2), rows = bundles > 4 ? 2 : 1, perRow = Math.ceil(bundles / rows);
-    let k = 0;
-    for (let r = 0; r < rows; r++){
-      const cnt = Math.min(perRow, bundles - k), w = cnt*58;
-      for (let i = 0; i < cnt; i++, k++) bundle(R, g, 120 - w/2 + i*58 - 5 + r*14, (rows > 1 ? 205 : 192) - r*22, (i - cnt/2)*4);
-    }
+    const bundles = Math.ceil(nb / 2), rows = bundles > 4 ? 2 : 1, per = Math.ceil(bundles / rows); let k = 0;
+    for (let r = 0; r < rows; r++){ const c = Math.min(per, bundles - k), w = c*50; for (let i = 0; i < c; i++, k++) bundle(R, g, 105 - w/2 + i*50 - 5 + r*12, 112 - r*20, (i - c/2)*4); }
   }
-  if (L >= 9){ goldBar(R, g, 6, 238); goldBar(R, g, 188, 238); goldBar(R, g, 196, 220); }
-  if (opt.label) T(g, 120, 268, `Stufe ${level}: ${LEVEL_NAME[L]}`, 20, {font:'"Patrick Hand",cursive', fill:'#555'});
+  if (L >= 9){ goldBar(R, g, 4, 146); goldBar(R, g, 166, 146); T(g, 18, 22, '✨', 18); T(g, 194, 18, '✨', 15); }
+  HL(R, g, 105, 94, eur(value), L >= 8 ? 34 : 32);
+  if (o.label) T(g, 105, 174, `Stufe ${L+1}: ${LEVEL_NAME[L]}`, 19, {font:HAND, fill:'#555'});
+  return g;
+}
+/* verdeckter Tresor */
+function drawSafe(svg, parent, o = {}){
+  const R = mk(svg), g = G(parent, o.tf);
+  if (!o.bare) R.rect(g, 0, 0, 210, 150, {fill:'#f1f3f5', fillStyle:'solid', roughness:2.2, strokeWidth:2});
+  R.rect(g, 52, 18, 106, 92, {fill:'#adb5bd', fillStyle:'hachure', hachureGap:5, roughness:1.8, strokeWidth:2});
+  R.rect(g, 62, 28, 86, 72, {fill:'#ced4da', fillStyle:'solid', roughness:1.4});
+  R.circ(g, 105, 64, 34, {fill:'#868e96', fillStyle:'solid'}); R.line(g, 105, 64, 116, 54, {strokeWidth:2.4});
+  R.line(g, 62, 110, 62, 118); R.line(g, 148, 110, 148, 118);
+  HL(R, g, 105, 140, '? €', 30, '#dee2e6');
+  if (o.drop){ R.ell(g, 105, 6, 22, 9, {fill:'#f6c945', fillStyle:'solid'}); T(g, 160, 16, 'klonk!', 18, {rot:-8}); }
+  if (o.label) T(g, 105, 174, 'verdeckt (ohne Transparenz)', 19, {font:HAND, fill:'#555'});
   return g;
 }
 
-/* ================= HOCHHAUS ================= */
+/* ================= HAUS (200 x 450, Boden y = 420) ================= */
 const FLOORS = [0,0,1,2,4,5,7,8,10,10];
-const HOUSE_NAME = ['Baugrube','Fundament','1. Stock','2. Stock','4. Stock','5. Stock','7. Stock','8. Stock','Rohbau fertig','FERTIG! 🎉'];
-/* Fläche 200 x 450, Boden bei y = 420 */
-function drawHouse(svg, parent, stage, opt = {}){
-  const R = mk(svg), S = stage - 1, g = G(parent, opt.tf);
-  const gy = 420, x0 = 34, w = 104, fh = 33;
-  // Himmel bei fertig
-  if (S === 9){ R.rect(g, 0, 0, 200, gy, {fill:'#dbe4ff', fillStyle:'solid', stroke:'none', roughness:0}); }
-  // Boden + Gras
-  R.rect(g, -6, gy, 212, 22, {fill:'#b2f2bb', fillStyle:'hachure', hachureGap:6, roughness:1.6});
+const HOUSE_NAME = ['Baugrube','Fundament','1. Stock','2. Stock','4. Stock','5. Stock','7. Stock','8. Stock','Richtfest','FERTIG! 🎉'];
+const FCOL = ['#ffc9c9','#ffe8cc','#d3f9d8','#d0ebff','#e5dbff','#fff3bf','#ffdeeb','#c5f6fa','#ffd8a8','#e9fac8'];
+const FSTY = ['hachure','cross-hatch','zigzag','hachure','dots','hachure','cross-hatch','zigzag','hachure','dots'];
+const JX = [0,-4,3,-2,5,-3,2,-5,4,-1], JW = [0,6,-4,8,-6,4,-2,6,-8,2];
+function windowAt(R, g, x, y, type, lit){
+  const f = {fill: lit ? '#ffe066' : '#a5d8ff', fillStyle:'solid', roughness:1.4, strokeWidth:1.3};
+  if (type === 0){ R.rect(g, x, y, 20, 17, f); R.line(g, x + 10, y, x + 10, y + 17, {strokeWidth:1}); }
+  else if (type === 1) R.path(g, `M${x} ${y+18} L${x} ${y+8} Q${x+10} ${y-4} ${x+20} ${y+8} L${x+20} ${y+18} Z`, f);
+  else if (type === 2) R.circ(g, x + 10, y + 9, 17, f);
+  else { R.rect(g, x + 2, y - 2, 16, 20, f); R.line(g, x - 3, y + 14, x + 23, y + 14, {strokeWidth:1.6}); R.line(g, x - 3, y + 18, x + 23, y + 18, {strokeWidth:1}); }
+}
+function drawHouse(svg, parent, stage, o = {}){
+  const R = mk(svg), S = stage - 1, g = G(parent, o.tf);
+  const gy = 420, X0 = 36, W = 100, fh = 33;
+  if (S === 9) R.rect(g, -4, 0, 208, gy, {fill:'#dbe4ff', fillStyle:'hachure', hachureGap:9, stroke:'none', roughness:2});
+  // Ziel-Umriss
+  if (S < 9) R.rect(g, X0, gy - 14 - 10*fh, W, 10*fh, {stroke:'#b8bec4', strokeWidth:1.2, strokeLineDash:[8,7], roughness:1.6});
+  if (S < 9) T(g, X0 + W/2, gy - 14 - 10*fh - 6, 'Ziel', 15, {font:HAND, fill:'#999'});
+  R.rect(g, -6, gy, 212, 22, {fill:'#b2f2bb', fillStyle:'hachure', hachureGap:6, roughness:2});
   if (S === 0){
-    R.path(g, `M${x0} ${gy} q${w/2} 26 ${w} 0`, {fill:'#d9b38c', fillStyle:'hachure', hachureGap:4});
-    R.line(g, 160, gy, 160, gy - 70, {strokeWidth:2.2});
-    R.rect(g, 132, gy - 108, 64, 40, {fill:'#fff', fillStyle:'solid'});
-    T(g, 164, gy - 92, 'Hier', 13); T(g, 164, gy - 77, 'entsteht…', 13);
-    T(g, 70, gy - 10, '⛏️', 22);
+    R.path(g, `M${X0-4} ${gy} q${W/2 + 4} 30 ${W + 8} 0`, {fill:'#d9b38c', fillStyle:'cross-hatch', hachureGap:5});
+    // Bagger
+    R.rect(g, 128, gy - 30, 44, 22, {fill:'#ffd43b', fillStyle:'solid'}); R.rect(g, 150, gy - 48, 20, 18, {fill:'#a5d8ff', fillStyle:'solid'});
+    R.circ(g, 136, gy - 6, 14, {fill:'#495057', fillStyle:'solid'}); R.circ(g, 164, gy - 6, 14, {fill:'#495057', fillStyle:'solid'});
+    R.line(g, 132, gy - 28, 100, gy - 60, {strokeWidth:3}); R.line(g, 100, gy - 60, 84, gy - 26, {strokeWidth:3});
+    R.poly(g, [[76,gy-30],[92,gy-30],[88,gy-16],[78,gy-18]], {fill:'#868e96', fillStyle:'solid'});
+    R.line(g, 22, gy, 22, gy - 74, {strokeWidth:2.2}); R.rect(g, 0, gy - 110, 70, 40, {fill:'#fff', fillStyle:'solid'});
+    T(g, 35, gy - 94, 'Hier entsteht', 12, {font:HAND}); T(g, 35, gy - 78, 'unser Haus!', 12, {font:HAND});
+    T(g, 186, gy - 4, '🚧', 18);
   }
-  if (S < 9) R.rect(g, x0, gy - 14 - 10*fh, w, 10*fh, {stroke:'#adb5bd', strokeWidth:1.2, strokeLineDash:[7,6], roughness:1});
-  if (S >= 1) R.rect(g, x0 - 6, gy - 14, w + 12, 14, {fill:'#adb5bd', fillStyle:'cross-hatch', hachureGap:5});
-  const n = FLOORS[S], top = gy - 14 - n*fh;
+  if (S >= 1) R.rect(g, X0 - 8, gy - 14, W + 16, 14, {fill:'#adb5bd', fillStyle:'cross-hatch', hachureGap:5, roughness:2});
+  if (S === 1){ R.circ(g, 168, gy - 26, 30, {fill:'#ff922b', fillStyle:'hachure', hachureGap:4}); R.line(g, 156, gy - 12, 152, gy); R.line(g, 180, gy - 12, 184, gy); T(g, 60, gy - 22, '👷', 22); }
+  const n = FLOORS[S]; let top = gy - 14;
   for (let f = 0; f < n; f++){
-    const y = gy - 14 - (f+1)*fh;
-    R.rect(g, x0, y, w, fh, {fill: S === 9 ? '#ffc9c9' : '#ffe3e3', fillStyle: S >= 8 ? 'solid' : 'hachure', hachureGap:7, roughness:1.3});
+    const y = gy - 14 - (f+1)*fh, x = X0 + JX[f], w = W + JW[f];
+    R.rect(g, x, y, w, fh, {fill:FCOL[f], fillStyle: S >= 8 ? 'solid' : FSTY[f], hachureGap:6, roughness:1.9, strokeWidth:1.8});
     for (let k = 0; k < 3; k++){
-      const lit = S === 9 && (f*3 + k) % 4 !== 1;
-      R.rect(g, x0 + 10 + k*31, y + 8, 22, 17, {fill: lit ? '#ffe066' : '#a5d8ff', fillStyle:'solid', roughness:1.1, strokeWidth:1.2});
+      const t = (f + k*2) % 4, lit = S === 9 && (f*3 + k) % 4 !== 1;
+      windowAt(R, g, x + 10 + k*((w - 30)/2) - (k ? 10 : 0), y + 8, t, lit);
     }
+    if (f % 3 === 1) T(g, x + w - 4, y + 30, '🪴', 13);
+    if (f === 4 && S >= 6) { R.line(g, x - 14, y + 6, x, y + 6, {strokeWidth:1}); T(g, x - 8, y + 18, '👕', 11); }
+    top = y;
   }
-  // Gerüst
   if (S >= 2 && S <= 8){
-    const sx = x0 + w + 6;
-    R.line(g, sx, gy, sx, top - 6, {strokeWidth:1.3}); R.line(g, sx + 12, gy, sx + 12, top - 6, {strokeWidth:1.3});
+    const sx = X0 + W + 10;
+    R.line(g, sx, gy, sx, top - 6, {strokeWidth:1.4}); R.line(g, sx + 12, gy, sx + 12, top - 6, {strokeWidth:1.4});
     for (let y = gy - 20; y > top; y -= 26) R.line(g, sx, y, sx + 12, y - 18, {strokeWidth:1});
+    T(g, X0 + W/2, top - 4, '👷', 18);
   }
-  // Kran
-  if (S >= 1 && S <= 8){
-    const mx = 182, mt = Math.max(16, top - 60);
-    R.line(g, mx, gy, mx, mt, {strokeWidth:2.4});
-    R.line(g, mx - 7, gy, mx - 7, mt + 10, {strokeWidth:1.3});
-    for (let y = gy - 18; y > mt + 10; y -= 22) R.line(g, mx - 7, y, mx, y - 14, {strokeWidth:1});
-    R.line(g, mx + 12, mt, x0 + 10, mt, {strokeWidth:2.2});
-    R.line(g, x0 + 40, mt, x0 + 40, top - 18, {strokeWidth:1});
-    R.rect(g, x0 + 30, top - 20, 20, 10, {fill:'#ffa94d', fillStyle:'solid'});
-    R.rect(g, mx - 2, mt - 4, 18, 12, {fill:'#ffd43b', fillStyle:'solid'});
+  if (S >= 2 && S <= 7){
+    const mx = 186, mt = Math.max(18, top - 70);
+    R.line(g, mx, gy, mx, mt, {strokeWidth:2.6}); R.line(g, mx - 8, gy, mx - 8, mt + 10, {strokeWidth:1.3});
+    for (let y = gy - 18; y > mt + 10; y -= 22) R.line(g, mx - 8, y, mx, y - 14, {strokeWidth:1});
+    R.line(g, mx + 14, mt, X0 + 6, mt + 3, {strokeWidth:2.4});
+    R.line(g, X0 + 46, mt + 2, X0 + 46, top - 26, {strokeWidth:1});
+    R.rect(g, X0 + 34, top - 28, 24, 11, {fill:'#ff922b', fillStyle:'solid'});
+    R.rect(g, mx - 3, mt - 5, 20, 13, {fill:'#ffd43b', fillStyle:'solid'});
+    T(g, 30, Math.max(30, mt - 10), '🐦', 14);
   }
-  // Rohbau / Dach / Fahne
-  if (S === 8) R.rect(g, x0 - 4, top - 8, w + 8, 8, {fill:'#868e96', fillStyle:'solid'});
+  if (S === 8){ R.rect(g, X0 - 6, top - 8, W + 12, 8, {fill:'#868e96', fillStyle:'solid'}); T(g, X0 + W/2, top - 12, '🌲', 30); T(g, 170, top + 20, 'Richtfest!', 16, {rot:-10}); }
   if (S === 9){
-    R.poly(g, [[x0 - 8, top], [x0 + w + 8, top], [x0 + w/2, top - 34]], {fill:'#fa5252', fillStyle:'hachure', hachureGap:5});
-    R.line(g, x0 + w/2, top - 34, x0 + w/2, top - 78, {strokeWidth:2});
-    R.poly(g, [[x0 + w/2, top - 78], [x0 + w/2 + 34, top - 70], [x0 + w/2, top - 60]], {fill:'#40c057', fillStyle:'solid'});
-    T(g, 22, 40, '🎆', 30); T(g, 176, 70, '🎇', 26); T(g, 160, 24, '✨', 20);
-    R.rect(g, x0 + 38, gy - 14 - 30, 28, 30, {fill:'#845ef7', fillStyle:'solid'});
+    R.poly(g, [[X0 - 10, top], [X0 + W + 10, top], [X0 + W - 8, top - 22], [X0 + 8, top - 22]], {fill:'#fa5252', fillStyle:'zigzag', hachureGap:5, roughness:2});
+    T(g, X0 + 24, top - 24, '🌳', 20); T(g, X0 + 76, top - 24, '🌻', 16);
+    R.line(g, X0 + 50, top - 22, X0 + 50, top - 70, {strokeWidth:2.2});
+    R.poly(g, [[X0 + 50, top - 70], [X0 + 86, top - 62], [X0 + 50, top - 52]], {fill:'#40c057', fillStyle:'solid'});
+    T(g, 20, 44, '🎆', 30); T(g, 178, 84, '🎇', 26); T(g, 160, 30, '✨', 20); T(g, 30, 120, '☀️', 22);
+    R.rect(g, X0 + 38, gy - 44, 26, 30, {fill:'#845ef7', fillStyle:'solid'}); T(g, 20, gy - 4, '🎉', 18); T(g, 182, gy - 4, '🥳', 18);
   }
-  if (opt.label) T(g, 100, 470, `Stufe ${stage}: ${HOUSE_NAME[S]}`, 20, {font:'"Patrick Hand",cursive', fill:'#555'});
+  if (o.label) T(g, 100, 470, `Stufe ${stage}: ${HOUSE_NAME[S]}`, 19, {font:HAND, fill:'#555'});
+  return g;
+}
+/* Runden-Balken (senkrecht, neben dem Haus) */
+function drawRounds(svg, parent, round, max, o = {}){
+  const R = mk(svg), g = G(parent, o.tf), h = o.h || 380, w = 26, seg = h / max;
+  R.rect(g, 0, 0, w, h, {fill:'#fff', fillStyle:'solid', roughness:1.8});
+  for (let i = 0; i < round; i++){
+    const col = i < max*.5 ? '#8ce99a' : i < max*.8 ? '#ffd43b' : '#ff8787';
+    R.rect(g, 3, h - (i+1)*seg + 1, w - 6, seg - 2, {fill:col, fillStyle:'solid', roughness:1.2, strokeWidth:1});
+  }
+  for (let i = 1; i < max; i++) R.line(g, 0, h - i*seg, 6, h - i*seg, {strokeWidth:1});
+  T(g, w/2, -26, '🌊', 22); T(g, w/2, -6, 'Flut', 13, {font:HAND});
+  T(g, w/2, h + 22, `${round}/${max}`, 17, {font:HAND});
+  R.line(g, w + 2, h - round*seg, w + 12, h - round*seg - 6, {strokeWidth:1.6}); T(g, w + 16, h - round*seg - 2, 'jetzt', 13, {font:HAND, anchor:'start'});
   return g;
 }
 
-/* ================= Galerie ================= */
-function cell(container, w, h, fn){
-  const d = document.createElement('div'); d.className = 'cell';
-  const s = document.createElementNS(NS, 'svg'); s.setAttribute('width', w); s.setAttribute('height', h);
-  d.appendChild(s); container.appendChild(d); fn(s); return s;
+/* ================= Beamer-Rahmen ================= */
+const PL = [['🚀','Raketen','#ffd43b',380],['😎','Füchse','#ff8787',260],['🐼','Pandas','#74c0fc',140],['🦄','Einhörner','#b197fc',210],
+            ['🐸','Frösche','#8ce99a',90],['🔥','Blitze','#ffa8a8',520],['🌵','Kakteen','#96f2d7',170],['🐙','Kraken','#eebefa',300]];
+const RULES_ON = [['§ 4','👁️ Transparenz','Alle sehen Geldberge und Einzahlungen.','Runde 2 · 6:2'],
+                  ['§ 5','📏 Mindestbeitrag','Wer weniger als 10 % einzahlt, bekommt nichts aus dem Topf.','Runde 4 · 5:3']];
+function frame(id, o){
+  const s = document.getElementById(id), R = mk(s);
+  R.rect(s, 4, 4, 1272, 712, {fill:'#fffdf5', fillStyle:'solid', roughness:2.4, strokeWidth:2.6});
+  // Kopf
+  T(s, 26, 50, '🏗️ Gemeinwohl', 34, {anchor:'start'});
+  R.rect(s, 430, 18, 420, 46, {fill:o.pc || '#d0bfff', fillStyle:'solid', roughness:2});
+  T(s, 640, 50, o.phase, 28);
+  if (o.timer){ R.ell(s, 1210, 40, 96, 54, {fill:'#ffc9c9', fillStyle:'solid'}); T(s, 1210, 50, o.timer, 26); }
+  // Spielstand-Leiste
+  R.rect(s, 16, 74, 1248, 36, {fill:'#f8f9fa', fillStyle:'solid', roughness:1.6, strokeWidth:1.4});
+  T(s, 30, 99, o.status || 'Runde 5 / 15  ·  Gemeinwohl 2.070 € von 8.000 €  ·  Ø Einzahlung zuletzt 31 %  ·  Prognose: fertig in ~5 Runden', 19, {anchor:'start', font:HAND});
+  // Regeltafel
+  let cx0;
+  if (o.rules === 'open'){
+    const gx = 16, gy = 120;
+    R.rect(s, gx, gy, 236, 586, {fill:'#fff8e6', fillStyle:'solid', roughness:2});
+    for (let y = gy + 60; y < gy + 580; y += 26) R.line(s, gx + 8, y, gx + 228, y, {stroke:'#e9ddb8', strokeWidth:1, roughness:.8});
+    T(s, gx + 118, gy + 34, '§ Regeltafel', 28); T(s, gx + 222, gy + 30, '◂', 22);
+    const base = [['§ 1','Topf-Regel','geheim zahlen · Topf ×2 · gleich verteilt'],['§ 2','Ziel & Flut','Haus fertig → Reichste gewinnt'],['§ 3','Vorschlagsrecht','größte Einzahlung schlägt vor']];
+    let y = gy + 70;
+    base.forEach(([n, h, t]) => { T(s, gx + 12, y, `${n} ${h}`, 18, {anchor:'start'}); T(s, gx + 12, y + 20, t, 14, {anchor:'start', font:HAND, fill:'#555'}); y += 52; });
+    y += 16;
+    (o.ruleList || RULES_ON).forEach(([n, h, t, when], i) => {
+      R.rect(s, gx + 6, y - 22, 224, 88, {fill: i === (o.newRule ?? -1) ? '#fff3bf' : '#d3f9d8', fillStyle:'solid', roughness:1.8, strokeWidth:1.4});
+      T(s, gx + 14, y, `${n} ${h}`, 18, {anchor:'start'}); wrap(s, gx + 14, y + 19, t, 14, 31, '#333');
+      T(s, gx + 224, y + 60, when, 13, {anchor:'end', font:HAND, fill: i === (o.newRule ?? -1) ? '#e67700' : '#2b8a3e'});
+      y += 96;
+    });
+    R.rect(s, gx + 18, gy + 540, 200, 34, {stroke:'#868e96', strokeLineDash:[6,5], roughness:1.4});
+    T(s, gx + 118, gy + 563, '📖 Regelkatalog ansehen', 17, {font:HAND});
+    cx0 = 262;
+  } else {
+    R.rect(s, 16, 120, 40, 586, {fill:'#fff8e6', fillStyle:'solid', roughness:2});
+    T(s, 36, 160, '§', 30); const t = T(s, 36, 400, `Regeln (${(o.ruleList || RULES_ON).length + 3}) ▸`, 20, {rot:90});
+    cx0 = 66;
+  }
+  // Haus + Runden
+  R.rect(s, 1012, 120, 252, 586, {fill:'#f1f3f5', fillStyle:'solid', roughness:2});
+  T(s, 1138, 148, 'Unser Haus', 24);
+  T(s, 1138, 172, o.house || '2.070 / 8.000 € · 26 %', 17, {font:HAND});
+  drawRounds(s, s, o.round || 5, 15, {tf:'translate(1024,236)', h:420});
+  drawHouse(s, s, o.stage || 4, {tf:'translate(1066,224) scale(.95)'});
+  return {s, R, x0:cx0, x1:1002};
 }
-const VAL = [3, 8, 15, 20, 34, 52, 80, 120, 190, 320];
-for (let i = 1; i <= 10; i++) cell(document.getElementById('houses'), 205, 480, s => drawHouse(s, s, i, {label:true}));
-for (let i = 1; i <= 10; i++) cell(document.getElementById('wallets'), 245, 276, s => drawWallet(s, s, i, VAL[i-1], {label:true}));
-
-/* ================= Zum Ausprobieren ================= */
-function tryIt(){
-  const v = +document.getElementById('lv').value; document.getElementById('lvT').textContent = v;
-  ['tryWallet','tryHouse'].forEach(id => document.getElementById(id).innerHTML = '');
-  const a = document.getElementById('tryWallet'), b = document.getElementById('tryHouse');
-  drawWallet(a, a, v, VAL[v-1], {label:true, tf:'translate(10,4)'});
-  drawHouse(b, b, v, {label:true});
+function wrap(p, x, y, text, size, chars, fill){
+  const words = text.split(' '); let line = '', yy = y;
+  words.forEach(w => { if ((line + ' ' + w).trim().length > chars){ T(p, x, yy, line.trim(), size, {anchor:'start', font:HAND, fill}); yy += size + 3; line = w; } else line += ' ' + w; });
+  if (line.trim()) T(p, x, yy, line.trim(), size, {anchor:'start', font:HAND, fill});
 }
-document.getElementById('lv').oninput = tryIt; tryIt();
-
-/* ================= Beamer ================= */
-(function(){
-  const s = document.getElementById('beamer'), R = mk(s);
-  R.rect(s, 4, 4, 1210, 650, {fill:'#fffdf5', fillStyle:'solid', roughness:2.2, strokeWidth:2.4});
-  T(s, 30, 52, '🏗️ Gemeinwohl-Spiel', 36, {anchor:'start'});
-  T(s, 600, 52, 'Runde 5 / 15 · Einzahlen läuft – 7 von 9 fertig', 24, {font:'"Patrick Hand",cursive'});
-  R.ell(s, 1050, 42, 90, 56, {fill:'#ffc9c9', fillStyle:'solid'}); T(s, 1050, 52, '0:18', 26);
-  // Spieler-Plätze
-  const P = [['😎 Füchse','#ff8787',6,52],['🐼 Pandas','#74c0fc',4,31],['🚀 Raketen','#ffd43b',8,124],['🦄 Einhörner','#b197fc',5,40],
-             ['🐸 Frösche','#8ce99a',3,18],['🔥 Blitze','#ffa8a8',7,88],['🌵 Kakteen','#96f2d7',4,27],['🐙 Kraken','#eebefa',6,49]];
-  P.forEach(([nm, col, lv, val], i) => {
-    const x = 26 + (i % 4)*214, y = 78 + Math.floor(i / 4)*262;
-    R.rect(s, x, y, 200, 252, {fill:'#fff', fillStyle:'solid', roughness:1.8});
-    R.rect(s, x + 10, y + 8, 180, 34, {fill:col, fillStyle:'solid', roughness:1.6});
-    T(s, x + 100, y + 33, nm, 22, {font:'"Patrick Hand",cursive'});
-    drawWallet(s, s, lv, val, {tf:`translate(${x + 12},${y + 44}) scale(.735)`, bare:true});
-    T(s, x + 170, y + 238, i % 3 === 1 ? '🤔' : '✅', 20);
+function tiles(F, mode){
+  const cols = 4, area = F.x1 - F.x0, tw = Math.min(180, area/cols - 12), th = 214;
+  PL.forEach(([e, n, c, v], i) => {
+    const x = F.x0 + 8 + (i % cols)*(tw + 12), y = 124 + Math.floor(i / cols)*(th + 10);
+    F.R.rect(F.s, x, y, tw, th, {fill:'#fff', fillStyle:'solid', roughness:2});
+    F.R.rect(F.s, x + 8, y + 8, tw - 16, 32, {fill:c, fillStyle:'solid', roughness:1.8});
+    T(F.s, x + tw/2, y + 32, `${e} ${n}`, 21, {font:HAND});
+    const sc = (tw - 10) / 210;
+    if (mode === 'hidden') drawSafe(F.s, F.s, {tf:`translate(${x + 5},${y + 48}) scale(${sc})`, bare:true, drop: i % 3 !== 1});
+    else drawWallet(F.s, F.s, v, {tf:`translate(${x + 5},${y + 48}) scale(${sc})`, bare:true});
+    T(F.s, x + tw - 18, y + th - 12, i % 3 === 1 ? '🤔' : '✅', 20);
+    if (mode === 'hidden' && i % 3 !== 1) T(F.s, x + 22, y + th - 12, 'gesetzt', 15, {font:HAND, anchor:'start', fill:'#2b8a3e'});
   });
-  // Topf
-  R.ell(s, 70, 624, 80, 30, {fill:'#868e96', fillStyle:'hachure', hachureGap:4}); T(s, 70, 630, '🪙', 18);
-  T(s, 118, 631, 'Topf ×2 – wird nach dem Einzahlen aufgedeckt', 20, {anchor:'start', font:'"Patrick Hand",cursive'});
-  T(s, 520, 631, '📜 Regeln: 👁️ Transparenz · 📏 Mindestbeitrag 3', 20, {anchor:'start', font:'"Patrick Hand",cursive'});
-  // Hochhaus rechts
-  R.rect(s, 900, 78, 300, 520, {fill:'#f1f3f5', fillStyle:'solid', roughness:1.8});
-  T(s, 1050, 116, 'Gemeinwohl', 28); T(s, 1050, 146, '412 / 900 T · 46 %', 22, {font:'"Patrick Hand",cursive'});
-  drawHouse(s, s, 5, {tf:'translate(942,150) scale(1.08)'});
+}
+/* Münzturm mit Skala: Sockel = alle zahlen nichts, oben = alle zahlen alles */
+function tower(F, cx, baseY, h, frac, o = {}){
+  const R = F.R, s = F.s, w = 110;
+  R.rect(s, cx - w/2 - 14, baseY, w + 28, 22, {fill:'#868e96', fillStyle:'cross-hatch', hachureGap:5, roughness:2});
+  R.rect(s, cx - w/2, baseY - h, w, h, {stroke:'#495057', strokeWidth:2, roughness:2});
+  for (let i = 1; i < 10; i++) R.line(s, cx - w/2, baseY - i*h/10, cx - w/2 + (i % 5 ? 10 : 18), baseY - i*h/10, {strokeWidth:1});
+  const fh = h * frac, n = Math.max(1, Math.round(fh / 7));
+  for (let i = 0; i < n; i++) R.ell(s, cx + ((i*37) % 7) - 3, baseY - 4 - i*(fh/n), w - 14, 16, {fill:'#f6c945', fillStyle:'solid', roughness:1.2, strokeWidth:1.1});
+  if (!o.noLabels){
+    T(s, cx + w/2 + 10, baseY - h + 6, o.top || 'alle zahlen alles', 16, {anchor:'start', font:HAND, fill:'#555'});
+    T(s, cx + w/2 + 10, baseY + 6, o.bottom || 'alle zahlen nichts', 16, {anchor:'start', font:HAND, fill:'#555'});
+  }
+  return baseY - fh;
+}
+
+function wrapS(){}
+/* ---------- F1: Einzahlen geheim ---------- */
+(() => { const F = frame('f1', {phase:'① Einzahlen – geheim!', timer:'0:18', rules:'open', pc:'#ffd8a8'}); tiles(F, 'hidden');
+  T(F.s, (F.x0 + F.x1)/2, 690, '🥁 5 von 8 haben gesetzt – wie viel wohl im Topf landet?', 24, {font:HAND}); })();
+/* ---------- F1b: Einzahlen mit Transparenz ---------- */
+(() => { const F = frame('f1b', {phase:'① Einzahlen', timer:'0:11', rules:'closed', pc:'#ffd8a8'}); tiles(F, 'open');
+  T(F.s, (F.x0 + F.x1)/2, 690, '👁️ Transparenz gilt: Wer ist reich – und wer hat schon gesetzt?', 24, {font:HAND}); })();
+/* ---------- F2: Showdown ---------- */
+(() => { const F = frame('f2', {phase:'② Showdown: der Topf', rules:'closed', pc:'#ffc9c9'});
+  const cx = (F.x0 + F.x1)/2 - 120, top = tower(F, cx, 640, 440, .25, {top:'alle zahlen alles: 2.070 €', bottom:'alle zahlen nichts: 0 €'});
+  HL(F.R, F.s, cx, top - 14, '520 €', 46, '#ffe066');
+  T(F.s, cx, 168, '🥁 Trrrrrrr …', 30);
+  const tx = cx + 230;
+  F.R.rect(F.s, tx, 250, 300, 170, {fill:'#fff', fillStyle:'solid', roughness:2});
+  T(F.s, tx + 150, 290, 'Im Topf: 520 €', 28);
+  T(F.s, tx + 150, 330, 'Ø pro Gruppe: 65 €', 22, {font:HAND});
+  T(F.s, tx + 150, 362, '= 25 % von dem, was möglich war', 20, {font:HAND});
+  T(F.s, tx + 150, 396, '(letzte Runde: 31 %) 📉', 20, {font:HAND, fill:'#c92a2a'});
+})();
+/* ---------- F3: Verdopplung ---------- */
+(() => { const F = frame('f3', {phase:'③ Verdopplung!', rules:'closed', pc:'#b2f2bb'});
+  const c1 = F.x0 + 200, c2 = c1 + 200;
+  tower(F, c1, 640, 440, .25, {noLabels:true}); const t2 = tower(F, c2, 640, 440, .25, {noLabels:true});
+  HL(F.R, F.s, c1, 510, '520 €', 32); HL(F.R, F.s, c2, 510, '520 €', 32);
+  T(F.s, (c1 + c2)/2, 180, '×2', 80, {fill:'#2b8a3e', rot:-8});
+  T(F.s, c2 + 80, 250, 'KLONK!', 30, {rot:10, anchor:'start'});
+  arrow(F.R, F.s, c1 + 40, 470, c2 - 40, 470, {lift:60});
+  const tx = c2 + 120;
+  F.R.rect(F.s, tx, 300, 300, 130, {fill:'#d3f9d8', fillStyle:'solid', roughness:2});
+  T(F.s, tx + 150, 348, '520 € × 2', 30); HL(F.R, F.s, tx + 150, 398, '= 1.040 €', 38);
+})();
+/* ---------- F4: Ausschüttung + Bau-Update ---------- */
+(() => { const F = frame('f4', {phase:'④ Ausschüttung', rules:'closed', pc:'#a5d8ff', stage:5, round:5, house:'2.590 / 8.000 € · 32 %',
+  status:'Runde 5 / 15  ·  Gemeinwohl 2.590 € (+520 €)  ·  Ø Einzahlung 25 %  ·  Prognose: fertig in ~6 Runden – Flut in 10 Runden'});
+  const cx = (F.x0 + F.x1)/2;
+  F.R.ell(F.s, cx, 170, 210, 70, {fill:'#f6c945', fillStyle:'cross-hatch', hachureGap:5}); T(F.s, cx, 180, '1.040 €', 30);
+  T(F.s, cx + 170, 168, '÷ 8 Gruppen', 24, {font:HAND});
+  const tw = 210, th = 108, cols = 4;
+  PL.forEach(([e, n, c, v], i) => {
+    const x = F.x0 + 16 + (i % cols)*(tw + 14), y = 262 + Math.floor(i / cols)*(th + 16);
+    F.R.rect(F.s, x, y, tw, th, {fill:'#fff', fillStyle:'solid', roughness:2});
+    F.R.rect(F.s, x + 6, y + 6, tw - 12, 28, {fill:c, fillStyle:'solid', roughness:1.6}); T(F.s, x + tw/2, y + 27, `${e} ${n}`, 19, {font:HAND});
+    HL(F.R, F.s, x + tw/2, y + 66, '+130 €', 28, '#b2f2bb');
+    const paid = [140, 60, 20, 80, 0, 120, 40, 60][i], bal = 130 - paid;
+    T(F.s, x + tw/2, y + 96, `gesetzt ${paid} € → ${bal >= 0 ? '+' : ''}${bal} €`, 16, {font:HAND, fill: bal >= 0 ? '#2b8a3e' : '#c92a2a'});
+    if (i < 4) arrow(F.R, F.s, cx + (i - 1.5)*30, 205, x + tw/2, y - 4, {lift:-10});
+  });
+  T(F.s, cx, 538, 'Jede Gruppe bekommt 130 € – egal, wie viel sie gesetzt hat!', 24);
+  T(F.s, cx, 572, '(Beträge pro Gruppe nur mit 👁️ Transparenz – sonst sieht jede nur ihren eigenen am Handy)', 17, {font:HAND, fill:'#666'});
+  F.R.rect(F.s, F.x0 + 40, 594, F.x1 - F.x0 - 80, 92, {fill:'#fff3bf', fillStyle:'solid', roughness:2});
+  T(F.s, cx, 630, '⑤ Bau-Update: Das Haus wächst von Stufe 4 auf 5 🏗️', 24);
+  T(F.s, cx, 664, 'Gemeinwohl 2.070 € → 2.590 €  ·  noch 5.410 € bis zum Ziel', 20, {font:HAND});
+  arrow(F.R, F.s, F.x1 - 30, 620, 1060, 430, {lift:60});
+})();
+/* ---------- F5: Regelrunde ---------- */
+(() => { const F = frame('f5', {phase:'⑥ § Regelrunde', timer:'0:09', rules:'open', pc:'#e5dbff',
+  ruleList: RULES_ON.concat([['§ 6','⚖️ Strafe','Wer am wenigsten einzahlt, gibt 10 € an alle.','neu? Abstimmung läuft']]), newRule:2});
+  const cx = (F.x0 + F.x1)/2;
+  T(F.s, cx, 160, '👑 Größte Einzahlung: 🚀 Raketen – sie schlagen vor:', 24, {font:HAND});
+  const g = G(F.s, `rotate(-2 ${cx} 330)`);
+  F.R.rect(g, cx - 260, 190, 520, 260, {fill:'#fff8e6', fillStyle:'solid', roughness:2.2, strokeWidth:2.4});
+  T(g, cx, 252, '§ 6  ⚖️ Strafe', 46);
+  T(g, cx, 304, 'Wer in einer Runde am wenigsten', 26, {font:HAND});
+  T(g, cx, 338, 'einzahlt, muss 10 € an alle abgeben.', 26, {font:HAND});
+  T(g, cx, 400, '„Damit sich Geizen nicht mehr lohnt!“ – Raketen', 20, {font:HAND, fill:'#666'});
+  // Stimmen
+  const votes = ['👍','👍','👎','👍','👍','🤔','👍','👎'];
+  PL.forEach(([e, n, c], i) => {
+    const x = F.x0 + 30 + i*88, y = 500;
+    F.R.circ(F.s, x + 30, y + 30, 56, {fill:c, fillStyle:'solid', roughness:1.8}); T(F.s, x + 30, y + 40, e, 28);
+    T(F.s, x + 30, y + 90, votes[i] === '🤔' ? '…' : '🗳️', 24);
+  });
+  T(F.s, cx, 640, '🗳️ 7 von 8 haben abgestimmt – gleich wird aufgedeckt!', 24, {font:HAND});
+  const st = G(F.s, `rotate(-14 ${cx + 190} 410)`);
+  F.R.rect(st, cx + 90, 380, 220, 60, {stroke:'#2b8a3e', strokeWidth:4, roughness:2.4}); T(st, cx + 200, 422, 'BESCHLOSSEN 5:3', 26, {fill:'#2b8a3e'});
+  T(F.s, cx + 200, 470, '(so sieht es nach dem Aufdecken aus)', 15, {font:HAND, fill:'#888'});
 })();
 
 /* ================= Handy ================= */
-function phone(id, mode){
+function phone(id, title, draw, tab){
   const s = document.getElementById(id), R = mk(s);
-  R.rect(s, 6, 6, 368, 748, {fill:'#2b2140', fillStyle:'solid', roughness:2, strokeWidth:3});
-  R.rect(s, 18, 30, 344, 700, {fill:'#fffdf5', fillStyle:'solid', roughness:1.5});
-  R.rect(s, 30, 42, 320, 44, {fill:'#ff8787', fillStyle:'solid'});
-  T(s, 46, 72, '😎 Füchse', 26, {anchor:'start', font:'"Patrick Hand",cursive'}); T(s, 336, 72, 'Runde 5', 22, {anchor:'end', font:'"Patrick Hand",cursive'});
-  drawWallet(s, s, 6, 52, {tf:'translate(36,98) scale(1.0)'});
-  drawHouse(s, s, 5, {tf:'translate(282,96) scale(.36)'});
-  T(s, 318, 280, '46 %', 18, {font:'"Patrick Hand",cursive'});
-  if (mode === 'pay'){
-    T(s, 190, 372, 'Wie viel wirfst du in den Topf?', 22, {font:'"Patrick Hand",cursive'});
-    R.ell(s, 190, 440, 150, 90, {fill:'#f6c945', fillStyle:'solid', roughness:1.6}); T(s, 190, 456, '12 T', 46);
-    R.line(s, 50, 520, 330, 520, {strokeWidth:3}); R.circ(s, 140, 520, 30, {fill:'#1e1e1e', fillStyle:'solid'});
-    [['−5',58],['−1',134],['+1',210],['+5',286]].forEach(([t, x]) => { R.rect(s, x, 548, 64, 46, {fill:'#e9ecef', fillStyle:'solid'}); T(s, x + 32, 579, t, 24); });
-    R.rect(s, 42, 616, 296, 64, {fill:'#69db7c', fillStyle:'hachure', hachureGap:6, roughness:1.8, strokeWidth:2.2});
-    T(s, 190, 658, '🪙 In den Topf werfen!', 28);
-  } else {
-    T(s, 190, 372, 'Auflösung Runde 5', 26);
-    T(s, 190, 408, 'Topf: 96 T  ×2  =  192 T', 24, {font:'"Patrick Hand",cursive'});
-    T(s, 190, 440, '÷ 8 Gruppen  =  24 T für jeden', 24, {font:'"Patrick Hand",cursive'});
-    R.rect(s, 46, 462, 288, 96, {fill:'#d3f9d8', fillStyle:'solid'});
-    T(s, 190, 496, 'Du: −12  +24', 26); T(s, 190, 536, '= +12 T 📈', 30);
-    R.rect(s, 46, 578, 288, 96, {fill:'#fff3bf', fillStyle:'solid'});
-    T(s, 190, 610, '👑 Größter Beitrag: Raketen (20)', 20, {font:'"Patrick Hand",cursive'});
-    T(s, 190, 646, '→ dürfen eine Regel vorschlagen', 20, {font:'"Patrick Hand",cursive'});
-  }
+  R.rect(s, 6, 6, 368, 748, {fill:'#2b2140', fillStyle:'solid', roughness:2.2, strokeWidth:3});
+  R.rect(s, 18, 30, 344, 700, {fill:'#fffdf5', fillStyle:'solid', roughness:1.6});
+  R.rect(s, 28, 40, 324, 42, {fill:'#ff8787', fillStyle:'solid'}); T(s, 42, 69, '😎 Füchse', 24, {anchor:'start', font:HAND}); T(s, 338, 69, title, 20, {anchor:'end', font:HAND});
+  draw(s, R);
+  // Reiter
+  [['💰 Ich',0],['§ Regeln',1],['🏢 Stand',2]].forEach(([t, i]) => { R.rect(s, 28 + i*108, 668, 100, 48, {fill: i === tab ? '#ffe066' : '#f1f3f5', fillStyle:'solid', roughness:1.6}); T(s, 78 + i*108, 699, t, 19, {font:HAND}); });
 }
-phone('phone1', 'pay'); phone('phone2', 'res');
+phone('p1', '① Einzahlen', (s, R) => {
+  drawWallet(s, s, 260, {tf:'translate(56,96) scale(1.25)'});
+  T(s, 190, 316, 'Wie viel setzt ihr?', 24, {font:HAND});
+  R.ell(s, 190, 380, 170, 86, {fill:'#f6c945', fillStyle:'solid', roughness:1.8}); T(s, 190, 396, '60 €', 44);
+  R.line(s, 46, 452, 334, 452, {strokeWidth:3}); R.circ(s, 112, 452, 28, {fill:'#1e1e1e', fillStyle:'solid'});
+  [['0 %',0],['25 %',1],['50 %',2],['alles',3]].forEach(([t, i]) => { R.rect(s, 40 + i*76, 476, 68, 40, {fill:'#e9ecef', fillStyle:'solid'}); T(s, 74 + i*76, 503, t, 19, {font:HAND}); });
+  R.rect(s, 40, 540, 300, 60, {fill:'#69db7c', fillStyle:'hachure', hachureGap:6, roughness:2, strokeWidth:2.2}); T(s, 190, 579, '🪙 In den Topf!', 28);
+  T(s, 190, 630, '📏 § 5: mind. 10 % (26 €), sonst kein Anteil', 15, {font:HAND, fill:'#c92a2a'});
+}, 0);
+phone('p2', '⑥ Abstimmung', (s, R) => {
+  T(s, 190, 118, '🚀 Raketen schlagen vor:', 22, {font:HAND});
+  const g = G(s, 'rotate(-2 190 240)');
+  R.rect(g, 40, 136, 300, 200, {fill:'#fff8e6', fillStyle:'solid', roughness:2.2, strokeWidth:2.2});
+  T(g, 190, 186, '§ 6  ⚖️ Strafe', 34);
+  T(g, 190, 228, 'Wer am wenigsten einzahlt,', 20, {font:HAND}); T(g, 190, 254, 'gibt 10 € an alle ab.', 20, {font:HAND});
+  T(g, 190, 306, 'gilt ab nächster Runde', 16, {font:HAND, fill:'#777'});
+  R.rect(s, 40, 380, 140, 120, {fill:'#b2f2bb', fillStyle:'hachure', hachureGap:6, roughness:2, strokeWidth:2.2}); T(s, 110, 440, '👍', 44); T(s, 110, 482, 'dafür', 20, {font:HAND});
+  R.rect(s, 200, 380, 140, 120, {fill:'#ffc9c9', fillStyle:'hachure', hachureGap:6, roughness:2, strokeWidth:2.2}); T(s, 270, 440, '👎', 44); T(s, 270, 482, 'dagegen', 20, {font:HAND});
+  T(s, 190, 548, 'geheime Abstimmung · 0:09', 18, {font:HAND, fill:'#666'});
+  T(s, 190, 600, '💡 Tipp: Was würde die Regel', 17, {font:HAND, fill:'#666'}); T(s, 190, 622, 'für EUCH bedeuten?', 17, {font:HAND, fill:'#666'});
+}, 0);
+phone('p3', '§ Regeln', (s, R) => {
+  T(s, 190, 118, '§ Unsere Regeln', 28);
+  const rows = [['§ 1 Topf-Regel','Grundregel'],['§ 2 Ziel & Flut','Grundregel'],['§ 3 Vorschlagsrecht','Grundregel'],['§ 4 👁️ Transparenz','seit Runde 2 · 6:2'],['§ 5 📏 Mindestbeitrag','seit Runde 4 · 5:3']];
+  rows.forEach(([a, b], i) => { R.rect(s, 34, 136 + i*56, 312, 48, {fill: i < 3 ? '#f8f9fa' : '#d3f9d8', fillStyle:'solid', roughness:1.6}); T(s, 46, 166 + i*56, a, 19, {anchor:'start', font:HAND}); T(s, 336, 166 + i*56, b, 14, {anchor:'end', font:HAND, fill:'#555'}); });
+  T(s, 190, 448, '📖 Regelkatalog (noch nicht gültig)', 19, {font:HAND});
+  const cat = ['⚖️ Strafe für den Geringsten','🏅 Ehrenpreis für den Höchsten','📈 Leistungsprinzip','🧾 Grundsteuer','🗑️ Regel abschaffen'];
+  cat.forEach((c, i) => { R.rect(s, 44, 462 + i*38, 292, 32, {stroke:'#adb5bd', strokeLineDash:[5,4], roughness:1.4}); T(s, 56, 484 + i*38, c, 17, {anchor:'start', font:HAND, fill:'#555'}); });
+}, 1);
+
+/* ================= Galerien ================= */
+function cell(container, w, h, fn){ const s = document.createElementNS(NS, 'svg'); s.setAttribute('width', w); s.setAttribute('height', h); container.appendChild(s); fn(s); }
+for (let i = 1; i <= 10; i++) cell(document.getElementById('houses'), 210, 482, s => drawHouse(s, s, i, {label:true}));
+const VAL = [8, 30, 70, 100, 160, 240, 380, 560, 850, 1500];
+VAL.forEach(v => cell(document.getElementById('wallets'), 214, 186, s => drawWallet(s, s, v, {label:true})));
+cell(document.getElementById('wallets'), 214, 186, s => drawSafe(s, s, {label:true}));
 </script>
 </body>
 </html>
