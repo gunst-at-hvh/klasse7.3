@@ -266,6 +266,52 @@ svg .later{animation:popIn .45s cubic-bezier(.2,1.8,.4,1) both}
 .waves span{display:inline-block;animation:bob 1.4s ease-in-out infinite}
 .payfly{position:fixed;font-size:2.4rem;z-index:60;pointer-events:none;animation:payFly .8s cubic-bezier(.3,0,.6,1) both}
 @keyframes payFly{to{transform:translateY(-55vh) scale(.5) rotate(360deg);opacity:0}}
+/* Avatare größer */
+.ae{font-size:1.55em;line-height:1;vertical-align:-.18em}
+.tile .nm .ae{font-size:1.7em}
+.minis span{font-size:1.05rem}.minis .ae{font-size:1.5rem;margin-right:2px}
+.voter{width:78px}.voter .c{width:64px;height:64px;font-size:2.4rem}
+.pchip .e{font-size:2rem}.ptop .e{font-size:2.2rem}
+/* Topf-Aufteilung */
+.potsplit{display:grid;grid-template-columns:auto 1fr;gap:6px 10px;align-items:center;max-width:860px;margin:6px auto}
+.psl{font-family:"Gochi Hand",cursive;font-size:1.25rem;white-space:nowrap}
+.psbar{display:flex;height:62px;border:2.5px solid var(--ink);border-radius:10px 4px 12px 4px;overflow:hidden;background:#fff}
+.psbar.in{animation:wipeIn .8s .1s both}.psbar.out{animation:wipeIn 1s 1.2s both}
+.seg{display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:2px solid var(--ink);min-width:0;overflow:hidden;animation:fadeIn .4s both}
+.seg:last-child{border-right:none}.seg .ae{font-size:1.7rem}.seg small{font-size:.85rem;white-space:nowrap}
+.potsplit.big .psbar{height:92px}.potsplit.big .seg .ae{font-size:2.6rem}.potsplit.big .seg small{font-size:1.05rem}.potsplit.big .psl{font-size:1.6rem}
+.psmid{font-family:"Gochi Hand",cursive;font-size:1.8rem;color:#2b8a3e;animation:popIn .45s .9s both}
+.balrow{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:12px;animation:fadeIn .6s 2.3s both}
+.balc{display:flex;align-items:center;gap:6px;padding:2px 14px;border:2px solid var(--ink);border-radius:999px 12px 999px 12px;font-family:"Gochi Hand",cursive;font-size:1.5rem;background:#fff}
+.balc.pos{background:#d3f9d8}.balc.neg{background:#ffe3e3}
+/* Handy: Ausschüttung in Schritten */
+.steps2{display:flex;flex-direction:column;gap:8px;max-width:440px;margin:6px auto;text-align:center}
+.step{display:grid;grid-template-columns:2.4rem 1fr auto;align-items:center;gap:6px;padding:6px 12px;background:#fff;border:2.5px solid var(--ink);border-radius:14px 4px 14px 4px;text-align:left;font-size:1.25rem;animation:popIn .45s cubic-bezier(.2,1.8,.4,1) both}
+.step .se{font-size:1.8rem}.step b{font-family:"Gochi Hand",cursive;font-weight:400;font-size:2.2rem}
+.step .sx{grid-column:1/-1;text-align:right}
+.resbig{display:flex;flex-direction:column;align-items:center;padding:6px 14px 8px;border:3px solid var(--ink);border-radius:255px 18px 225px 18px/18px 225px 18px 255px;animation:popIn .55s cubic-bezier(.2,1.8,.4,1) both}
+.resbig span{font-family:"Gochi Hand",cursive;font-size:3rem;line-height:1.1}.resbig small{font-size:1.2rem}
+.resbig.pos{background:#d3f9d8}.resbig.neg{background:#ffe3e3}.resbig.eq{background:#f1f3f5}
+/* Verlauf */
+table.log td,table.log th{padding:3px 6px;white-space:nowrap}table.log tr.sum td{border-top:2px solid var(--ink);font-weight:600}
+/* kompakter am Handy, nichts verdeckt, Knöpfe am PC nicht zu breit */
+.choices2{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;max-width:640px;margin:8px auto}
+.choices2 .choice{margin:0;padding:8px 10px;display:flex;flex-direction:column;gap:2px}
+.choices2 .choice small{font-size:.85rem;line-height:1.15;color:#444}
+.votebtns{max-width:480px;margin:0 auto}.votebtns button{font-size:2rem;padding:8px 0}
+.pbody .lawcard{margin:6px auto;padding:10px 14px}.pbody .lawcard h2{font-size:1.9rem;margin:0 0 4px}.pbody .lawcard p{font-size:1.15rem;margin:4px 0}
+.pbody .voters{gap:6px;margin-top:8px}
+.hostbar{justify-content:center;align-items:center}.hostbar button{max-width:340px}
+.tabs{justify-content:center}.tabs button{max-width:240px;font-size:.98rem}
+.tabs.withhost{bottom:calc(58px + env(safe-area-inset-bottom));padding-bottom:8px}
+.pbody{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
+body.withhost .pbody{padding-bottom:calc(156px + env(safe-area-inset-bottom))}
+.ppanel{bottom:calc(64px + env(safe-area-inset-bottom))}
+body.withhost .ppanel{bottom:calc(124px + env(safe-area-inset-bottom))}
+.payui{max-width:460px;margin:0 auto;width:100%}
+#rStart{max-width:520px;display:block;margin-left:auto!important;margin-right:auto!important}
+#pRoom{max-width:720px;margin:0 auto}
+.choice{max-width:640px}
 .gbar{width:320px;height:26px;border:2.5px solid var(--ink);border-radius:12px 4px 14px 4px;background:#fff;overflow:hidden;margin:8px auto}
 .gbar i{display:block;height:100%;background:repeating-linear-gradient(-45deg,#8ce99a 0 10px,#b2f2bb 10px 20px);transition:width 1.6s cubic-bezier(.3,1.3,.5,1)}
 .bigval{font-family:"Gochi Hand",cursive;font-size:4.2rem;line-height:1.05}
@@ -299,6 +345,7 @@ svg .later{animation:popIn .45s cubic-bezier(.2,1.8,.4,1) both}
     <span class="codebox sk2" id="hCodeSmall">····</span>
     <span id="hLamp" style="font-size:.95rem">⚪ …</span>
     <button class="chip" id="hBoardBtn">🏅</button>
+    <button class="chip" id="hLogBtn">📜 Verlauf</button>
     <button class="chip" id="hSndBtn">🔊</button>
     <button class="chip" id="hFsBtn">⛶ Vollbild</button>
     <button class="chip gold hidden" id="hSkipBtn">⏩ Weiter</button>
@@ -399,7 +446,7 @@ svg .later{animation:popIn .45s cubic-bezier(.2,1.8,.4,1) both}
   </div>
   <div class="ppanel hidden" id="pPanel"></div>
   <div class="tabs hidden" id="pTabs">
-    <button data-tab="me" class="on">💰 Ich</button><button data-tab="rules">§ Regeln</button><button data-tab="stand">🏢 Stand</button>
+    <button data-tab="me" class="on">💰 Ich</button><button data-tab="rules">§ Regeln</button><button data-tab="log">📜 Verlauf</button><button data-tab="stand">🏢 Stand</button>
   </div>
   <div class="hostbar hidden" id="pHostBar"><span>👑 Host</span><button class="gold" id="pHSkip">⏩ Weiter</button><button id="pHEnd">🏁 Ende</button></div>
 </section>
@@ -445,7 +492,7 @@ function keepRegistered(getPeer, lampId){
 }
 
 const PREFIX = 'hvh-gemeinwohl-';
-const APP_VERSION = '2026-10-17k1';
+const APP_VERSION = '2026-10-17l1';
 const AUTOJOIN_KEY = 'gemeinwohl-autojoin';
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const EMOJIS = ['😀','😎','🤓','🥳','🤩','😜','🤠','🥸','😇','🤖','👻','👽','💩','🐱','🐶','🦊','🐼','🐸','🦁','🐯','🐵','🐙','🦄','🐝','🐢','🦖','🐧','🦉','🐬','🦈','🍕','🍩','🍉','⚽','🏀','🎮','🎸','🚀','🌈','🔥','⭐','💎','👑','🌵'];
@@ -878,6 +925,7 @@ function startHost(){
   show('home', false); show('host'); setupFs($('hFsBtn')); buildChips();
   $('hStart').onclick = () => { ac(); hStartGame(); };
   $('hSkipBtn').onclick = hSkip;
+  $('hLogBtn').onclick = () => { if (H.phase !== 'lobby') showLog(hView(null)); };
   $('hSndBtn').onclick = () => { SND.on = !SND.on; $('hSndBtn').textContent = SND.on ? '🔊' : '🔇'; };
   $('hBoardBtn').onclick = () => { if (!has('konto') && H.phase !== 'end') { toast('Kontostände sind geheim – erst mit 💰 Kontostand-Transparenz', 'yellow'); return; }
     showBoard('💰 Kontostände', inGame().map(p => ({avatar:p.avatar, name:p.name, color:p.color, score:p.money, label:eur(p.money)}))); };
@@ -964,7 +1012,7 @@ function buildChips(){
   mk2(['hRuleRow','rRuleRow'], [[1,'jede Runde'],[2,'jede 2. Runde']], 'ruleEvery');
   mk2(['rLateRow'], [['1','✅ jederzeit (ab nächster Runde)'],['0','🔒 nur vor dem Start']], 'late');
   ['hPresetRow','rPresetRow'].forEach(id => { const row = $(id); row.innerHTML = '';
-    [['⚡ sehr kurz (~5 min)', {goalMul:5, maxRounds:4, time:20, factor:'2'}], ['🙂 kurz (~10 min)', {goalMul:12, maxRounds:6, time:30, factor:'2'}], ['🏗️ normal (~15 min)', {goalMul:25, maxRounds:8, time:30, factor:'2'}]]
+    [['⚡ sehr kurz (~5 min)', {goalMul:5, maxRounds:4, time:20, factor:'2', transp:'1'}], ['🙂 kurz (~10 min)', {goalMul:12, maxRounds:6, time:30, factor:'2', transp:'0'}], ['🏗️ normal (~15 min)', {goalMul:25, maxRounds:8, time:30, factor:'2', transp:'0'}]]
       .forEach(([label, cfg]) => { const b = document.createElement('button'); b.className = 'chip'; b.textContent = label; b.dataset.cfg = JSON.stringify(cfg);
         b.onclick = () => { Object.assign(H, cfg); syncChips(); }; row.appendChild(b); }); });
   syncChips();
@@ -1092,7 +1140,7 @@ function hPayout(){
     p.money = p.money - a - pen + got; p.contrib += a;
     p.last = {a, pen, got, bal: got - a - pen, excl: c.excluded.includes(p.pid), bonus: c.bonus[p.pid] || 0};
   });
-  H.hist.push({round:H.round, rate:c.rate, pot:c.pot0, total0:c.total0, total1:total(), rules:H.rules.map(r => r.id), a:{...c.a}});
+  H.hist.push({round:H.round, rate:c.rate, pot:c.pot0, total0:c.total0, total1:total(), rules:H.rules.map(r => r.id), a:{...c.a}, got:{...c.got}, pen:{...c.pen}});
   H.phase = 'payout'; hStep(11000, hBuild); hPush();
 }
 function hProg(){
@@ -1215,10 +1263,14 @@ function hView(p){
     lastRate: H.hist.length ? H.hist[H.hist.length - 1].rate : null,
     rules: H.rules.map((r, i) => ({id:r.id, no:4 + i, round:r.round, yes:r.yes, no2:r.no})), opts: hOptions(),
     konto, einz, players: pub, outcome:H.outcome, fx:H.fx, prizes: end ? hPrizes() : null, need: end ? H.need : null, goalMul:H.goalMul, room:H.room, host:hCreatorName(),
-    hist: end ? H.hist.map(h => ({round:h.round, rate:h.rate, rules:h.rules})) : null};
+    hist: end ? H.hist.map(h => ({round:h.round, rate:h.rate, rules:h.rules})) : null,
+    /* Verlauf: Topf und Ø immer; wer was gezahlt hat nur für Runden mit 👁️ Einzahlungs-Transparenz */
+    log: H.hist.map(h => { const ids = Object.keys(h.a), open = h.rules.includes('einzahl') || end;
+      return {round:h.round, pot:h.pot, avg: Math.round(h.pot / Math.max(1, ids.length)), open, a: open ? h.a : null,
+        bal: open ? Object.fromEntries(ids.map(pid => [pid, (h.got[pid] || 0) - h.a[pid] - (h.pen[pid] || 0)])) : null}; })};
   if (c && ['showdown','double','payout','build','propose','vote','verdict'].includes(H.phase)){
     const top = c.top.map(pid => H.players.get(pid)).filter(Boolean);
-    v.cur = {pot0:c.pot0, pot:c.pot, max:c.max, rate:c.rate, doubled:c.doubled, share:c.share, n:c.n, avg: Math.round(c.pot0 / c.n),
+    v.cur = {pot0:c.pot0, pot:c.pot, max:c.max, rate:c.rate, doubled:c.doubled, share:c.share, n:c.n, avg: Math.round(c.pot0 / c.n), avgBal: Math.round((c.doubled - c.pot0 - c.penTotal) / c.n),
       penTotal:c.penTotal, bonusTotal:c.bonusTotal, exclN:c.excluded.length, total0:c.total0, total1:c.total1,
       top: H.phase !== 'showdown' && H.phase !== 'double' ? top.map(t => t.avatar + ' ' + t.name) : []};
   }
@@ -1351,7 +1403,7 @@ function renderCenter(el, s, o){
   if (s.phase === 'pay'){
     const seen = el.__paid && el.__round === s.round ? el.__paid : new Set(); el.__round = s.round;
     el.innerHTML = `<div class="tiles">${P.map(p => { const jp = p.locked && !seen.has(p.pid);
-      return `<div class="tile sk${jp ? ' justpaid' : ''}" data-pid="${p.pid}"><div class="nm" style="background:${p.color}">${esc(p.avatar + ' ' + p.name)}</div><svg></svg>
+      return `<div class="tile sk${jp ? ' justpaid' : ''}" data-pid="${p.pid}"><div class="nm" style="background:${p.color}">${nmH(p)}</div><svg></svg>
       <span class="st">${p.locked ? '✅' : '🤔'}</span>${p.locked && !s.konto ? '<span class="st2">gesetzt</span>' : ''}${jp ? '<span class="coinfall">🪙</span>' : ''}</div>`; }).join('')}</div>
       <div class="bigline">🤫 ${P.filter(p => p.locked).length} / ${P.length} haben gesetzt</div>`;
     el.__paid = new Set(P.filter(p => p.locked).map(p => p.pid));
@@ -1372,15 +1424,9 @@ function renderCenter(el, s, o){
       ${c.penTotal ? `<div class="bigline" style="font-size:1.3rem">inkl. ⚖️ ${eur(c.penTotal)} Strafe</div>` : ''}`;
     drawDouble(el.querySelector('.dbl'), c.max ? c.pot / c.max : 0, c.pot, c.doubled, fxs(s), {k:'r' + s.round, anim: !!o.fresh});
   } else if (s.phase === 'payout'){
-    const cmp = a => a > c.avg ? '<span class="badge up">⬆️ über Ø</span>' : a < c.avg ? '<span class="badge dn">⬇️ unter Ø</span>' : '<span class="badge eq">= Ø</span>';
     el.innerHTML = `<div class="flow"><div class="fc sk2">Ø eingezahlt<b>${eur(c.avg)}</b></div><div class="ar">${!c.exclN && !c.bonusTotal && !c.penTotal ? fxs(s) + ' ' : ''}➜</div>
         <div class="fc sk2" style="background:#d3f9d8">jede/r bekommt<b>${eur(c.share)}</b></div></div>
-      <div class="tiles paytiles">${P.map((p, i) => { const L = p.last;
-        return `<div class="tile sk fly" style="animation-delay:${.2 + i*0.15}s"><div class="nm" style="background:${p.color}">${esc(p.avatar + ' ' + p.name)}</div>
-          <div class="big" data-to="${L ? (L.excl ? 0 : L.got) : c.share}" data-x="${L && L.excl ? 1 : ''}">${L ? (L.excl ? '❌ 0 €' : '+' + eur(L.got)) : '+' + eur(c.share)}</div>${!L && c.exclN ? '<div class="sm muted">oder ❌ 0 €</div>' : ''}
-          ${L ? `<div class="sm">gesetzt ${eur(L.a)}${L.pen ? ` · ⚖️ ${eur(L.pen)}` : ''}${L.bonus ? ` · 🏅 ${eur(L.bonus)}` : ''}</div>${cmp(L.a)}` : ''}</div>`; }).join('')}</div>
-      <div class="bigline" style="font-size:1.4rem">⚖️ Gleich viel für alle${c.exclN ? ` · ❌ ${c.exclN}× nichts (📏)` : ''}</div>`;
-    if (o.fresh) el.querySelectorAll('.paytiles .big').forEach((b, i) => { if (!b.dataset.x) countUp(b, +b.dataset.to, 800, '+', 200 + i*150); });
+      ${potSplit(s, !o.phone)}`;
   } else if (s.phase === 'build'){
     const ph = o.phone, before = stageOf2(s, c.total0), up = s.stage > before;
     const f0 = buildFrac(c.total0, s.startTotal, s.goal), f1 = buildFrac(s.total, s.startTotal, s.goal), left = s.maxRounds - s.round;
@@ -1425,6 +1471,51 @@ function renderCenter(el, s, o){
       <div class="muted" style="margin-top:6px">Gesprächsanlass: Wann wurde viel gegeben, wann wenig? Was haben die Regeln verändert?</div></div>`;
     drawChart(el.querySelector('.chart'), s, o.phone ? 330 : 860);
   }
+}
+const nmH = p => `<span class="ae">${esc(p.avatar)}</span> ${esc(p.name)}`;
+/* Topf-Aufteilung: rein (wer hat eingezahlt) → ×2 → raus (wer bekommt was); mit 👁️ auch wer gewonnen/verloren hat */
+function potSplit(s, big){
+  const c = s.cur, P = s.players, open = s.einz && P.every(p => p.last);
+  const seg = (w, col, inner, d) => `<div class="seg" style="flex:${Math.max(w, .0001)} 1 0;background:${col};animation-delay:${d}s">${inner}</div>`;
+  const lab = (e, v) => `<span class="ae">${e}</span><small>${v}</small>`;
+  let ins = '', outs = '';
+  if (c.pot > 0){
+    if (open){ P.filter(p => p.last.a > 0).forEach((p, i) => { ins += seg(p.last.a, p.color + 'cc', lab(esc(p.avatar), eur(p.last.a)), .2 + i*.12); });
+      if (c.penTotal) ins += seg(c.penTotal, '#ffa8a8', lab('⚖️', eur(c.penTotal)), .6); }
+    else ins = seg(1, '#ced4da', lab('🔒', eur(c.pot)), .2);
+  }
+  if (open) P.filter(p => p.last.got > 0).forEach((p, i) => { outs += seg(p.last.got, p.color + 'cc', lab(esc(p.avatar), eur(p.last.got)), 1.4 + i*.1); });
+  else { const elig = c.exclN ? Array.from({length: c.n - c.exclN}, () => null) : P;
+    elig.forEach((p, i) => { outs += seg(c.share, p ? p.color + 'cc' : '#b2f2bb', lab(p ? esc(p.avatar) : '👤', eur(c.share)), 1.4 + i*.1); });
+    if (c.bonusTotal) outs += seg(c.bonusTotal, '#ffe066', lab('🏅', eur(c.bonusTotal)), 1.9); }
+  const bal = open ? `<div class="balrow">${[...P].sort((a, b) => b.last.bal - a.last.bal).map(p => `<div class="balc ${p.last.bal > 0 ? 'pos' : p.last.bal < 0 ? 'neg' : ''}"><span class="ae">${esc(p.avatar)}</span><b>${p.last.bal > 0 ? '+' : ''}${eur(p.last.bal)}</b></div>`).join('')}</div>` : '';
+  return `<div class="potsplit${big ? ' big' : ''}"><div class="psl">🪙 rein</div><div class="psbar in" style="width:${Math.max(4, c.pot / Math.max(1, c.doubled) * 100)}%">${ins || '<div class="seg" style="flex:1">0 €</div>'}</div>
+    <div></div><div class="psmid">${fxs(s)} ⤵</div>
+    <div class="psl">💶 raus</div><div class="psbar out">${outs}</div></div>${bal}${c.exclN && !open ? `<div class="muted" style="text-align:center">❌ ${c.exclN}× nichts (📏 Mindestbeitrag)</div>` : ''}`;
+}
+/* Verlauf aller Runden */
+function logHtml(s){
+  const L = s.log || [], P = s.players;
+  if (!L.length) return '<div class="muted">Noch keine Runde ausgewertet.</div>';
+  const anyOpen = L.some(r => r.open), cell = (r, p) => { if (!r.open) return '<td class="n muted">🔒</td>'; const a = r.a[p.pid]; if (a == null) return '<td class="n">–</td>';
+    return `<td class="n" style="background:${a > r.avg ? '#d0ebff' : a < r.avg ? '#ffe8cc' : 'transparent'}">${eur(a)}</td>`; };
+  let h = `<div style="overflow-x:auto"><table class="res log"><tr><th>Runde</th><th class="n">Topf</th><th class="n">Ø</th>${anyOpen ? P.map(p => `<th class="n"><span class="ae">${esc(p.avatar)}</span></th>`).join('') : ''}</tr>`;
+  L.forEach(r => { h += `<tr><td>${r.round}</td><td class="n">${eur(r.pot)}</td><td class="n">${eur(r.avg)}</td>${anyOpen ? P.map(p => cell(r, p)).join('') : ''}</tr>`; });
+  if (anyOpen){
+    h += `<tr class="sum"><td colspan="3">Σ eingezahlt${L.every(r => r.open) ? '' : ' (sichtbare Runden)'}</td>${P.map(p => `<td class="n">${eur(L.filter(r => r.open).reduce((t, r) => t + (r.a[p.pid] || 0), 0))}</td>`).join('')}</tr>`;
+    const last = L[L.length - 1];
+    if (last.open) h += `<tr class="sum"><td colspan="3">± letzte Runde</td>${P.map(p => { const b = last.bal[p.pid]; return b == null ? '<td></td>' : `<td class="n" style="color:${b >= 0 ? '#2b8a3e' : '#c92a2a'}">${b > 0 ? '+' : ''}${eur(b)}</td>`; }).join('')}</tr>`;
+  }
+  if (anyOpen && s.konto) h += `<tr class="sum"><td colspan="3">💰 Konto jetzt</td>${P.map(p => `<td class="n">${p.money != null ? eur(p.money) : ''}</td>`).join('')}</tr>`;
+  h += '</table></div>';
+  if (!anyOpen) h += '<div class="muted" style="margin-top:6px">Wer wie viel eingezahlt hat, wird erst mit 👁️ Einzahlungs-Transparenz sichtbar.</div>';
+  if (anyOpen) h += '<div class="muted" style="margin-top:6px">blau = über Ø · orange = unter Ø</div>';
+  return h;
+}
+function showLog(s){
+  document.querySelectorAll('.logov').forEach(x => x.remove());
+  const d = document.createElement('div'); d.className = 'lb logov'; d.innerHTML = `<h2>📜 Verlauf</h2><div class="box sk" style="width:min(1000px,100%);text-align:left">${logHtml(s)}</div><div class="muted" style="margin-top:10px">(klicken zum Schließen)</div>`;
+  d.onclick = () => d.remove(); document.body.appendChild(d);
 }
 function prizeHtml(s){
   const P = s.players, nm = ids => ids.map(id => { const p = P.find(x => x.pid === id); return p ? `<b>${esc(p.avatar + ' ' + p.name)}</b> (${eur(p.money)})` : ''; }).join(' & ');
@@ -1600,6 +1691,7 @@ function pState(s){
   if (C.room && fresh) phaseFx(s);
   if (fresh && s.phase === 'end' && s.outcome === 'win' && C.room) setTimeout(() => showPodium([...s.players].sort((a, b) => a.place - b.place).map(p => ({avatar:p.avatar, name:p.name, score:p.money, place:p.place, label:eur(p.money)}))), 1500);
   if (fresh && s.phase !== 'end') phaseBanner(s);
+  if (fresh){ C.det = false; try { window.scrollTo(0, 0); document.querySelector('#player .pbody').scrollTop = 0; } catch(e){} }
   withTrans($('pMain'), fresh, s.phase, () => pRender(fresh));
 }
 function pRender(fresh){
@@ -1621,7 +1713,7 @@ function pRender(fresh){
         ${s.rules.some(r => r.id === 'mindest') ? `<div class="warn">📏 Mindestbeitrag: mind. ${eur(Math.ceil(me.money * .1))}, sonst kein Anteil!</div>` : ''}
         ${s.rules.some(r => r.id === 'grundsteuer') ? `<div class="warn">🧾 Grundsteuer: mindestens ${eur(me.minPay)} werden automatisch gezahlt.</div>` : ''}
         ${s.rules.some(r => r.id === 'strafe') ? '<div class="warn">⚖️ Wer am wenigsten zahlt, gibt zusätzlich 10 % ab.</div>' : ''}</div>
-        <div class="minis">${s.players.map(p => `<span>${esc(p.avatar)} ${p.locked ? '✅' : '🤔'}</span>`).join('')}</div>`;
+        <div class="minis">${s.players.map(p => `<span><span class="ae">${esc(p.avatar)}</span>${p.locked ? '✅' : '🤔'}</span>`).join('')}</div>`;
       drawWallet($('pW'), me.money, {k:me.pid});
       const set = v => { C.amt = clamp(Math.round(v), me.minPay, me.money); $('pAmt').textContent = eur(C.amt); $('pRange').value = C.amt; };
       $('pRange').oninput = e => set(+e.target.value);
@@ -1632,34 +1724,34 @@ function pRender(fresh){
           f.style.left = (r.left + r.width/2 - 18 + (i - 2.5) * 16) + 'px'; f.style.top = r.top + 'px'; f.style.animationDelay = (i * .07) + 's'; document.body.appendChild(f); setTimeout(() => f.remove(), 1400); } };
     } else {
       el.innerHTML = head + `<div class="center2"><div style="font-size:4rem">🔒</div><div class="ti" style="font-size:1.8rem">Gesetzt: <span class="amt">${eur(me.pay)}</span></div>
-        <div>Warte auf die anderen …</div><div class="minis">${s.players.map(p => `<span>${esc(p.avatar)} ${p.locked ? '✅' : '🤔'}</span>`).join('')}</div></div>`;
+        <div>Warte auf die anderen …</div><div class="minis">${s.players.map(p => `<span><span class="ae">${esc(p.avatar)}</span>${p.locked ? '✅' : '🤔'}</span>`).join('')}</div></div>`;
     }
   } else if (s.phase === 'payout' && me.mine){
-    const m = me.mine, bal = m.got - m.a - m.pen, avg = s.cur.avg, mx = Math.max(m.a, avg, m.got, 1);
-    const verd = m.a > avg ? ['⬆️ über dem Durchschnitt', 'up'] : m.a < avg ? ['⬇️ unter dem Durchschnitt', 'dn'] : ['= genau Durchschnitt', 'eq'];
-    const row = (label, val, w, col) => `<div class="bl">${label}</div><div class="bt"><i data-w="${w}" style="background:${col}"></i></div><div class="bv">${val}</div>`;
-    el.innerHTML = head + `<div class="box sk" style="margin:8px auto;max-width:420px">
-      <div class="bars">
-        ${row('🪙 du', eur(m.a), m.a / mx * 100, '#ffc9c9')}
-        ${row('👥 Ø alle', eur(avg), avg / mx * 100, '#dee2e6')}
-        ${row('💶 zurück', m.excl ? '❌ 0 €' : '+' + eur(m.got), m.got / mx * 100, '#8ce99a')}
-      </div>
-      <div class="verdict"><span class="badge ${verd[1]}" style="font-size:1.4rem">${verd[0]}</span></div>
-      ${m.pen ? `<div class="warn">⚖️ Strafe −${eur(m.pen)}</div>` : ''}${m.bonus ? `<div>🏅 Ehrenpreis inkl. ${eur(m.bonus)}</div>` : ''}${m.excl ? '<div class="warn">📏 unter dem Mindestbeitrag – kein Anteil</div>' : ''}
-      <div style="font-size:1.35rem;margin-top:4px">Bilanz <b style="color:${bal >= 0 ? '#2b8a3e' : '#c92a2a'}">${bal >= 0 ? '+' : ''}${eur(bal)}</b> → <span class="amt">${eur(me.money)}</span></div></div>
-      <svg id="pW" width="100%" height="140" style="max-width:280px;margin:0 auto"></svg>` + pWaitNote(s);
-    drawWallet($('pW'), me.money, {k:me.pid});
-    const bars = el.querySelectorAll('.bars i'); requestAnimationFrame(() => setTimeout(() => bars.forEach((b, i) => setTimeout(() => { b.style.width = b.dataset.w + '%'; }, fresh ? i * 250 : 0)), 30));
+    const m = me.mine, c = s.cur, bal = m.got - m.a - m.pen, rel = bal - c.avgBal;
+    const st = (i, e, label, val, extra = '') => `<div class="step" style="animation-delay:${i * .8}s"><span class="se">${e}</span><span>${label}</span><b>${val}</b>${extra ? `<div class="sx">${extra}</div>` : ''}</div>`;
+    const cmpA = m.a > c.avg ? `<span class="badge up">⬆️ ${eur(m.a - c.avg)} mehr als Ø</span>` : m.a < c.avg ? `<span class="badge dn">⬇️ ${eur(c.avg - m.a)} weniger als Ø</span>` : '<span class="badge eq">= genau Ø</span>';
+    const res = rel > 0 ? ['pos', '😎', `+${eur(rel)}`, 'mehr als der Durchschnitt'] : rel < 0 ? ['neg', '😬', `−${eur(-rel)}`, 'weniger als der Durchschnitt'] : ['eq', '😐', '±0 €', 'genau wie der Durchschnitt'];
+    el.innerHTML = head + `<div class="steps2">
+        ${st(0, '👥', 'Ø eingezahlt', eur(c.avg))}
+        ${st(1, '🪙', 'du', eur(m.a), cmpA)}
+        ${st(2, '💶', m.excl ? 'du bekommst' : 'alle bekommen', m.excl ? '❌ 0 €' : '+' + eur(c.share), m.bonus ? `🏅 +${eur(m.bonus)} Ehrenpreis` : m.pen ? `⚖️ Strafe −${eur(m.pen)}` : m.excl ? '📏 unter dem Mindestbeitrag' : '')}
+        <div class="resbig ${res[0]}" style="animation-delay:2.4s"><span>${res[1]} ${res[2]}</span><small>${res[3]}</small></div>
+        <div class="muted" style="animation:fadeIn .4s 2.8s both">Deine Runde ${bal >= 0 ? '+' : ''}${eur(bal)} · Ø ${c.avgBal >= 0 ? '+' : ''}${eur(c.avgBal)} → du hast jetzt <b>${eur(me.money)}</b></div>
+        <button class="chip" id="pDet" style="margin:6px auto 0">${C.det ? '▴ Topf-Aufteilung zu' : '📊 Topf-Aufteilung'}</button>
+        ${C.det ? potSplit(s, false) : ''}</div>` + pWaitNote(s);
+    if (!fresh) el.querySelectorAll('.step,.resbig,.steps2 > .muted').forEach(x => x.style.animation = 'none');
+    $('pDet').onclick = () => { C.det = !C.det; pRender(false); };
+    if (fresh && C.room) setTimeout(() => { if (C.st === s) (rel > 0 ? sTada : rel < 0 ? sSad : sBlip)(); }, 2400);
   } else if (s.phase === 'propose' && s.prop && s.prop.pid === me.pid){
     const o = s.opts;
     el.innerHTML = head + `<div class="ti" style="text-align:center;font-size:1.6rem">👑 Du hast am meisten eingezahlt!</div><div style="text-align:center">Schlag eine Regel vor – alle stimmen ab.</div>
-      ${o.add.map(id => `<button class="choice" data-k="add" data-r="${id}"><b>§ ${RULES[id].e} ${RULES[id].n}</b><br>${RULES[id].t}</button>`).join('')}
-      ${o.remove.map(id => `<button class="choice red" data-k="remove" data-r="${id}"><b>🗑️ abschaffen: ${RULES[id].e} ${RULES[id].n}</b></button>`).join('')}
-      <button class="choice" data-k="pass" style="background:#eee"><b>🙅 Passen</b> – keine neue Regel</button>`;
+      <div class="choices2">${o.add.map(id => `<button class="choice" data-k="add" data-r="${id}"><b>${RULES[id].e} ${RULES[id].n}</b><small>${RULES[id].t}</small></button>`).join('')}
+      ${o.remove.map(id => `<button class="choice red" data-k="remove" data-r="${id}"><b>🗑️ ${RULES[id].e} ${RULES[id].n}</b><small>abschaffen</small></button>`).join('')}
+      <button class="choice" data-k="pass" style="background:#eee"><b>🙅 Passen</b><small>keine neue Regel</small></button></div>`;
     el.querySelectorAll('.choice').forEach(b => b.onclick = () => { C.conn && C.conn.open && C.conn.send({t:'propose', kind:b.dataset.k, rule:b.dataset.r}); el.innerHTML = head + '<div class="center2">⏳ …</div>'; });
   } else if (s.phase === 'vote' && !me.voted){
     el.innerHTML = head + lawCard(s) + `<div class="votebtns"><button class="go" data-y="1">👍<br><span style="font-size:1.1rem">dafür</span></button><button class="red" data-y="0">👎<br><span style="font-size:1.1rem">dagegen</span></button></div>
-      <div class="tip" style="margin-top:8px">Geheime Abstimmung. Überlege: Was bedeutet die Regel für dich – und für alle?</div>`;
+      <div class="tip" style="margin-top:6px">🤫 geheim</div>`;
     el.querySelectorAll('[data-y]').forEach(b => b.onclick = () => { C.conn && C.conn.open && C.conn.send({t:'vote', yes: b.dataset.y === '1'}); sTick(); });
   } else if (s.phase === 'end'){
     el.innerHTML = head + `<div class="box sk" style="margin:8px auto"><div style="font-size:3rem">${s.outcome === 'win' ? (me.place === 1 ? '🏆' : me.place <= 3 ? ['','🥇','🥈','🥉'][me.place] : '🏠') : '🌊'}</div>
@@ -1697,9 +1789,10 @@ function pTabs(){
   document.querySelectorAll('#pTabs button').forEach(b => { b.classList.toggle('on', b.dataset.tab === C.tab); b.onclick = () => { C.tab = C.tab === b.dataset.tab ? 'me' : b.dataset.tab; pTabs(); }; });
   const pn = $('pPanel'); show('pPanel', C.tab !== 'me');
   if (document.body.classList.contains('wide')){ show('pPanel', false);
-    $('pWideL').innerHTML = `<div class="ti" style="font-size:1.5rem">§ Unsere Regeln</div>${ruleHtml(s, {full:true, catalog:true})}`; standInto($('pWideR'), s, 250); return; }
+    $('pWideL').innerHTML = `<div class="ti" style="font-size:1.5rem">§ Unsere Regeln</div>${ruleHtml(s, {full:true, catalog:true})}`; standInto($('pWideR'), s, 250); $('pWideR').insertAdjacentHTML('beforeend', `<div class="ti" style="font-size:1.4rem;margin-top:10px">📜 Verlauf</div>${logHtml(s)}`); return; }
   if (C.tab === 'rules') pn.innerHTML = `<div class="ti" style="font-size:1.8rem">§ Unsere Regeln</div>${ruleHtml(s, {full:true, catalog:true})}`;
   else if (C.tab === 'stand') standInto(pn, s, 220);
+  else if (C.tab === 'log') pn.innerHTML = `<div class="ti" style="font-size:1.8rem">📜 Verlauf</div>${logHtml(s)}`;
 }
 function standInto(el, s, w){
   el.innerHTML = `<div class="ti" style="font-size:1.8rem">🏢 Spielstand</div><div>${statusLine(s)}</div><div>🏗️ ${pct(buildFrac(s.total, s.startTotal, s.goal))} gebaut</div>

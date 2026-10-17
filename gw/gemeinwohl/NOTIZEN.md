@@ -53,3 +53,7 @@ Gemeinsames Projekt + Bedrohung mit Countdown – optisch könnten Projekt und C
 - Flut-/Runden-Balken direkt links am Haus, gleiche Höhe wie Boden…Ziel; Stockwerke wachsen linear mit dem Baufortschritt → Erwartung (Runden) vs. Stand (Haus) direkt vergleichbar
 - Handy: zwei schmale Balken (🌊 Runden, 🏗️ Bau) unter der Phase; Stand-Tab scrollbar auch mit Host-Leiste; ohne Beamer am PC (ab 1000 px) dreispaltig mit Regeln und Stand
 - Phasenwechsel: Stempel-Banner + altes Bild wischt weg, neues zoomt/wischt/rutscht rein
+- Ausschüttung Handy: Schritte nacheinander (Ø eingezahlt → du → alle bekommen → groß: ±X € mehr/weniger als der Durchschnitt), Topf-Aufteilung aufklappbar
+- Beamer: Topf-Aufteilung „rein“ (wer hat eingezahlt, mit 👁️) → ×2 → „raus“ + ±-Chips, wer gewonnen/verloren hat
+- 📜 Verlauf (Handy-Tab, Beamer-Knopf, PC-Seitenleiste): Topf + Ø je Runde; Beträge pro Spieler nur für Runden mit 👁️
+- ⚡ sehr kurz startet mit sichtbaren Kontoständen; größere Spieler-Emojis; kompaktere Abstimmung/Regelwahl; Knöpfe am PC begrenzt
