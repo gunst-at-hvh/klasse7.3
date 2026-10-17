@@ -232,11 +232,10 @@ table.res .n{text-align:right}
     <div>
       <div class="settings sk">
         <div class="ti" style="font-size:1.5rem">So geht's</div>
-        <div style="line-height:1.35">Jede Runde zahlt jede/r geheim etwas in den Topf. Der Topf wird <b>vervielfacht (×1,5)</b> und an <b>alle gleich</b> verteilt.
+        <div style="line-height:1.35">Jede Runde zahlt jede/r geheim etwas in den Topf. Der Topf wird <b>verdoppelt</b> und an <b>alle gleich</b> verteilt.
           Wächst das Gemeinwohl auf das Ziel, ist das Haus fertig – dann gewinnt, wer am meisten Geld hat. Schafft ihr es nicht bis zur letzten Runde, kommt die <b>Flut</b>: dann gibt es nur einen Trostpreis für den Zweitreichsten. 👏 Publikumspreis für den, der insgesamt am meisten einzahlt.
           Wer am meisten einzahlt, darf eine neue Regel vorschlagen.</div>
         <label>Spiellänge</label><div class="row" id="hPresetRow"></div>
-        <div id="hNeed" style="margin:4px 0 2px;padding:6px 10px;background:#fff3bf;border:2px solid #1e1e1e;border-radius:12px 4px 12px 4px;font-size:1rem"></div>
         <label>Zeit zum Einzahlen</label><div class="row" id="hTimeRow"></div>
         <label>🤖 Bots (Computer-Spieler)</label><div class="row" id="hBotRow"></div>
         <details class="more"><summary>⚙️ Mehr Optionen</summary>
@@ -245,6 +244,7 @@ table.res .n{text-align:right}
           <label>Kontostände am Anfang</label><div class="row" id="hTranspRow"></div>
           <label>Regelrunde</label><div class="row" id="hRuleRow"></div>
           <label>Topf wird vervielfacht</label><div class="row" id="hFactorRow"></div>
+          <label>Prognose in der Anzeige</label><div class="row" id="hProgRow"></div>
         </details>
       </div>
       <div style="margin-top:12px"><span class="ti" style="font-size:1.6rem" id="hCount">0 Spieler</span><div class="plist" id="hLobbyList"></div></div>
@@ -294,7 +294,6 @@ table.res .n{text-align:right}
       <div class="roomcard sk"><b id="rCount">Dabei: 1 Spieler</b><div class="plist" id="rList" style="justify-content:center"></div></div>
       <div class="settings sk">
         <label>Spiellänge</label><div class="row" id="rPresetRow"></div>
-        <div id="rNeed" style="margin:4px 0 2px;padding:6px 10px;background:#fff3bf;border:2px solid #1e1e1e;border-radius:12px 4px 12px 4px;font-size:1rem"></div>
         <label>Zeit zum Einzahlen</label><div class="row" id="rTimeRow"></div>
         <label>🤖 Bots (Computer-Spieler)</label><div class="row" id="rBotRow"></div>
         <details class="more"><summary>⚙️ Mehr Optionen</summary>
@@ -303,6 +302,7 @@ table.res .n{text-align:right}
           <label>Kontostände am Anfang</label><div class="row" id="rTranspRow"></div>
           <label>Regelrunde</label><div class="row" id="rRuleRow"></div>
           <label>Topf wird vervielfacht</label><div class="row" id="rFactorRow"></div>
+          <label>Prognose in der Anzeige</label><div class="row" id="rProgRow"></div>
           <label>Beitreten</label><div class="row" id="rLateRow"></div>
         </details>
       </div>
@@ -359,7 +359,7 @@ function keepRegistered(getPeer, lampId){
 }
 
 const PREFIX = 'hvh-gemeinwohl-';
-const APP_VERSION = '2026-10-17g2';
+const APP_VERSION = '2026-10-17g3';
 const AUTOJOIN_KEY = 'gemeinwohl-autojoin';
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const EMOJIS = ['😀','😎','🤓','🥳','🤩','😜','🤠','🥸','😇','🤖','👻','👽','💩','🐱','🐶','🦊','🐼','🐸','🦁','🐯','🐵','🐙','🦄','🐝','🐢','🦖','🐧','🦉','🐬','🦈','🍕','🍩','🍉','⚽','🏀','🎮','🎸','🚀','🌈','🔥','⭐','💎','👑','🌵'];
@@ -543,8 +543,9 @@ function AMT(R, g, x, y, text, size, kind){
 /* ---------- Geldberg (210 x 150) ---------- */
 const COINS = [[],[3],[5,2],[5,4],[6,5,3],[8,7,5],[9,8,7,5],[11,10,9,8,6],[13,12,11,10,9],[16,15,14,13,12,11]];
 const LOOSE = [2,1,1,1,1,1,2,2,3,4], BILLS = [0,0,0,1,2,3,4,6,9,13];
-const LV = [0,25,50,100,150,225,350,500,750,1250];
-const levelOf = v => { let l = 1; LV.forEach((t, i) => { if (v >= t) l = i + 1; }); return l; };
+let WALLET_M = 25;   // wird aus dem Spielziel gesetzt: Stufe 10 ≈ 1,5 × Durchschnitt am Ziel
+const LVf = () => [0, 25, 50].concat([0,1,2,3,4,5,6].map(i => 100 * Math.pow(WALLET_M * 1.5, i / 6)));
+const levelOf = v => { let l = 1; LVf().forEach((t, i) => { if (v >= t) l = i + 1; }); return l; };
 function coinStack(R, g, x, base, n){ for (let i = 0; i < n; i++) R.ell(g, x, base - i*4.6, 26, 10, {fill:'#f6c945', fillStyle:'solid', roughness:1.1, strokeWidth:1.15}); }
 function bill(R, g, x, y, rot){ const gg = G(g, `rotate(${rot} ${x+30} ${y+14})`); R.rect(gg, x, y, 60, 28, {fill:'#8fd18f', fillStyle:'hachure', hachureGap:5, roughness:1.4}); R.ell(gg, x+30, y+14, 18, 16, {fill:'#d3f9d8', fillStyle:'solid', roughness:1}); T(gg, x+30, y+19, '€', 12); }
 function bundle(R, g, x, y, rot){ const gg = G(g, `rotate(${rot} ${x+30} ${y+14})`); for (let i = 3; i >= 0; i--) R.rect(gg, x + i*2, y - i*2.5, 60, 28, {fill:'#8fd18f', fillStyle:i ? 'solid' : 'hachure', hachureGap:5, roughness:1.2, strokeWidth:1.15}); R.rect(gg, x+25, y-8, 10, 38, {fill:'#ffd8a8', fillStyle:'solid', roughness:1}); }
@@ -682,7 +683,7 @@ const RULE_IDS = Object.keys(RULES);
    ===================================================================== */
 const H = {
   peer:null, code:'', players:new Map(), phase:'lobby',
-  time:30, bots:0, goalMul:15, maxRounds:12, transp:'0', ruleEvery:1, factor:'1.5', fx:1.5,
+  time:30, bots:0, goalMul:25, maxRounds:8, transp:'0', ruleEvery:1, factor:'2', fx:2, prog:'0', need:.5,
   room:false, late:'1', creatorPid:null, lobbySig:'',
   round:0, goal:0, startTotal:0, rules:[], hist:[], cur:null, prop:null, votes:{}, verdict:null, outcome:null,
   timer:null, stepT:null, endsAt:0, evId:0, ev:[]
@@ -783,26 +784,25 @@ function buildChips(){
   });
   mk2(['hTimeRow','rTimeRow'], [[20,'20 s'],[30,'30 s'],[45,'45 s'],[0,'∞']], 'time');
   mk2(['hBotRow','rBotRow'], [[0,'Keine'],[1,'1'],[2,'2'],[3,'3'],[4,'4'],[6,'6']], 'bots', hSyncBots);
-  mk2(['hGoalRow','rGoalRow'], [[2.5,'2,5×'],[4,'4×'],[6,'6×'],[10,'10×'],[15,'15×'],[20,'20×']], 'goalMul');
-  mk2(['hRoundsRow','rRoundsRow'], [[4,'4'],[5,'5'],[6,'6'],[8,'8'],[10,'10'],[12,'12'],[15,'15']], 'maxRounds');
-  mk2(['hFactorRow','rFactorRow'], [['1.5','×1,5 (Standard)'],['2','×2 (leichter)'],['3','×3 (sehr leicht)']], 'factor');
+  mk2(['hGoalRow','rGoalRow'], [[5,'5×'],[8,'8×'],[12,'12×'],[25,'25×'],[50,'50×']], 'goalMul');
+  mk2(['hRoundsRow','rRoundsRow'], [[4,'4'],[5,'5'],[6,'6'],[8,'8'],[10,'10'],[12,'12']], 'maxRounds');
+  mk2(['hProgRow','rProgRow'], [['0','aus'],['1','📈 an (zeigt, ob es reicht)']], 'prog');
+  mk2(['hFactorRow','rFactorRow'], [['2','×2 (Standard)'],['1.5','×1,5 (schwerer)'],['3','×3 (leichter)']], 'factor');
   mk2(['hTranspRow','rTranspRow'], [['0','🔒 geheim'],['1','💰 sichtbar (Regel gilt ab Start)']], 'transp');
   mk2(['hRuleRow','rRuleRow'], [[1,'jede Runde'],[2,'jede 2. Runde']], 'ruleEvery');
   mk2(['rLateRow'], [['1','✅ jederzeit (ab nächster Runde)'],['0','🔒 nur vor dem Start']], 'late');
   ['hPresetRow','rPresetRow'].forEach(id => { const row = $(id); row.innerHTML = '';
-    [['⚡ sehr kurz (~5 min)', {goalMul:2.5, maxRounds:4, time:20, factor:'1.5'}], ['🙂 kurz (~10 min)', {goalMul:6, maxRounds:8, time:30, factor:'1.5'}], ['🏗️ normal (~15 min)', {goalMul:15, maxRounds:12, time:30, factor:'1.5'}]]
+    [['⚡ sehr kurz (~5 min)', {goalMul:5, maxRounds:4, time:20, factor:'2'}], ['🙂 kurz (~10 min)', {goalMul:12, maxRounds:6, time:30, factor:'2'}], ['🏗️ normal (~15 min)', {goalMul:25, maxRounds:8, time:30, factor:'2'}]]
       .forEach(([label, cfg]) => { const b = document.createElement('button'); b.className = 'chip'; b.textContent = label; b.dataset.cfg = JSON.stringify(cfg);
         b.onclick = () => { Object.assign(H, cfg); syncChips(); }; row.appendChild(b); }); });
   syncChips();
 }
 /* nötige Ø-Einzahlung, damit das Haus genau in der letzten Runde fertig wird */
-const needRate = () => (Math.pow(H.goalMul, 1 / H.maxRounds) - 1) / ((+H.factor || 1.5) - 1);
+const needRate = () => (Math.pow(H.goalMul, 1 / H.maxRounds) - 1) / ((+H.factor || 2) - 1);
 function syncChips(){
-  const nr = Math.round(needRate() * 100);
-  ['hNeed','rNeed'].forEach(id => { const e = $(id); if (e) e.innerHTML = `🎯 Damit das Haus vor der Flut fertig wird, müssen <b>alle im Schnitt ~${nr} %</b> ihres Geldes pro Runde einzahlen.${nr > 100 ? ' (unmöglich!)' : nr < 35 ? ' (eher leicht)' : ''}`; });
   ['hPresetRow','rPresetRow'].forEach(id => $(id).querySelectorAll('button').forEach(b => { const c = JSON.parse(b.dataset.cfg); b.classList.toggle('on', Object.keys(c).every(k => H[k] === c[k])); }));
   [['hTimeRow','time'],['rTimeRow','time'],['hBotRow','bots'],['rBotRow','bots'],['hGoalRow','goalMul'],['rGoalRow','goalMul'],['hRoundsRow','maxRounds'],['rRoundsRow','maxRounds'],
-   ['hTranspRow','transp'],['rTranspRow','transp'],['hFactorRow','factor'],['rFactorRow','factor'],['hRuleRow','ruleEvery'],['rRuleRow','ruleEvery'],['rLateRow','late']].forEach(([id, key]) =>
+   ['hTranspRow','transp'],['rTranspRow','transp'],['hFactorRow','factor'],['rFactorRow','factor'],['hProgRow','prog'],['rProgRow','prog'],['hRuleRow','ruleEvery'],['rRuleRow','ruleEvery'],['rLateRow','late']].forEach(([id, key]) =>
     $(id).querySelectorAll('button').forEach(b => b.classList.toggle('on', String(H[key]) === b.dataset.v)));
 }
 
@@ -857,7 +857,7 @@ function hBotsPay(){
 function hStartGame(){
   [...H.players.values()].forEach(p => { p.inGame = p.online || p.bot; p.money = 100; p.contrib = 0; p.last = null; });
   H.startTotal = total(); H.goal = H.goalMul * H.startTotal;
-  H.fx = +H.factor || 1.5;
+  H.fx = +H.factor || 2; H.need = needRate();
   H.rules = H.transp === '1' ? [{id:'konto', round:0, yes:'Start', no:''}] : [];
   H.round = 0; H.hist = []; H.outcome = null; H.ev = [];
   show('hLobby', false); show('hGame');
@@ -1033,7 +1033,7 @@ function hTick(){
 function hView(p){
   const konto = has('konto'), einz = has('einzahl'), end = H.phase === 'end', c = H.cur;
   const afterPay = ['payout','build','propose','vote','verdict','end'].includes(H.phase);
-  const prog = H.hist.length ? hProg() : null;
+  const prog = H.prog === '1' && H.hist.length ? hProg() : null;
   const pub = inGame().map(q => ({pid:q.pid, name:q.name, avatar:q.avatar, color:q.color, bot:!!q.bot,
     money: konto || end ? q.money : null, locked:q.locked, voted: q.pid in H.votes,
     last: (einz || end) && afterPay && q.last ? q.last : null, contrib: end ? q.contrib : null, place: end ? q.place : null}));
@@ -1041,7 +1041,7 @@ function hView(p){
     total: total(), goal:H.goal, startTotal:H.startTotal, stage: stageOf(total()), prog: prog === Infinity ? -1 : prog,
     lastRate: H.hist.length ? H.hist[H.hist.length - 1].rate : null,
     rules: H.rules.map((r, i) => ({id:r.id, no:4 + i, round:r.round, yes:r.yes, no2:r.no})), opts: hOptions(),
-    konto, einz, players: pub, outcome:H.outcome, fx:H.fx, prizes: end ? hPrizes() : null, room:H.room, host:hCreatorName(),
+    konto, einz, players: pub, outcome:H.outcome, fx:H.fx, prizes: end ? hPrizes() : null, need: end ? H.need : null, goalMul:H.goalMul, room:H.room, host:hCreatorName(),
     hist: end ? H.hist.map(h => ({round:h.round, rate:h.rate, rules:h.rules})) : null};
   if (c && ['showdown','double','payout','build','propose','vote','verdict'].includes(H.phase)){
     const top = c.top.map(pid => H.players.get(pid)).filter(Boolean);
@@ -1149,7 +1149,7 @@ function hRender(){
   const n = ps.filter(p => p.online || p.bot).length;
   $('hStart').disabled = n < 2; $('hStartNote').textContent = n < 2 ? 'mindestens 2 Spieler (Bots zählen mit)' : n < 4 ? 'Tipp: ab 4 Spielern wird es spannend' : '';
   if (H.phase === 'lobby'){ $('hPhase').textContent = 'Lobby'; show('hStatus', false); show('hSkipBtn', false); return; }
-  const s = hView(null);
+  const s = hView(null); WALLET_M = H.goalMul;
   $('hPhase').textContent = PH_NAME[s.phase] + (s.phase === 'pay' && !s.konto ? ' – geheim!' : '');
   show('hStatus'); $('hStatus').textContent = statusLine(s);
   show('hSkipBtn', s.phase !== 'end');
@@ -1204,7 +1204,7 @@ function renderCenter(el, s, o){
       <div class="ti" style="font-size:2.2rem">${up ? '🏗️ Das Haus wächst!' : '🧱 Weiter geht\'s am Bau'}</div>
       <div style="font-size:1.4rem">Gemeinwohl ${eur(c.total0)} → <span class="amt g">${eur(s.total)}</span> (+${eur(s.total - c.total0)})</div>
       <div style="font-size:1.2rem;margin-top:6px">noch ${eur(Math.max(0, s.goal - s.total))} bis zum Ziel · ${s.maxRounds - s.round} Runde${s.maxRounds - s.round === 1 ? '' : 'n'} bis zur Flut</div>
-      <div style="font-size:1.25rem;margin-top:8px">${s.prog === 0 ? '🎉 Geschafft!' : s.prog < 0 ? '😬 So wächst nichts – die Flut kommt!' : `📈 Bei diesem Tempo fertig in ~${s.prog} Runden ${s.prog > s.maxRounds - s.round ? '– ⚠️ das reicht nicht vor der Flut!' : '– das reicht!'}`}</div>
+      <div style="font-size:1.25rem;margin-top:8px">${s.prog == null ? '' : s.prog === 0 ? '🎉 Geschafft!' : s.prog < 0 ? '😬 So wächst nichts – die Flut kommt!' : `📈 Bei diesem Tempo fertig in ~${s.prog} Runden ${s.prog > s.maxRounds - s.round ? '– ⚠️ das reicht nicht vor der Flut!' : '– das reicht!'}`}</div>
       ${o.phone ? '<svg class="mh" width="150" height="300" style="margin:8px auto 0"></svg>' : ''}</div>`;
     const mh = el.querySelector('.mh'); if (mh) drawHouse(mh, s.stage);
   } else if (s.phase === 'propose'){
@@ -1225,6 +1225,8 @@ function renderCenter(el, s, o){
       <table class="res"><tr><th>Platz</th><th>Spieler</th><th class="n">Geld am Ende</th><th class="n">insgesamt eingezahlt</th></tr>
       ${rank.map(p => `<tr><td>${p.place}.</td><td>${esc(p.avatar + ' ' + p.name)}${p.bot ? ' 🤖' : ''}</td><td class="n">${eur(p.money)}</td><td class="n">${eur(p.contrib)}</td></tr>`).join('')}</table>
       <div class="ti" style="font-size:1.4rem;margin-top:10px">📉 Ø Einzahlung pro Runde</div><svg class="chart" width="${o.phone ? 330 : 860}" height="220"></svg>
+      <div style="margin-top:8px;font-size:1.15rem">🎯 Nötig gewesen wären im Schnitt <b>~${Math.round(s.need * 100)} %</b> pro Runde – ihr habt im Schnitt <b>${pct(s.hist.reduce((a, h) => a + h.rate, 0) / Math.max(1, s.hist.length))}</b> eingezahlt.</div>
+      <div style="margin-top:4px;font-size:1.15rem">💡 Jeder eingezahlte Euro brachte allen zusammen ${String(s.fx).replace('.', ',')} € – dir selbst aber nur ${(s.fx / P.length).toFixed(2).replace('.', ',')} €.</div>
       <div class="muted" style="margin-top:6px">Gesprächsanlass: Wann wurde viel gegeben, wann wenig? Was haben die Regeln verändert?</div></div>`;
     drawChart(el.querySelector('.chart'), s, o.phone ? 330 : 860);
   }
@@ -1395,7 +1397,7 @@ function pOnMsg(m){
 }
 let pLastKey = '';
 function pState(s){
-  const prev = C.st; C.st = s;
+  const prev = C.st; C.st = s; if (s.goalMul) WALLET_M = s.goalMul;
   if (s.me){ C.score = s.me.money; }
   pTop(); pScreen('pPlay'); show('pTabs'); $('pTabs').classList.toggle('withhost', !!C.isCreator);
   const key = s.phase + s.round, fresh = key !== pLastKey; pLastKey = key;
@@ -1419,7 +1421,7 @@ function pRender(fresh){
         <input type="range" id="pRange" min="${me.minPay}" max="${me.money}" step="1" value="${C.amt}">
         <div class="quick">${[0, .25, .5, .75, 1].map(f => `<button data-f="${f}">${f === 1 ? 'alles' : Math.round(f*100) + ' %'}</button>`).join('')}</div>
         <button class="go" id="pPay" style="font-size:1.5rem;padding:12px">🪙 In den Topf!</button>
-        <div class="tip">1 € von dir → ${String(s.fx || 2).replace('.', ',')} € im Topf → davon bekommst du nur ${back} € zurück (der Rest geht an die anderen).</div>
+        <div class="tip">Der Topf wird ${fxs(s)} vervielfacht und an alle gleich verteilt.</div>
         ${s.rules.some(r => r.id === 'mindest') ? `<div class="warn">📏 Mindestbeitrag: mind. ${eur(Math.ceil(me.money * .1))}, sonst kein Anteil!</div>` : ''}
         ${s.rules.some(r => r.id === 'grundsteuer') ? `<div class="warn">🧾 Grundsteuer: mindestens ${eur(me.minPay)} werden automatisch gezahlt.</div>` : ''}
         ${s.rules.some(r => r.id === 'strafe') ? '<div class="warn">⚖️ Wer am wenigsten zahlt, gibt zusätzlich 10 % ab.</div>' : ''}</div>

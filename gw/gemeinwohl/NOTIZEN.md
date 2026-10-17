@@ -41,7 +41,7 @@ Gemeinsames Projekt + Bedrohung mit Countdown – optisch könnten Projekt und C
 
 ## Prototyp (17.10.) – `index.html`
 - Beamer- und Raum-Modus (ohne Beamer), „Spielername“, Bots (kooperativ / bedingt / geizig / schlau)
-- Spiellänge (Mo: nötige Ø-Einzahlung soll mind. ~50 % sein): ⚡ sehr kurz 2,5× in 4 Runden (~51 %) · kurz 6× in 8 (~50 %) · normal 15× in 12 (~51 %); Topf ×1,5 Standard (×2/×3 wählbar); Lobby zeigt die nötige Quote
+- Spiellänge (nötige Ø-Einzahlung ~50 %, Topf ×2 Standard auch bei 2–3 Spielern): ⚡ sehr kurz 5× in 4 Runden · kurz 12× in 6 · normal 25× in 8; keine Hinweise auf die nötige Quote während des Spiels – erst in der Auswertung; Prognose nur als Option
 - Flut: Reichste gehen leer aus, 🥈 Trostpreis für den Zweitreichsten · 👏 Publikumspreis für die höchste Gesamteinzahlung (immer)
 - Regeln: 💰 Kontostand-Transparenz (auch als Startoption), 👁️ Einzahlungs-Transparenz, 📏 Mindestbeitrag 10 %, 🧾 Grundsteuer 5 %, ⚖️ Strafe (erst nach 👁️), 🏅 Ehrenpreis, 📈 Leistungsprinzip, Abschaffen, Passen
 - Auswertung am Ende: alles aufgedeckt + Kurve Ø-Einzahlung mit Regel-Markierungen
