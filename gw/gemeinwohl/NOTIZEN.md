@@ -43,5 +43,8 @@ Gemeinsames Projekt + Bedrohung mit Countdown – optisch könnten Projekt und C
 - Beamer- und Raum-Modus (ohne Beamer), „Spielername“, Bots (kooperativ / bedingt / geizig / schlau)
 - Spiellänge (nötige Ø-Einzahlung ~50 %, Topf ×2 Standard auch bei 2–3 Spielern): ⚡ sehr kurz 5× in 4 Runden · kurz 12× in 6 · normal 25× in 8; keine Hinweise auf die nötige Quote während des Spiels – erst in der Auswertung; Prognose nur als Option
 - Flut: Reichste gehen leer aus, 🥈 Trostpreis für den Zweitreichsten · 👏 Publikumspreis für die höchste Gesamteinzahlung (immer)
-- Regeln: 💰 Kontostand-Transparenz (auch als Startoption), 👁️ Einzahlungs-Transparenz, 📏 Mindestbeitrag 10 %, 🧾 Grundsteuer 5 %, ⚖️ Strafe (erst nach 👁️), 🏅 Ehrenpreis, 📈 Leistungsprinzip, Abschaffen, Passen
+- Regeln: 💰 Kontostand-Transparenz (auch als Startoption), 👁️ Einzahlungs-Transparenz, 📏 Mindestbeitrag 10 %, 🧾 Grundsteuer 5 %, ⚖️ Strafe (erst nach 👁️), 🏅 Ehrenpreis, Abschaffen, Passen (📈 Leistungsprinzip gestrichen – stellt die Spielidee auf den Kopf)
 - Auswertung am Ende: alles aufgedeckt + Kurve Ø-Einzahlung mit Regel-Markierungen
+- Ablauf: Aufdeck-Phasen warten standardmäßig auf „Weiter ▶“ (Beamer-Knopf, Leertaste/→/Presenter; im Raum-Modus Host-Leiste) – Option „automatisch mit Pausen“; weniger Text pro Phase
+- Haus-Maßstab logarithmisch: gleicher Wachstumsfaktor = gleich viel Haus (bei ~nötiger Einzahlung wächst es jede Runde gleichmäßig); Haus wächst sichtbar erst in der Bau-Phase
+- Hintergrund etwas dunkler

@@ -3,16 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#fdfbf4">
+<meta name="theme-color" content="#f1ecdd">
 <title>Gemeinwohl-Spiel</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Gochi+Hand&display=swap" rel="stylesheet">
 <style>
-:root{--paper:#fdfbf4;--ink:#1e1e1e;--muted:#6b6b6b;--soft:#f1f3f5;--green:#d3f9d8;--red:#ffe3e3;--gold:#f6c945}
+:root{--paper:#e8e1cd;--ink:#1e1e1e;--muted:#6b6b6b;--soft:#f1f3f5;--green:#d3f9d8;--red:#ffe3e3;--gold:#f6c945}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;min-height:100%}
 body{background:var(--paper);color:var(--ink);font-family:"Patrick Hand","Comic Sans MS",cursive;font-size:19px;
-  background-image:radial-gradient(#e7e1cf 1px,transparent 1px);background-size:22px 22px;min-height:100dvh}
+  background-image:radial-gradient(#d9cfb4 1px,transparent 1px);background-size:22px 22px;min-height:100dvh}
 h1,h2,h3,.ti{font-family:"Gochi Hand","Patrick Hand",cursive;font-weight:400}
 button,input{font:inherit;color:inherit}
 .hidden{display:none!important}
@@ -44,7 +44,7 @@ button.chip.on{background:#ffe066}
 .phase{flex:1;text-align:center;font-family:"Gochi Hand",cursive;font-size:1.8rem;padding:2px 16px;min-width:260px}
 .codebox{font-family:"Gochi Hand",cursive;font-size:1.4rem;padding:2px 12px;letter-spacing:.1em}
 .timer{font-family:"Gochi Hand",cursive;font-size:1.6rem;padding:2px 14px;background:#ffc9c9}
-.status{margin:8px 0;padding:5px 14px;background:#f8f9fa;font-size:1.08rem}
+.status{margin:8px 0;padding:5px 14px;background:#fff;font-size:1.15rem;text-align:center}
 .lobby{display:grid;grid-template-columns:minmax(260px,360px) 1fr;gap:18px;margin-top:10px}
 @media(max-width:900px){.lobby{grid-template-columns:1fr}}
 .joinbox{text-align:center;padding:14px}
@@ -106,7 +106,7 @@ details.more summary{cursor:pointer;font-family:"Gochi Hand",cursive;font-size:1
 .voters{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:14px}
 .voter{text-align:center;width:70px}
 .voter .c{width:56px;height:56px;margin:0 auto;border:2.5px solid var(--ink);border-radius:50% 45% 52% 48%;display:grid;place-items:center;font-size:1.8rem}
-.side{padding:10px;text-align:center;background:#f1f3f5}
+.side{padding:10px;text-align:center;background:#fff}
 .side .ti{font-size:1.6rem}
 .side svg{margin:0 auto}
 table.res{width:100%;border-collapse:collapse;font-size:1.05rem}
@@ -163,14 +163,14 @@ table.res .n{text-align:right}
 @keyframes fadeIn{from{opacity:0}}
 @keyframes slideIn{from{transform:translateX(-40px);opacity:0}}
 @keyframes popIn{from{transform:scale(.3);opacity:0}}
-.lb{position:fixed;inset:0;z-index:35;background:rgba(253,251,244,.97);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;cursor:pointer;overflow:auto}
+.lb{position:fixed;inset:0;z-index:35;background:rgba(232,225,205,.97);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;cursor:pointer;overflow:auto}
 .lb h2{font-family:"Gochi Hand",cursive;font-size:2.6rem;margin:0 0 16px}
 .lb .rows{width:min(900px,100%);display:flex;flex-direction:column;gap:8px}
 .lb .r{display:flex;align-items:center;gap:14px;background:#fff;border:2.5px solid var(--ink);border-radius:14px 4px 14px 4px;padding:6px 16px;animation:slideIn .45s both}
 .lb .r .pl{font-size:1.6rem;min-width:1.6ch}.lb .r .e{font-size:2rem}.lb .r .n{flex:1;font-size:1.6rem}.lb .r .s{font-size:1.5rem}
 #crownPop{position:fixed;left:50%;top:40%;transform:translate(-50%,-50%);z-index:41;pointer-events:none;text-align:center;font-size:1.8rem}
 #crownPop .c{font-size:6rem;display:block}
-#bigNum{position:fixed;inset:0;z-index:38;display:grid;place-items:center;background:rgba(253,251,244,.94);animation:fadeIn .25s}
+#bigNum{position:fixed;inset:0;z-index:38;display:grid;place-items:center;background:rgba(232,225,205,.94);animation:fadeIn .25s}
 #bigNum .n{font-family:"Gochi Hand",cursive;font-size:clamp(5rem,20vw,14rem);line-height:1}
 #bigNum .n.pop{animation:numPop .6s cubic-bezier(.2,1.8,.4,1)}
 #bigNum .l{font-family:"Gochi Hand",cursive;font-size:clamp(1.4rem,4vw,2.4rem);text-align:center;margin-top:10px}
@@ -190,6 +190,34 @@ table.res .n{text-align:right}
 #podiumOv .rest{margin-top:10px;text-align:center}
 .confetti{position:fixed;top:-20px;width:10px;height:16px;z-index:41;pointer-events:none;animation:fall linear forwards}
 @keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+/* Phasen-Leiste */
+.steps{display:flex;align-items:center;justify-content:center;gap:4px;flex-wrap:nowrap}
+.steps .st{display:grid;place-items:center;width:38px;height:38px;border:2px solid #b9b2a0;border-radius:50% 45% 52% 48%;font-size:1.05rem;color:#aaa;background:#fff;filter:grayscale(1);opacity:.55;flex:0 0 auto}
+.steps .st.done{opacity:.8;filter:none;border-color:var(--ink);background:#e9ecef}
+.steps .st.on{width:auto;height:auto;padding:2px 14px;border:2.5px solid var(--ink);border-radius:255px 14px 225px 14px/14px 225px 14px 255px;background:#ffe066;color:var(--ink);filter:none;opacity:1;font-family:"Gochi Hand",cursive;font-size:1.6rem;animation:pop .5s}
+.steps .ar{color:#b9b2a0;font-size:.9rem}
+.phase.stepsbox{background:transparent;border:none;padding:0}
+.pphase .steps .st{width:30px;height:30px;font-size:.85rem}
+.pphase .steps .st.on{font-size:1.2rem;padding:1px 10px}
+#hNext{position:fixed;right:22px;bottom:22px;z-index:30;font-size:2rem;padding:12px 34px;animation:nudge 1.6s ease-in-out infinite}
+@keyframes nudge{0%,100%{transform:translateX(0)}50%{transform:translateX(6px)}}
+#hNext .k{display:block;font-size:.85rem;color:#555}
+.pulse{animation:nudge 1.6s ease-in-out infinite}
+#hNext{position:fixed;right:300px;bottom:22px;z-index:30;font-size:1.9rem;padding:10px 34px;box-shadow:4px 4px 0 var(--ink);animation:breathe 1.8s ease-in-out infinite}
+#hNext[disabled]{opacity:.35;animation:none;box-shadow:none}
+@keyframes breathe{50%{transform:scale(1.07)}}
+.hostbar button.wait{animation:breathe 1.6s ease-in-out infinite;box-shadow:0 0 0 4px #ffe066}
+.bigpot{font-family:"Gochi Hand",cursive;font-size:4rem;line-height:1.05}
+.hgwrap{display:flex;gap:30px;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:6px}
+.hgwrap svg.hg{animation:grow 1s cubic-bezier(.2,1.6,.4,1) both;transform-origin:bottom center}
+.gbar{width:320px;height:26px;border:2.5px solid var(--ink);border-radius:12px 4px 14px 4px;background:#fff;overflow:hidden;margin:8px auto}
+.gbar i{display:block;height:100%;background:repeating-linear-gradient(-45deg,#8ce99a 0 10px,#b2f2bb 10px 20px);transition:width 1.6s cubic-bezier(.3,1.3,.5,1)}
+.bigval{font-family:"Gochi Hand",cursive;font-size:4.2rem;line-height:1.05}
+.bigsub{font-size:1.5rem}
+.waitnote{text-align:center;color:#555;margin-top:10px;font-size:1.05rem}
+.housegrow{display:flex;gap:28px;align-items:flex-end;justify-content:center;flex-wrap:wrap}
+.housegrow .hg{animation:grow .9s cubic-bezier(.2,1.6,.4,1) both;transform-origin:bottom center}
+@keyframes grow{from{transform:scaleY(.82);opacity:.3}}
 .netinfo{position:fixed;bottom:70px;left:50%;transform:translateX(-50%);background:#fff;border:2px solid var(--ink);padding:4px 12px;border-radius:999px;font-size:.9rem;z-index:50}
 </style>
 </head>
@@ -237,6 +265,7 @@ table.res .n{text-align:right}
           Wer am meisten einzahlt, darf eine neue Regel vorschlagen.</div>
         <label>Spiellänge</label><div class="row" id="hPresetRow"></div>
         <label>Zeit zum Einzahlen</label><div class="row" id="hTimeRow"></div>
+        <label>Nächste Phase</label><div class="row" id="hPaceRow"></div>
         <label>🤖 Bots (Computer-Spieler)</label><div class="row" id="hBotRow"></div>
         <details class="more"><summary>⚙️ Mehr Optionen</summary>
           <label>Ziel (Gemeinwohl × Startgeld aller)</label><div class="row" id="hGoalRow"></div>
@@ -254,6 +283,7 @@ table.res .n{text-align:right}
   <div class="game hidden" id="hGame">
     <div class="rules sk2" id="hRules"></div>
     <div class="center" id="hCenter"></div>
+    <button class="gold hidden" id="hNext">Weiter ▶</button>
     <div class="side sk" id="hSide">
       <div class="ti">Unser Haus</div>
       <div id="hHouseInfo" style="font-size:1rem"></div>
@@ -295,6 +325,7 @@ table.res .n{text-align:right}
       <div class="settings sk">
         <label>Spiellänge</label><div class="row" id="rPresetRow"></div>
         <label>Zeit zum Einzahlen</label><div class="row" id="rTimeRow"></div>
+        <label>Nächste Phase</label><div class="row" id="rPaceRow"></div>
         <label>🤖 Bots (Computer-Spieler)</label><div class="row" id="rBotRow"></div>
         <details class="more"><summary>⚙️ Mehr Optionen</summary>
           <label>Ziel (Gemeinwohl × Startgeld aller)</label><div class="row" id="rGoalRow"></div>
@@ -359,7 +390,7 @@ function keepRegistered(getPeer, lampId){
 }
 
 const PREFIX = 'hvh-gemeinwohl-';
-const APP_VERSION = '2026-10-17g3';
+const APP_VERSION = '2026-10-17i1';
 const AUTOJOIN_KEY = 'gemeinwohl-autojoin';
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const EMOJIS = ['😀','😎','🤓','🥳','🤩','😜','🤠','🥸','😇','🤖','👻','👽','💩','🐱','🐶','🦊','🐼','🐸','🦁','🐯','🐵','🐙','🦄','🐝','🐢','🦖','🐧','🦉','🐬','🦈','🍕','🍩','🍉','⚽','🏀','🎮','🎸','🚀','🌈','🔥','⭐','💎','👑','🌵'];
@@ -673,8 +704,7 @@ const RULES = {
   mindest:    {e:'📏', n:'Mindestbeitrag', t:'Wer weniger als 10 % seines Geldes einzahlt, bekommt nichts aus dem Topf.'},
   grundsteuer:{e:'🧾', n:'Grundsteuer', t:'Jede/r zahlt automatisch mindestens 5 % seines Geldes ein.'},
   strafe:     {e:'⚖️', n:'Strafe', t:'Wer am wenigsten einzahlt, gibt zusätzlich 10 % seines Geldes in den Topf.', req:'einzahl'},
-  ehre:       {e:'🏅', n:'Ehrenpreis', t:'Wer am meisten einzahlt, bekommt vorab 10 % des verdoppelten Topfs.'},
-  leistung:   {e:'📈', n:'Leistungsprinzip', t:'Der Topf wird nach Einzahlung verteilt: Wer mehr gibt, bekommt mehr zurück.'}
+  ehre:       {e:'🏅', n:'Ehrenpreis', t:'Wer am meisten einzahlt, bekommt vorab 10 % des verdoppelten Topfs.'}
 };
 const RULE_IDS = Object.keys(RULES);
 
@@ -683,7 +713,7 @@ const RULE_IDS = Object.keys(RULES);
    ===================================================================== */
 const H = {
   peer:null, code:'', players:new Map(), phase:'lobby',
-  time:30, bots:0, goalMul:25, maxRounds:8, transp:'0', ruleEvery:1, factor:'2', fx:2, prog:'0', need:.5,
+  time:30, bots:0, goalMul:25, maxRounds:8, transp:'0', ruleEvery:1, factor:'2', fx:2, prog:'0', need:.5, pace:'host', next:null, phaseAt:0,
   room:false, late:'1', creatorPid:null, lobbySig:'',
   round:0, goal:0, startTotal:0, rules:[], hist:[], cur:null, prop:null, votes:{}, verdict:null, outcome:null,
   timer:null, stepT:null, endsAt:0, evId:0, ev:[]
@@ -692,15 +722,17 @@ const hs = f => { if (!H.room) f(); };
 function hBroadcast(msg){ H.players.forEach(p => { if (p.conn && p.conn.open) try { p.conn.send(msg); } catch(e){} }); }
 function hSend(p, msg){ if (p.conn && p.conn.open) try { p.conn.send(msg); } catch(e){} }
 function hAt(ms, fn){ clearTimeout(H.stepT); H.stepT = setTimeout(fn, ms); }
+/* Nächster Schritt einer Aufdeck-Phase: Standard = erst, wenn der Host auf „Weiter“ klickt; sonst automatisch (mit Pause) */
+function hStep(ms, fn){ clearTimeout(H.stepT); H.next = fn; H.phaseAt = Date.now(); if (H.pace === 'auto') H.stepT = setTimeout(hGoNext, ms); }
+function hGoNext(){ const f = H.next; if (!f) return; H.next = null; clearTimeout(H.stepT); f(); }
 const has = id => H.rules.some(r => r.id === id);
 const inGame = () => [...H.players.values()].filter(p => p.inGame);
 const total = () => inGame().reduce((s, p) => s + p.money, 0);
-function stageOf(t){
-  if (!H.goal) return 1;
-  if (t >= H.goal) return 10;
-  const prog = (t - H.startTotal) / (H.goal - H.startTotal);
-  return clamp(1 + Math.floor(prog * 9), 1, 9);
-}
+/* Baufortschritt im Maßstab des erwarteten (exponentiellen) Wachstums:
+   gleicher Faktor Wachstum = gleich viel Haus. Mit ~nötiger Einzahlung wächst das Haus jede Runde gleichmäßig. */
+function buildFrac(t, start, goal){ if (!goal || !start || t <= start) return 0; return clamp(Math.log(t / start) / Math.log(goal / start), 0, 1); }
+function stageCalc(t, start, goal){ if (!goal) return 1; if (t >= goal) return 10; return clamp(1 + Math.floor(buildFrac(t, start, goal) * 9 + 1e-9), 1, 9); }
+const stageOf = t => stageCalc(t, H.startTotal, H.goal);
 function hEv(text, cls){ H.ev.push({id: ++H.evId, text, cls}); if (H.ev.length > 30) H.ev.shift(); hs(() => toast(text, cls)); }
 
 function startHost(){
@@ -783,6 +815,7 @@ function buildChips(){
       b.onclick = () => { H[key] = ['time','bots','goalMul','maxRounds','ruleEvery'].includes(key) ? +v : v; syncChips(); after && after(); }; row.appendChild(b); });
   });
   mk2(['hTimeRow','rTimeRow'], [[20,'20 s'],[30,'30 s'],[45,'45 s'],[0,'∞']], 'time');
+  mk2(['hPaceRow','rPaceRow'], [['host','👆 erst bei „Weiter“ (Standard)'],['auto','⏱️ automatisch mit Pausen']], 'pace');
   mk2(['hBotRow','rBotRow'], [[0,'Keine'],[1,'1'],[2,'2'],[3,'3'],[4,'4'],[6,'6']], 'bots', hSyncBots);
   mk2(['hGoalRow','rGoalRow'], [[5,'5×'],[8,'8×'],[12,'12×'],[25,'25×'],[50,'50×']], 'goalMul');
   mk2(['hRoundsRow','rRoundsRow'], [[4,'4'],[5,'5'],[6,'6'],[8,'8'],[10,'10'],[12,'12']], 'maxRounds');
@@ -802,7 +835,7 @@ const needRate = () => (Math.pow(H.goalMul, 1 / H.maxRounds) - 1) / ((+H.factor 
 function syncChips(){
   ['hPresetRow','rPresetRow'].forEach(id => $(id).querySelectorAll('button').forEach(b => { const c = JSON.parse(b.dataset.cfg); b.classList.toggle('on', Object.keys(c).every(k => H[k] === c[k])); }));
   [['hTimeRow','time'],['rTimeRow','time'],['hBotRow','bots'],['rBotRow','bots'],['hGoalRow','goalMul'],['rGoalRow','goalMul'],['hRoundsRow','maxRounds'],['rRoundsRow','maxRounds'],
-   ['hTranspRow','transp'],['rTranspRow','transp'],['hFactorRow','factor'],['rFactorRow','factor'],['hProgRow','prog'],['rProgRow','prog'],['hRuleRow','ruleEvery'],['rRuleRow','ruleEvery'],['rLateRow','late']].forEach(([id, key]) =>
+   ['hTranspRow','transp'],['rTranspRow','transp'],['hFactorRow','factor'],['rFactorRow','factor'],['hProgRow','prog'],['rProgRow','prog'],['hRuleRow','ruleEvery'],['rRuleRow','ruleEvery'],['rLateRow','late'],['hPaceRow','pace'],['rPaceRow','pace']].forEach(([id, key]) =>
     $(id).querySelectorAll('button').forEach(b => b.classList.toggle('on', String(H[key]) === b.dataset.v)));
 }
 
@@ -828,7 +861,7 @@ function botPayAmount(p){
   if (has('mindest') && p.bot !== 'geizig') r = Math.max(r, .11);
   return clamp(Math.round(p.money * r), hMinPay(p), p.money);
 }
-const PUNISH = ['mindest','strafe','leistung','grundsteuer'];
+const PUNISH = ['mindest','strafe','grundsteuer'];
 function botLikes(p, kind, rule){
   let yes;
   if (PUNISH.includes(rule)) yes = p.bot === 'koop' ? .9 : p.bot === 'bedingt' ? .6 : .1;
@@ -839,7 +872,7 @@ function botLikes(p, kind, rule){
 }
 function botPropose(p){
   const av = hOptions();
-  const pref = p.bot === 'koop' ? ['mindest','strafe','konto','einzahl','leistung','grundsteuer','ehre'] : p.bot === 'schlau' ? ['ehre','konto','einzahl'] : p.bot === 'geizig' ? [] : ['konto','einzahl','mindest','ehre'];
+  const pref = p.bot === 'koop' ? ['mindest','strafe','konto','einzahl','grundsteuer','ehre'] : p.bot === 'schlau' ? ['ehre','konto','einzahl'] : p.bot === 'geizig' ? [] : ['konto','einzahl','mindest','ehre'];
   if (p.bot === 'geizig'){ const r = H.rules.find(x => PUNISH.includes(x.id)); return r ? ['remove', r.id] : ['pass']; }
   if (p.bot === 'bedingt' && Math.random() < .3) return ['pass'];
   const pick = pref.find(id => av.add.includes(id));
@@ -866,7 +899,7 @@ function hStartGame(){
 function hNextRound(){
   clearTimeout(H.timer); clearTimeout(H.stepT);
   H.players.forEach(p => { if (!p.inGame && (p.online || p.bot)) p.inGame = true; p.pay = null; p.locked = false; });
-  H.round++; H.cur = null; H.prop = null; H.verdict = null; H.votes = {};
+  H.round++; H.cur = null; H.prop = null; H.verdict = null; H.votes = {}; H.next = null; H.phaseAt = Date.now();
   H.phase = 'pay'; H.endsAt = H.time ? Date.now() + H.time*1000 : 0;
   if (H.time) H.timer = setTimeout(hPayTimeout, H.time*1000);
   hTick(); hPush(); hBotsPay();
@@ -895,15 +928,13 @@ function hCompute(){
   c.bonusTotal = bonusTotal;
   let elig = ps;
   if (has('mindest')){ elig = ps.filter(p => c.a[p.pid] >= Math.ceil(p.money * .1)); c.excluded = ps.filter(p => !elig.includes(p)).map(p => p.pid); if (!elig.length){ elig = ps; c.excluded = []; } }
-  const sumA = elig.reduce((s, p) => s + c.a[p.pid], 0);
-  const leist = has('leistung') && sumA > 0;
   let given = 0;
-  elig.forEach(p => { const sh = leist ? Math.floor(rem * c.a[p.pid] / sumA) : Math.floor(rem / elig.length); c.got[p.pid] = sh; given += sh; });
+  elig.forEach(p => { const sh = Math.floor(rem / elig.length); c.got[p.pid] = sh; given += sh; });
   const order = [...elig].sort(() => Math.random() - .5); let left = rem - given, k = 0;
   while (left > 0 && order.length){ c.got[order[k % order.length].pid]++; left--; k++; }
   ps.forEach(p => { c.got[p.pid] = (c.got[p.pid] || 0) + (c.bonus[p.pid] || 0); });
-  c.share = leist ? null : Math.floor(rem / elig.length);
-  c.leist = leist; c.n = ps.length;
+  c.share = Math.floor(rem / elig.length);
+  c.n = ps.length;
   c.total0 = total();
   c.total1 = c.total0 + c.doubled - c.pot;   // der Topf wird vervielfacht → Gemeinwohl wächst um den Zuwachs
   c.proposer = c.top.length ? c.top[Math.floor(Math.random() * c.top.length)] : null;
@@ -912,9 +943,9 @@ function hCompute(){
 function hShowdown(){
   clearTimeout(H.timer); H.endsAt = 0;
   H.cur = hCompute(); H.phase = 'showdown';
-  hs(() => sDrum(2.6)); hPush(); hAt(4300, hDouble);
+  hStep(7500, hDouble); hs(() => sDrum(2.6)); hPush();
 }
-function hDouble(){ H.phase = 'double'; hs(sDing); hPush(); hAt(3000, hPayout); }
+function hDouble(){ H.phase = 'double'; hStep(6000, hPayout); hs(sDing); hPush(); }
 function hPayout(){
   const c = H.cur;
   inGame().forEach(p => {
@@ -923,7 +954,7 @@ function hPayout(){
     p.last = {a, pen, got, bal: got - a - pen, excl: c.excluded.includes(p.pid), bonus: c.bonus[p.pid] || 0};
   });
   H.hist.push({round:H.round, rate:c.rate, pot:c.pot0, total0:c.total0, total1:total(), rules:H.rules.map(r => r.id), a:{...c.a}});
-  H.phase = 'payout'; hs(sCoin); hPush(); hAt(6500, hBuild);
+  H.phase = 'payout'; hStep(11000, hBuild); hs(sCoin); hPush();
 }
 function hProg(){
   const h = H.hist[H.hist.length - 1]; if (!h) return null;
@@ -936,12 +967,10 @@ function hProg(){
 function hBuild(){
   H.phase = 'build'; const t = total();
   const before = stageOf(H.hist[H.hist.length - 1].total0), now = stageOf(t);
-  if (now > before) hs(() => { sFanfare(); });
-  hPush();
-  if (t >= H.goal) return hAt(5000, () => hEnd('win'));
-  if (H.round >= H.maxRounds) return hAt(5000, () => hEnd('flood'));
   const ruleRound = H.round % H.ruleEvery === 0 && H.cur.proposer;
-  hAt(5000, ruleRound ? hPropose : hNextRound);
+  hStep(9000, t >= H.goal ? () => hEnd('win') : H.round >= H.maxRounds ? () => hEnd('flood') : ruleRound ? hPropose : hNextRound);
+  if (now > before) hs(() => setTimeout(sFanfare, 900));
+  hPush();
 }
 function hOptions(){
   const add = RULE_IDS.filter(id => !has(id) && (!RULES[id].req || has(RULES[id].req)));
@@ -950,7 +979,7 @@ function hOptions(){
 }
 function hPropose(){
   const p = H.players.get(H.cur.proposer);
-  H.phase = 'propose'; H.prop = {pid:p.pid, kind:null, rule:null};
+  H.phase = 'propose'; H.prop = {pid:p.pid, kind:null, rule:null}; H.next = null; H.phaseAt = Date.now();
   H.endsAt = Date.now() + 30000; clearTimeout(H.timer); H.timer = setTimeout(() => hChoose('pass'), 30000);
   hEv(`👑 ${p.avatar} ${p.name} hat am meisten eingezahlt und darf eine Regel vorschlagen!`, 'gold');
   hPush();
@@ -964,11 +993,11 @@ function hChoose(kind, rule){
     H.prop.kind = kind; H.prop.rule = rule; hVote();
   } else {
     H.prop.kind = 'pass'; H.phase = 'verdict'; H.verdict = {pass:true};
-    hPush(); hAt(2600, hNextRound);
+    hStep(4000, hNextRound); hPush();
   }
 }
 function hVote(){
-  H.phase = 'vote'; H.votes = {};
+  H.phase = 'vote'; H.votes = {}; H.phaseAt = Date.now();
   H.endsAt = Date.now() + 25000; H.timer = setTimeout(hVerdict, 25000);
   hs(sBlip); hPush();
   inGame().filter(p => p.bot).forEach(p => setTimeout(() => { if (H.phase === 'vote' && !(p.pid in H.votes)){ H.votes[p.pid] = botLikes(p, H.prop.kind, H.prop.rule); hPush(); hCheckVotes(); } }, 1200 + Math.random()*3500));
@@ -984,10 +1013,10 @@ function hVerdict(){
     else H.rules = H.rules.filter(r => r.id !== H.prop.rule);
     hs(sFanfare);
   } else hs(() => tone(200, .4, 'sawtooth', .08));
-  H.phase = 'verdict'; hPush(); hAt(4200, hNextRound);
+  H.phase = 'verdict'; hStep(6500, hNextRound); hPush();
 }
 function hEnd(outcome){
-  clearTimeout(H.timer); clearTimeout(H.stepT);
+  clearTimeout(H.timer); clearTimeout(H.stepT); H.next = null;
   H.phase = 'end'; H.outcome = outcome;
   const list = hRanking();
   hPush();
@@ -1008,7 +1037,7 @@ function hRanking(){
 }
 function hNewGame(){
   clearTimeout(H.timer); clearTimeout(H.stepT);
-  H.phase = 'lobby'; H.round = 0; H.hist = []; H.rules = []; H.cur = null; H.outcome = null; H.lobbySig = '';
+  H.phase = 'lobby'; H.round = 0; H.hist = []; H.rules = []; H.cur = null; H.outcome = null; H.lobbySig = ''; H.next = null;
   H.players.forEach(p => { p.money = 100; p.contrib = 0; p.last = null; p.pay = null; p.locked = false; });
   H.players.forEach(p => hSend(p, {t:'welcome', v:APP_VERSION, name:p.name, avatar:p.avatar, color:p.color, score:100, room:H.room, creator: p.pid === H.creatorPid}));
   hBroadcast({t:'wait', lobby:true, text:`Warte, bis ${hCreatorName()} das Spiel startet …`});
@@ -1016,11 +1045,17 @@ function hNewGame(){
 }
 function hSkip(){
   ac();
-  if (H.phase === 'pay') hPayTimeout();
+  if (Date.now() - H.phaseAt < 900) return;   // Doppelklick überspringt nicht zwei Phasen
+  if (H.next) hGoNext();
+  else if (H.phase === 'pay') hPayTimeout();
   else if (H.phase === 'propose') hChoose('pass');
   else if (H.phase === 'vote') hVerdict();
-  else if (H.stepT && ['showdown','double','payout','build','verdict'].includes(H.phase)){ const f = {showdown:hDouble, double:hPayout, payout:hBuild, build:null, verdict:hNextRound}[H.phase]; if (f){ clearTimeout(H.stepT); f(); } }
 }
+/* Beamer: Leertaste, Enter, → oder Presenter-Klicker (Bild ↓) = Weiter */
+document.addEventListener('keydown', e => {
+  if (H.room || !H.next || H.phase === 'lobby' || /INPUT|TEXTAREA/.test((e.target || {}).tagName || '')) return;
+  if ([' ', 'Enter', 'ArrowRight', 'PageDown'].includes(e.key)){ e.preventDefault(); hSkip(); }
+});
 function hTick(){
   clearInterval(H.tickI);
   H.tickI = setInterval(() => {
@@ -1033,19 +1068,20 @@ function hTick(){
 function hView(p){
   const konto = has('konto'), einz = has('einzahl'), end = H.phase === 'end', c = H.cur;
   const afterPay = ['payout','build','propose','vote','verdict','end'].includes(H.phase);
-  const prog = H.prog === '1' && H.hist.length ? hProg() : null;
+  const prog = H.prog === '1' && H.hist.length && H.phase !== 'payout' ? hProg() : null;
+  const shownT = H.phase === 'payout' && c ? c.total0 : total();   // das Haus wächst erst in der Bau-Phase
   const pub = inGame().map(q => ({pid:q.pid, name:q.name, avatar:q.avatar, color:q.color, bot:!!q.bot,
     money: konto || end ? q.money : null, locked:q.locked, voted: q.pid in H.votes,
     last: (einz || end) && afterPay && q.last ? q.last : null, contrib: end ? q.contrib : null, place: end ? q.place : null}));
   const v = {t:'state', phase:H.phase, round:H.round, maxRounds:H.maxRounds, ends: H.endsAt ? Math.max(0, H.endsAt - Date.now()) : 0,
-    total: total(), goal:H.goal, startTotal:H.startTotal, stage: stageOf(total()), prog: prog === Infinity ? -1 : prog,
+    total: shownT, goal:H.goal, startTotal:H.startTotal, stage: stageOf(shownT), prog: prog === Infinity ? -1 : prog, waitHost: H.pace === 'host' && !!H.next,
     lastRate: H.hist.length ? H.hist[H.hist.length - 1].rate : null,
     rules: H.rules.map((r, i) => ({id:r.id, no:4 + i, round:r.round, yes:r.yes, no2:r.no})), opts: hOptions(),
     konto, einz, players: pub, outcome:H.outcome, fx:H.fx, prizes: end ? hPrizes() : null, need: end ? H.need : null, goalMul:H.goalMul, room:H.room, host:hCreatorName(),
     hist: end ? H.hist.map(h => ({round:h.round, rate:h.rate, rules:h.rules})) : null};
   if (c && ['showdown','double','payout','build','propose','vote','verdict'].includes(H.phase)){
     const top = c.top.map(pid => H.players.get(pid)).filter(Boolean);
-    v.cur = {pot0:c.pot0, pot:c.pot, max:c.max, rate:c.rate, doubled:c.doubled, share:c.share, n:c.n, leist:c.leist,
+    v.cur = {pot0:c.pot0, pot:c.pot, max:c.max, rate:c.rate, doubled:c.doubled, share:c.share, n:c.n,
       penTotal:c.penTotal, bonusTotal:c.bonusTotal, exclN:c.excluded.length, total0:c.total0, total1:c.total1,
       top: H.phase !== 'showdown' && H.phase !== 'double' ? top.map(t => t.avatar + ' ' + t.name) : []};
   }
@@ -1103,7 +1139,7 @@ const pct = x => Math.round(x * 100) + ' %';
 const roundsLeft = s => s.maxRounds - s.round + (['pay','showdown','double'].includes(s.phase) ? 1 : 0);
 function statusLine(s){
   const pr = s.prog == null || s.phase === 'end' ? '' : s.prog === 0 ? ' · 🎉 Ziel erreicht!' : s.prog < 0 ? ' · Prognose: so wird das nichts 😬' : ` · Prognose: fertig in ~${s.prog} Runde${s.prog > 1 ? 'n' : ''}${s.prog > roundsLeft(s) ? ' ⚠️ zu spät!' : ''}`;
-  return `Runde ${s.round} / ${s.maxRounds} · Gemeinwohl ${eur(s.total)} von ${eur(s.goal)}` + (s.lastRate != null ? ` · Ø Einzahlung zuletzt ${pct(s.lastRate)}` : '') + pr;
+  return `Runde ${s.round} / ${s.maxRounds} · Gemeinwohl ${eur(s.total)} von ${eur(s.goal)}` + pr;
 }
 function ruleHtml(s, opt = {}){
   let h = BASE_RULES.map((r, i) => `<div class="rule base"><b>§ ${i+1} ${r[0]}</b>${opt.full ? r[1].replace('verdoppelt', 'vervielfacht (' + fxs(s) + ')') : ''}</div>`).join('');
@@ -1152,7 +1188,10 @@ function hRender(){
   const s = hView(null); WALLET_M = H.goalMul;
   $('hPhase').textContent = PH_NAME[s.phase] + (s.phase === 'pay' && !s.konto ? ' – geheim!' : '');
   show('hStatus'); $('hStatus').textContent = statusLine(s);
-  show('hSkipBtn', s.phase !== 'end');
+  show('hSkipBtn', ['pay','propose','vote'].includes(s.phase));
+  const nb = $('hNext'); show('hNext', !!H.next);
+  if (H.next){ nb.textContent = s.phase === 'build' && (s.stage >= 10 || s.round >= s.maxRounds) ? 'Zum Ergebnis ▶' : 'Weiter ▶'; nb.disabled = Date.now() - H.phaseAt < 900;
+    if (nb.disabled) setTimeout(() => { nb.disabled = false; }, 950); nb.onclick = hSkip; }
   // Regeltafel
   const rp = $('hRules'); rp.classList.toggle('collapsed', !hRulesOpen);
   rp.innerHTML = `<div class="rhead" id="hRulesHead"><span>§ ${hRulesOpen ? 'Regeltafel' : 'Regeln (' + (3 + s.rules.length) + ')'}</span><span>${hRulesOpen ? '◂' : '▸'}</span></div>
@@ -1162,7 +1201,7 @@ function hRender(){
   const cb = document.getElementById('hCatBtn'); if (cb) cb.onclick = e => { e.stopPropagation(); hCatOpen = !hCatOpen; hRender(); };
   // Haus + Runden
   drawHouse($('hHouse'), s.stage, {flood: s.outcome === 'flood'}); drawRounds($('hRounds'), s.round, s.maxRounds);
-  $('hHouseInfo').innerHTML = `${eur(s.total)} / ${eur(s.goal)} · ${pct(Math.min(1, (s.total - s.startTotal) / (s.goal - s.startTotal)))}`;
+  $('hHouseInfo').innerHTML = `<b>${eur(s.total)}</b> von ${eur(s.goal)}<br>🏗️ ${pct(buildFrac(s.total, s.startTotal, s.goal))} gebaut`;
   // Mitte
   const key = s.phase + s.round, fresh = key !== hLastKey; hLastKey = key;
   renderCenter($('hCenter'), s, {fresh, beamer:true});
@@ -1173,49 +1212,51 @@ function renderCenter(el, s, o){
   if (s.phase === 'pay'){
     el.innerHTML = `<div class="tiles">${P.map(p => `<div class="tile sk${p.locked ? ' paid' : ''}" data-pid="${p.pid}"><div class="nm" style="background:${p.color}">${esc(p.avatar + ' ' + p.name)}</div><svg></svg>
       <span class="st">${p.locked ? '✅' : '🤔'}</span>${p.locked && !s.konto ? '<span class="st2">gesetzt</span>' : ''}</div>`).join('')}</div>
-      <div class="bigline">${s.konto ? '💰 Wer ist reich – und wer hat schon gesetzt?' : `🥁 ${P.filter(p => p.locked).length} von ${P.length} haben gesetzt – wie viel landet wohl im Topf?`}</div>`;
+      <div class="bigline">🤫 ${P.filter(p => p.locked).length} / ${P.length} haben gesetzt</div>`;
     el.querySelectorAll('.tile').forEach(t => { const p = P.find(x => x.pid === t.dataset.pid), sv = t.querySelector('svg');
       if (s.konto && p.money != null) drawWallet(sv, p.money, {k:p.pid}); else drawSafe(sv, {k:p.pid, drop:p.locked}); });
   } else if (s.phase === 'showdown' || s.phase === 'double'){
-    const dbl = s.phase === 'double';
-    el.innerHTML = `<div class="split"><div><svg class="tw1" width="${o.phone ? (dbl ? 150 : 250) : 300}" height="${o.phone ? (dbl ? 235 : 390) : 470}"></svg></div>
-      ${dbl ? `<div class="ti" style="font-size:${o.phone ? 3 : 5}rem;color:#2b8a3e;align-self:center">${fxs(s)}</div><div><svg class="tw2" width="${o.phone ? 150 : 300}" height="${o.phone ? 235 : 470}"></svg></div>` : ''}
-      <div class="box sk" style="align-self:center;min-width:${o.phone ? 220 : 300}px">${dbl
-        ? `<div class="ti" style="font-size:1.6rem">${eur(c.pot)} ${fxs(s)}</div><div style="font-size:2rem" class="ti"><span class="amt g">= ${eur(c.doubled)}</span></div>${c.penTotal ? `<div class="muted">inkl. ${eur(c.penTotal)} ⚖️ Strafe</div>` : ''}`
-        : `<div class="ti" style="font-size:1.5rem">🥁 Trrrrr …</div><div class="showstats" style="opacity:0;transition:opacity .6s"><div class="ti" style="font-size:1.6rem">Im Topf: ${eur(c.pot0)}</div>
-           <div>Ø pro Spieler: ${eur(c.pot0 / c.n)}</div><div>= ${pct(c.rate)} von dem, was möglich war</div>${s.lastRate != null && s.round > 1 ? '' : ''}</div>`}</div></div>`;
+    const dbl = s.phase === 'double', ph = o.phone;
+    el.innerHTML = `<div class="split"><div><svg class="tw1" width="${ph ? (dbl ? 140 : 230) : 300}" height="${ph ? (dbl ? 220 : 360) : 470}"></svg></div>
+      ${dbl ? `<div class="ti" style="font-size:${ph ? 3 : 5.5}rem;color:#2b8a3e;align-self:center">${fxs(s)}</div><div><svg class="tw2" width="${ph ? 140 : 300}" height="${ph ? 220 : 470}"></svg></div>` : ''}
+      <div class="box sk" style="align-self:center;min-width:${ph ? 200 : 300}px">${dbl
+        ? `<div class="bigsub">${eur(c.pot)} ${fxs(s)} =</div><div class="bigpot" style="${ph ? 'font-size:2.6rem' : ''}"><span class="amt g">${eur(c.doubled)}</span></div>${c.penTotal ? `<div class="muted">inkl. ⚖️ ${eur(c.penTotal)} Strafe</div>` : ''}`
+        : `<div class="ti" style="font-size:1.6rem">🥁 Im Topf …</div><div class="showstats" style="opacity:0;transition:opacity .6s"><div class="bigpot" style="${ph ? 'font-size:2.6rem' : ''}">${eur(c.pot0)}</div>
+           <div class="bigsub">= ${pct(c.rate)} vom Möglichen</div></div>`}</div></div>`;
     const t1 = el.querySelector('.tw1');
     if (o.fresh || !t1.__drawn){ animTower(t1, s, dbl); t1.__drawn = true; }
     if (dbl){ const t2 = el.querySelector('.tw2'); drawTower(t2, c.max ? c.pot0 / c.max : 0, {k:'r' + s.round, value:c.pot0, labels:false}); t2.style.animation = 'flyIn .6s both'; }
-    else setTimeout(() => { const st = el.querySelector('.showstats'); if (st) st.style.opacity = 1; }, 3300);
+    else { const st = el.querySelector('.showstats'); if (o.fresh) setTimeout(() => { st.style.opacity = 1; }, 3300); else st.style.opacity = 1; }
   } else if (s.phase === 'payout'){
-    const per = c.leist ? 'nach Einzahlung (📈 Leistungsprinzip)' : `${eur(c.share)} für jede/n`;
-    el.innerHTML = `<div class="bigline">${eur(c.doubled)} ${c.bonusTotal ? `− ${eur(c.bonusTotal)} 🏅 ` : ''}÷ ${c.n - c.exclN} → <span class="amt g">${per}</span></div>
+    el.innerHTML = `<div class="bigline">${eur(c.doubled)}${c.bonusTotal ? ` − 🏅 ${eur(c.bonusTotal)}` : ''} ÷ ${c.n - c.exclN} = <span class="amt g">${eur(c.share)}</span> für jede/n</div>
       <div class="tiles paytiles">${P.map((p, i) => { const L = p.last;
-        const got = L ? L.got : c.leist ? null : (s.einz ? null : c.share);
-        return `<div class="tile sk fly" style="animation-delay:${i*0.12}s"><div class="nm" style="background:${p.color}">${esc(p.avatar + ' ' + p.name)}</div>
-          <div class="big">${L ? (L.excl ? '❌ 0 €' : '+' + eur(L.got)) : c.leist ? '+ ? €' : '+' + eur(c.share)}</div>${!L && c.exclN ? '<div class="sm muted">oder ❌ 0 €</div>' : ''}
-          ${L ? `<div class="sm">gesetzt ${eur(L.a)}${L.pen ? ` · Strafe ${eur(L.pen)}` : ''}${L.bonus ? ` · 🏅 ${eur(L.bonus)}` : ''}</div><div class="sm" style="color:${L.bal >= 0 ? '#2b8a3e' : '#c92a2a'}">Bilanz ${L.bal >= 0 ? '+' : ''}${eur(L.bal)}</div>` : ''}</div>`; }).join('')}</div>
-      <div class="bigline" style="font-size:1.4rem">${c.leist ? 'Wer mehr gibt, bekommt mehr zurück.' : 'Jede/r bekommt gleich viel – egal, wie viel sie/er gesetzt hat!'}${c.exclN ? ` · ❌ ${c.exclN}× kein Anteil (📏 Mindestbeitrag)` : ''}</div>
-      ${s.einz ? '' : '<div class="muted" style="text-align:center">Wer wie viel gesetzt hat, bleibt geheim – erst mit 👁️ Einzahlungs-Transparenz sichtbar.</div>'}`;
+        return `<div class="tile sk fly" style="animation-delay:${i*0.15}s"><div class="nm" style="background:${p.color}">${esc(p.avatar + ' ' + p.name)}</div>
+          <div class="big">${L ? (L.excl ? '❌ 0 €' : '+' + eur(L.got)) : '+' + eur(c.share)}</div>${!L && c.exclN ? '<div class="sm muted">oder ❌ 0 €</div>' : ''}
+          ${L ? `<div class="sm">gesetzt ${eur(L.a)}${L.pen ? ` · ⚖️ ${eur(L.pen)}` : ''}${L.bonus ? ` · 🏅 ${eur(L.bonus)}` : ''}</div><div class="sm" style="color:${L.bal >= 0 ? '#2b8a3e' : '#c92a2a'}">${L.bal >= 0 ? '+' : ''}${eur(L.bal)}</div>` : ''}</div>`; }).join('')}</div>
+      <div class="bigline" style="font-size:1.4rem">⚖️ Gleich viel für alle${c.exclN ? ` · ❌ ${c.exclN}× nichts (📏)` : ''}</div>`;
   } else if (s.phase === 'build'){
-    const up = s.stage > stageOf2(s, c.total0);
-    el.innerHTML = `<div class="box sk" style="max-width:640px;margin:30px auto">
-      <div class="ti" style="font-size:2.2rem">${up ? '🏗️ Das Haus wächst!' : '🧱 Weiter geht\'s am Bau'}</div>
-      <div style="font-size:1.4rem">Gemeinwohl ${eur(c.total0)} → <span class="amt g">${eur(s.total)}</span> (+${eur(s.total - c.total0)})</div>
-      <div style="font-size:1.2rem;margin-top:6px">noch ${eur(Math.max(0, s.goal - s.total))} bis zum Ziel · ${s.maxRounds - s.round} Runde${s.maxRounds - s.round === 1 ? '' : 'n'} bis zur Flut</div>
-      <div style="font-size:1.25rem;margin-top:8px">${s.prog == null ? '' : s.prog === 0 ? '🎉 Geschafft!' : s.prog < 0 ? '😬 So wächst nichts – die Flut kommt!' : `📈 Bei diesem Tempo fertig in ~${s.prog} Runden ${s.prog > s.maxRounds - s.round ? '– ⚠️ das reicht nicht vor der Flut!' : '– das reicht!'}`}</div>
-      ${o.phone ? '<svg class="mh" width="150" height="300" style="margin:8px auto 0"></svg>' : ''}</div>`;
-    const mh = el.querySelector('.mh'); if (mh) drawHouse(mh, s.stage);
+    const ph = o.phone, before = stageOf2(s, c.total0), up = s.stage > before;
+    const f0 = buildFrac(c.total0, s.startTotal, s.goal), f1 = buildFrac(s.total, s.startTotal, s.goal), left = s.maxRounds - s.round;
+    el.innerHTML = `<div class="hgwrap"><svg class="hg" width="${ph ? 150 : 250}" height="${ph ? 338 : 562}"></svg>
+      <div class="box sk" style="min-width:${ph ? 220 : 360}px">
+        <div class="ti" style="font-size:${ph ? 1.6 : 2.4}rem">${up ? '🏗️ Das Haus wächst!' : '🧱 Noch kein neues Stockwerk'}</div>
+        <div class="bigpot" style="${ph ? 'font-size:2.4rem' : ''}">${eur(s.total)}</div>
+        <div class="bigsub">+${eur(s.total - c.total0)} diese Runde</div>
+        <div class="gbar" style="${ph ? 'width:200px' : ''}"><i style="width:${f0*100}%"></i></div>
+        <div style="font-size:1.2rem">${s.stage >= 10 ? '🎉 Ziel erreicht!' : left > 0 ? `🌊 noch ${left} Runde${left === 1 ? '' : 'n'}` : '🌊 Die Flut kommt …'}</div>
+        ${s.prog == null || s.stage >= 10 ? '' : `<div style="font-size:1.1rem;margin-top:4px">${s.prog < 0 ? '📈 So wächst nichts.' : `📈 Bei diesem Tempo: ~${s.prog} Runde${s.prog === 1 ? '' : 'n'}`}</div>`}</div></div>`;
+    const hg = el.querySelector('.hg'), bar = el.querySelector('.gbar i');
+    if (o.fresh && up){ drawHouse(hg, before); hg.style.animation = 'none';
+      setTimeout(() => { drawHouse(hg, s.stage); hg.style.animation = ''; bar.style.width = f1*100 + '%'; }, 900); }
+    else { drawHouse(hg, s.stage); requestAnimationFrame(() => setTimeout(() => { bar.style.width = f1*100 + '%'; }, o.fresh ? 400 : 0)); }
   } else if (s.phase === 'propose'){
-    el.innerHTML = `<div class="box sk" style="max-width:640px;margin:30px auto"><div style="font-size:3rem">👑</div>
-      <div class="ti" style="font-size:2rem">${esc(s.prop.avatar + ' ' + s.prop.name)} hat am meisten eingezahlt</div>
-      <div style="font-size:1.3rem">… und darf jetzt eine Regel vorschlagen oder abschaffen. 🤔</div>
-      <div class="muted">(Wie viel gezahlt wurde, bleibt ${s.einz ? 'oben sichtbar' : 'geheim'}.)</div></div>`;
+    el.innerHTML = `<div class="box sk" style="max-width:640px;margin:30px auto"><div style="font-size:${o.phone ? 3 : 4.5}rem">👑</div>
+      <div class="ti" style="font-size:${o.phone ? 1.6 : 2.4}rem">${esc(s.prop.avatar + ' ' + s.prop.name)}</div>
+      <div style="font-size:1.4rem">hat am meisten eingezahlt und darf eine Regel vorschlagen.</div></div>`;
   } else if (s.phase === 'vote' || s.phase === 'verdict'){
-    if (s.verdict && s.verdict.pass){ el.innerHTML = `<div class="box sk" style="max-width:600px;margin:40px auto"><div class="ti" style="font-size:2rem">${esc(s.prop.avatar + ' ' + s.prop.name)} verzichtet auf einen Vorschlag.</div><div>Weiter geht's!</div></div>`; return; }
+    if (s.verdict && s.verdict.pass){ el.innerHTML = `<div class="box sk" style="max-width:600px;margin:40px auto"><div style="font-size:3rem">🙅</div><div class="ti" style="font-size:2rem">${esc(s.prop.avatar + ' ' + s.prop.name)} passt.</div><div style="font-size:1.3rem">Keine neue Regel.</div></div>`; return; }
     el.innerHTML = lawCard(s) + `<div class="voters">${P.map(p => `<div class="voter"><div class="c" style="background:${p.color}">${esc(p.avatar)}</div>${s.phase === 'vote' ? (p.voted ? '🗳️' : '…') : ''}<div style="font-size:.8rem">${esc(p.name)}</div></div>`).join('')}</div>
-      <div class="bigline" style="font-size:1.4rem">${s.phase === 'vote' ? `🗳️ ${s.votedN} von ${P.length} haben abgestimmt – geheim!` : s.verdict.acc ? '✅ Die Mehrheit ist dafür – gilt ab der nächsten Runde.' : '❌ Keine Mehrheit – alles bleibt, wie es ist.'}</div>`;
+      <div class="bigline" style="font-size:1.5rem">${s.phase === 'vote' ? `🗳️ ${s.votedN} / ${P.length} – geheim` : s.verdict.acc ? '✅ gilt ab der nächsten Runde' : '❌ bleibt, wie es ist'}</div>`;
   } else if (s.phase === 'end'){
     const win = s.outcome === 'win', rank = [...P].sort((a, b) => a.place - b.place);
     el.innerHTML = `<div class="box sk" style="margin:6px auto;max-width:900px">
@@ -1244,7 +1285,7 @@ function prizeHtml(s){
     h += line('👏', 'Publikumspreis', ids.map(p => `<b>${esc(p.avatar + ' ' + p.name)}</b> hat insgesamt am meisten eingezahlt (${eur(p.contrib)})`).join(' & ') + '.'); }
   return h;
 }
-function stageOf2(s, t){ if (t >= s.goal) return 10; return clamp(1 + Math.floor((t - s.startTotal) / (s.goal - s.startTotal) * 9), 1, 9); }
+const stageOf2 = (s, t) => stageCalc(t, s.startTotal, s.goal);
 /* Verlauf: Ø Einzahlung pro Runde mit Regel-Markierungen */
 function drawChart(svg, s, W){
   svg.innerHTML = ''; svg.setAttribute('viewBox', `0 0 ${W} 220`); seedFor('chart');
@@ -1442,8 +1483,8 @@ function pRender(fresh){
       <div style="font-size:1.3rem;line-height:1.7">eingezahlt <span class="amt r">−${eur(m.a)}</span>${m.pen ? `<br>⚖️ Strafe <span class="amt r">−${eur(m.pen)}</span>` : ''}<br>
       bekommen <span class="amt g">+${eur(m.got)}</span>${m.bonus ? ` (inkl. 🏅 ${eur(m.bonus)})` : ''}<br>
       <b>= ${bal >= 0 ? '+' : ''}${eur(bal)}</b> → jetzt <span class="amt">${eur(me.money)}</span></div>
-      <div class="muted" style="margin-top:6px">${s.cur.leist ? 'Verteilt nach Einzahlung (📈).' : `Jede/r bekommt ${eur(s.cur.share)} – auch wer nichts gezahlt hat.`}</div></div>
-      <svg id="pW" width="100%" height="150" style="max-width:300px;margin:0 auto"></svg>`;
+      <div class="muted" style="margin-top:6px">Jede/r bekommt ${eur(s.cur.share)} – auch wer nichts gezahlt hat.</div></div>
+      <svg id="pW" width="100%" height="150" style="max-width:300px;margin:0 auto"></svg>` + pWaitNote(s);
     drawWallet($('pW'), me.money, {k:me.pid});
   } else if (s.phase === 'propose' && s.prop && s.prop.pid === me.pid){
     const o = s.opts;
@@ -1469,10 +1510,14 @@ function pRender(fresh){
     if (C.isCreator){ const b = document.createElement('button'); b.className = 'go'; b.style.cssText = 'width:100%;margin-top:10px;font-size:1.3rem'; b.textContent = '🔄 Neues Spiel'; b.onclick = () => hNewGame(); el.appendChild(b); }
   } else {
     // Showdown, Verdopplung, Bau, Vorschlag, Abstimmung (bereits gewählt), Ergebnis: kompakte Beamer-Ansicht
-    el.innerHTML = head + '<div id="pC"></div>' + (s.phase === 'vote' && me.voted ? '<div class="tip">✓ Du hast abgestimmt.</div>' : '');
+    el.innerHTML = head + '<div id="pC"></div>' + (s.phase === 'vote' && me.voted ? '<div class="tip">✓ Du hast abgestimmt.</div>' : '') + pWaitNote(s);
     renderCenter($('pC'), s, {phone:true, fresh});
   }
   pTabs();
+}
+function pWaitNote(s){
+  if (!s.waitHost || C.isCreator) return '';
+  return `<div class="waitnote">${s.room ? `⏸ Weiter, sobald ${esc(s.host)} tippt` : '👀 Schau auf den Beamer'}</div>`;
 }
 function pTabs(){
   const s = C.st;
@@ -1536,6 +1581,7 @@ function rHostUpdate(ps){
     $('rStart').disabled = n < 2; $('rStart').textContent = n < 2 ? 'Warte auf Mitspieler (oder Bots) …' : "▶ Los geht's";
   }
   show('pHostBar', !['lobby','end'].includes(H.phase));
+  $('pHSkip').classList.toggle('wait', !!H.next);
 }
 
 if (Q.get('debug')) window.__dbg = {C, H};
