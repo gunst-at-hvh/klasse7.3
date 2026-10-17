@@ -132,6 +132,17 @@ table.res .n{text-align:right}
 .payui{display:flex;flex-direction:column;gap:10px;align-items:stretch}
 .payamt{align-self:center;font-family:"Gochi Hand",cursive;font-size:3rem;padding:0 26px;background:var(--gold);border:2.5px solid var(--ink);border-radius:50% 46% 50% 44%/60% 50% 56% 50%}
 .payui input[type=range]{width:100%;height:40px;accent-color:#1e1e1e}
+.havebox{display:flex;align-items:center;justify-content:center;gap:10px;margin:2px auto 4px}
+.havebox b{font-family:"Gochi Hand",cursive;font-weight:400;font-size:3rem;line-height:1}
+.paypct{text-align:center;font-size:1.05rem;color:#555;margin-top:-6px}
+.pslider{position:relative;height:74px;margin:2px 14px 6px;touch-action:none;cursor:pointer;user-select:none;-webkit-user-select:none}
+.pslider .trk{position:absolute;left:0;right:0;top:14px;height:30px;background:#fff;border:2.5px solid var(--ink);border-radius:16px 6px 18px 6px;overflow:hidden}
+.pslider .fill{height:100%;width:0;background:repeating-linear-gradient(-45deg,#f6c945 0 10px,#ffe066 10px 20px)}
+.pslider .knob{position:absolute;top:6px;left:0;transform:translateX(-50%);font-size:2.4rem;line-height:1;filter:drop-shadow(2px 2px 0 rgba(0,0,0,.35));pointer-events:none;transition:transform .1s}
+.pslider.drag .knob{transform:translateX(-50%) scale(1.25)}
+.pslider i{position:absolute;top:10px;width:2px;height:38px;margin-left:-1px;background:#868e96;pointer-events:none}
+.pslider span{position:absolute;top:50px;transform:translateX(-50%);font-size:.85rem;color:#868e96;pointer-events:none}
+.pslider .e0{left:0}.pslider .e1{left:100%;transform:translateX(-100%)}
 .quick{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
 .quick button{padding:6px 0;font-size:.98rem}
 .tip{font-size:.95rem;color:#555;text-align:center}
@@ -558,7 +569,7 @@ function keepRegistered(getPeer, lampId){
 }
 
 const PREFIX = 'hvh-gemeinwohl2-';
-const APP_VERSION = 'v2-2026-10-17e';
+const APP_VERSION = 'v2-2026-10-17f';
 const AUTOJOIN_KEY = 'gemeinwohl2-autojoin';
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const EMOJIS = ['😀','😎','🤓','🥳','🤩','😜','🤠','🥸','😇','🤖','👻','👽','💩','🐱','🐶','🦊','🐼','🐸','🦁','🐯','🐵','🐙','🦄','🐝','🐢','🦖','🐧','🦉','🐬','🦈','🍕','🍩','🍉','⚽','🏀','🎮','🎸','🚀','🌈','🔥','⭐','💎','👑','🌵'];
@@ -1877,13 +1888,16 @@ function pRender(fresh){
   if (me.inGame === false){ el.innerHTML = head + '<div class="center2"><div class="bigemoji">🕐</div><div class="ti" style="font-size:1.6rem">Du bist ab der nächsten Runde dabei – mit 100 €.</div></div>'; pTabs(); return; }
   if (s.phase === 'pay'){
     if (!me.locked){
+      const minis = s.players.map(p => `<span><span class="ae">${esc(p.avatar)}</span>${p.locked ? '✅' : '🤔'}</span>`).join('');
+      if (!fresh && C.payRound === s.round && el.querySelector('#pSl')){ const mn = el.querySelector('.minis'); if (mn) mn.innerHTML = minis; pTabs(); return; }   // Schieber beim Ziehen nicht neu aufbauen
+      C.payRound = s.round;
       if (C.amt == null) C.amt = me.minPay;
       const n = s.players.length, back = ((s.fx || 2) / n).toFixed(2).replace('.', ',');
-      el.innerHTML = head + `<svg id="pW" width="100%" height="150" style="max-width:300px;margin:0 auto"></svg>
+      el.innerHTML = head + `<div class="havebox"><svg id="pW" width="130" height="94"></svg><div><div class="lbl">💰 du hast</div><b>${eur(me.money)}</b></div></div>
         <div class="payui"><div class="ti" style="text-align:center;font-size:1.3rem">Wie viel wirfst du in den Topf?</div>
-        <div class="payamt" id="pAmt">${eur(C.amt)}</div>
-        <input type="range" id="pRange" min="${me.minPay}" max="${me.money}" step="1" value="${C.amt}">
-        <div class="quick">${[0, .25, .5, .75, 1].map(f => `<button data-f="${f}">${f === 1 ? 'alles' : Math.round(f*100) + ' %'}</button>`).join('')}</div>
+        <div class="payamt" id="pAmt">${eur(C.amt)}</div><div class="paypct" id="pPct"></div>
+        <div class="pslider" id="pSl"><div class="trk"><div class="fill" id="pFill"></div></div><div class="knob" id="pKnob">🪙</div>
+          ${[10, 25, 50, 75].map(t => `<i style="left:${t}%"></i><span style="left:${t}%">${t}%</span>`).join('')}<span class="e0">0</span><span class="e1">alles</span></div>
         <button class="go" id="pPay" style="font-size:1.5rem;padding:12px">🪙 In den Topf!</button>
         <div class="tip">Der Topf wird ${fxs(s)} vervielfacht und an alle gleich verteilt.${me.lastAvg != null ? `<br>Letzte Runde: Ø ${eur(me.lastAvg)} pro Kopf` : ''}</div>
         ${s.rules.some(r => r.id === 'mindest') ? `<div class="warn">📏 Mindestbeitrag: mind. ${eur(Math.ceil(me.money * .1))}, sonst kein Anteil!</div>` : ''}
@@ -1891,9 +1905,15 @@ function pRender(fresh){
         ${s.rules.some(r => r.id === 'strafe') ? '<div class="warn">⚖️ Wer am wenigsten zahlt, gibt zusätzlich 10 % ab.</div>' : ''}</div>
         <div class="minis">${s.players.map(p => `<span><span class="ae">${esc(p.avatar)}</span>${p.locked ? '✅' : '🤔'}</span>`).join('')}</div>`;
       drawWallet($('pW'), me.money, {k:me.pid});
-      const set = v => { C.amt = clamp(Math.round(v), me.minPay, me.money); $('pAmt').textContent = eur(C.amt); $('pRange').value = C.amt; };
-      $('pRange').oninput = e => set(+e.target.value);
-      el.querySelectorAll('[data-f]').forEach(b => b.onclick = () => set(me.money * +b.dataset.f));
+      /* Schieber: dort, wo man hintippt, steht der Betrag; ziehen geht auch. Marken nur zur Orientierung. */
+      const set = v => { C.amt = clamp(Math.round(v), me.minPay, me.money); const f = me.money ? C.amt / me.money : 0;
+        $('pAmt').textContent = eur(C.amt); $('pPct').textContent = `${Math.round(f * 100)} % · dir bleiben ${eur(me.money - C.amt)}`;
+        $('pFill').style.width = f * 100 + '%'; $('pKnob').style.left = f * 100 + '%'; };
+      const sl = $('pSl'), at = e => { const r = sl.querySelector('.trk').getBoundingClientRect(); set(clamp((e.clientX - r.left) / r.width, 0, 1) * me.money); };
+      sl.onpointerdown = e => { e.preventDefault(); sl.setPointerCapture(e.pointerId); sl.classList.add('drag'); at(e); };
+      sl.onpointermove = e => { if (sl.classList.contains('drag')) at(e); };
+      sl.onpointerup = sl.onpointercancel = () => { sl.classList.remove('drag'); try { navigator.vibrate && navigator.vibrate(8); } catch(e){} };
+      set(C.amt);
       $('pPay').onclick = () => { ac(); C.conn && C.conn.open && C.conn.send({t:'pay', v:C.amt}); $('pPay').disabled = true; $('pPay').textContent = '🪙 klonk!'; sCoin();
         try { navigator.vibrate && navigator.vibrate(40); } catch(e){}
         const r = $('pPay').getBoundingClientRect(); for (let i = 0; i < Math.min(6, 1 + Math.round(C.amt / Math.max(1, me.money) * 5)); i++){ const f = document.createElement('div'); f.className = 'payfly'; f.textContent = '🪙';
