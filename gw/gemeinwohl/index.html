@@ -232,10 +232,11 @@ table.res .n{text-align:right}
     <div>
       <div class="settings sk">
         <div class="ti" style="font-size:1.5rem">So geht's</div>
-        <div style="line-height:1.35">Jede Runde zahlt jede/r geheim etwas in den Topf. Der Topf wird <b>verdoppelt</b> und an <b>alle gleich</b> verteilt.
+        <div style="line-height:1.35">Jede Runde zahlt jede/r geheim etwas in den Topf. Der Topf wird <b>vervielfacht (×1,5)</b> und an <b>alle gleich</b> verteilt.
           Wächst das Gemeinwohl auf das Ziel, ist das Haus fertig – dann gewinnt, wer am meisten Geld hat. Schafft ihr es nicht bis zur letzten Runde, kommt die <b>Flut</b>: dann gibt es nur einen Trostpreis für den Zweitreichsten. 👏 Publikumspreis für den, der insgesamt am meisten einzahlt.
           Wer am meisten einzahlt, darf eine neue Regel vorschlagen.</div>
         <label>Spiellänge</label><div class="row" id="hPresetRow"></div>
+        <div id="hNeed" style="margin:4px 0 2px;padding:6px 10px;background:#fff3bf;border:2px solid #1e1e1e;border-radius:12px 4px 12px 4px;font-size:1rem"></div>
         <label>Zeit zum Einzahlen</label><div class="row" id="hTimeRow"></div>
         <label>🤖 Bots (Computer-Spieler)</label><div class="row" id="hBotRow"></div>
         <details class="more"><summary>⚙️ Mehr Optionen</summary>
@@ -293,6 +294,7 @@ table.res .n{text-align:right}
       <div class="roomcard sk"><b id="rCount">Dabei: 1 Spieler</b><div class="plist" id="rList" style="justify-content:center"></div></div>
       <div class="settings sk">
         <label>Spiellänge</label><div class="row" id="rPresetRow"></div>
+        <div id="rNeed" style="margin:4px 0 2px;padding:6px 10px;background:#fff3bf;border:2px solid #1e1e1e;border-radius:12px 4px 12px 4px;font-size:1rem"></div>
         <label>Zeit zum Einzahlen</label><div class="row" id="rTimeRow"></div>
         <label>🤖 Bots (Computer-Spieler)</label><div class="row" id="rBotRow"></div>
         <details class="more"><summary>⚙️ Mehr Optionen</summary>
@@ -357,7 +359,7 @@ function keepRegistered(getPeer, lampId){
 }
 
 const PREFIX = 'hvh-gemeinwohl-';
-const APP_VERSION = '2026-10-17g1';
+const APP_VERSION = '2026-10-17g2';
 const AUTOJOIN_KEY = 'gemeinwohl-autojoin';
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const EMOJIS = ['😀','😎','🤓','🥳','🤩','😜','🤠','🥸','😇','🤖','👻','👽','💩','🐱','🐶','🦊','🐼','🐸','🦁','🐯','🐵','🐙','🦄','🐝','🐢','🦖','🐧','🦉','🐬','🦈','🍕','🍩','🍉','⚽','🏀','🎮','🎸','🚀','🌈','🔥','⭐','💎','👑','🌵'];
@@ -680,7 +682,7 @@ const RULE_IDS = Object.keys(RULES);
    ===================================================================== */
 const H = {
   peer:null, code:'', players:new Map(), phase:'lobby',
-  time:30, bots:0, goalMul:10, maxRounds:15, transp:'0', ruleEvery:1, factor:'auto', fx:2,
+  time:30, bots:0, goalMul:15, maxRounds:12, transp:'0', ruleEvery:1, factor:'1.5', fx:1.5,
   room:false, late:'1', creatorPid:null, lobbySig:'',
   round:0, goal:0, startTotal:0, rules:[], hist:[], cur:null, prop:null, votes:{}, verdict:null, outcome:null,
   timer:null, stepT:null, endsAt:0, evId:0, ev:[]
@@ -781,19 +783,23 @@ function buildChips(){
   });
   mk2(['hTimeRow','rTimeRow'], [[20,'20 s'],[30,'30 s'],[45,'45 s'],[0,'∞']], 'time');
   mk2(['hBotRow','rBotRow'], [[0,'Keine'],[1,'1'],[2,'2'],[3,'3'],[4,'4'],[6,'6']], 'bots', hSyncBots);
-  mk2(['hGoalRow','rGoalRow'], [[3,'3× (sehr kurz)'],[5,'5× (kurz)'],[10,'10×'],[15,'15× (lang)']], 'goalMul');
-  mk2(['hRoundsRow','rRoundsRow'], [[5,'5'],[8,'8'],[10,'10'],[12,'12'],[15,'15'],[20,'20']], 'maxRounds');
-  mk2(['hFactorRow','rFactorRow'], [['auto','automatisch (×1,5 bei 2–3 Spielern, sonst ×2)'],['1.5','×1,5'],['2','×2'],['3','×3']], 'factor');
+  mk2(['hGoalRow','rGoalRow'], [[2.5,'2,5×'],[4,'4×'],[6,'6×'],[10,'10×'],[15,'15×'],[20,'20×']], 'goalMul');
+  mk2(['hRoundsRow','rRoundsRow'], [[4,'4'],[5,'5'],[6,'6'],[8,'8'],[10,'10'],[12,'12'],[15,'15']], 'maxRounds');
+  mk2(['hFactorRow','rFactorRow'], [['1.5','×1,5 (Standard)'],['2','×2 (leichter)'],['3','×3 (sehr leicht)']], 'factor');
   mk2(['hTranspRow','rTranspRow'], [['0','🔒 geheim'],['1','💰 sichtbar (Regel gilt ab Start)']], 'transp');
   mk2(['hRuleRow','rRuleRow'], [[1,'jede Runde'],[2,'jede 2. Runde']], 'ruleEvery');
   mk2(['rLateRow'], [['1','✅ jederzeit (ab nächster Runde)'],['0','🔒 nur vor dem Start']], 'late');
   ['hPresetRow','rPresetRow'].forEach(id => { const row = $(id); row.innerHTML = '';
-    [['⚡ sehr kurz (2–3 Spieler, ~5 min)', {goalMul:3, maxRounds:6, time:20, ruleEvery:1}], ['🙂 kurz (~10 min)', {goalMul:5, maxRounds:8, time:30, ruleEvery:1}], ['🏗️ normal (~20 min)', {goalMul:10, maxRounds:15, time:30, ruleEvery:1}]]
+    [['⚡ sehr kurz (~5 min)', {goalMul:2.5, maxRounds:4, time:20, factor:'1.5'}], ['🙂 kurz (~10 min)', {goalMul:6, maxRounds:8, time:30, factor:'1.5'}], ['🏗️ normal (~15 min)', {goalMul:15, maxRounds:12, time:30, factor:'1.5'}]]
       .forEach(([label, cfg]) => { const b = document.createElement('button'); b.className = 'chip'; b.textContent = label; b.dataset.cfg = JSON.stringify(cfg);
         b.onclick = () => { Object.assign(H, cfg); syncChips(); }; row.appendChild(b); }); });
   syncChips();
 }
+/* nötige Ø-Einzahlung, damit das Haus genau in der letzten Runde fertig wird */
+const needRate = () => (Math.pow(H.goalMul, 1 / H.maxRounds) - 1) / ((+H.factor || 1.5) - 1);
 function syncChips(){
+  const nr = Math.round(needRate() * 100);
+  ['hNeed','rNeed'].forEach(id => { const e = $(id); if (e) e.innerHTML = `🎯 Damit das Haus vor der Flut fertig wird, müssen <b>alle im Schnitt ~${nr} %</b> ihres Geldes pro Runde einzahlen.${nr > 100 ? ' (unmöglich!)' : nr < 35 ? ' (eher leicht)' : ''}`; });
   ['hPresetRow','rPresetRow'].forEach(id => $(id).querySelectorAll('button').forEach(b => { const c = JSON.parse(b.dataset.cfg); b.classList.toggle('on', Object.keys(c).every(k => H[k] === c[k])); }));
   [['hTimeRow','time'],['rTimeRow','time'],['hBotRow','bots'],['rBotRow','bots'],['hGoalRow','goalMul'],['rGoalRow','goalMul'],['hRoundsRow','maxRounds'],['rRoundsRow','maxRounds'],
    ['hTranspRow','transp'],['rTranspRow','transp'],['hFactorRow','factor'],['rFactorRow','factor'],['hRuleRow','ruleEvery'],['rRuleRow','ruleEvery'],['rLateRow','late']].forEach(([id, key]) =>
@@ -851,7 +857,7 @@ function hBotsPay(){
 function hStartGame(){
   [...H.players.values()].forEach(p => { p.inGame = p.online || p.bot; p.money = 100; p.contrib = 0; p.last = null; });
   H.startTotal = total(); H.goal = H.goalMul * H.startTotal;
-  H.fx = H.factor === 'auto' ? (inGame().length <= 3 ? 1.5 : 2) : +H.factor;
+  H.fx = +H.factor || 1.5;
   H.rules = H.transp === '1' ? [{id:'konto', round:0, yes:'Start', no:''}] : [];
   H.round = 0; H.hist = []; H.outcome = null; H.ev = [];
   show('hLobby', false); show('hGame');
