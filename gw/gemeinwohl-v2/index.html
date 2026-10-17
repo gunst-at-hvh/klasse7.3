@@ -434,6 +434,7 @@ table.rk.big{font-size:1.1rem}table.rk.big td{padding:2px 6px}
 .gnav{display:flex;gap:10px;justify-content:center;margin-top:8px;flex-wrap:wrap}.gnav button{font-size:1.2rem}
 .guideov{position:fixed;inset:0;z-index:44;background:var(--paper);overflow:auto;padding:14px 12px}
 #hGame.guidemode{grid-template-columns:1fr}#hGame.guidemode .rules,#hGame.guidemode .side{display:none}
+.pctbig{display:inline-block;padding:0 12px;background:#ffe066;border:2.5px solid var(--ink);border-radius:10px 4px 12px 4px}
 .gbar{width:320px;height:26px;border:2.5px solid var(--ink);border-radius:12px 4px 14px 4px;background:#fff;overflow:hidden;margin:8px auto}
 .gbar i{display:block;height:100%;background:repeating-linear-gradient(-45deg,#8ce99a 0 10px,#b2f2bb 10px 20px);transition:width 1.6s cubic-bezier(.3,1.3,.5,1)}
 .bigval{font-family:"Gochi Hand",cursive;font-size:4.2rem;line-height:1.05}
@@ -619,7 +620,7 @@ function keepRegistered(getPeer, lampId){
 }
 
 const PREFIX = 'hvh-gemeinwohl2-';
-const APP_VERSION = 'v2-2026-10-17k';
+const APP_VERSION = 'v2-2026-10-17l';
 const AUTOJOIN_KEY = 'gemeinwohl2-autojoin';
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const EMOJIS = ['😀','😎','🤓','🥳','🤩','😜','🤠','🥸','😇','🤖','👻','👽','💩','🐱','🐶','🦊','🐼','🐸','🦁','🐯','🐵','🐙','🦄','🐝','🐢','🦖','🐧','🦉','🐬','🦈','🍕','🍩','🍉','⚽','🏀','🎮','🎸','🚀','🌈','🔥','⭐','💎','👑','🌵'];
@@ -1024,12 +1025,14 @@ const BASE_RULES = [
 const RULES = {
   konto:      {e:'💰', n:'Kontostand-Transparenz', t:'Alle sehen, wie viel Geld jede/r hat.'},
   einzahl:    {e:'👁️', n:'Einzahlungs-Transparenz', t:'Alle sehen, wer wie viel eingezahlt und bekommen hat.'},
-  mindest:    {e:'📏', n:'Mindestbeitrag', t:'Wer weniger als 10 % seines Geldes einzahlt, bekommt nichts aus dem Topf.'},
-  grundsteuer:{e:'🧾', n:'Grundsteuer', t:'Jede/r zahlt automatisch mindestens 5 % seines Geldes ein.'},
+  mindest:    {e:'📏', n:'Mindestbeitrag', t:'Jede/r muss mindestens {p} % seines Geldes einzahlen.', t0:'Jede/r muss mindestens einen festen Prozentsatz einzahlen (beim Vorschlag wählbar, später nur erhöhbar).'},
   strafe:     {e:'⚖️', n:'Strafe', t:'Wer am wenigsten einzahlt, gibt zusätzlich 10 % seines Geldes in den Topf.', req:'einzahl'},
   ehre:       {e:'🏅', n:'Ehrenpreis', t:'Wer am meisten einzahlt, bekommt vorab 10 % des verdoppelten Topfs.'}
 };
 const RULE_IDS = Object.keys(RULES);
+/* Regeltext mit Prozentsatz (Mindestbeitrag) */
+const ruleT = (id, pct) => { const R = RULES[id]; return pct != null && R.t.includes('{p}') ? R.t.replace('{p}', pct) : (R.t0 || R.t); };
+const MIN_STEP = 5, MIN_MAX = 50;
 
 /* =====================================================================
    HOST
@@ -1057,6 +1060,10 @@ function hSetPace(mode){
   if (H.next){ clearTimeout(H.stepT); H.goAt = 0;
     if (mode === 'auto'){ const t = Math.max(3000, (H.stepMs || 6000) * (+H.autoMul || 1) - (Date.now() - H.phaseAt)); H.goAt = Date.now() + t; H.stepT = setTimeout(hGoNext, t); }
     else if (mode === 'vote' && H.ready.size >= hNeedReady()){ H.goAt = Date.now() + 3000; H.stepT = setTimeout(hGoNext, 3000); } }
+  if (H.phase === 'pay'){
+    if (mode === 'host'){ clearTimeout(H.timer); H.endsAt = 0; }
+    else if (!H.endsAt && H.time){ H.endsAt = Date.now() + H.time * 1000; clearTimeout(H.timer); H.timer = setTimeout(hPayTimeout, H.time * 1000); }
+  }
   toast(PACE_LABEL[mode], 'blue', 1400); hPush();
 }
 const hCyclePace = () => { ac(); hSetPace({host:'vote', vote:'auto', auto:'host'}[H.pace] || 'host'); };
@@ -1147,7 +1154,9 @@ function hOnMsg(conn, m){
     hPush(); hCheckPaid();
   } else if (m.t === 'propose'){
     const p = hFrom(conn); if (!p || H.phase !== 'propose' || !H.prop || H.prop.pid !== p.pid) return;
-    hChoose(m.kind, m.rule);
+    hChoose(m.kind, m.rule, m.pct);
+  } else if (m.t === 'draft'){
+    const p = hFrom(conn); if (p && H.phase === 'pay' && !p.locked) p.draft = Math.round(+m.v || 0);
   } else if (m.t === 'ready'){
     const p = hFrom(conn); if (p) hReady(p);
   } else if (m.t === 'vote'){
@@ -1157,7 +1166,8 @@ function hOnMsg(conn, m){
 }
 const hFrom = conn => [...H.players.values()].find(x => x.conn === conn);
 function hCreatorName(){ const c = H.players.get(H.creatorPid); return c ? c.avatar + ' ' + c.name : 'der Host'; }
-const hMinPay = p => has('grundsteuer') ? Math.min(p.money, Math.ceil(p.money * .05)) : 0;
+const minPct = () => { const r = H.rules.find(x => x.id === 'mindest'); return r ? r.pct || 10 : 0; };
+const hMinPay = p => { const q = minPct(); return q ? Math.min(p.money, Math.ceil(p.money * q / 100)) : 0; };
 
 function buildChips(){
   const mk2 = (rowIds, list, key, after) => rowIds.forEach(id => {
@@ -1212,25 +1222,26 @@ const lastRate = () => H.hist.length ? H.hist[H.hist.length - 1].rate : .3;
 function botPayAmount(p){
   const rr = Math.random(), lr = lastRate();
   let r = p.bot === 'koop' ? .45 + rr*.35 : p.bot === 'geizig' ? rr*.08 : p.bot === 'schlau' ? lr*.7 : clamp(lr + (rr - .5)*.15, 0, 1);
-  if (has('mindest') && p.bot !== 'geizig') r = Math.max(r, .11);
   return clamp(Math.round(p.money * r), hMinPay(p), p.money);
 }
-const PUNISH = ['mindest','strafe','grundsteuer'];
+const PUNISH = ['mindest','strafe'];
 function botLikes(p, kind, rule){
   let yes;
   if (PUNISH.includes(rule)) yes = p.bot === 'koop' ? .9 : p.bot === 'bedingt' ? .6 : .1;
   else if (rule === 'ehre') yes = p.bot === 'geizig' ? .2 : .7;
   else yes = p.bot === 'geizig' ? .25 : p.bot === 'schlau' ? .5 : .8;
   if (kind === 'remove') yes = 1 - yes;
+  if (kind === 'raise') yes = p.bot === 'koop' ? .8 : p.bot === 'bedingt' ? .45 : .05;
   return Math.random() < yes;
 }
 function botPropose(p){
   const av = hOptions();
-  const pref = p.bot === 'koop' ? ['mindest','strafe','konto','einzahl','grundsteuer','ehre'] : p.bot === 'schlau' ? ['ehre','konto','einzahl'] : p.bot === 'geizig' ? [] : ['konto','einzahl','mindest','ehre'];
-  if (p.bot === 'geizig'){ const r = H.rules.find(x => PUNISH.includes(x.id)); return r ? ['remove', r.id] : ['pass']; }
+  const pref = p.bot === 'koop' ? ['mindest','strafe','konto','einzahl','ehre'] : p.bot === 'schlau' ? ['ehre','konto','einzahl'] : p.bot === 'geizig' ? [] : ['konto','einzahl','mindest','ehre'];
+  if (p.bot === 'geizig'){ const r = H.rules.find(x => PUNISH.includes(x.id) && av.remove.includes(x.id)); return r ? ['remove', r.id] : ['pass']; }
   if (p.bot === 'bedingt' && Math.random() < .3) return ['pass'];
+  if (p.bot === 'koop' && av.raise && Math.random() < .5) return ['raise', 'mindest', Math.min(MIN_MAX, minPct() + 10)];
   const pick = pref.find(id => av.add.includes(id));
-  return pick ? ['add', pick] : ['pass'];
+  return pick ? ['add', pick, pick === 'mindest' ? 10 : null] : ['pass'];
 }
 function hBotsPay(){
   const key = H.round;
@@ -1258,14 +1269,16 @@ function hNextRound(){
   clearTimeout(H.timer); clearTimeout(H.stepT);
   H.players.forEach(p => { if (!p.inGame && (p.online || p.bot)) p.inGame = true; p.pay = null; p.locked = false; });
   H.round++; H.cur = null; H.prop = null; H.verdict = null; H.votes = {}; H.next = null; H.phaseAt = Date.now();
-  H.phase = 'pay'; H.endsAt = H.time ? Date.now() + H.time*1000 : 0;
-  if (H.time) H.timer = setTimeout(hPayTimeout, H.time*1000);
+  H.players.forEach(p => { p.draft = null; });
+  const timed = H.time && H.pace !== 'host';   // ⏸ Timer aus → beim Einzahlen kein Countdown
+  H.phase = 'pay'; H.endsAt = timed ? Date.now() + H.time*1000 : 0;
+  if (timed) H.timer = setTimeout(hPayTimeout, H.time*1000);
   hTick(); hPush(); hBotsPay();
 }
 function hCheckPaid(){ if (inGame().filter(p => p.online || p.bot).every(p => p.locked)) hAt(800, hShowdown); }
 function hPayTimeout(){
   if (H.phase !== 'pay') return;
-  inGame().forEach(p => { if (!p.locked){ p.pay = hMinPay(p); p.locked = true; p.auto = true; } });
+  inGame().forEach(p => { if (!p.locked){ p.pay = clamp(p.draft != null ? p.draft : hMinPay(p), hMinPay(p), p.money); p.locked = true; p.auto = true; } });
   hShowdown();
 }
 /* Auswertung einer Runde – alle Regeln hier */
@@ -1285,7 +1298,6 @@ function hCompute(){
   if (has('ehre') && c.top.length){ const b = Math.floor(c.doubled * .1 / c.top.length); c.top.forEach(pid => { c.bonus[pid] = b; bonusTotal += b; }); rem -= bonusTotal; }
   c.bonusTotal = bonusTotal;
   let elig = ps;
-  if (has('mindest')){ elig = ps.filter(p => c.a[p.pid] >= Math.ceil(p.money * .1)); c.excluded = ps.filter(p => !elig.includes(p)).map(p => p.pid); if (!elig.length){ elig = ps; c.excluded = []; } }
   let given = 0;
   elig.forEach(p => { const sh = Math.floor(rem / elig.length); c.got[p.pid] = sh; given += sh; });
   const order = [...elig].sort(() => Math.random() - .5); let left = rem - given, k = 0;
@@ -1331,8 +1343,9 @@ function hBuild(){
 }
 function hOptions(){
   const add = RULE_IDS.filter(id => !has(id) && (!RULES[id].req || has(RULES[id].req)));
-  const remove = H.rules.map(r => r.id);
-  return {add, remove};
+  const remove = H.rules.map(r => r.id).filter(id => id !== 'mindest');   // Mindestbeitrag: nur erhöhen, nie senken/abschaffen
+  const raise = has('mindest') && minPct() < MIN_MAX;
+  return {add, remove, raise, minPct: minPct()};
 }
 function hPropose(){
   const p = H.players.get(H.cur.proposer);
@@ -1340,14 +1353,15 @@ function hPropose(){
   H.endsAt = Date.now() + 30000; clearTimeout(H.timer); H.timer = setTimeout(() => hChoose('pass'), 30000);
   hEv(`👑 ${p.avatar} ${p.name} hat am meisten eingezahlt und darf eine Regel vorschlagen!`, 'gold');
   hPush();
-  if (p.bot) setTimeout(() => { if (H.phase === 'propose' && H.prop.pid === p.pid){ const [k, r] = botPropose(p); hChoose(k, r); } }, 2500 + Math.random()*2000);
+  if (p.bot) setTimeout(() => { if (H.phase === 'propose' && H.prop.pid === p.pid){ const [k, r, q] = botPropose(p); hChoose(k, r, q); } }, 2500 + Math.random()*2000);
 }
-function hChoose(kind, rule){
+function hChoose(kind, rule, pct){
   if (H.phase !== 'propose') return;
   clearTimeout(H.timer); H.endsAt = 0;
-  const o = hOptions();
-  if (kind === 'add' && o.add.includes(rule) || kind === 'remove' && o.remove.includes(rule)){
-    H.prop.kind = kind; H.prop.rule = rule; hVote();
+  const o = hOptions(), q = Math.round(+pct / MIN_STEP) * MIN_STEP;
+  const okMin = rule !== 'mindest' || (q >= MIN_STEP && q <= MIN_MAX && (kind !== 'raise' || q > o.minPct));
+  if (okMin && (kind === 'add' && o.add.includes(rule) || kind === 'remove' && o.remove.includes(rule) || kind === 'raise' && rule === 'mindest' && o.raise)){
+    H.prop.kind = kind; H.prop.rule = rule; H.prop.pct = rule === 'mindest' ? q : null; H.prop.from = kind === 'raise' ? o.minPct : null; hVote();
   } else {
     H.prop.kind = 'pass'; H.phase = 'verdict'; H.verdict = {pass:true};
     hStep(4000, hNextRound); hPush();
@@ -1366,7 +1380,8 @@ function hVerdict(){
   const v = Object.values(H.votes), yes = v.filter(x => x).length, no = v.length - yes, acc = yes > no;
   H.verdict = {yes, no, acc};
   if (acc){
-    if (H.prop.kind === 'add') H.rules.push({id:H.prop.rule, round:H.round, yes, no});
+    if (H.prop.kind === 'add') H.rules.push({id:H.prop.rule, round:H.round, yes, no, pct:H.prop.pct});
+    else if (H.prop.kind === 'raise'){ const r = H.rules.find(x => x.id === 'mindest'); if (r){ r.pct = H.prop.pct; r.round = H.round; r.yes = yes; r.no = no; } }
     else H.rules = H.rules.filter(r => r.id !== H.prop.rule);
   }
   H.phase = 'verdict'; hStep(6500, hNextRound); hPush();
@@ -1435,7 +1450,7 @@ function hView(p){
   const v = {t:'state', phase:H.phase, round:H.round, maxRounds:H.maxRounds, ends: H.endsAt ? Math.max(0, H.endsAt - Date.now()) : 0,
     total: shownT, goal:H.goal, startTotal:H.startTotal, stage: stageOf(shownT), prog: prog === Infinity ? -1 : prog, waitHost: H.pace === 'host' && !!H.next,
     lastRate: H.hist.length ? H.hist[H.hist.length - 1].rate : null,
-    rules: H.rules.map((r, i) => ({id:r.id, no:4 + i, round:r.round, yes:r.yes, no2:r.no})), opts: hOptions(),
+    rules: H.rules.map((r, i) => ({id:r.id, no:4 + i, round:r.round, yes:r.yes, no2:r.no, pct:r.pct})), opts: hOptions(),
     konto, einz, players: pub, outcome:H.outcome, fx:H.fx, prizes: end ? hPrizes() : null, need: end ? H.need : null, goalMul:H.goalMul, room:H.room, host:hCreatorName(),
     hist: end ? H.hist.map(h => ({round:h.round, rate:h.rate, rules:h.rules})) : null,
     gi: H.phase === 'guide' ? H.gi : null,
@@ -1454,7 +1469,7 @@ function hView(p){
     v.cur.dist = inGame().map(q => ({a:c.a[q.pid] || 0, bal:(c.got[q.pid] || 0) - (c.a[q.pid] || 0) - (c.pen[q.pid] || 0), me: !!p && q.pid === p.pid,
       who: einz || end ? {avatar:q.avatar, name:q.name} : null})).sort((x, y) => y.bal - x.bal || x.a - y.a);
   }
-  if (H.prop){ const pp = H.players.get(H.prop.pid); v.prop = {pid:pp.pid, name:pp.name, avatar:pp.avatar, kind:H.prop.kind, rule:H.prop.rule}; }
+  if (H.prop){ const pp = H.players.get(H.prop.pid); v.prop = {pid:pp.pid, name:pp.name, avatar:pp.avatar, kind:H.prop.kind, rule:H.prop.rule, pct:H.prop.pct, from:H.prop.from}; }
   if (H.verdict) v.verdict = H.verdict;
   v.votedN = Object.keys(H.votes).length;
   if (p){
@@ -1565,19 +1580,19 @@ function statusLine(s){
 }
 function ruleHtml(s, opt = {}){
   let h = BASE_RULES.map((r, i) => `<div class="rule base"><b>§ ${i+1} ${r[0]}</b>${opt.full ? r[1].replace('verdoppelt', 'vervielfacht (' + fxs(s) + ')') : ''}</div>`).join('');
-  s.rules.forEach(r => { const R = RULES[r.id]; h += `<div class="rule sk2 on"><b>§ ${r.no} ${R.e} ${R.n}</b>${R.t}<div class="w">${r.round ? `seit Runde ${r.round} · ${r.yes}:${r.no2}` : 'gilt ab Start'}</div></div>`; });
-  if (s.prop && s.prop.kind && s.phase === 'vote'){ const R = RULES[s.prop.rule]; h += `<div class="rule sk2 vote"><b>${s.prop.kind === 'remove' ? '🗑️ abschaffen?' : '§ neu?'} ${R.e} ${R.n}</b>${R.t}<div class="w" style="color:#e67700">Abstimmung läuft</div></div>`; }
+  s.rules.forEach(r => { const R = RULES[r.id]; h += `<div class="rule sk2 on"><b>§ ${r.no} ${R.e} ${R.n}${r.pct ? ' ' + r.pct + ' %' : ''}</b>${ruleT(r.id, r.pct)}<div class="w">${r.round ? `seit Runde ${r.round} · ${r.yes}:${r.no2}` : 'gilt ab Start'}</div></div>`; });
+  if (s.prop && s.prop.kind && s.phase === 'vote'){ const R = RULES[s.prop.rule]; h += `<div class="rule sk2 vote"><b>${s.prop.kind === 'remove' ? '🗑️ abschaffen?' : s.prop.kind === 'raise' ? '⬆️ erhöhen?' : '§ neu?'} ${R.e} ${R.n}</b>${ruleT(s.prop.rule, s.prop.pct)}<div class="w" style="color:#e67700">Abstimmung läuft</div></div>`; }
   if (opt.catalog){
     h += `<div class="ti" style="margin-top:10px;font-size:1.3rem">📖 Regelkatalog</div>`;
     RULE_IDS.filter(id => !s.rules.some(r => r.id === id)).forEach(id => { const R = RULES[id], lock = !s.opts.add.includes(id);
-      h += `<div class="rule sk2 cat${lock ? ' lock' : ''}"><b>${R.e} ${R.n}</b>${R.t}${lock && R.req ? `<div class="w" style="color:#888">erst nach ${RULES[R.req].e} ${RULES[R.req].n}</div>` : ''}</div>`; });
+      h += `<div class="rule sk2 cat${lock ? ' lock' : ''}"><b>${R.e} ${R.n}</b>${ruleT(id)}${lock && R.req ? `<div class="w" style="color:#888">erst nach ${RULES[R.req].e} ${RULES[R.req].n}</div>` : ''}</div>`; });
   }
   return h;
 }
 function lawCard(s){
-  const R = RULES[s.prop.rule], rm = s.prop.kind === 'remove';
+  const R = RULES[s.prop.rule], rm = s.prop.kind === 'remove', up = s.prop.kind === 'raise';
   return `<div class="lawcard sk"><div class="muted">${esc(s.prop.avatar + ' ' + s.prop.name)} schlägt vor:</div>
-    <h2>${rm ? '🗑️ Abschaffen:' : '§ ' + (4 + s.rules.length)} ${R.e} ${R.n}</h2><p>${R.t}</p>
+    <h2>${rm ? '🗑️ Abschaffen:' : up ? '⬆️ Erhöhen:' : '§ ' + (4 + s.rules.length)} ${R.e} ${R.n}${s.prop.pct ? ` <span class="pctbig">${up ? s.prop.from + ' % → ' : ''}${s.prop.pct} %</span>` : ''}</h2><p>${ruleT(s.prop.rule, s.prop.pct)}</p>
     ${s.verdict && !s.verdict.pass ? `<div class="stamp ${s.verdict.acc ? 'ok' : 'no'}">${s.verdict.acc ? (rm ? 'ABGESCHAFFT' : 'BESCHLOSSEN') : 'ABGELEHNT'} ${s.verdict.yes}:${s.verdict.no}</div>` : ''}</div>`;
 }
 /* Turm-Animation: füllt sich von 0 bis zum Wert */
@@ -2028,8 +2043,7 @@ function pRender(fresh){
           ${[10, 25, 50, 75].map(t => `<i style="left:${t}%"></i><span style="left:${t}%">${t}%</span>`).join('')}<span class="e0">0</span><span class="e1">alles</span></div>
         <button class="go" id="pPay" style="font-size:1.5rem;padding:12px">🪙 In den Topf!</button>
         <div class="tip">Der Topf wird ${fxs(s)} vervielfacht und an alle gleich verteilt.${me.lastAvg != null ? `<br>Letzte Runde: Ø ${eur(me.lastAvg)} pro Kopf` : ''}</div>
-        ${s.rules.some(r => r.id === 'mindest') ? `<div class="warn">📏 Mindestbeitrag: mind. ${eur(Math.ceil(me.money * .1))}, sonst kein Anteil!</div>` : ''}
-        ${s.rules.some(r => r.id === 'grundsteuer') ? `<div class="warn">🧾 Grundsteuer: mindestens ${eur(me.minPay)} werden automatisch gezahlt.</div>` : ''}
+        ${me.minPay ? `<div class="warn">📏 Mindestbeitrag: mindestens ${eur(me.minPay)} (${(s.rules.find(r => r.id === 'mindest') || {}).pct} %)</div>` : ''}
         ${s.rules.some(r => r.id === 'strafe') ? '<div class="warn">⚖️ Wer am wenigsten zahlt, gibt zusätzlich 10 % ab.</div>' : ''}</div>
         <div class="minis">${s.players.map(p => `<span><span class="ae">${esc(p.avatar)}</span>${p.locked ? '✅' : '🤔'}</span>`).join('')}</div>`;
       drawWallet($('pW'), me.money, {k:me.pid});
@@ -2040,7 +2054,9 @@ function pRender(fresh){
       const sl = $('pSl'), at = e => { const r = sl.querySelector('.trk').getBoundingClientRect(); set(clamp((e.clientX - r.left) / r.width, 0, 1) * me.money); };
       sl.onpointerdown = e => { e.preventDefault(); sl.setPointerCapture(e.pointerId); sl.classList.add('drag'); at(e); };
       sl.onpointermove = e => { if (sl.classList.contains('drag')) at(e); };
-      sl.onpointerup = sl.onpointercancel = () => { sl.classList.remove('drag'); try { navigator.vibrate && navigator.vibrate(8); } catch(e){} };
+      sl.onpointerup = sl.onpointercancel = () => { sl.classList.remove('drag'); sendDraft(); try { navigator.vibrate && navigator.vibrate(8); } catch(e){} };
+      const sendDraft = () => { C.conn && C.conn.open && C.conn.send({t:'draft', v:C.amt}); };
+      sl.addEventListener('pointermove', () => { clearTimeout(C.draftT); C.draftT = setTimeout(sendDraft, 250); });
       set(C.amt);
       $('pPay').onclick = () => { ac(); C.conn && C.conn.open && C.conn.send({t:'pay', v:C.amt}); $('pPay').disabled = true; $('pPay').textContent = '🪙 klonk!'; sCoin();
         try { navigator.vibrate && navigator.vibrate(40); } catch(e){}
@@ -2080,10 +2096,22 @@ function pRender(fresh){
   } else if (s.phase === 'propose' && s.prop && s.prop.pid === me.pid){
     const o = s.opts;
     el.innerHTML = head + `<div class="ti" style="text-align:center;font-size:1.6rem">👑 Du hast am meisten eingezahlt!</div><div style="text-align:center">Schlag eine Regel vor – alle stimmen ab.</div>
-      <div class="choices2">${o.add.map(id => `<button class="choice" data-k="add" data-r="${id}"><b>${RULES[id].e} ${RULES[id].n}</b><small>${RULES[id].t}</small></button>`).join('')}
+      <div class="choices2">${o.add.map(id => `<button class="choice" data-k="add" data-r="${id}"><b>${RULES[id].e} ${RULES[id].n}</b><small>${id === 'mindest' ? 'mindestens … % einzahlen (du wählst)' : ruleT(id)}</small></button>`).join('')}
+      ${o.raise ? `<button class="choice" data-k="raise" data-r="mindest"><b>⬆️ 📏 Mindestbeitrag erhöhen</b><small>jetzt ${o.minPct} % – höher setzen</small></button>` : ''}
       ${o.remove.map(id => `<button class="choice red" data-k="remove" data-r="${id}"><b>🗑️ ${RULES[id].e} ${RULES[id].n}</b><small>abschaffen</small></button>`).join('')}
       <button class="choice" data-k="pass" style="background:#eee"><b>🙅 Passen</b><small>keine neue Regel</small></button></div>`;
-    el.querySelectorAll('.choice').forEach(b => b.onclick = () => { C.conn && C.conn.open && C.conn.send({t:'propose', kind:b.dataset.k, rule:b.dataset.r}); el.innerHTML = head + '<div class="center2">⏳ …</div>'; });
+    const send = (kind, rule, pct) => { C.conn && C.conn.open && C.conn.send({t:'propose', kind, rule, pct}); el.innerHTML = head + '<div class="center2">⏳ …</div>'; };
+    el.querySelectorAll('.choice').forEach(b => b.onclick = () => {
+      if (b.dataset.r !== 'mindest') return send(b.dataset.k, b.dataset.r);
+      const lo = b.dataset.k === 'raise' ? o.minPct + MIN_STEP : MIN_STEP; let v = Math.max(lo, 10);
+      el.innerHTML = head + `<div class="box sk" style="max-width:440px;margin:10px auto"><div class="ti" style="font-size:1.6rem">📏 Mindestbeitrag${b.dataset.k === 'raise' ? ' erhöhen' : ''}</div>
+        <div style="font-size:1.2rem">Jede/r muss mindestens … einzahlen:</div><div class="payamt" id="mpVal" style="margin:8px auto;display:inline-block">${v} %</div>
+        <input type="range" id="mpR" min="${lo}" max="${MIN_MAX}" step="${MIN_STEP}" value="${v}" style="width:100%;height:40px;accent-color:#1e1e1e">
+        <div class="tip">${b.dataset.k === 'raise' ? `jetzt ${o.minPct} % · ` : ''}später nur noch erhöhbar, nie senken</div>
+        <div class="gnav"><button class="chip" id="mpBack">◀ zurück</button><button class="go" id="mpGo" style="font-size:1.3rem">§ Vorschlagen</button></div></div>`;
+      $('mpR').oninput = e => { v = +e.target.value; $('mpVal').textContent = v + ' %'; };
+      $('mpBack').onclick = () => pRender(true); $('mpGo').onclick = () => send(b.dataset.k, 'mindest', v);
+    });
   } else if (s.phase === 'vote' && !me.voted){
     el.innerHTML = head + lawCard(s) + `<div class="votebtns"><button class="go" data-y="1">👍<br><span style="font-size:1.1rem">dafür</span></button><button class="red" data-y="0">👎<br><span style="font-size:1.1rem">dagegen</span></button></div>
       <div class="tip" style="margin-top:6px">🤫 geheim</div>`;
