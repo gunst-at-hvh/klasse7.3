@@ -431,6 +431,13 @@ table.rk.big{font-size:1.1rem}table.rk.big td{padding:2px 6px}
 .guide .gemo span{animation:popIn .5s cubic-bezier(.2,1.8,.4,1) both}.guide .gemo span:nth-child(2){animation-delay:.3s}.guide .gemo span:nth-child(3){animation-delay:.6s}.guide .gemo span:nth-child(4){animation-delay:.9s}
 .guide .gdots{display:flex;gap:8px;margin-top:4px}.guide .gdots i{width:12px;height:12px;border-radius:50%;border:2px solid var(--ink);background:#fff}.guide .gdots i.on{background:var(--ink)}
 .guide.ph .gtitle{font-size:2.5rem}.guide.ph .gline{font-size:1.65rem;line-height:1.2}.guide.ph .gsub{font-size:1.25rem}.guide.ph .gemo{font-size:3.6rem;gap:10px}.guide.ph .gimg{gap:4px}
+.gex{border-collapse:collapse;font-size:clamp(1.25rem, 3.4vh, 2rem);margin:0 auto;background:#fff;border:2.5px solid var(--ink);border-radius:12px}
+.gex th{font-weight:400;color:#666;font-size:.7em;padding:2px 10px}.gex td{padding:3px 12px;border-top:1px solid #eee;white-space:nowrap}
+.gex tr{animation:popIn .45s cubic-bezier(.2,1.8,.4,1) both}.gex tr:first-child{animation:none}
+.gex .r{color:#c92a2a}.gex .g{color:#2b8a3e}.gex b{font-family:"Gochi Hand",cursive;font-weight:400;font-size:1.25em}.gex b.best{background:#d3f9d8;padding:0 6px;border-radius:6px}
+.guide.ph .gex{font-size:1.15rem}.guide.ph .gex td{padding:3px 6px}
+.gfig{display:flex;flex-direction:column;align-items:center}.gcap{font-size:clamp(1.05rem, 2.6vh, 1.5rem);text-align:center;line-height:1.2}
+.guide.ph .gcap{font-size:1rem}
 .gnav .gbig{font-size:1.5rem;padding:8px 26px}
 .gskip{display:flex;justify-content:center;margin-top:22px}.gskip button{font-size:.9rem;opacity:.75;padding:4px 12px}
 .gcount{text-align:center;font-size:.95rem;color:#666;margin-top:4px}
@@ -623,7 +630,7 @@ function keepRegistered(getPeer, lampId){
 }
 
 const PREFIX = 'hvh-gemeinwohl2-';
-const APP_VERSION = 'v2-2026-10-17m';
+const APP_VERSION = 'v2-2026-10-17n';
 const AUTOJOIN_KEY = 'gemeinwohl2-autojoin';
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const EMOJIS = ['😀','😎','🤓','🥳','🤩','😜','🤠','🥸','😇','🤖','👻','👽','💩','🐱','🐶','🦊','🐼','🐸','🦁','🐯','🐵','🐙','🦄','🐝','🐢','🦖','🐧','🦉','🐬','🦈','🍕','🍩','🍉','⚽','🏀','🎮','🎸','🚀','🌈','🔥','⭐','💎','👑','🌵'];
@@ -1267,7 +1274,7 @@ function hStartGame(){
   else if (H.guide === '1'){ H.phase = 'guide'; H.gi = 0; hStep(9000, hGuideNext); hPush(); }
   else hNextRound();
 }
-function hGuideNext(){ H.gi++; if (H.gi >= GUIDE.length) return hGuideSkip(); hStep(H.gi === 3 ? 10000 : 9000, hGuideNext); hPush(); }
+function hGuideNext(){ H.gi++; if (H.gi >= GUIDE.length) return hGuideSkip(); hStep(GUIDE[H.gi].ms || 9000, hGuideNext); hPush(); }
 function hGuidePrev(){ if (H.phase !== 'guide' || !H.gi) return; H.gi--; hStep(9000, hGuideNext); hPush(); }
 function hGuideSkip(){ if (H.phase !== 'guide') return; clearTimeout(H.stepT); H.next = null; hNextRound(); }
 function hNextRound(){
@@ -1526,13 +1533,15 @@ function showPodium(src){
 const fxs = s => '×' + String(s.fx || 2).replace('.', ',');
 /* ===== Anleitung (Folien, knapp & groß) ===== */
 const GUIDE = [
-  {t:'🏠 Euer Ziel', l:'Baut <b>zusammen</b> ein Haus –<br>bevor die 🌊 <b>Flut</b> kommt.', s:'Jede/r startet mit 100 €.'},
-  {t:'🤫 Geheim einzahlen', l:'Jede Runde: Wie viel wirfst du<br>in den <b>Topf</b>?', s:'0 € … alles – keiner sieht es.'},
-  {t:'×2 Der Topf verdoppelt sich', l:'Alles im Topf wird <b>verdoppelt</b>.', s:''},
-  {t:'➗ Alle bekommen gleich viel', l:'Der Topf wird auf <b>alle</b> verteilt –', s:'auch auf die, die nichts eingezahlt haben!'},
-  {t:'🏗️ Das Haus wächst', l:'Alles Geld zusammen = <b>Gemeinwohl</b>.<br>Je mehr, desto höher das Haus.', s:'🌊 Nach {R} Runden kommt die Flut.'},
-  {t:'🏆 Wer gewinnt?', l:'🏠 Haus fertig → <b>wer am meisten Geld hat</b>.<br>🌊 Flut → die Reichsten gehen leer aus,<br>🥈 Platz 2 bekommt den Trostpreis.', s:'👏 Wer insgesamt am meisten einzahlt: Publikumspreis'},
-  {t:'👑 Regeln ändern', l:'Wer am meisten einzahlt,<br>darf eine <b>Regel</b> vorschlagen.', s:'Alle stimmen geheim ab 👍 👎'}
+  {img:'goal', t:'🏠 Euer Ziel', l:'Baut <b>zusammen</b> ein Haus –<br>bevor die 🌊 <b>Flut</b> kommt.', s:'Jede/r startet mit 100 €.'},
+  {img:'safe', t:'🤫 Geheim einzahlen', l:'Jede Runde: Wie viel wirfst du<br>in den <b>Topf</b>?', s:'0 € … alles – keiner sieht es.'},
+  {img:'dbl', t:'×2 Der Topf verdoppelt sich', l:'Alles im Topf wird <b>verdoppelt</b>.', s:''},
+  {img:'seq', ms:10000, t:'➗ Alle bekommen gleich viel', l:'Der Topf wird auf <b>alle</b> verteilt –', s:'auch auf die, die nichts eingezahlt haben!'},
+  {img:'ex', ms:14000, t:'🧮 Ein Beispiel', l:'Topf 200 € → ×2 = 400 € → <b>jede/r +100 €</b>', s:'Wer <b>nichts</b> setzt, hat am Ende am <b>meisten</b> … 😈'},
+  {img:'house', t:'🏗️ Das Haus wächst', l:'Alles Geld zusammen = <b>Gemeinwohl</b>.<br>Je mehr, desto höher das Haus.', s:'🌊 Nach {R} Runden kommt die Flut.'},
+  {img:'zero', ms:12000, t:'… aber wenn alle 0 € setzen?', l:'Dann wächst <b>nichts</b> – kein Haus,<br>die 🌊 Flut kommt, <b>alle verlieren</b>.', s:'Ihr seid aufeinander angewiesen.'},
+  {img:'win', t:'🏆 Wer gewinnt?', l:'🏠 Haus fertig → <b>wer am meisten Geld hat</b>.<br>🌊 Flut → die Reichsten gehen leer aus,<br>🥈 Platz 2 bekommt den Trostpreis.', s:'👏 Wer insgesamt am meisten einzahlt: Publikumspreis'},
+  {img:'rule', t:'👑 Regeln ändern', l:'Wer am meisten einzahlt,<br>darf eine <b>Regel</b> vorschlagen.', s:'Alle stimmen geheim ab 👍 👎'}
 ];
 function guideHtml(i, o = {}){
   const g = GUIDE[i], R = o.rounds || 8;
@@ -1542,16 +1551,31 @@ function guideHtml(i, o = {}){
 }
 function guideDraw(el, i, o = {}){
   const box = el.querySelector('.gimg'); if (!box) return;
-  const sv = (w, h) => { const x = document.createElementNS(NS, 'svg'); x.setAttribute('width', w); x.setAttribute('height', h); box.appendChild(x); return x; };
+  const sv = (w, h, parent) => { const x = document.createElementNS(NS, 'svg'); x.setAttribute('width', w); x.setAttribute('height', h); (parent || box).appendChild(x); return x; };
+  const P4 = [['🦊','Ali'],['🐼','Ben'],['🐸','Cem'],['🦄','Dana']];
   const fake = {round:0, fx:2, cur:{pot:120, doubled:240, share:60, n:4, exclN:0, max:400},
-    players:[['🦊','Ali'],['🐼','Ben'],['🐸','Cem'],['🦄','Dana']].map((a, k) => ({avatar:a[0], name:a[1], color:COLORS[k], got:60}))};
-  if (i === 0){ const h = sv(160, 300); drawHouse(h, 4, {round:1, max:4}); const w = sv(170, 123); w.dataset.k = .45; drawWallet(w, 100, {k:'g'}); }
-  else if (i === 1){ const a = sv(170, 123); drawSafe(a, {k:'g1', drop:true}); const b = sv(170, 123); drawSafe(b, {k:'g2'}); const c = sv(170, 123); drawSafe(c, {k:'g3', drop:true}); }
-  else if (i === 2){ const d = sv(300, 380); d.classList.add('dbl'); drawDouble(d, .3, 120, 240, '×2', {k:'g', anim:true}); }
-  else if (i === 3){ const q = sv('100%', 380); q.classList.add('seq'); drawSeq(q, fake); }
-  else if (i === 4){ const h = sv(170, 319); let L = 1; drawHouse(h, L, {round:1, max:4}); const t = setInterval(() => { if (!h.isConnected || L >= 9){ clearInterval(t); return; } L += 2; drawHouse(h, L, {round:Math.ceil(L / 2.5), max:4}); h.style.animation = 'none'; void h.offsetWidth; h.style.animation = 'grow .6s both'; }, 900); }
-  else if (i === 5){ box.innerHTML = '<div class="gemo"><span>🏠</span><span>→</span><span>🏆</span></div><div class="gemo"><span>🌊</span><span>→</span><span>🥈</span></div>'; }
-  else if (i === 6){ box.innerHTML = '<div class="gemo"><span>👑</span><span>📜</span><span>👍</span><span>👎</span></div>'; }
+    players:P4.map((a, k) => ({avatar:a[0], name:a[1], color:COLORS[k], got:60}))};
+  const img = GUIDE[i].img;
+  if (img === 'goal'){ const h = sv(160, 300); drawHouse(h, 4, {round:1, max:4}); const w = sv(170, 123); w.dataset.k = .45; drawWallet(w, 100, {k:'g'}); }
+  else if (img === 'safe'){ ['g1','g2','g3'].forEach((k, n) => drawSafe(sv(170, 123), {k, drop: n !== 1})); }
+  else if (img === 'dbl'){ const d = sv(300, 380); d.classList.add('dbl'); drawDouble(d, .3, 120, 240, '×2', {k:'g', anim:true}); }
+  else if (img === 'seq'){ const q = sv('100%', 380); q.classList.add('seq'); drawSeq(q, fake); }
+  else if (img === 'ex'){   // Beispiel: 4 Spieler, verschieden viel gesetzt
+    const set = [100, 50, 50, 0], share = 100;
+    box.innerHTML = `<table class="gex"><tr><th></th><th>setzt</th><th>bekommt</th><th>hat dann</th></tr>${P4.map((a, k) => { const end = 100 - set[k] + share;
+      return `<tr style="animation-delay:${.3 + k * .5}s"><td><span class="ae">${a[0]}</span> ${a[1]}</td><td class="r">−${set[k]} €</td><td class="g">+${share} €</td>
+        <td><b class="${end === 200 ? 'best' : ''}">${end} €</b> ${set[k] > 50 ? '😇' : set[k] < 50 ? '😈' : '🙂'}</td></tr>`; }).join('')}</table>`;
+  }
+  else if (img === 'house'){ const h = sv(170, 319); let L = 1; drawHouse(h, L, {round:1, max:4}); const t = setInterval(() => { if (!h.isConnected || L >= 9){ clearInterval(t); return; } L += 2; drawHouse(h, L, {round:Math.ceil(L / 2.5), max:4}); h.style.animation = 'none'; void h.offsetWidth; h.style.animation = 'grow .6s both'; }, 900); }
+  else if (img === 'zero'){   // alle 0 € gegen alle 100 €
+    box.innerHTML = `<div class="gfig"><div class="gcap">alle setzen <b>0 €</b></div></div><div class="gfig"><div class="gcap">alle setzen <b>100 €</b></div></div>`;
+    const [f1, f2] = box.querySelectorAll('.gfig');
+    drawHouse(sv(170, 319, f1), 0, {round:4, max:4, flood:true}); drawHouse(sv(170, 319, f2), 9, {round:4, max:4});
+    f1.insertAdjacentHTML('beforeend', '<div class="gcap">jede/r bleibt bei 100 €<br>🌊 alle verlieren</div>');
+    f2.insertAdjacentHTML('beforeend', '<div class="gcap">jede/r hat <b>200 €</b><br>🏠 Haus wächst</div>');
+  }
+  else if (img === 'win'){ box.innerHTML = '<div class="gemo"><span>🏠</span><span>→</span><span>🏆</span></div><div class="gemo"><span>🌊</span><span>→</span><span>🥈</span></div>'; }
+  else if (img === 'rule'){ box.innerHTML = '<div class="gemo"><span>👑</span><span>📜</span><span>👍</span><span>👎</span></div>'; }
 }
 /* Wischen: links = weiter, rechts = zurück */
 function addSwipe(el, onNext, onPrev){
@@ -1580,8 +1604,9 @@ function fitGuide(root){
   requestAnimationFrame(() => { const im = [...root.querySelectorAll('.gimg')].find(e => !e.closest('.ghost')); if (!im) return;
     const rest = [...root.querySelectorAll('.gline,.gsub,.gdots,.gnav,.gskip,.gcount')].filter(e => !e.closest('.ghost')).reduce((a, e) => a + e.offsetHeight + 8, 0);
     const bars = document.getElementById('pTabs'), bottom = bars && !bars.classList.contains('hidden') && bars.offsetParent ? bars.getBoundingClientRect().top : innerHeight;
-    const h = Math.max(140, bottom - im.getBoundingClientRect().top - rest - 12), sv = [...im.querySelectorAll('svg')];
-    const avW = im.clientWidth - 20 * Math.max(0, sv.length - 1);
+    const caps = [...im.querySelectorAll('.gfig')].reduce((m, f) => Math.max(m, [...f.querySelectorAll('.gcap')].reduce((a, c) => a + c.offsetHeight, 0)), 0);
+    const h = Math.max(140, bottom - im.getBoundingClientRect().top - rest - 12 - caps), sv = [...im.querySelectorAll('svg')];
+    const avW = im.clientWidth - 20 * Math.max(0, sv.length - 1) - (caps ? 30 : 0);
     sv.forEach(x => { const vb = (x.getAttribute('viewBox') || '0 0 1 1').split(/\s+/).map(Number), r = vb[2] / vb[3] || 1, tot = sv.reduce((a, y) => { const v = (y.getAttribute('viewBox') || '0 0 1 1').split(/\s+/).map(Number); return a + (v[2] / v[3] || 1) * (+y.dataset.k || 1); }, 0);
       const hh = Math.min(h, avW / tot) * (+x.dataset.k || 1); x.style.height = hh + 'px'; x.style.width = hh * r + 'px'; x.style.maxHeight = 'none'; x.style.maxWidth = 'none'; }); });
 }
