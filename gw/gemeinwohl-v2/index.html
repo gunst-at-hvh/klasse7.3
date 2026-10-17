@@ -540,7 +540,7 @@ function keepRegistered(getPeer, lampId){
 }
 
 const PREFIX = 'hvh-gemeinwohl2-';
-const APP_VERSION = 'v2-2026-10-17b';
+const APP_VERSION = 'v2-2026-10-17c';
 const AUTOJOIN_KEY = 'gemeinwohl2-autojoin';
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const EMOJIS = ['😀','😎','🤓','🥳','🤩','😜','🤠','🥸','😇','🤖','👻','👽','💩','🐱','🐶','🦊','🐼','🐸','🦁','🐯','🐵','🐙','🦄','🐝','🐢','🦖','🐧','🦉','🐬','🦈','🍕','🍩','🍉','⚽','🏀','🎮','🎸','🚀','🌈','🔥','⭐','💎','👑','🌵'];
@@ -1851,7 +1851,7 @@ function pRender(fresh){
         <div>Warte auf die anderen …</div><div class="minis">${s.players.map(p => `<span><span class="ae">${esc(p.avatar)}</span>${p.locked ? '✅' : '🤔'}</span>`).join('')}</div></div>`;
     }
   } else if (s.phase === 'payout' && me.mine){
-    const m = me.mine, c = s.cur, bal = m.got - m.a - m.pen, dA = m.a - c.avg;
+    const m = me.mine, c = s.cur, bal = m.got - m.a - m.pen, dA = m.a - c.avg, rel = bal - c.avgBal;
     const k = dA > .5 ? 'angel' : dA < -.5 ? 'devil' : 'even', na = fresh ? '' : 'animation:none;';
     const sg = v => (v > 0 ? '+' : v < 0 ? '−' : '±') + eur(Math.abs(v));
     el.innerHTML = head + `<div class="beats">
@@ -1859,8 +1859,8 @@ function pRender(fresh){
         <div class="calc">${m.excl ? '❌ 0 € bekommen' : eur(m.got) + ' bekommen'} − ${eur(m.a)} eingezahlt${m.pen ? ` − ⚖️ ${eur(m.pen)}` : ''}</div>
         <div class="avgline">👥 Ø aller: <b>${sg(c.avgBal)}</b></div></div>
       <div class="beat role ${k}" style="animation-delay:1.5s;${na}"><div class="roleE">${k === 'angel' ? '😇' : k === 'devil' ? '😈' : '😐'}</div>
-        <div class="roleS">${k === 'angel' ? 'Du hast <b>mehr</b> als der Durchschnitt eingezahlt' : k === 'devil' ? 'Du hast <b>mehr</b> als der Durchschnitt bekommen' : 'Du hast genau den Durchschnitt eingezahlt'}</div>
-        <div class="roleS2">${k === 'angel' ? '(und weniger bekommen 😢)' : k === 'devil' ? '(und weniger eingezahlt 😊)' : '(und genau den Durchschnitt bekommen)'}</div></div>
+        <div class="roleS">${rel > 0 ? `Du hast <b>${eur(rel)} mehr</b> als der Durchschnitt bekommen` : rel < 0 ? `Du hast <b>${eur(-rel)} weniger</b> als der Durchschnitt bekommen` : 'Du hast genau so viel wie der Durchschnitt bekommen'}</div>
+        <div class="roleS2">(${k === 'angel' ? 'und mehr eingezahlt' : k === 'devil' ? 'und weniger eingezahlt' : 'und genau den Durchschnitt eingezahlt'} ${rel > 0 ? '😊' : rel < 0 ? '😢' : '😐'})</div></div>
       <button class="chip" id="pDet" style="margin:4px auto 0">${C.det ? '▴ Details zu' : '📊 Details'}</button>
       ${C.det ? `<div class="muted">Alle bekommen ${eur(c.share)} · Ø eingezahlt ${eur(c.avg)} · du ${eur(m.a)} · jetzt ${eur(me.money)}</div>` + potSplit(s, false) : ''}</div>` + pWaitNote(s);
     $('pDet').onclick = () => { C.det = !C.det; pRender(false); };
