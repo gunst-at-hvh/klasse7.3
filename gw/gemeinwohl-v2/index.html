@@ -445,6 +445,16 @@ table.rk.big{font-size:1.1rem}table.rk.big td{padding:2px 6px}
 .guideov{position:fixed;inset:0;z-index:44;background:var(--paper);overflow:auto;padding:14px 12px}
 #hGame.guidemode{grid-template-columns:1fr}#hGame.guidemode .rules,#hGame.guidemode .side{display:none}
 .pctbig{display:inline-block;padding:0 12px;background:#ffe066;border:2.5px solid var(--ink);border-radius:10px 4px 12px 4px}
+/* große Gruppen */
+.chipwall{display:grid;grid-template-columns:repeat(auto-fill,minmax(11.5rem,1fr));gap:7px}
+.pcw{display:flex;align-items:center;gap:6px;padding:4px 8px;background:#fff;border:3px solid;border-radius:14px 4px 14px 4px;font-size:1.05rem;position:relative}
+.pcw .nm2{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.pcw .mn{font-family:"Gochi Hand",cursive;font-size:1.1rem}
+.pcw.ok{background:#ebfbee}.pcw.justpaid{animation:payPop .6s cubic-bezier(.2,1.8,.4,1)}
+.voters.many .voter{width:58px}.voters.many .voter .c{width:46px;height:46px;font-size:1.7rem}.voters.many .voter div[style]{font-size:.7rem!important}
+table.res.sm{font-size:.92rem}table.res.sm td,table.res.sm th{padding:1px 4px}
+.tb2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.endgrid.big{grid-template-columns:1fr 1.15fr}.endgrid.big div[style*='font-size:1.15rem']{font-size:1rem!important}.endgrid.big .box{padding:6px 10px}table.res.sm td{white-space:nowrap}
+table.rk tr.gaprow td{text-align:center;color:#aaa;padding:0;line-height:.9;border:none}
 .gbar{width:320px;height:26px;border:2.5px solid var(--ink);border-radius:12px 4px 14px 4px;background:#fff;overflow:hidden;margin:8px auto}
 .gbar i{display:block;height:100%;background:repeating-linear-gradient(-45deg,#8ce99a 0 10px,#b2f2bb 10px 20px);transition:width 1.6s cubic-bezier(.3,1.3,.5,1)}
 .bigval{font-family:"Gochi Hand",cursive;font-size:4.2rem;line-height:1.05}
@@ -630,7 +640,7 @@ function keepRegistered(getPeer, lampId){
 }
 
 const PREFIX = 'hvh-gemeinwohl2-';
-const APP_VERSION = 'v2-2026-10-17n';
+const APP_VERSION = 'v2-2026-10-17p';
 const AUTOJOIN_KEY = 'gemeinwohl2-autojoin';
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const EMOJIS = ['😀','😎','🤓','🥳','🤩','😜','🤠','🥸','😇','🤖','👻','👽','💩','🐱','🐶','🦊','🐼','🐸','🦁','🐯','🐵','🐙','🦄','🐝','🐢','🦖','🐧','🦉','🐬','🦈','🍕','🍩','🍉','⚽','🏀','🎮','🎸','🚀','🌈','🔥','⭐','💎','👑','🌵'];
@@ -1149,8 +1159,7 @@ function hOnMsg(conn, m){
     if (!p && H.room && H.late !== '1' && H.phase !== 'lobby'){ try { conn.send({t:'closed'}); } catch(e){} setTimeout(() => { try { conn.close(); } catch(e){} }, 800); return; }
     const name = String(m.name || 'Spieler').slice(0,16), avatar = String(m.avatar || '😀').slice(0,8);
     if (!p){
-      const used = [...H.players.values()].map(x => x.color);
-      p = {pid:m.pid, name, avatar, color: COLORS.find(c => !used.includes(c)) || COLORS[H.players.size % COLORS.length], money:100, contrib:0, inGame: H.phase === 'lobby', pay:null, locked:false, last:null};
+      p = {pid:m.pid, name, avatar, color: freeColor(), money:100, contrib:0, inGame: H.phase === 'lobby', pay:null, locked:false, last:null};
       H.players.set(m.pid, p); hs(sBlip);
       if (H.phase !== 'lobby') hEv(`${avatar} ${name} kommt dazu – ab der nächsten Runde mit 100 €`, 'blue');
     } else { p.name = name; p.avatar = avatar; }
@@ -1189,7 +1198,7 @@ function buildChips(){
   mk2(['hTimeRow','rTimeRow'], [[20,'20 s'],[30,'30 s'],[45,'45 s'],[0,'∞']], 'time');
   mk2(['hPaceRow','rPaceRow'], [['host','👆 Host klickt „Weiter“'],['auto','⏱️ feste Zeit'],['vote','🙋 Mehrheit tippt „Weiter“']], 'pace');
   mk2(['hAutoRow','rAutoRow'], [[.7,'schnell'],[1,'mittel'],[1.5,'langsam']], 'autoMul');
-  mk2(['hBotRow','rBotRow'], [[0,'Keine'],[1,'1'],[2,'2'],[3,'3'],[4,'4'],[6,'6']], 'bots', hSyncBots);
+  mk2(['hBotRow','rBotRow'], [[0,'Keine'],[1,'1'],[2,'2'],[3,'3'],[4,'4'],[6,'6'],[26,'26 🧪 Test']], 'bots', hSyncBots);
   mk2(['hGoalRow','rGoalRow'], [[5,'5×'],[8,'8×'],[12,'12×'],[25,'25×'],[50,'50×']], 'goalMul');
   mk2(['hRoundsRow','rRoundsRow'], [[4,'4'],[5,'5'],[6,'6'],[8,'8'],[10,'10'],[12,'12']], 'maxRounds');
   mk2(['hProgRow','rProgRow'], [['0','aus'],['1','📈 an (zeigt, ob es reicht)']], 'prog');
@@ -1215,16 +1224,19 @@ function syncChips(){
 }
 
 /* ---------- Bots ---------- */
-const BOT_NAMES = ['Robbi','Bleep','Pixel','Bolt','Zippo','Kiki-3'], BOT_AV = ['🤖','👾','🦾','🛸','🧠','🎰'];
-const BOT_TYPES = ['bedingt','koop','geizig','schlau','bedingt','koop'];
+const BOT_NAMES = ['Robbi','Bleep','Pixel','Bolt','Zippo','Kiki-3','Nano','Byte','Chip','Gizmo','Turbo','Volt','Neo','Spark','Dot','Flux','Mecha','Orbit','Rusty','Sigma','Tron','Unit-7','Wired','Xeno','Yoyo','Zap'];
+const BOT_AV = ['🤖','👾','🦾','🛸','🧠','🎰','🐙','🦖','🐧','🦉','🐢','🦀','🐝','🦊','🐸','🐼','🦁','🐯','🐨','🐵','🦄','🐳','🦋','🐞','🍄','🌵'];
+const BOT_TYPES = BOT_NAMES.map((_, i) => ['bedingt','koop','geizig','schlau','bedingt','koop'][i % 6]);
+/* Farbe: erst die 12 festen, danach berechnete (für große Gruppen) */
+function hslHex(h, s2 = 62, l = 48){ s2 /= 100; l /= 100; const k = n => (n + h / 30) % 12, a = s2 * Math.min(l, 1 - l), f = n => l - a * Math.max(-1, Math.min(k(n) - 3, 9 - k(n), 1)); return '#' + [f(0), f(8), f(4)].map(x => Math.round(x * 255).toString(16).padStart(2, '0')).join(''); }
+const freeColor = () => { const used = [...H.players.values()].map(x => x.color); return COLORS.find(c => !used.includes(c)) || hslHex((H.players.size * 47) % 360); };
 function hSyncBots(){
   if (H.phase !== 'lobby'){ toast('Bots nur vor dem Start ändern', 'yellow'); H.bots = [...H.players.values()].filter(p => p.bot).length; syncChips(); return; }
   const bots = [...H.players.values()].filter(p => p.bot);
   while (bots.length > H.bots){ H.players.delete(bots.pop().pid); }
   for (let i = 0; bots.length < H.bots && i < BOT_NAMES.length; i++){
     const pid = 'bot-' + i; if (H.players.has(pid)) continue;
-    const used = [...H.players.values()].map(x => x.color);
-    const b = {pid, bot:BOT_TYPES[i], online:true, conn:null, name:BOT_NAMES[i], avatar:BOT_AV[i], color: COLORS.find(c => !used.includes(c)) || COLORS[i], money:100, contrib:0, inGame:true, pay:null, locked:false, last:null};
+    const b = {pid, bot:BOT_TYPES[i], online:true, conn:null, name:BOT_NAMES[i], avatar:BOT_AV[i], color: freeColor(), money:100, contrib:0, inGame:true, pay:null, locked:false, last:null};
     H.players.set(pid, b); bots.push(b);
   }
   H.lobbySig = ''; hRender();
@@ -1696,6 +1708,12 @@ function renderCenter(el, s, o){
   const c = s.cur, P = s.players;
   if (s.phase === 'pay'){
     const seen = el.__paid && el.__round === s.round ? el.__paid : new Set(); el.__round = s.round;
+    if (P.length > 12){
+      el.innerHTML = `<div class="chipwall">${P.map(p => { const jp = p.locked && !seen.has(p.pid);
+        return `<div class="pcw${p.locked ? ' ok' : ''}${jp ? ' justpaid' : ''}" style="border-color:${p.color}"><span class="ae">${esc(p.avatar)}</span><span class="nm2">${esc(p.name)}</span>${s.konto && p.money != null ? `<span class="mn">${eur(p.money)}</span>` : ''}<span class="st3">${p.locked ? '✅' : '🤔'}</span></div>`; }).join('')}</div>
+        <div class="bigline">🤫 ${P.filter(p => p.locked).length} / ${P.length} haben gesetzt</div>`;
+      el.__paid = new Set(P.filter(p => p.locked).map(p => p.pid)); return;
+    }
     el.innerHTML = `<div class="tiles${P.length > 8 ? ' many' : ''}">${P.map(p => { const jp = p.locked && !seen.has(p.pid);
       return `<div class="tile sk${jp ? ' justpaid' : ''}" data-pid="${p.pid}"><div class="nm" style="background:${p.color}">${nmH(p)}</div><svg></svg>
       <span class="st">${p.locked ? '✅' : '🤔'}</span>${p.locked && !s.konto ? '<span class="st2">gesetzt</span>' : ''}${jp ? '<span class="coinfall">🪙</span>' : ''}</div>`; }).join('')}</div>
@@ -1750,22 +1768,25 @@ function renderCenter(el, s, o){
       <div style="font-size:1.4rem">hat am meisten eingezahlt und darf eine Regel vorschlagen.</div></div>`;
   } else if (s.phase === 'vote' || s.phase === 'verdict'){
     if (s.verdict && s.verdict.pass){ el.innerHTML = `<div class="box sk" style="max-width:600px;margin:40px auto"><div style="font-size:3rem">🙅</div><div class="ti" style="font-size:2rem">${esc(s.prop.avatar + ' ' + s.prop.name)} passt.</div><div style="font-size:1.3rem">Keine neue Regel.</div></div>`; return; }
-    el.innerHTML = lawCard(s) + `<div class="voters">${P.map(p => `<div class="voter"><div class="c" style="background:${p.color}">${esc(p.avatar)}</div>${s.phase === 'vote' ? (p.voted ? '🗳️' : '…') : ''}<div style="font-size:.8rem">${esc(p.name)}</div></div>`).join('')}</div>
+    el.innerHTML = lawCard(s) + `<div class="voters${P.length > 12 ? ' many' : ''}">${P.map(p => `<div class="voter"><div class="c" style="background:${p.color}">${esc(p.avatar)}</div>${s.phase === 'vote' ? (p.voted ? '🗳️' : '…') : ''}<div style="font-size:.8rem">${esc(p.name)}</div></div>`).join('')}</div>
       <div class="bigline" style="font-size:1.5rem">${s.phase === 'vote' ? `🗳️ ${s.votedN} / ${P.length} – geheim` : s.verdict.acc ? '✅ gilt ab der nächsten Runde' : '❌ bleibt, wie es ist'}</div>`;
   } else if (s.phase === 'end'){
     const win = s.outcome === 'win', rank = [...P].sort((a, b) => a.place - b.place);
-    el.innerHTML = `<div class="${o.phone ? '' : 'endgrid'}"><div><div class="box sk" style="margin:6px auto;max-width:900px">
+    const bigG = rank.length > 12;
+    const A = `<div class="box sk" style="margin:6px auto;max-width:900px">
       <div class="ti" style="font-size:${o.phone ? 2.4 : 2}rem">${win ? '🎉 Das Haus ist fertig!' : '🌊 Die Flut kommt – das Haus wurde nicht fertig!'}</div>
-      ${win ? '' : `<div class="waves">${'🌊🌊🌊🌊🌊🌊🌊'.match(/🌊/gu).map((w, i) => `<span style="animation-delay:${i*.15}s">${w}</span>`).join('')}</div>`}
-      ${prizeHtml(s)}</div>
-      <div class="box sk" style="margin:10px auto;max-width:900px;text-align:left"><div class="ti" style="font-size:1.6rem">🔍 Jetzt wird alles aufgedeckt</div>
-      <table class="res"><tr><th>Platz</th><th>Spieler</th><th class="n">Geld am Ende</th><th class="n">insgesamt eingezahlt</th></tr>
-      ${rank.map(p => `<tr><td>${p.place}.</td><td>${esc(p.avatar + ' ' + p.name)}${p.bot ? ' 🤖' : ''}</td><td class="n">${eur(p.money)}</td><td class="n">${eur(p.contrib)}</td></tr>`).join('')}</table></div></div>
-      <div><div class="box sk" style="margin:${o.phone ? '10px' : '6px'} auto;max-width:900px;text-align:left">
-      <div class="ti" style="font-size:1.4rem">📉 Ø Einzahlung pro Runde</div><svg class="chart" width="${o.phone ? 330 : 560}" height="${o.phone ? 220 : 190}" style="max-width:100%"></svg>
+      ${win || bigG ? '' : `<div class="waves">${'🌊🌊🌊🌊🌊🌊🌊'.match(/🌊/gu).map((w, i) => `<span style="animation-delay:${i*.15}s">${w}</span>`).join('')}</div>`}
+      ${prizeHtml(s)}</div>`;
+    const tb = list => `<table class="res${bigG ? ' sm' : ''}"><tr><th>Platz</th><th>Spieler</th><th class="n">Geld</th><th class="n">eingezahlt</th></tr>
+        ${list.map(p => `<tr><td>${p.place}.</td><td>${esc(p.avatar + ' ' + p.name)}${p.bot && !bigG ? ' 🤖' : ''}</td><td class="n">${eur(p.money)}</td><td class="n">${eur(p.contrib)}</td></tr>`).join('')}</table>`;
+    const B = `<div class="box sk" style="margin:${o.phone ? '10px' : '6px'} auto;max-width:900px;text-align:left"><div class="ti" style="font-size:1.6rem">🔍 Jetzt wird alles aufgedeckt</div>
+      ${!bigG || o.phone ? tb(rank) : `<div class="tb2">${tb(rank.slice(0, Math.ceil(rank.length / 2)))}${tb(rank.slice(Math.ceil(rank.length / 2)))}</div>`}</div>`;
+    const C = `<div class="box sk" style="margin:${o.phone ? '10px' : '6px'} auto;max-width:900px;text-align:left">
+      <div class="ti" style="font-size:1.4rem">📉 Ø Einzahlung pro Runde</div><svg class="chart" width="${o.phone ? 330 : 560}" height="${o.phone ? 220 : bigG ? 120 : 190}" style="max-width:100%"></svg>
       <div style="margin-top:8px;font-size:1.15rem">🎯 Nötig gewesen wären im Schnitt <b>~${Math.round(s.need * 100)} %</b> pro Runde – ihr habt im Schnitt <b>${pct(s.hist.reduce((a, h) => a + h.rate, 0) / Math.max(1, s.hist.length))}</b> eingezahlt.</div>
       <div style="margin-top:4px;font-size:1.15rem">💡 Jeder eingezahlte Euro brachte allen zusammen ${String(s.fx).replace('.', ',')} € – dir selbst aber nur ${(s.fx / P.length).toFixed(2).replace('.', ',')} €.</div>
-      <div class="muted" style="margin-top:6px">Gesprächsanlass: Wann wurde viel gegeben, wann wenig? Was haben die Regeln verändert?</div></div></div></div>`;
+      ${bigG ? '' : '<div class="muted" style="margin-top:6px">Gesprächsanlass: Wann wurde viel gegeben, wann wenig? Was haben die Regeln verändert?</div>'}</div>`;
+    el.innerHTML = o.phone ? A + B + C : `<div class="endgrid${bigG ? ' big' : ''}"><div>${A}${bigG ? C : B}</div><div>${bigG ? B : C}</div></div>`;
     drawChart(el.querySelector('.chart'), s, o.phone ? 330 : 560);
   }
 }
@@ -1798,9 +1819,11 @@ function drawSplit(svg, s, o = {}){
   const got = P.map(p => p.got || 0), sumG = got.reduce((a, b) => a + b, 0) || 1, avgG = sumG / N;
   const span = got.map(x => x > 0 ? x : avgG * .5), sumS = span.reduce((a, b) => a + b, 0);
   let a0 = -Math.PI / 2;
+  const big = N > 12;
   const it = P.map((p, i) => { const w = span[i] / sumS * 2 * Math.PI, o2 = {p, a1:a0, a2:a0 + w, mid:a0 + w / 2, got:got[i]}; a0 += w; return o2; });
+  const wedges = big ? Array.from({length:12}, (_, k) => ({a1:-Math.PI / 2 + k * Math.PI / 6, a2:-Math.PI / 2 + (k + 1) * Math.PI / 6, mid:-Math.PI / 2 + (k + .5) * Math.PI / 6, got:1})) : it;
   const pie = an(G(g), 'piein', 0);
-  it.forEach((t, i) => {
+  wedges.forEach((t, i) => {
     const wg = an(G(pie), 'wedge', 1.9 + i * .07);
     wg.style.setProperty('--tx', Math.cos(t.mid) * (rx - 40) + 'px'); wg.style.setProperty('--ty', Math.sin(t.mid) * (ry - 30) + 'px');
     if (t.got > 0){ const lg = t.a2 - t.a1 > Math.PI ? 1 : 0, x1 = cx + r * Math.cos(t.a1), y1 = cy + r * Math.sin(t.a1), x2 = cx + r * Math.cos(t.a2), y2 = cy + r * Math.sin(t.a2);
@@ -1809,8 +1832,18 @@ function drawSplit(svg, s, o = {}){
   });
   const lbl = an(G(pie), 'potlbl', 1.8); AMT(R, lbl, cx, cy + 14, eur(c.doubled), 40, 'g');
   const cuts = an(G(g), 'potlbl', 2.2);
-  if (N > 1) it.forEach((t, i) => { const cg = an(G(cuts), 'later', .6 + i * .12), x = cx + (r + 22) * Math.cos(t.a1), y = cy + (r + 22) * Math.sin(t.a1);
+  if (N > 1) wedges.forEach((t, i) => { const cg = an(G(cuts), 'later', .6 + i * (big ? .07 : .12)), x = cx + (r + 22) * Math.cos(t.a1), y = cy + (r + 22) * Math.sin(t.a1);
     R.line(cg, cx, cy, x, y, {strokeWidth:3, stroke:'#c92a2a', roughness:.8}); T(cg, x, y + 8, '✂️', 26); });
+  if (big){   // alle Spieler im Doppelkreis, kleiner, ohne Einzelbeträge
+    const RX = ph ? 262 : 415, RY = ph ? 262 : 262;
+    P.forEach((p, i) => { const a = -Math.PI / 2 + i * 2 * Math.PI / N, f = i % 2 ? .8 : 1, x = cx + RX * f * Math.cos(a), y = cy + RY * f * Math.sin(a), ag = G(g);
+      R.ell(ag, x, y - 6, 66, 66, {fill:p.color + '55', fillStyle:'solid', roughness:1.3, strokeWidth:1.6});
+      T(ag, x, y + 8, p.avatar, 42); T(ag, x, y + 44, p.name.length > 8 ? p.name.slice(0, 7) + '…' : p.name, 19, {font:HAND});
+      if (open){ const d = p.last.a - c.avg; const rg = an(G(g), 'later', 3.9 + i * .03); T(rg, x + 26, y - 22, d > .5 ? '😇' : d < -.5 ? '😈' : '😐', 26); } });
+    const mid = an(G(g), 'later', 2.7); R.ell(mid, cx, cy, ph ? 300 : 330, ph ? 200 : 190, {fill:'#d3f9d8', fillStyle:'solid', roughness:1.5, strokeWidth:3});
+    T(mid, cx, cy - 40, 'jede/r bekommt', 26, {font:HAND}); T(mid, cx, cy + 32, '+' + eur(c.share), 80, {fill:'#2b8a3e'}); T(mid, cx, cy + 68, `Ø eingezahlt ${eur(c.avg)}`, 20, {font:HAND, fill:'#1c7ed6'});
+    return;
+  }
   it.forEach((t, i) => {
     const x = cx + rx * Math.cos(t.mid), y = cy + ry * Math.sin(t.mid), p = t.p, ag = G(g);
     const q = ph ? 1.15 : 1;
@@ -1827,7 +1860,7 @@ function drawSplit(svg, s, o = {}){
 const SEQ_MS = 6200;
 function drawSeq(svg, s){
   const c = s.cur, P = s.players, N = P.length, nE = c.n - c.exclN;
-  const rows = N <= 4 ? 1 : N <= 8 ? 2 : 3, perRow = Math.ceil(N / rows), y0 = rows === 1 ? 610 : 590, dy = 150, HH = y0 + (rows - 1) * dy + 135;
+  const big = N > 12, rows = big ? Math.ceil(N / 7) : N <= 4 ? 1 : N <= 8 ? 2 : 3, perRow = Math.ceil(N / rows), y0 = big ? 560 : rows === 1 ? 610 : 590, dy = big ? 92 : 150, HH = y0 + (rows - 1) * dy + (big ? 60 : 135);
   svg.innerHTML = ''; svg.setAttribute('viewBox', `0 0 640 ${HH}`); svg.style.maxHeight = '78vh';
   const R = mk(svg), g = G(svg), frac = c.max ? c.pot / c.max : 0;
   const cls = (el, c2, st) => { el.setAttribute('class', c2); if (st) el.setAttribute('style', st); return el; };
@@ -1845,14 +1878,19 @@ function drawSeq(svg, s){
   P.forEach((p, i) => {
     const row = Math.floor(i / perRow), inRow = Math.min(perRow, N - row * perRow), col = i - row * perRow;
     const x = 320 + (col - (inRow - 1) / 2) * Math.min(150, 620 / inRow), y = y0 + row * dy, got = p.got || 0;
+    if (big){ const ag = G(g); R.ell(ag, x, y - 6, 62, 62, {fill:p.color + '55', fillStyle:'solid', roughness:1.3, strokeWidth:1.6});
+      T(ag, x, y + 8, p.avatar, 38); T(ag, x, y + 40, p.name.length > 8 ? p.name.slice(0, 7) + '…' : p.name, 17, {font:HAND}); return; }
     const st = cls(G(g), 'sq stk', `--tx:${x - 320}px;--ty:${y - 370}px;animation-delay:${3.5 + i * .07}s`);
     if (got > 0) for (let k = 0; k < 6; k++) R.ell(st, 320, 385 - k * 9, 46, 17, {fill:'#f6c945', fillStyle:'solid', roughness:1, strokeWidth:1.2});
     const ag = G(g); R.ell(ag, x, y - 8, 96, 96, {fill:p.color + '55', fillStyle:'solid', roughness:1.4, strokeWidth:2});
     T(ag, x, y + 12, p.avatar, 58); T(ag, x, y + 60, p.name.length > 9 ? p.name.slice(0, 8) + '…' : p.name, 24, {font:HAND});
     const am = cls(G(g), 'sq amt', `animation-delay:${4.2 + i * .06}s`); AMT(R, am, x, y + 102, got > 0 ? '+' + eur(got) : '❌ 0 €', 34, got > 0 ? 'g' : 'r');
   });
-  const big = cls(G(g), 'sq big'); R.ell(big, 320, 320, 440, 210, {fill:'#d3f9d8', fillStyle:'solid', roughness:1.5, strokeWidth:3});
-  T(big, 320, 278, 'jede/r bekommt', 36, {font:HAND}); T(big, 320, 375, '+' + eur(c.share), 104, {fill:'#2b8a3e'});
+  if (big) for (let k = 0; k < 18; k++){ const a = k * 2 * Math.PI / 18 + .2, d = 260 + (k % 3) * 40;   // Münzen fliegen in alle Richtungen
+    const st = cls(G(g), 'sq stk', `--tx:${Math.cos(a) * d}px;--ty:${Math.sin(a) * d * .9}px;animation-delay:${3.5 + (k % 6) * .05}s`);
+    for (let m = 0; m < 4; m++) R.ell(st, 320, 385 - m * 9, 40, 15, {fill:'#f6c945', fillStyle:'solid', roughness:1, strokeWidth:1.1}); }
+  const bigE = cls(G(g), 'sq big'); R.ell(bigE, 320, 320, 440, 210, {fill:'#d3f9d8', fillStyle:'solid', roughness:1.5, strokeWidth:3});
+  T(bigE, 320, 278, 'jede/r bekommt', 36, {font:HAND}); T(bigE, 320, 375, '+' + eur(c.share), 104, {fill:'#2b8a3e'});
 }
 function seqSounds(n){ sWhoosh(.2); sDing(); setTimeout(sDing, 1250); sThud(2.75); for (let i = 0; i < Math.min(n, 10); i++) sSnip(3.4 + i * .07); sCoins(Math.min(n, 10), 3.7, .08); setTimeout(sTada, 4700); }
 /* Verlauf aller Runden */
@@ -2204,9 +2242,11 @@ function miniStand(s){
 function rankTable(s, beamer){
   const D = s.cur && s.cur.dist; if (!D || !D.length) return '';
   const av = s.cur.avgBal, sg = v => (v > 0 ? '+' : v < 0 ? '−' : '±') + eur(Math.abs(v));
-  let rows = '', avgDone = false;
+  let rows = '', avgDone = false, gap = false;
+  const firstBelow = D.findIndex(d => d.bal < av), keep = i => D.length <= 14 || i < 4 || i >= D.length - 4 || D[i].me || Math.abs(i - firstBelow) <= 1;
   D.forEach((d, i) => {
-    if (!avgDone && d.bal < av){ rows += `<tr class="avgrow"><td colspan="3">┄┄ Ø ${sg(av)} ┄┄</td></tr>`; avgDone = true; }
+    if (!avgDone && d.bal < av){ rows += `<tr class="avgrow"><td colspan="3">┄┄ Ø ${sg(av)} ┄┄</td></tr>`; avgDone = true; gap = false; }
+    if (!keep(i)){ if (!gap){ rows += '<tr class="gaprow"><td colspan="3">⋮</td></tr>'; gap = true; } return; } gap = false;
     const who = d.who ? `<span class="ae">${esc(d.who.avatar)}</span> ${esc(d.who.name)}` : d.me ? '<b>du</b>' : '<span class="muted">?</span>';
     rows += `<tr class="${d.me ? 'me' : ''}"><td>${i + 1}. ${who}${d.me && d.who ? ' <b>(du)</b>' : ''}</td><td class="n">${eur(d.a)}</td><td class="n">${sg(d.bal)}</td></tr>`;
   });
