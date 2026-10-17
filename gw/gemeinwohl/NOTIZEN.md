@@ -57,3 +57,10 @@ Gemeinsames Projekt + Bedrohung mit Countdown – optisch könnten Projekt und C
 - Beamer: Topf-Aufteilung „rein“ (wer hat eingezahlt, mit 👁️) → ×2 → „raus“ + ±-Chips, wer gewonnen/verloren hat
 - 📜 Verlauf (Handy-Tab, Beamer-Knopf, PC-Seitenleiste): Topf + Ø je Runde; Beträge pro Spieler nur für Runden mit 👁️
 - ⚡ sehr kurz startet mit sichtbaren Kontoständen; größere Spieler-Emojis; kompaktere Abstimmung/Regelwahl; Knöpfe am PC begrenzt
+
+## v2 „Drama-Version“ (`../gemeinwohl-v2/`)
+- Jede Phase = wenige große Takte nacheinander; Details nur in Stand/Verlauf/Regeln
+- Showdown: Topf zählt hoch, dann riesig „Ø pro Kopf“; Handy zusätzlich „du … ⬆️/⬇️ über/unter Ø“
+- Ausschüttung (Beamer): Topf als Torte, ✂️ wird in Stücke geschnitten, Stücke fliegen zu den Spielern (+X €), Mitte „Ø eingezahlt“, dann 😇/😈 neben jedem (nur mit 👁️, sonst 🎭 „weiß nur dein Handy“)
+- Ausschüttung (Handy): „alle bekommen +X €“ (Münzregen) → „du vs Ø“ → groß 😇 ENGEL / 😈 TEUFEL mit Ton
+- „Weiter“: Host klickt · feste Zeit (schnell/mittel/langsam) · Mehrheit (mehr als die Hälfte tippt 🙋 → 3 s Countdown); Knopf oben in der Statuszeile mit Countdown-Balken; Regeltafel am Beamer eingeklappt
