@@ -48,3 +48,5 @@ Gemeinsames Projekt + Bedrohung mit Countdown – optisch könnten Projekt und C
 - Ablauf: Aufdeck-Phasen warten standardmäßig auf „Weiter ▶“ (Beamer-Knopf, Leertaste/→/Presenter; im Raum-Modus Host-Leiste) – Option „automatisch mit Pausen“; weniger Text pro Phase
 - Haus-Maßstab logarithmisch: gleicher Wachstumsfaktor = gleich viel Haus (bei ~nötiger Einzahlung wächst es jede Runde gleichmäßig); Haus wächst sichtbar erst in der Bau-Phase
 - Hintergrund etwas dunkler
+- Animationen & Töne: Münze fällt beim Setzen, Turm wird beim Vervielfachen „geklont“ (Klammer + Ergebnis), Beträge zählen hoch, Bau mit Hämmern/Funken/„+X €“, Stempel mit Rumms, Flut mit Wellen + Platschen, Sieg mit Konfetti
+- Ausschüttung: „Ø eingezahlt → jede/r bekommt“; Handy zeigt Balken du / Ø alle / zurück + „über/unter dem Durchschnitt“; beim Einzahlen „Letzte Runde: Ø … pro Kopf“
