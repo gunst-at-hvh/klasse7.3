@@ -38,3 +38,10 @@ Gemeinsames Projekt + Bedrohung mit Countdown – optisch könnten Projekt und C
 - Ziel 10× – passt die Rundenzahl?
 - Bei Misserfolg: alle verlieren, oder trotzdem gewinnt der Reichste?
 - Regelvorschlag jede Runde? „Regel abschaffen“ erlaubt?
+
+## Prototyp (17.10.) – `index.html`
+- Beamer- und Raum-Modus (ohne Beamer), „Spielername“, Bots (kooperativ / bedingt / geizig / schlau)
+- Spiellänge: ⚡ sehr kurz (Ziel 3×, 6 Runden) · kurz (5×, 8) · normal (10×, 15); Topf-Faktor automatisch ×1,5 bei 2–3 Spielern, sonst ×2
+- Flut: Reichste gehen leer aus, 🥈 Trostpreis für den Zweitreichsten · 👏 Publikumspreis für die höchste Gesamteinzahlung (immer)
+- Regeln: 💰 Kontostand-Transparenz (auch als Startoption), 👁️ Einzahlungs-Transparenz, 📏 Mindestbeitrag 10 %, 🧾 Grundsteuer 5 %, ⚖️ Strafe (erst nach 👁️), 🏅 Ehrenpreis, 📈 Leistungsprinzip, Abschaffen, Passen
+- Auswertung am Ende: alles aufgedeckt + Kurve Ø-Einzahlung mit Regel-Markierungen
