@@ -372,7 +372,8 @@ svg .done{animation:none!important}svg .wedge.done,svg .potlbl.done{display:none
 /* Handy-Sequenz */
 .seqhead{position:relative;height:3.4rem;text-align:center;font-family:"Gochi Hand",cursive}
 .seqhead span{position:absolute;left:0;right:0;top:0;font-size:2.3rem;opacity:0}
-.seqhead .h1{animation:hShow 1.3s ease both}.seqhead .h2{animation:hShow 2.2s ease 1.2s both;color:#2b8a3e}.seqhead .h3{animation:popIn .5s cubic-bezier(.2,1.8,.4,1) 3.3s both;color:#2b8a3e}
+.seqhead .h1{animation:hShow 1.3s ease both}.seqhead .h2{animation:hShow 2.2s ease 1.2s both;color:#2b8a3e}.seqhead .h3{animation:hIn .5s cubic-bezier(.2,1.8,.4,1) 3.3s both;color:#2b8a3e}
+@keyframes hIn{from{opacity:0;transform:scale(.4)}to{opacity:1;transform:scale(1)}}
 @keyframes hShow{0%{opacity:0;transform:scale(.6)}12%{opacity:1;transform:scale(1)}88%{opacity:1}100%{opacity:0}}
 svg.seq{display:block;margin:0 auto}
 svg .sq{transform-box:fill-box;transform-origin:center}
@@ -384,6 +385,8 @@ svg .lab12{animation:popIn .4s cubic-bezier(.2,1.8,.4,1) 1.2s both,fadeOut .3s 2
 svg .pile{animation:popIn .5s cubic-bezier(.2,1.8,.4,1) 2.85s both,fadeOut .35s 3.55s forwards}
 svg .div{animation:popIn .4s cubic-bezier(.2,1.8,.4,1) 3.1s both,fadeOut .3s 3.6s forwards}
 svg .stk{animation:stkFly .8s cubic-bezier(.4,0,.6,1) both}
+svg .rainc{animation-name:rainC;animation-timing-function:cubic-bezier(.35,0,.75,1);animation-fill-mode:both}
+@keyframes rainC{0%{transform:translate(0,0) rotate(0);opacity:0}12%{opacity:1}85%{opacity:1}100%{transform:translate(var(--dx),var(--dy)) rotate(var(--rot));opacity:0}}
 @keyframes stkFly{0%{transform:translate(0,0) scale(1.2);opacity:0}15%{opacity:1}85%{opacity:1}100%{transform:translate(var(--tx),var(--ty)) scale(.6);opacity:0}}
 svg .amt{animation:popIn .4s cubic-bezier(.2,1.8,.4,1) both}
 svg .big{animation:popIn .55s cubic-bezier(.2,1.8,.4,1) 4.6s both}
@@ -640,7 +643,7 @@ function keepRegistered(getPeer, lampId){
 }
 
 const PREFIX = 'hvh-gemeinwohl2-';
-const APP_VERSION = 'v2-2026-10-17p';
+const APP_VERSION = 'v2-2026-10-17q';
 const AUTOJOIN_KEY = 'gemeinwohl2-autojoin';
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const EMOJIS = ['😀','😎','🤓','🥳','🤩','😜','🤠','🥸','😇','🤖','👻','👽','💩','🐱','🐶','🦊','🐼','🐸','🦁','🐯','🐵','🐙','🦄','🐝','🐢','🦖','🐧','🦉','🐬','🦈','🍕','🍩','🍉','⚽','🏀','🎮','🎸','🚀','🌈','🔥','⭐','💎','👑','🌵'];
@@ -1886,9 +1889,10 @@ function drawSeq(svg, s){
     T(ag, x, y + 12, p.avatar, 58); T(ag, x, y + 60, p.name.length > 9 ? p.name.slice(0, 8) + '…' : p.name, 24, {font:HAND});
     const am = cls(G(g), 'sq amt', `animation-delay:${4.2 + i * .06}s`); AMT(R, am, x, y + 102, got > 0 ? '+' + eur(got) : '❌ 0 €', 34, got > 0 ? 'g' : 'r');
   });
-  if (big) for (let k = 0; k < 18; k++){ const a = k * 2 * Math.PI / 18 + .2, d = 260 + (k % 3) * 40;   // Münzen fliegen in alle Richtungen
-    const st = cls(G(g), 'sq stk', `--tx:${Math.cos(a) * d}px;--ty:${Math.sin(a) * d * .9}px;animation-delay:${3.5 + (k % 6) * .05}s`);
-    for (let m = 0; m < 4; m++) R.ell(st, 320, 385 - m * 9, 40, 15, {fill:'#f6c945', fillStyle:'solid', roughness:1, strokeWidth:1.1}); }
+  if (big){ const yEnd = y0 + (rows - 1) * dy + 10;   // langsamer Münzregen auf alle Spieler unten
+    for (let k = 0; k < 34; k++){ const x = 30 + ((k * 137) % 580), y1 = 250 + ((k * 53) % 120), dur = 1.7 + (k % 5) * .18;
+      const st = cls(G(g), 'sq rainc', `--dy:${yEnd - y1 - ((k * 31) % (rows * dy))}px;--dx:${((k * 29) % 40) - 20}px;--rot:${(k % 2 ? 1 : -1) * (180 + (k * 23) % 180)}deg;animation-delay:${3.4 + (k % 12) * .13}s;animation-duration:${dur}s`);
+      R.ell(st, x, y1, 30, 12, {fill:'#f6c945', fillStyle:'solid', roughness:1, strokeWidth:1.1}); } }
   const bigE = cls(G(g), 'sq big'); R.ell(bigE, 320, 320, 440, 210, {fill:'#d3f9d8', fillStyle:'solid', roughness:1.5, strokeWidth:3});
   T(bigE, 320, 278, 'jede/r bekommt', 36, {font:HAND}); T(bigE, 320, 375, '+' + eur(c.share), 104, {fill:'#2b8a3e'});
 }
