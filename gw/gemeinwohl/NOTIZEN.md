@@ -68,3 +68,4 @@ Gemeinsames Projekt + Bedrohung mit Countdown – optisch könnten Projekt und C
 - v2b: Handy-Ausschüttung: groß „💰 diese Runde dazugewonnen +X €“ (bekommen − eingezahlt, Ø aller), dann nur Smiley: 😇 „mehr als der Durchschnitt eingezahlt (und weniger bekommen 😢)“ / 😈 „mehr als der Durchschnitt bekommen (und weniger eingezahlt 😊)“
 - v2e: Handy-Sequenz in einem Bild ohne Weiter: Topf → teilt sich in zwei (×2 = …) → beide werden ein Geldberg → „÷ N“ → Berg zerfällt in Stapel, die zu jedem fliegen (+X €) → groß „jede/r bekommt“ → danach persönliche Analyse
 - v2g: Analyse am Handy mit Rangliste der Runde (eingezahlt / dazugewonnen, Ø-Linie, „du“ markiert; ohne 👁️ anonym „?“); eigener Einsatz „🪙 gesetzt …“ dauerhaft oben in der Kopfzeile
+- v2i: Beamer-Rangliste neben der Torten-Teilung (anonym ohne 👁️); Beamer passt sich an 16:9 an (getestet 1280×720, 1366×768, 1920×1080: nie scrollen) – Größen nach Bildschirmhöhe, Timer in der Statuszeile, Spielende zweispaltig

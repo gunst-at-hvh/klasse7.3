@@ -395,6 +395,31 @@ table.rk{width:100%;border-collapse:collapse;font-size:1.05rem;text-align:left}
 table.rk th{font-weight:400;color:#666;font-size:.85rem}table.rk td{padding:2px 6px;border-bottom:1px solid #eee}
 table.rk .n{text-align:right;white-space:nowrap}table.rk tr.me td{background:#fff3bf;font-weight:600}
 table.rk tr.avgrow td{text-align:center;color:#1c7ed6;font-family:"Gochi Hand",cursive;font-size:1.15rem;border:none;padding:0}
+/* 16:9-Beamer: alles in die Bildschirmhöhe */
+#host .top{flex-wrap:nowrap;gap:8px}#host .top .chip{padding:4px 10px;font-size:.95rem;white-space:nowrap}#host .top h1{font-size:1.7rem;white-space:nowrap}
+#host .phase{min-width:0;font-size:1.6rem}
+.statusrow .timer{align-self:center}
+#hGame .center{min-height:0}
+#hGame .rules{max-height:calc(100dvh - 120px)}
+html.beamer{font-size:clamp(16px, 1.9vh, 27px)}
+#host .game{grid-template-columns:auto minmax(0,1fr) clamp(270px, 19vw, 420px)}
+#hHouse{height:calc(100dvh - 13rem);width:auto;max-width:100%}
+#hSide{max-height:calc(100dvh - 7.5rem);overflow:hidden}
+#hCenter svg.tw1{height:calc(100dvh - 15rem);width:auto}
+#hCenter svg.dbl{height:calc(100dvh - 9.5rem);width:auto;max-width:100%}
+#hCenter .hgwrap svg.hg{height:calc(100dvh - 9.5rem);width:auto}
+#hCenter .huge{font-size:clamp(3.5rem, 11vh, 7rem)}#hCenter .huge2{font-size:clamp(4rem, 13vh, 8.5rem)}
+.splitwrap{display:flex;gap:12px;align-items:flex-start;justify-content:center}
+.splitwrap svg.split{flex:1 1 auto;min-width:0;max-height:calc(100dvh - 15rem)}
+.brank{flex:0 0 clamp(280px, 21vw, 460px);background:#fff;border:2.5px solid var(--ink);border-radius:14px 4px 14px 4px;padding:6px 8px;animation:fadeIn .6s 4.6s both;max-height:calc(100dvh - 15rem);overflow:hidden}
+table.rk.big{font-size:1.1rem}table.rk.big td{padding:2px 6px}
+#hCenter .tiles.many{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}#hCenter .tiles.many .tile svg{max-height:82px}
+#hCenter .tiles .tile svg{max-height:calc((100dvh - 20rem) / 2)}
+#hCenter .tiles{grid-template-columns:repeat(auto-fill,minmax(13rem,1fr))}
+.endgrid{display:grid;grid-template-columns:1.1fr 1fr;gap:12px;align-items:start}
+#hCenter .endgrid .box{margin:4px 0!important;padding:8px 12px}
+#hCenter .waves{font-size:1.5rem;letter-spacing:2px;line-height:1.2}#hCenter .endgrid .ti{line-height:1.1}#hCenter .endgrid table.res td{padding:2px 6px}
+@media (max-height:800px){#host .top h1 small{display:none}#hCenter .lawcard{margin:6px auto}#hCenter .voters{margin-top:6px}}
 .gbar{width:320px;height:26px;border:2.5px solid var(--ink);border-radius:12px 4px 14px 4px;background:#fff;overflow:hidden;margin:8px auto}
 .gbar i{display:block;height:100%;background:repeating-linear-gradient(-45deg,#8ce99a 0 10px,#b2f2bb 10px 20px);transition:width 1.6s cubic-bezier(.3,1.3,.5,1)}
 .bigval{font-family:"Gochi Hand",cursive;font-size:4.2rem;line-height:1.05}
@@ -433,9 +458,8 @@ table.rk tr.avgrow td{text-align:center;color:#1c7ed6;font-family:"Gochi Hand",c
     <button class="chip" id="hSndBtn">🔊</button>
     <button class="chip" id="hFsBtn">⛶ Vollbild</button>
     <button class="chip gold hidden" id="hSkipBtn">⏩ Weiter</button>
-    <span class="timer sk hidden" id="hTimer">0:30</span>
   </div>
-  <div class="statusrow"><div class="status sk2 hidden" id="hStatus"></div>
+  <div class="statusrow"><span class="timer sk hidden" id="hTimer">0:30</span><div class="status sk2 hidden" id="hStatus"></div>
     <div class="nextbox hidden" id="hNextBox"><button class="gold" id="hNext">Weiter ▶</button><span class="nbinfo" id="hNextInfo"></span><i class="nbbar" id="hNextBar"></i></div></div>
   <div class="lobby" id="hLobby">
     <div class="joinbox sk">
@@ -578,7 +602,7 @@ function keepRegistered(getPeer, lampId){
 }
 
 const PREFIX = 'hvh-gemeinwohl2-';
-const APP_VERSION = 'v2-2026-10-17g';
+const APP_VERSION = 'v2-2026-10-17i';
 const AUTOJOIN_KEY = 'gemeinwohl2-autojoin';
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const EMOJIS = ['😀','😎','🤓','🥳','🤩','😜','🤠','🥸','😇','🤖','👻','👽','💩','🐱','🐶','🦊','🐼','🐸','🦁','🐯','🐵','🐙','🦄','🐝','🐢','🦖','🐧','🦉','🐬','🦈','🍕','🍩','🍉','⚽','🏀','🎮','🎸','🚀','🌈','🔥','⭐','💎','👑','🌵'];
@@ -1040,6 +1064,7 @@ const stageOf = t => stageCalc(t, H.startTotal, H.goal);
 function hEv(text, cls){ H.ev.push({id: ++H.evId, text, cls}); if (H.ev.length > 30) H.ev.shift(); hs(() => toast(text, cls)); }
 
 function startHost(){
+  document.documentElement.classList.add('beamer');
   show('home', false); show('host'); setupFs($('hFsBtn')); buildChips();
   $('hStart').onclick = () => { ac(); hStartGame(); };
   $('hSkipBtn').onclick = hSkip;
@@ -1533,7 +1558,7 @@ function renderCenter(el, s, o){
   const c = s.cur, P = s.players;
   if (s.phase === 'pay'){
     const seen = el.__paid && el.__round === s.round ? el.__paid : new Set(); el.__round = s.round;
-    el.innerHTML = `<div class="tiles">${P.map(p => { const jp = p.locked && !seen.has(p.pid);
+    el.innerHTML = `<div class="tiles${P.length > 8 ? ' many' : ''}">${P.map(p => { const jp = p.locked && !seen.has(p.pid);
       return `<div class="tile sk${jp ? ' justpaid' : ''}" data-pid="${p.pid}"><div class="nm" style="background:${p.color}">${nmH(p)}</div><svg></svg>
       <span class="st">${p.locked ? '✅' : '🤔'}</span>${p.locked && !s.konto ? '<span class="st2">gesetzt</span>' : ''}${jp ? '<span class="coinfall">🪙</span>' : ''}</div>`; }).join('')}</div>
       <div class="bigline">🤫 ${P.filter(p => p.locked).length} / ${P.length} haben gesetzt</div>`;
@@ -1557,7 +1582,7 @@ function renderCenter(el, s, o){
     if (o.phone){ el.innerHTML = potSplit(s, false); return; }
     const nE = c.n - c.exclN, open = s.einz && P.every(p => p.last), d = o.fresh ? '' : 'animation:none;';
     el.innerHTML = `<div class="splithead"><span class="sh1">${eur(c.doubled)} ÷ ${nE}</span><span class="sh2" style="${d}">= ${eur(c.share)} für jede/n</span></div>
-      <svg class="split" width="100%" viewBox="0 0 960 600" style="max-height:62vh"></svg>
+      <div class="splitwrap"><svg class="split" width="100%" viewBox="0 0 960 670"></svg><div class="brank" style="${d}">${rankTable(s, true)}</div></div>
       <div class="splitfoot" style="${d}">${open ? '😇 mehr als Ø eingezahlt · 😈 weniger als Ø eingezahlt' : '😇 oder 😈 ? – das weiß nur dein Handy 🤫'}</div>`;
     drawSplit(el.querySelector('.split'), s, {anim: !!o.fresh});
   } else if (s.phase === 'build'){
@@ -1591,18 +1616,19 @@ function renderCenter(el, s, o){
       <div class="bigline" style="font-size:1.5rem">${s.phase === 'vote' ? `🗳️ ${s.votedN} / ${P.length} – geheim` : s.verdict.acc ? '✅ gilt ab der nächsten Runde' : '❌ bleibt, wie es ist'}</div>`;
   } else if (s.phase === 'end'){
     const win = s.outcome === 'win', rank = [...P].sort((a, b) => a.place - b.place);
-    el.innerHTML = `<div class="box sk" style="margin:6px auto;max-width:900px">
-      <div class="ti" style="font-size:2.4rem">${win ? '🎉 Das Haus ist fertig!' : '🌊 Die Flut kommt – das Haus wurde nicht fertig!'}</div>
+    el.innerHTML = `<div class="${o.phone ? '' : 'endgrid'}"><div><div class="box sk" style="margin:6px auto;max-width:900px">
+      <div class="ti" style="font-size:${o.phone ? 2.4 : 2}rem">${win ? '🎉 Das Haus ist fertig!' : '🌊 Die Flut kommt – das Haus wurde nicht fertig!'}</div>
       ${win ? '' : `<div class="waves">${'🌊🌊🌊🌊🌊🌊🌊'.match(/🌊/gu).map((w, i) => `<span style="animation-delay:${i*.15}s">${w}</span>`).join('')}</div>`}
       ${prizeHtml(s)}</div>
       <div class="box sk" style="margin:10px auto;max-width:900px;text-align:left"><div class="ti" style="font-size:1.6rem">🔍 Jetzt wird alles aufgedeckt</div>
       <table class="res"><tr><th>Platz</th><th>Spieler</th><th class="n">Geld am Ende</th><th class="n">insgesamt eingezahlt</th></tr>
-      ${rank.map(p => `<tr><td>${p.place}.</td><td>${esc(p.avatar + ' ' + p.name)}${p.bot ? ' 🤖' : ''}</td><td class="n">${eur(p.money)}</td><td class="n">${eur(p.contrib)}</td></tr>`).join('')}</table>
-      <div class="ti" style="font-size:1.4rem;margin-top:10px">📉 Ø Einzahlung pro Runde</div><svg class="chart" width="${o.phone ? 330 : 860}" height="220"></svg>
+      ${rank.map(p => `<tr><td>${p.place}.</td><td>${esc(p.avatar + ' ' + p.name)}${p.bot ? ' 🤖' : ''}</td><td class="n">${eur(p.money)}</td><td class="n">${eur(p.contrib)}</td></tr>`).join('')}</table></div></div>
+      <div><div class="box sk" style="margin:${o.phone ? '10px' : '6px'} auto;max-width:900px;text-align:left">
+      <div class="ti" style="font-size:1.4rem">📉 Ø Einzahlung pro Runde</div><svg class="chart" width="${o.phone ? 330 : 560}" height="${o.phone ? 220 : 190}" style="max-width:100%"></svg>
       <div style="margin-top:8px;font-size:1.15rem">🎯 Nötig gewesen wären im Schnitt <b>~${Math.round(s.need * 100)} %</b> pro Runde – ihr habt im Schnitt <b>${pct(s.hist.reduce((a, h) => a + h.rate, 0) / Math.max(1, s.hist.length))}</b> eingezahlt.</div>
       <div style="margin-top:4px;font-size:1.15rem">💡 Jeder eingezahlte Euro brachte allen zusammen ${String(s.fx).replace('.', ',')} € – dir selbst aber nur ${(s.fx / P.length).toFixed(2).replace('.', ',')} €.</div>
-      <div class="muted" style="margin-top:6px">Gesprächsanlass: Wann wurde viel gegeben, wann wenig? Was haben die Regeln verändert?</div></div>`;
-    drawChart(el.querySelector('.chart'), s, o.phone ? 330 : 860);
+      <div class="muted" style="margin-top:6px">Gesprächsanlass: Wann wurde viel gegeben, wann wenig? Was haben die Regeln verändert?</div></div></div></div>`;
+    drawChart(el.querySelector('.chart'), s, o.phone ? 330 : 560);
   }
 }
 const nmH = p => `<span class="ae">${esc(p.avatar)}</span> ${esc(p.name)}`;
@@ -1628,7 +1654,7 @@ function potSplit(s, big){
 }
 function drawSplit(svg, s, o = {}){
   const c = s.cur, P = s.players, N = P.length, open = s.einz && P.every(p => p.last);
-  const ph = !!o.phone, W = ph ? 640 : 960, HH = ph ? 650 : 600, cx = ph ? 320 : 480, cy = ph ? 305 : 300, r = ph ? 100 : 118, rx = ph ? 230 : 385, ry = ph ? 222 : 228;
+  const ph = !!o.phone, W = ph ? 640 : 960, HH = ph ? 650 : 670, cx = ph ? 320 : 480, cy = ph ? 305 : 318, r = ph ? 100 : 118, rx = ph ? 230 : 385, ry = ph ? 222 : 228;
   svg.innerHTML = ''; svg.setAttribute('viewBox', `0 0 ${W} ${HH}`); seedFor('split' + s.round);
   const R = mk(svg), g = G(svg), an = (el, cls, d) => { el.setAttribute('class', o.anim ? cls : cls + ' done'); el.style.animationDelay = d + 's'; return el; };
   const got = P.map(p => p.got || 0), sumG = got.reduce((a, b) => a + b, 0) || 1, avgG = sumG / N;
@@ -2003,7 +2029,7 @@ function miniStand(s){
     <span>🏗️</span><div class="mb"><i style="width:${f*100}%;background:repeating-linear-gradient(-45deg,#8ce99a 0 6px,#b2f2bb 6px 12px)"></i></div><span>${pct(f)}</span></div>`;
 }
 /* Rangliste der Runde: alle Beträge untereinander, Ø-Linie, „du“ markiert (anonym ohne 👁️) */
-function rankHtml(s, na){
+function rankTable(s, beamer){
   const D = s.cur && s.cur.dist; if (!D || !D.length) return '';
   const av = s.cur.avgBal, sg = v => (v > 0 ? '+' : v < 0 ? '−' : '±') + eur(Math.abs(v));
   let rows = '', avgDone = false;
@@ -2013,8 +2039,11 @@ function rankHtml(s, na){
     rows += `<tr class="${d.me ? 'me' : ''}"><td>${i + 1}. ${who}${d.me && d.who ? ' <b>(du)</b>' : ''}</td><td class="n">${eur(d.a)}</td><td class="n">${sg(d.bal)}</td></tr>`;
   });
   if (!avgDone) rows += `<tr class="avgrow"><td colspan="3">┄┄ Ø ${sg(av)} ┄┄</td></tr>`;
-  return `<div class="beat rank" style="animation-delay:2.7s;${na}"><div class="lbl">📊 So stehen alle diese Runde</div>
-    <table class="rk"><tr><th></th><th class="n">eingezahlt</th><th class="n">dazugewonnen</th></tr>${rows}</table></div>`;
+  return `${beamer ? '<div class="lbl" style="text-align:center">📊 Rangliste der Runde</div>' : ''}<table class="rk${beamer ? ' big' : ''}"><tr><th></th><th class="n">eingezahlt</th><th class="n">gewonnen</th></tr>${rows}</table>`;
+}
+function rankHtml(s, na){
+  const t = rankTable(s, false); if (!t) return '';
+  return `<div class="beat rank" style="animation-delay:2.7s;${na}"><div class="lbl">📊 So stehen alle diese Runde</div>${t}</div>`;
 }
 function pReady(s){
   let b = document.getElementById('pReady');
