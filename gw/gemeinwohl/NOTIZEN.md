@@ -66,3 +66,4 @@ Gemeinsames Projekt + Bedrohung mit Countdown – optisch könnten Projekt und C
 - „Weiter“: Host klickt · feste Zeit (schnell/mittel/langsam) · Mehrheit (mehr als die Hälfte tippt 🙋 → 3 s Countdown); Knopf oben in der Statuszeile mit Countdown-Balken; Regeltafel am Beamer eingeklappt
 - v2b: Timer-Knopf im Spiel (Beamer oben, Host-Leiste): ⏸ Timer aus → 🙋 Gemeinschaftszeit (mehr als die Hälfte der Nicht-Bots tippt Weiter) → ⏱️ Autotimer; wirkt sofort
 - v2b: Handy-Ausschüttung: groß „💰 diese Runde dazugewonnen +X €“ (bekommen − eingezahlt, Ø aller), dann nur Smiley: 😇 „mehr als der Durchschnitt eingezahlt (und weniger bekommen 😢)“ / 😈 „mehr als der Durchschnitt bekommen (und weniger eingezahlt 😊)“
+- v2e: Handy-Sequenz in einem Bild ohne Weiter: Topf → teilt sich in zwei (×2 = …) → beide werden ein Geldberg → „÷ N“ → Berg zerfällt in Stapel, die zu jedem fliegen (+X €) → groß „jede/r bekommt“ → danach persönliche Analyse

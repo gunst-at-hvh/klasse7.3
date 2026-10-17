@@ -357,6 +357,24 @@ svg .done{animation:none!important}svg .wedge.done,svg .potlbl.done{display:none
 .beat.role.angel{background:#e7f5ff}.beat.role.devil{background:#ffe3e3}.beat.role.even{background:#f1f3f5}
 .rain{position:absolute;top:-30px;font-size:1.6rem;animation:rainFall 1.2s ease-in both;pointer-events:none}
 @keyframes rainFall{to{transform:translateY(150px) rotate(300deg);opacity:0}}
+/* Handy-Sequenz */
+.seqhead{position:relative;height:3.4rem;text-align:center;font-family:"Gochi Hand",cursive}
+.seqhead span{position:absolute;left:0;right:0;top:0;font-size:2.3rem;opacity:0}
+.seqhead .h1{animation:hShow 1.3s ease both}.seqhead .h2{animation:hShow 2.2s ease 1.2s both;color:#2b8a3e}.seqhead .h3{animation:popIn .5s cubic-bezier(.2,1.8,.4,1) 3.3s both;color:#2b8a3e}
+@keyframes hShow{0%{opacity:0;transform:scale(.6)}12%{opacity:1;transform:scale(1)}88%{opacity:1}100%{opacity:0}}
+svg.seq{display:block;margin:0 auto}
+svg .sq{transform-box:fill-box;transform-origin:center}
+svg .twL{animation:sepL .9s cubic-bezier(.3,1.4,.5,1) .2s both,mergeL .5s ease-in 2.6s forwards}
+svg .twR{animation:sepR .9s cubic-bezier(.3,1.4,.5,1) .2s both,mergeR .5s ease-in 2.6s forwards}
+@keyframes sepL{from{transform:translateX(100px)}}@keyframes sepR{from{transform:translateX(-100px);opacity:.3}}
+@keyframes mergeL{to{transform:translateX(100px) scale(.7);opacity:0}}@keyframes mergeR{to{transform:translateX(-100px) scale(.7);opacity:0}}
+svg .lab12{animation:popIn .4s cubic-bezier(.2,1.8,.4,1) 1.2s both,fadeOut .3s 2.5s forwards}
+svg .pile{animation:popIn .5s cubic-bezier(.2,1.8,.4,1) 2.85s both,fadeOut .35s 3.55s forwards}
+svg .div{animation:popIn .4s cubic-bezier(.2,1.8,.4,1) 3.1s both,fadeOut .3s 3.6s forwards}
+svg .stk{animation:stkFly .8s cubic-bezier(.4,0,.6,1) both}
+@keyframes stkFly{0%{transform:translate(0,0) scale(1.2);opacity:0}15%{opacity:1}85%{opacity:1}100%{transform:translate(var(--tx),var(--ty)) scale(.6);opacity:0}}
+svg .amt{animation:popIn .4s cubic-bezier(.2,1.8,.4,1) both}
+svg .big{animation:popIn .55s cubic-bezier(.2,1.8,.4,1) 4.6s both}
 .gbar{width:320px;height:26px;border:2.5px solid var(--ink);border-radius:12px 4px 14px 4px;background:#fff;overflow:hidden;margin:8px auto}
 .gbar i{display:block;height:100%;background:repeating-linear-gradient(-45deg,#8ce99a 0 10px,#b2f2bb 10px 20px);transition:width 1.6s cubic-bezier(.3,1.3,.5,1)}
 .bigval{font-family:"Gochi Hand",cursive;font-size:4.2rem;line-height:1.05}
@@ -540,7 +558,7 @@ function keepRegistered(getPeer, lampId){
 }
 
 const PREFIX = 'hvh-gemeinwohl2-';
-const APP_VERSION = 'v2-2026-10-17d';
+const APP_VERSION = 'v2-2026-10-17e';
 const AUTOJOIN_KEY = 'gemeinwohl2-autojoin';
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const EMOJIS = ['😀','😎','🤓','🥳','🤩','😜','🤠','🥸','😇','🤖','👻','👽','💩','🐱','🐶','🦊','🐼','🐸','🦁','🐯','🐵','🐙','🦄','🐝','🐢','🦖','🐧','🦉','🐬','🦈','🍕','🍩','🍉','⚽','🏀','🎮','🎸','🚀','🌈','🔥','⭐','💎','👑','🌵'];
@@ -1343,7 +1361,7 @@ function hView(p){
   const pub = inGame().map(q => ({pid:q.pid, name:q.name, avatar:q.avatar, color:q.color, bot:!!q.bot,
     money: konto || end ? q.money : null, locked:q.locked, voted: q.pid in H.votes,
     last: (einz || end) && afterPay && q.last ? q.last : null, contrib: end ? q.contrib : null, place: end ? q.place : null,
-    got: c && ['payout','build'].includes(H.phase) ? (c.got[q.pid] || 0) : null, ready: !!(H.ready && H.ready.has(q.pid))}));
+    got: c && ['double','payout','build'].includes(H.phase) ? (c.got[q.pid] || 0) : null, ready: !!(H.ready && H.ready.has(q.pid))}));
   const v = {t:'state', phase:H.phase, round:H.round, maxRounds:H.maxRounds, ends: H.endsAt ? Math.max(0, H.endsAt - Date.now()) : 0,
     total: shownT, goal:H.goal, startTotal:H.startTotal, stage: stageOf(shownT), prog: prog === Infinity ? -1 : prog, waitHost: H.pace === 'host' && !!H.next,
     lastRate: H.hist.length ? H.hist[H.hist.length - 1].rate : null,
@@ -1618,6 +1636,37 @@ function drawSplit(svg, s, o = {}){
   if (ph){ T(mid, cx, cy - 34, 'jede/r bekommt', 26, {font:HAND, fill:'#333'}); T(mid, cx, cy + 36, '+' + eur(c.share), 72, {fill:'#2b8a3e'}); }
   else { T(mid, cx, cy - 26, 'Ø eingezahlt', 22, {font:HAND, fill:'#555'}); T(mid, cx, cy + 30, eur(c.avg), 56, {fill:'#1c7ed6'}); }
 }
+const SEQ_MS = 6200;
+function drawSeq(svg, s){
+  const c = s.cur, P = s.players, N = P.length, nE = c.n - c.exclN;
+  const rows = N <= 4 ? 1 : N <= 8 ? 2 : 3, perRow = Math.ceil(N / rows), y0 = rows === 1 ? 610 : 590, dy = 150, HH = y0 + (rows - 1) * dy + 135;
+  svg.innerHTML = ''; svg.setAttribute('viewBox', `0 0 640 ${HH}`); svg.style.maxHeight = '78vh';
+  const R = mk(svg), g = G(svg), frac = c.max ? c.pot / c.max : 0;
+  const cls = (el, c2, st) => { el.setAttribute('class', c2); if (st) el.setAttribute('style', st); return el; };
+  const tower = (x, c2, st) => { const o = cls(G(g), c2, st); seedFor('seqT' + s.round); towerInto(R, G(o, `translate(${x - 90 * .85},70) scale(.85)`), 90, frac, {labels:false, value:c.pot}); return o; };
+  // 1) Topf teilt sich in zwei (der rechte ist die Kopie)
+  tower(470, 'sq twR'); tower(170, 'sq twL');
+  const x2 = cls(G(g), 'sq lab12'); T(x2, 320, 330, (s.fx ? '×' + String(s.fx).replace('.', ',') : '×2'), 76, {fill:'#2b8a3e'});
+  R.path(x2, 'M95 100 Q95 76 125 76 L295 76 Q314 76 320 58 Q326 76 345 76 L515 76 Q545 76 545 100', {strokeWidth:3, stroke:'#2b8a3e'}); AMT(R, x2, 320, 46, '= ' + eur(c.doubled), 44, 'g');
+  // 2) beides wird ein großer Berg
+  const pile = cls(G(g), 'sq pile');
+  const lay = [10, 9, 8, 7, 6, 5, 4, 3, 2]; lay.forEach((n, row) => { for (let k = 0; k < n; k++) R.ell(pile, 320 + (k - (n - 1) / 2) * 34, 400 - row * 20, 40, 16, {fill:'#f6c945', fillStyle:'solid', roughness:1.1, strokeWidth:1.2}); });
+  AMT(R, pile, 320, 470, eur(c.doubled), 50, 'g');
+  const dv = cls(G(g), 'sq div'); T(dv, 545, 360, '÷ ' + nE, 70, {fill:'#c92a2a'});
+  // 3) der Berg zerfällt in Stapel, die zu jedem fliegen
+  P.forEach((p, i) => {
+    const row = Math.floor(i / perRow), inRow = Math.min(perRow, N - row * perRow), col = i - row * perRow;
+    const x = 320 + (col - (inRow - 1) / 2) * Math.min(150, 620 / inRow), y = y0 + row * dy, got = p.got || 0;
+    const st = cls(G(g), 'sq stk', `--tx:${x - 320}px;--ty:${y - 370}px;animation-delay:${3.5 + i * .07}s`);
+    if (got > 0) for (let k = 0; k < 6; k++) R.ell(st, 320, 385 - k * 9, 46, 17, {fill:'#f6c945', fillStyle:'solid', roughness:1, strokeWidth:1.2});
+    const ag = G(g); R.ell(ag, x, y - 8, 96, 96, {fill:p.color + '55', fillStyle:'solid', roughness:1.4, strokeWidth:2});
+    T(ag, x, y + 12, p.avatar, 58); T(ag, x, y + 60, p.name.length > 9 ? p.name.slice(0, 8) + '…' : p.name, 24, {font:HAND});
+    const am = cls(G(g), 'sq amt', `animation-delay:${4.2 + i * .06}s`); AMT(R, am, x, y + 102, got > 0 ? '+' + eur(got) : '❌ 0 €', 34, got > 0 ? 'g' : 'r');
+  });
+  const big = cls(G(g), 'sq big'); R.ell(big, 320, 320, 440, 210, {fill:'#d3f9d8', fillStyle:'solid', roughness:1.5, strokeWidth:3});
+  T(big, 320, 278, 'jede/r bekommt', 36, {font:HAND}); T(big, 320, 375, '+' + eur(c.share), 104, {fill:'#2b8a3e'});
+}
+function seqSounds(n){ sWhoosh(.2); sDing(); setTimeout(sDing, 1250); sThud(2.75); for (let i = 0; i < Math.min(n, 10); i++) sSnip(3.4 + i * .07); sCoins(Math.min(n, 10), 3.7, .08); setTimeout(sTada, 4700); }
 /* Verlauf aller Runden */
 function logHtml(s){
   const L = s.log || [], P = s.players;
@@ -1813,16 +1862,16 @@ function pState(s){
   pTop(); pScreen('pPlay'); show('pTabs'); $('pTabs').classList.toggle('withhost', !!C.isCreator); document.body.classList.toggle('withhost', !!C.isCreator); pWide();
   const key = s.phase + s.round, fresh = key !== pLastKey; pLastKey = key;
   if (fresh && s.phase === 'pay') C.amt = null;
-  if (C.room && fresh && s.phase !== 'payout') phaseFx(s);
+  const inSeq = ['double','payout'].includes(s.phase) && C.seqRound === s.round;
+  if (C.room && fresh && !['double','payout'].includes(s.phase)) phaseFx(s);
   if (fresh && s.phase === 'end' && s.outcome === 'win' && C.room) setTimeout(() => showPodium([...s.players].sort((a, b) => a.place - b.place).map(p => ({avatar:p.avatar, name:p.name, score:p.money, place:p.place, label:eur(p.money)}))), 1500);
-  if (fresh && s.phase !== 'end') phaseBanner(s);
+  if (fresh && !['end','double','payout'].includes(s.phase)) phaseBanner(s);
   pReady(s);
   if (fresh){ C.det = false; try { window.scrollTo(0, 0); document.querySelector('#player .pbody').scrollTop = 0; } catch(e){} }
-  withTrans($('pMain'), fresh, s.phase, () => pRender(fresh));
+  withTrans($('pMain'), fresh && !inSeq, s.phase, () => pRender(fresh));
 }
 function pRender(fresh){
   const s = C.st; if (!s) return;
-  if (s.phase !== 'payout' || (fresh && s.phase === 'payout')) C.splitDone = false;
   const me = s.me || {}, el = $('pMain');
   const head = `<div class="pphase">${PH_NAME[s.phase] || ''}</div><div class="tip">${statusLine(s)}</div>${miniStand(s)}`;
   if (me.inGame === false){ el.innerHTML = head + '<div class="center2"><div class="bigemoji">🕐</div><div class="ti" style="font-size:1.6rem">Du bist ab der nächsten Runde dabei – mit 100 €.</div></div>'; pTabs(); return; }
@@ -1853,16 +1902,16 @@ function pRender(fresh){
       el.innerHTML = head + `<div class="center2"><div style="font-size:4rem">🔒</div><div class="ti" style="font-size:1.8rem">Gesetzt: <span class="amt">${eur(me.pay)}</span></div>
         <div>Warte auf die anderen …</div><div class="minis">${s.players.map(p => `<span><span class="ae">${esc(p.avatar)}</span>${p.locked ? '✅' : '🤔'}</span>`).join('')}</div></div>`;
     }
-  } else if (s.phase === 'payout' && me.mine && !C.splitDone){
-    if (fresh){ C.splitKey = s.round; clearTimeout(C.splitT);
-      C.splitT = setTimeout(() => { if (C.st && C.st.phase === 'payout' && C.splitKey === C.st.round){ C.splitDone = true; C.beatsAnim = true; withTrans($('pMain'), true, 'payout', () => pRender(false)); C.beatsAnim = false; } }, 5300);
-      if (C.room) phaseFx({phase:'payout', players:s.players});
-    } else if (el.querySelector('svg.split')){ pTabs(); return; }   // laufende Animation nicht neu starten
+  } else if ((s.phase === 'double' || s.phase === 'payout') && me.mine && C.seqDone !== s.round){
+    if (C.seqRound !== s.round){ C.seqRound = s.round; clearTimeout(C.seqT);
+      C.seqT = setTimeout(() => { if (C.st && ['double','payout'].includes(C.st.phase) && C.st.round === C.seqRound){ C.seqDone = C.seqRound; C.beatsAnim = true; pReady(C.st); withTrans($('pMain'), true, 'payout', () => pRender(false)); C.beatsAnim = false; } }, SEQ_MS);
+      if (C.room) seqSounds(s.players.length);
+    } else if (el.querySelector('svg.seq')){ pTabs(); return; }   // laufende Sequenz nicht unterbrechen
     const c = s.cur;
-    el.innerHTML = head + `<div class="splithead ph"><span class="sh1">${eur(c.doubled)} ÷ ${c.n - c.exclN}</span></div>
-      <svg class="split" viewBox="0 0 640 650" width="100%" style="max-height:72vh"></svg>`;
-    drawSplit(el.querySelector('svg.split'), s, {anim:true, phone:true});
-  } else if (s.phase === 'payout' && me.mine){
+    el.innerHTML = head.replace(PH_NAME[s.phase], '💶 Topf wird verteilt') + `<div class="seqhead"><span class="h1">🪙 ${eur(c.pot)} im Topf</span><span class="h2">${fxs(s)} = ${eur(c.doubled)}</span><span class="h3">${eur(c.doubled)} ÷ ${c.n - c.exclN} = ${eur(c.share)}</span></div>
+      <svg class="seq" width="100%"></svg>`;
+    drawSeq(el.querySelector('svg.seq'), s);
+  } else if ((s.phase === 'payout' || s.phase === 'double') && me.mine){
     fresh = !!C.beatsAnim;
     const m = me.mine, c = s.cur, bal = m.got - m.a - m.pen, dA = m.a - c.avg, rel = bal - c.avgBal;
     const k = dA > .5 ? 'angel' : dA < -.5 ? 'devil' : 'even', na = fresh ? '' : 'animation:none;';
@@ -1921,7 +1970,7 @@ function miniStand(s){
 }
 function pReady(s){
   let b = document.getElementById('pReady');
-  const on = s && s.next && s.next.mode === 'vote' && !C.isCreator && s.me && s.me.inGame && $('pPlay') && !$('pPlay').classList.contains('hidden');
+  const on = s && s.next && s.next.mode === 'vote' && !C.isCreator && s.me && s.me.inGame && $('pPlay') && !$('pPlay').classList.contains('hidden') && !(s.phase === 'payout' && C.seqDone !== s.round);
   if (!on){ if (b) b.remove(); document.body.classList.remove('hasready'); return; }
   if (!b){ b = document.createElement('button'); b.id = 'pReady'; b.className = 'readychip gold'; document.body.appendChild(b); }
   document.body.classList.add('hasready'); b.disabled = !!s.me.ready; b.classList.toggle('done', !!s.me.ready);
