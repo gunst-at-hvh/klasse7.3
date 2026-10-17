@@ -50,3 +50,6 @@ Gemeinsames Projekt + Bedrohung mit Countdown – optisch könnten Projekt und C
 - Hintergrund etwas dunkler
 - Animationen & Töne: Münze fällt beim Setzen, Turm wird beim Vervielfachen „geklont“ (Klammer + Ergebnis), Beträge zählen hoch, Bau mit Hämmern/Funken/„+X €“, Stempel mit Rumms, Flut mit Wellen + Platschen, Sieg mit Konfetti
 - Ausschüttung: „Ø eingezahlt → jede/r bekommt“; Handy zeigt Balken du / Ø alle / zurück + „über/unter dem Durchschnitt“; beim Einzahlen „Letzte Runde: Ø … pro Kopf“
+- Flut-/Runden-Balken direkt links am Haus, gleiche Höhe wie Boden…Ziel; Stockwerke wachsen linear mit dem Baufortschritt → Erwartung (Runden) vs. Stand (Haus) direkt vergleichbar
+- Handy: zwei schmale Balken (🌊 Runden, 🏗️ Bau) unter der Phase; Stand-Tab scrollbar auch mit Host-Leiste; ohne Beamer am PC (ab 1000 px) dreispaltig mit Regeln und Stand
+- Phasenwechsel: Stempel-Banner + altes Bild wischt weg, neues zoomt/wischt/rutscht rein

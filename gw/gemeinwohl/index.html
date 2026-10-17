@@ -206,10 +206,38 @@ table.res .n{text-align:right}
 #hNext{position:fixed;right:300px;bottom:22px;z-index:30;font-size:1.9rem;padding:10px 34px;box-shadow:4px 4px 0 var(--ink);animation:breathe 1.8s ease-in-out infinite}
 #hNext[disabled]{opacity:.35;animation:none;box-shadow:none}
 @keyframes breathe{50%{transform:scale(1.07)}}
-.hostbar button.wait{animation:breathe 1.6s ease-in-out infinite;box-shadow:0 0 0 4px #ffe066}
+.hostbar button.wait{animation:glow 1.4s ease-in-out infinite}
+@keyframes glow{50%{box-shadow:0 0 0 4px #ffe066,0 0 14px 4px #ffe066}}
+.hostbar span{font-size:.95rem;white-space:nowrap;padding-right:4px}
+body.withhost .ppanel{bottom:124px}
+body.withhost .pbody{padding-bottom:150px}
+.ppanel{-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.ministand{max-width:360px;margin:4px auto 6px;display:grid;grid-template-columns:auto 1fr auto;gap:3px 6px;align-items:center;font-size:.85rem}
+.ministand .mb{height:9px;border:1.8px solid var(--ink);border-radius:6px 2px 6px 2px;background:#fff;overflow:hidden}
+.ministand .mb i{display:block;height:100%;transition:width 1s}
+.wideside{display:none}
+body.wide #pPlay:not(.hidden){display:grid;grid-template-columns:280px minmax(0,1fr) 310px;gap:16px;align-items:start;max-width:1500px;margin:0 auto}
+body.wide .wideside{display:block;padding:10px 12px;position:sticky;top:8px;max-height:calc(100dvh - 140px);overflow:auto;text-align:center}
+body.wide #pWideL{background:#fff8e6;text-align:left}
+body.wide #pWideR{background:#fff}
+body.wide #pTabs,body.wide #pPanel,body.wide .ministand{display:none!important}
+body.wide #pMain{min-width:0}
+#pMain,.center{position:relative}
+.ghost{position:absolute;left:0;right:0;top:0;pointer-events:none;animation:ghostOut .55s ease-in both;z-index:5}
+@keyframes ghostOut{to{transform:translateX(-140px) rotate(-4deg) scale(.92);opacity:0}}
+.enter-zoom > :not(.ghost){animation:zoomIn .6s cubic-bezier(.2,1.5,.4,1) .12s both}
+@keyframes zoomIn{from{transform:scale(.55);opacity:0}}
+.enter-wipe > :not(.ghost){animation:wipeIn .7s ease-out .12s both}
+@keyframes wipeIn{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+.enter-slide > :not(.ghost){animation:slideR .55s cubic-bezier(.2,1.3,.4,1) .12s both}
+@keyframes slideR{from{transform:translateX(160px);opacity:0}}
+.phbanner{position:fixed;inset:0;display:grid;place-items:center;z-index:45;pointer-events:none}
+.phbanner span{font-family:"Gochi Hand",cursive;font-size:clamp(2.2rem,7vw,5rem);background:#ffe066;border:4px solid var(--ink);border-radius:255px 18px 225px 18px/18px 225px 18px 255px;padding:6px 34px;box-shadow:6px 6px 0 var(--ink);animation:bannerIn 1.3s both;white-space:nowrap}
+@keyframes bannerIn{0%{transform:scale(3) rotate(-14deg);opacity:0}16%{transform:scale(.95) rotate(-4deg);opacity:1}24%{transform:scale(1.04) rotate(-4deg)}72%{transform:scale(1) rotate(-4deg);opacity:1}100%{transform:scale(.35) translateY(-38vh) rotate(0);opacity:0}}
 .bigpot{font-family:"Gochi Hand",cursive;font-size:4rem;line-height:1.05}
 .hgwrap{display:flex;gap:30px;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:6px}
 .hgwrap svg.hg{animation:grow 1s cubic-bezier(.2,1.6,.4,1) both;transform-origin:bottom center}
+.hgwrap{position:relative}
 .coinfall{position:absolute;left:50%;top:-10px;font-size:2rem;animation:coinFall .7s cubic-bezier(.5,0,.8,.4) both;pointer-events:none}
 @keyframes coinFall{from{transform:translate(-50%,-60px) rotate(-90deg);opacity:0}70%{opacity:1}to{transform:translate(-50%,70px) rotate(200deg);opacity:0}}
 .tile.justpaid{animation:payPop .6s cubic-bezier(.2,1.8,.4,1)}
@@ -316,8 +344,7 @@ svg .later{animation:popIn .45s cubic-bezier(.2,1.8,.4,1) both}
       <div class="ti">Unser Haus</div>
       <div id="hHouseInfo" style="font-size:1rem"></div>
       <div style="display:flex;justify-content:center;align-items:flex-end;gap:2px;margin-top:20px">
-        <svg id="hRounds" width="60" height="440"></svg>
-        <svg id="hHouse" width="200" height="450"></svg>
+        <svg id="hHouse" width="250" height="469"></svg>
       </div>
       <div class="muted" style="font-size:.9rem;margin-top:6px">Code: <b id="hCode2"></b></div>
     </div>
@@ -367,7 +394,7 @@ svg .later{animation:popIn .45s cubic-bezier(.2,1.8,.4,1) both}
       </div>
       <button class="go" id="rStart" style="width:100%;font-size:1.4rem;margin-top:12px" disabled>Warte auf Mitspieler …</button>
     </div>
-    <div class="hidden" id="pPlay"><div id="pMain"></div></div>
+    <div class="hidden" id="pPlay"><div class="wideside sk2" id="pWideL"></div><div id="pMain"></div><div class="wideside sk" id="pWideR"></div></div>
     <div class="hidden" id="pResult"></div>
   </div>
   <div class="ppanel hidden" id="pPanel"></div>
@@ -418,7 +445,7 @@ function keepRegistered(getPeer, lampId){
 }
 
 const PREFIX = 'hvh-gemeinwohl-';
-const APP_VERSION = '2026-10-17j1';
+const APP_VERSION = '2026-10-17k1';
 const AUTOJOIN_KEY = 'gemeinwohl-autojoin';
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const EMOJIS = ['😀','😎','🤓','🥳','🤩','😜','🤠','🥸','😇','🤖','👻','👽','💩','🐱','🐶','🦊','🐼','🐸','🦁','🐯','🐵','🐙','🦄','🐝','🐢','🦖','🐧','🦉','🐬','🦈','🍕','🍩','🍉','⚽','🏀','🎮','🎸','🚀','🌈','🔥','⭐','💎','👑','🌵'];
@@ -631,6 +658,21 @@ function phaseFx(s){
      end: () => { if (s.outcome === 'win'){ sFanfare(); confetti(160); } else sSplash(); }
   }[s.phase] || (() => {}))();
 }
+const PH_KIND = {pay:'slide', showdown:'zoom', double:'zoom', payout:'wipe', build:'slide', propose:'zoom', vote:'wipe', end:'zoom'};
+function phaseBanner(s){
+  const t = {pay: s.round === 1 ? '🪙 Los geht\'s!' : `🪙 Runde ${s.round}`, showdown:'🥁 Showdown', double: fxs(s) + '!', payout:'💶 Ausschüttung', build:'🏗️ Bau', propose:'👑 Regelrunde', vote:'🗳️ Abstimmung'}[s.phase];
+  if (!t) return; document.querySelectorAll('.phbanner').forEach(x => x.remove());
+  const d = document.createElement('div'); d.className = 'phbanner'; d.innerHTML = '<span></span>'; d.firstChild.textContent = t; document.body.appendChild(d); setTimeout(() => d.remove(), 1400);
+}
+function withTrans(el, fresh, phase, fn){
+  const kind = fresh && PH_KIND[phase]; let gh = null;
+  if (kind && el.children.length){ gh = document.createElement('div'); gh.className = 'ghost'; gh.innerHTML = el.innerHTML; gh.querySelectorAll('[id]').forEach(x => x.removeAttribute('id')); }
+  fn();
+  if (!kind) return;
+  el.classList.remove('enter-zoom', 'enter-wipe', 'enter-slide'); void el.offsetWidth; el.classList.add('enter-' + kind);
+  clearTimeout(el.__tr); el.__tr = setTimeout(() => el.classList.remove('enter-' + kind), 1000);
+  if (gh){ el.appendChild(gh); setTimeout(() => gh.remove(), 600); }
+}
 /* Zahl hochzählen lassen */
 function countUp(el, to, ms = 900, pre = '', delay = 0){
   const t0 = performance.now() + delay;
@@ -683,10 +725,23 @@ function windowAt(R, g, x, y, type, lit){
   else if (type === 2) R.circ(g, x + 10, y + 9, 17, f);
   else { R.rect(g, x + 2, y - 2, 16, 20, f); R.line(g, x - 3, y + 14, x + 23, y + 14, {strokeWidth:1.6}); }
 }
+/* Stufe L: 0 = Baugrube, 1 = Fundament, 2..10 = 1..9 Stockwerke, 11 = fertig. Stockwerke wachsen linear mit dem Baufortschritt */
+function houseSN(L){ if (L <= 0) return [0, 0]; if (L >= 11) return [9, 10]; const n = L - 1; return [n === 0 ? 1 : n >= 9 ? 8 : clamp(n + 1, 2, 7), n]; }
+/* Runden-/Flut-Balken links neben dem Haus – gleiche Höhe wie Boden … Ziel: so sieht man „wo sollten wir sein“ vs. „wo sind wir“ */
+function roundBar(R, g, round, max){
+  const gy = 420, y0 = gy - 14, y1 = gy - 14 - 330, x = 8, w = 22, seg = (y0 - y1) / max;
+  R.rect(g, x, y1, w, y0 - y1, {fill:'#fff', fillStyle:'solid', roughness:1.6});
+  for (let i = 0; i < Math.min(round, max); i++){ const col = i < max*.5 ? '#8ce99a' : i < max*.8 ? '#ffd43b' : '#ff8787';
+    R.rect(g, x + 3, y0 - (i+1)*seg + 1.5, w - 6, seg - 3, {fill:col, fillStyle:'solid', roughness:1.1, strokeWidth:1}); }
+  for (let i = 1; i < max; i++) R.line(g, x + w, y0 - i*seg, x + w + 7, y0 - i*seg, {strokeWidth:1, stroke:'#868e96'});
+  T(g, x + w/2, y1 - 8, '🌊', 20); T(g, x + w/2, gy + 17, `${round}/${max}`, 14, {font:HAND});
+}
 function drawHouse(svg, stage, o = {}){
-  svg.innerHTML = ''; svg.setAttribute('viewBox', '0 0 200 450'); seedFor('house' + stage + (o.flood ? 'f' : ''));
-  const R = mk(svg), S = clamp(stage, 1, 10) - 1, g = G(svg);
+  const bar = o.max != null;
+  svg.innerHTML = ''; svg.setAttribute('viewBox', bar ? '0 0 240 450' : '0 0 200 450'); seedFor('house' + stage + (o.flood ? 'f' : '') + (bar ? 'b' : ''));
+  const R = mk(svg), root = G(svg), g = bar ? G(root, 'translate(40,0)') : root, [S, nFl] = houseSN(stage);
   const gy = 420, X0 = 36, W = 100, fh = 33;
+  if (bar){ R.rect(root, -6, gy, 50, 22, {fill:'#b2f2bb', fillStyle:'hachure', hachureGap:6, roughness:2}); roundBar(R, root, o.round || 0, o.max); }
   if (S === 9 && !o.flood) R.rect(g, -4, 0, 208, gy, {fill:'#dbe4ff', fillStyle:'hachure', hachureGap:9, stroke:'none', roughness:2});
   if (S < 9){ R.rect(g, X0, gy - 14 - 10*fh, W, 10*fh, {stroke:'#b8bec4', strokeWidth:1.2, strokeLineDash:[8,7], roughness:1.6}); T(g, X0 + W/2, gy - 14 - 10*fh - 6, 'Ziel', 15, {font:HAND, fill:'#999'}); }
   R.rect(g, -6, gy, 212, 22, {fill:'#b2f2bb', fillStyle:'hachure', hachureGap:6, roughness:2});
@@ -700,7 +755,7 @@ function drawHouse(svg, stage, o = {}){
   }
   if (S >= 1) R.rect(g, X0 - 8, gy - 14, W + 16, 14, {fill:'#adb5bd', fillStyle:'cross-hatch', hachureGap:5, roughness:2});
   if (S === 1){ R.circ(g, 168, gy - 26, 30, {fill:'#ff922b', fillStyle:'hachure', hachureGap:4}); T(g, 60, gy - 22, '👷', 22); }
-  const n = FLOORS[S]; let top = gy - 14;
+  const n = nFl; let top = gy - 14;
   for (let f = 0; f < n; f++){
     const y = gy - 14 - (f+1)*fh, x = X0 + JX[f], w = W + JW[f];
     R.rect(g, x, y, w, fh, {fill:FCOL[f], fillStyle: S >= 8 ? 'solid' : FSTY[f], hachureGap:6, roughness:1.9, strokeWidth:1.8});
@@ -724,6 +779,7 @@ function drawHouse(svg, stage, o = {}){
     R.rect(g, X0 + 38, gy - 44, 26, 30, {fill:'#845ef7', fillStyle:'solid'});
   }
   if (o.flood){
+    if (bar) R.path(root, `M-6 ${gy - 150} q20 -14 46 0 L46 ${gy + 22} L-6 ${gy + 22} Z`, {fill:'#4dabf7', fillStyle:'hachure', hachureGap:5, fillWeight:2, roughness:2.2, strokeWidth:2});
     R.path(g, `M-6 ${gy - 150} q25 -16 50 0 t50 0 t50 0 t50 0 L206 ${gy + 22} L-6 ${gy + 22} Z`, {fill:'#4dabf7', fillStyle:'hachure', hachureGap:5, fillWeight:2, roughness:2.2, strokeWidth:2});
     T(g, 100, gy - 60, '🌊', 40);
   }
@@ -760,17 +816,17 @@ function towerInto(R, g, cx, frac, o = {}){
 }
 /* Verdopplung: der Turm wird „geklont“ und rutscht nach rechts, dann Klammer + Ergebnis */
 function drawDouble(svg, frac, pot, result, fxLabel, o = {}){
-  svg.innerHTML = ''; svg.setAttribute('viewBox', '0 0 470 505'); seedFor('dbl' + (o.k || ''));
-  const R = mk(svg), root = G(svg, 'translate(0,45)'), dx = 270;
+  svg.innerHTML = ''; svg.setAttribute('viewBox', '20 0 400 505'); seedFor('dbl' + (o.k || ''));
+  const R = mk(svg), root = G(svg, 'translate(0,45)'), dx = 230;
   const g2 = G(root); g2.setAttribute('class', o.anim ? 'clone' : ''); g2.style.setProperty('--dx', dx + 'px'); if (!o.anim) g2.setAttribute('transform', `translate(${dx},0)`);
   seedFor('dbl' + (o.k || '')); towerInto(R, g2, 90, frac, {k:o.k, labels:false, value:pot});
   seedFor('dbl' + (o.k || '')); towerInto(R, G(root), 90, frac, {k:o.k, labels:false, value:pot});
   const lt = G(root); if (o.anim) { lt.setAttribute('class', 'later'); lt.style.animationDelay = '1.2s'; }
-  T(lt, 225, 300, fxLabel, 64, {fill:'#2b8a3e'});
+  T(lt, 205, 300, fxLabel, 58, {fill:'#2b8a3e'});
   const lb = G(root); if (o.anim) { lb.setAttribute('class', 'later'); lb.style.animationDelay = '1.7s'; }
   const by = 30;
-  R.path(lb, `M40 ${by + 18} Q40 ${by} 70 ${by} L200 ${by} Q225 ${by} 235 ${by - 16} Q245 ${by} 270 ${by} L400 ${by} Q430 ${by} 430 ${by + 18}`, {strokeWidth:2.4, stroke:'#2b8a3e'});
-  AMT(R, lb, 235, by - 26, '= ' + eur(result), 40, 'g');
+  R.path(lb, `M38 ${by + 18} Q38 ${by} 64 ${by} L180 ${by} Q200 ${by} 205 ${by - 16} Q210 ${by} 230 ${by} L346 ${by} Q372 ${by} 372 ${by + 18}`, {strokeWidth:2.4, stroke:'#2b8a3e'});
+  AMT(R, lb, 205, by - 26, '= ' + eur(result), 40, 'g');
 }
 
 /* =====================================================================
@@ -814,7 +870,7 @@ const total = () => inGame().reduce((s, p) => s + p.money, 0);
 /* Baufortschritt im Maßstab des erwarteten (exponentiellen) Wachstums:
    gleicher Faktor Wachstum = gleich viel Haus. Mit ~nötiger Einzahlung wächst das Haus jede Runde gleichmäßig. */
 function buildFrac(t, start, goal){ if (!goal || !start || t <= start) return 0; return clamp(Math.log(t / start) / Math.log(goal / start), 0, 1); }
-function stageCalc(t, start, goal){ if (!goal) return 1; if (t >= goal) return 10; return clamp(1 + Math.floor(buildFrac(t, start, goal) * 9 + 1e-9), 1, 9); }
+function stageCalc(t, start, goal){ if (!goal) return 0; if (t >= goal) return 11; const f = buildFrac(t, start, goal); return f <= 0 ? 0 : clamp(1 + Math.floor(f * 10 + 1e-9), 1, 10); }
 const stageOf = t => stageCalc(t, H.startTotal, H.goal);
 function hEv(text, cls){ H.ev.push({id: ++H.evId, text, cls}); if (H.ev.length > 30) H.ev.shift(); hs(() => toast(text, cls)); }
 
@@ -1272,7 +1328,7 @@ function hRender(){
   show('hStatus'); $('hStatus').textContent = statusLine(s);
   show('hSkipBtn', ['pay','propose','vote'].includes(s.phase));
   const nb = $('hNext'); show('hNext', !!H.next);
-  if (H.next){ nb.textContent = s.phase === 'build' && (s.stage >= 10 || s.round >= s.maxRounds) ? 'Zum Ergebnis ▶' : 'Weiter ▶'; nb.disabled = Date.now() - H.phaseAt < 900;
+  if (H.next){ nb.textContent = s.phase === 'build' && (s.stage >= 11 || s.round >= s.maxRounds) ? 'Zum Ergebnis ▶' : 'Weiter ▶'; nb.disabled = Date.now() - H.phaseAt < 900;
     if (nb.disabled) setTimeout(() => { nb.disabled = false; }, 950); nb.onclick = hSkip; }
   // Regeltafel
   const rp = $('hRules'); rp.classList.toggle('collapsed', !hRulesOpen);
@@ -1282,12 +1338,12 @@ function hRender(){
   if (!hRulesOpen) rp.onclick = () => { hRulesOpen = true; hRender(); }; else rp.onclick = null;
   const cb = document.getElementById('hCatBtn'); if (cb) cb.onclick = e => { e.stopPropagation(); hCatOpen = !hCatOpen; hRender(); };
   // Haus + Runden
-  drawHouse($('hHouse'), s.stage, {flood: s.outcome === 'flood'}); drawRounds($('hRounds'), s.round, s.maxRounds);
+  drawHouse($('hHouse'), s.stage, {flood: s.outcome === 'flood', round:s.round, max:s.maxRounds});
   $('hHouseInfo').innerHTML = `<b>${eur(s.total)}</b> von ${eur(s.goal)}<br>🏗️ ${pct(buildFrac(s.total, s.startTotal, s.goal))} gebaut`;
   // Mitte
   const key = s.phase + s.round, fresh = key !== hLastKey; hLastKey = key;
-  if (fresh) phaseFx(s);
-  renderCenter($('hCenter'), s, {fresh, beamer:true});
+  if (fresh){ phaseFx(s); phaseBanner(s); }
+  withTrans($('hCenter'), fresh, s.phase, () => renderCenter($('hCenter'), s, {fresh, beamer:true}));
 }
 /* Mitte je nach Phase (Beamer groß, Handy kompakt mit o.phone) */
 function renderCenter(el, s, o){
@@ -1312,7 +1368,7 @@ function renderCenter(el, s, o){
     const st = el.querySelector('.showstats'); if (o.fresh) setTimeout(() => { st.style.opacity = 1; }, 3300); else st.style.opacity = 1;
   } else if (s.phase === 'double'){
     const ph = o.phone;
-    el.innerHTML = `<div class="dblrow"><svg class="dbl" width="${ph ? 330 : 600}" height="${ph ? 355 : 645}"></svg></div>
+    el.innerHTML = `<div class="dblrow"><svg class="dbl" width="${ph ? 300 : 540}" height="${ph ? 379 : 682}"></svg></div>
       ${c.penTotal ? `<div class="bigline" style="font-size:1.3rem">inkl. ⚖️ ${eur(c.penTotal)} Strafe</div>` : ''}`;
     drawDouble(el.querySelector('.dbl'), c.max ? c.pot / c.max : 0, c.pot, c.doubled, fxs(s), {k:'r' + s.round, anim: !!o.fresh});
   } else if (s.phase === 'payout'){
@@ -1328,23 +1384,24 @@ function renderCenter(el, s, o){
   } else if (s.phase === 'build'){
     const ph = o.phone, before = stageOf2(s, c.total0), up = s.stage > before;
     const f0 = buildFrac(c.total0, s.startTotal, s.goal), f1 = buildFrac(s.total, s.startTotal, s.goal), left = s.maxRounds - s.round;
-    el.innerHTML = `<div class="hgwrap"><svg class="hg" width="${ph ? 150 : 250}" height="${ph ? 338 : 562}"></svg>
+    el.innerHTML = `<div class="hgwrap"><svg class="hg" width="${ph ? 170 : 290}" height="${ph ? 319 : 544}"></svg>
       <div class="box sk" style="min-width:${ph ? 220 : 360}px">
         <div class="ti" style="font-size:${ph ? 1.6 : 2.4}rem">${up ? '🏗️ Das Haus wächst!' : '🧱 Noch kein neues Stockwerk'}</div>
         <div class="bigpot" style="${ph ? 'font-size:2.4rem' : ''}">${eur(s.total)}</div>
         <div class="bigsub">+${eur(s.total - c.total0)} diese Runde</div>
         <div class="gbar" style="${ph ? 'width:200px' : ''}"><i style="width:${f0*100}%"></i></div>
-        <div style="font-size:1.2rem">${s.stage >= 10 ? '🎉 Ziel erreicht!' : left > 0 ? `🌊 noch ${left} Runde${left === 1 ? '' : 'n'}` : '🌊 Die Flut kommt …'}</div>
-        ${s.prog == null || s.stage >= 10 ? '' : `<div style="font-size:1.1rem;margin-top:4px">${s.prog < 0 ? '📈 So wächst nichts.' : `📈 Bei diesem Tempo: ~${s.prog} Runde${s.prog === 1 ? '' : 'n'}`}</div>`}</div></div>`;
+        <div style="font-size:1.2rem">${s.stage >= 11 ? '🎉 Ziel erreicht!' : left > 0 ? `🌊 noch ${left} Runde${left === 1 ? '' : 'n'}` : '🌊 Die Flut kommt …'}</div>
+        ${s.prog == null || s.stage >= 11 ? '' : `<div style="font-size:1.1rem;margin-top:4px">${s.prog < 0 ? '📈 So wächst nichts.' : `📈 Bei diesem Tempo: ~${s.prog} Runde${s.prog === 1 ? '' : 'n'}`}</div>`}</div></div>`;
     const hg = el.querySelector('.hg'), bar = el.querySelector('.gbar i');
     if (o.fresh){ const wrap = el.querySelector('.hgwrap'); wrap.style.position = 'relative';
       const fu = document.createElement('div'); fu.className = 'floatup'; fu.textContent = '+' + eur(s.total - c.total0); fu.style.left = (ph ? 40 : 90) + 'px'; fu.style.top = (ph ? 120 : 220) + 'px'; wrap.appendChild(fu);
       if (up) setTimeout(() => { for (let i = 0; i < 9; i++){ const sp = document.createElement('div'); sp.className = 'spark'; sp.textContent = ['✨','⭐','🎉'][i % 3];
         sp.style.left = (ph ? 70 : 120) + 'px'; sp.style.top = (ph ? 90 : 160) + 'px'; sp.style.setProperty('--sx', (Math.cos(i*.7) * 110) + 'px'); sp.style.setProperty('--sy', (Math.sin(i*.7) * 90 - 40) + 'px');
         sp.style.animationDelay = (i*.05) + 's'; wrap.appendChild(sp); } }, 950); }
-    if (o.fresh && up){ drawHouse(hg, before); hg.style.animation = 'none';
-      setTimeout(() => { drawHouse(hg, s.stage); hg.style.animation = ''; bar.style.width = f1*100 + '%'; }, 900); }
-    else { drawHouse(hg, s.stage); requestAnimationFrame(() => setTimeout(() => { bar.style.width = f1*100 + '%'; }, o.fresh ? 400 : 0)); }
+    const hb = {round:s.round, max:s.maxRounds};
+    if (o.fresh && up){ drawHouse(hg, before, hb); hg.style.animation = 'none';
+      setTimeout(() => { drawHouse(hg, s.stage, hb); hg.style.animation = ''; bar.style.width = f1*100 + '%'; }, 900); }
+    else { drawHouse(hg, s.stage, hb); requestAnimationFrame(() => setTimeout(() => { bar.style.width = f1*100 + '%'; }, o.fresh ? 400 : 0)); }
   } else if (s.phase === 'propose'){
     el.innerHTML = `<div class="box sk" style="max-width:640px;margin:30px auto"><div style="font-size:${o.phone ? 3 : 4.5}rem">👑</div>
       <div class="ti" style="font-size:${o.phone ? 1.6 : 2.4}rem">${esc(s.prop.avatar + ' ' + s.prop.name)}</div>
@@ -1537,17 +1594,18 @@ let pLastKey = '';
 function pState(s){
   const prev = C.st; C.st = s; if (s.goalMul) WALLET_M = s.goalMul;
   if (s.me){ C.score = s.me.money; }
-  pTop(); pScreen('pPlay'); show('pTabs'); $('pTabs').classList.toggle('withhost', !!C.isCreator);
+  pTop(); pScreen('pPlay'); show('pTabs'); $('pTabs').classList.toggle('withhost', !!C.isCreator); document.body.classList.toggle('withhost', !!C.isCreator); pWide();
   const key = s.phase + s.round, fresh = key !== pLastKey; pLastKey = key;
   if (fresh && s.phase === 'pay') C.amt = null;
   if (C.room && fresh) phaseFx(s);
   if (fresh && s.phase === 'end' && s.outcome === 'win' && C.room) setTimeout(() => showPodium([...s.players].sort((a, b) => a.place - b.place).map(p => ({avatar:p.avatar, name:p.name, score:p.money, place:p.place, label:eur(p.money)}))), 1500);
-  pRender(fresh);
+  if (fresh && s.phase !== 'end') phaseBanner(s);
+  withTrans($('pMain'), fresh, s.phase, () => pRender(fresh));
 }
 function pRender(fresh){
   const s = C.st; if (!s) return;
   const me = s.me || {}, el = $('pMain');
-  const head = `<div class="pphase">${PH_NAME[s.phase] || ''}</div><div class="tip">${statusLine(s)}</div>`;
+  const head = `<div class="pphase">${PH_NAME[s.phase] || ''}</div><div class="tip">${statusLine(s)}</div>${miniStand(s)}`;
   if (me.inGame === false){ el.innerHTML = head + '<div class="center2"><div class="bigemoji">🕐</div><div class="ti" style="font-size:1.6rem">Du bist ab der nächsten Runde dabei – mit 100 €.</div></div>'; pTabs(); return; }
   if (s.phase === 'pay'){
     if (!me.locked){
@@ -1611,15 +1669,24 @@ function pRender(fresh){
       ${(s.prizes.rich || []).includes(me.pid) ? '<div class="ti" style="font-size:1.3rem">🌊 Am reichsten – aber leer ausgegangen.</div>' : ''}
       ${(s.prizes.pub || []).includes(me.pid) ? '<div class="ti" style="font-size:1.5rem">👏 Publikumspreis: Du hast am meisten eingezahlt!</div>' : ''}
       <div>Du hast ${eur(me.money)} · insgesamt eingezahlt: ${eur(me.contrib)}</div></div><div id="pEnd"></div>`;
-    renderCenter($('pEnd'), s, {phone:true, fresh});
+    renderCenter($('pEnd'), s, {phone:!document.body.classList.contains('wide'), fresh});
     show('pAgain', false);
     if (C.isCreator){ const b = document.createElement('button'); b.className = 'go'; b.style.cssText = 'width:100%;margin-top:10px;font-size:1.3rem'; b.textContent = '🔄 Neues Spiel'; b.onclick = () => hNewGame(); el.appendChild(b); }
   } else {
     // Showdown, Verdopplung, Bau, Vorschlag, Abstimmung (bereits gewählt), Ergebnis: kompakte Beamer-Ansicht
     el.innerHTML = head + '<div id="pC"></div>' + (s.phase === 'vote' && me.voted ? '<div class="tip">✓ Du hast abgestimmt.</div>' : '') + pWaitNote(s);
-    renderCenter($('pC'), s, {phone:true, fresh});
+    renderCenter($('pC'), s, {phone:!document.body.classList.contains('wide'), fresh});
   }
   pTabs();
+}
+function pWide(){ document.body.classList.toggle('wide', innerWidth >= 1000 && !!C.st && !$('pPlay').classList.contains('hidden')); }
+addEventListener('resize', () => { const w = document.body.classList.contains('wide'); pWide(); if (C.st && w !== document.body.classList.contains('wide')) pRender(false); });
+/* Handy: Zeit (Runden bis zur Flut) und Bau als zwei schmale Balken im gleichen Maßstab */
+function miniStand(s){
+  if (!s.goal || s.phase === 'end') return '';
+  const f = buildFrac(s.total, s.startTotal, s.goal), r = Math.min(1, s.round / s.maxRounds), rc = r <= .5 ? '#8ce99a' : r <= .8 ? '#ffd43b' : '#ff8787';
+  return `<div class="ministand"><span>🌊</span><div class="mb"><i style="width:${r*100}%;background:${rc}"></i></div><span>${s.round}/${s.maxRounds}</span>
+    <span>🏗️</span><div class="mb"><i style="width:${f*100}%;background:repeating-linear-gradient(-45deg,#8ce99a 0 6px,#b2f2bb 6px 12px)"></i></div><span>${pct(f)}</span></div>`;
 }
 function pWaitNote(s){
   if (!s.waitHost || C.isCreator) return '';
@@ -1629,14 +1696,17 @@ function pTabs(){
   const s = C.st;
   document.querySelectorAll('#pTabs button').forEach(b => { b.classList.toggle('on', b.dataset.tab === C.tab); b.onclick = () => { C.tab = C.tab === b.dataset.tab ? 'me' : b.dataset.tab; pTabs(); }; });
   const pn = $('pPanel'); show('pPanel', C.tab !== 'me');
+  if (document.body.classList.contains('wide')){ show('pPanel', false);
+    $('pWideL').innerHTML = `<div class="ti" style="font-size:1.5rem">§ Unsere Regeln</div>${ruleHtml(s, {full:true, catalog:true})}`; standInto($('pWideR'), s, 250); return; }
   if (C.tab === 'rules') pn.innerHTML = `<div class="ti" style="font-size:1.8rem">§ Unsere Regeln</div>${ruleHtml(s, {full:true, catalog:true})}`;
-  else if (C.tab === 'stand'){
-    pn.innerHTML = `<div class="ti" style="font-size:1.8rem">🏢 Spielstand</div><div>${statusLine(s)}</div>
-      <div style="display:flex;justify-content:center;align-items:flex-end;margin:10px 0"><svg id="pR" width="46" height="330"></svg><svg id="pH" width="150" height="338"></svg></div>
-      ${s.konto ? `<div class="ti" style="font-size:1.4rem">💰 Kontostände</div><table class="res">${[...s.players].sort((a, b) => b.money - a.money).map(p => `<tr><td>${esc(p.avatar + ' ' + p.name)}</td><td class="n">${eur(p.money)}</td></tr>`).join('')}</table>`
-        : `<div class="muted">Kontostände der anderen sind geheim. Du hast ${eur(C.score)}, der Durchschnitt liegt bei ${eur(s.total / Math.max(1, s.players.length))}.</div>`}`;
-    drawRounds($('pR'), s.round, s.maxRounds); drawHouse($('pH'), s.stage, {flood:s.outcome === 'flood'});
-  }
+  else if (C.tab === 'stand') standInto(pn, s, 220);
+}
+function standInto(el, s, w){
+  el.innerHTML = `<div class="ti" style="font-size:1.8rem">🏢 Spielstand</div><div>${statusLine(s)}</div><div>🏗️ ${pct(buildFrac(s.total, s.startTotal, s.goal))} gebaut</div>
+    <div style="display:flex;justify-content:center;margin:10px 0"><svg class="sth" width="${w}" height="${Math.round(w * 450 / 240)}"></svg></div>
+    ${s.konto ? `<div class="ti" style="font-size:1.4rem">💰 Kontostände</div><table class="res">${[...s.players].sort((a, b) => b.money - a.money).map(p => `<tr><td>${esc(p.avatar + ' ' + p.name)}</td><td class="n">${eur(p.money)}</td></tr>`).join('')}</table>`
+      : `<div class="muted">Kontostände der anderen sind geheim. Du hast ${eur(C.score)}, der Durchschnitt liegt bei ${eur(s.total / Math.max(1, s.players.length))}.</div>`}`;
+  drawHouse(el.querySelector('.sth'), s.stage, {flood:s.outcome === 'flood', round:s.round, max:s.maxRounds});
 }
 function pTop(){ $('pTopE').textContent = C.avatar; $('pTopN').textContent = C.name; $('pTopS').textContent = eur(C.score); }
 function pSetupInput(){}
