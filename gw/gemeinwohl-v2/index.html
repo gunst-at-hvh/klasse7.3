@@ -430,7 +430,10 @@ table.rk.big{font-size:1.1rem}table.rk.big td{padding:2px 6px}
 .guide .gemo{display:flex;gap:22px;justify-content:center;font-size:clamp(3rem, 10vh, 6rem);line-height:1.1}
 .guide .gemo span{animation:popIn .5s cubic-bezier(.2,1.8,.4,1) both}.guide .gemo span:nth-child(2){animation-delay:.3s}.guide .gemo span:nth-child(3){animation-delay:.6s}.guide .gemo span:nth-child(4){animation-delay:.9s}
 .guide .gdots{display:flex;gap:8px;margin-top:4px}.guide .gdots i{width:12px;height:12px;border-radius:50%;border:2px solid var(--ink);background:#fff}.guide .gdots i.on{background:var(--ink)}
-.guide.ph .gtitle{font-size:2.1rem}.guide.ph .gline{font-size:1.35rem}.guide.ph .gsub{font-size:1.05rem}.guide.ph .gemo{font-size:3.4rem}.guide.ph .gimg{gap:6px}
+.guide.ph .gtitle{font-size:2.5rem}.guide.ph .gline{font-size:1.65rem;line-height:1.2}.guide.ph .gsub{font-size:1.25rem}.guide.ph .gemo{font-size:3.6rem;gap:10px}.guide.ph .gimg{gap:4px}
+.gnav .gbig{font-size:1.5rem;padding:8px 26px}
+.gskip{display:flex;justify-content:center;margin-top:22px}.gskip button{font-size:.9rem;opacity:.75;padding:4px 12px}
+.gcount{text-align:center;font-size:.95rem;color:#666;margin-top:4px}
 .gnav{display:flex;gap:10px;justify-content:center;margin-top:8px;flex-wrap:wrap}.gnav button{font-size:1.2rem}
 .guideov{position:fixed;inset:0;z-index:44;background:var(--paper);overflow:auto;padding:14px 12px}
 #hGame.guidemode{grid-template-columns:1fr}#hGame.guidemode .rules,#hGame.guidemode .side{display:none}
@@ -620,7 +623,7 @@ function keepRegistered(getPeer, lampId){
 }
 
 const PREFIX = 'hvh-gemeinwohl2-';
-const APP_VERSION = 'v2-2026-10-17l';
+const APP_VERSION = 'v2-2026-10-17m';
 const AUTOJOIN_KEY = 'gemeinwohl2-autojoin';
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const EMOJIS = ['😀','😎','🤓','🥳','🤩','😜','🤠','🥸','😇','🤖','👻','👽','💩','🐱','🐶','🦊','🐼','🐸','🦁','🐯','🐵','🐙','🦄','🐝','🐢','🦖','🐧','🦉','🐬','🦈','🍕','🍩','🍉','⚽','🏀','🎮','🎸','🚀','🌈','🔥','⭐','💎','👑','🌵'];
@@ -1071,6 +1074,7 @@ const hCyclePace = () => { ac(); hSetPace({host:'vote', vote:'auto', auto:'host'
 const hHumans = () => inGame().filter(p => !p.bot && p.online);
 const hNeedReady = () => Math.floor(hHumans().length / 2) + 1;
 function hReady(p){
+  if (H.phase === 'guide' && H.room){ H.ready.add(p.pid); if (hHumans().every(q => H.ready.has(q.pid))) return hGuideSkip(); hPush(); return; }
   if (!H.next || !H.ready || H.ready.has(p.pid)) return;
   H.ready.add(p.pid); hs(sTick);
   if (H.pace === 'vote' && !H.goAt && H.ready.size >= hNeedReady()){ H.goAt = Date.now() + 3000; clearTimeout(H.stepT); H.stepT = setTimeout(hGoNext, 3000); }
@@ -1259,7 +1263,8 @@ function hStartGame(){
   H.rules = H.transp === '1' ? [{id:'konto', round:0, yes:'Start', no:''}] : [];
   H.round = 0; H.hist = []; H.outcome = null; H.ev = [];
   show('hLobby', false); show('hGame');
-  if (H.guide === '1'){ H.phase = 'guide'; H.gi = 0; hStep(9000, hGuideNext); hPush(); }
+  if (H.guide === '1' && H.room){ H.phase = 'guide'; H.gi = 0; H.next = null; H.ready = new Set(); hPush(); }   // ohne Beamer: jede/r blättert selbst
+  else if (H.guide === '1'){ H.phase = 'guide'; H.gi = 0; hStep(9000, hGuideNext); hPush(); }
   else hNextRound();
 }
 function hGuideNext(){ H.gi++; if (H.gi >= GUIDE.length) return hGuideSkip(); hStep(H.gi === 3 ? 10000 : 9000, hGuideNext); hPush(); }
@@ -1453,7 +1458,7 @@ function hView(p){
     rules: H.rules.map((r, i) => ({id:r.id, no:4 + i, round:r.round, yes:r.yes, no2:r.no, pct:r.pct})), opts: hOptions(),
     konto, einz, players: pub, outcome:H.outcome, fx:H.fx, prizes: end ? hPrizes() : null, need: end ? H.need : null, goalMul:H.goalMul, room:H.room, host:hCreatorName(),
     hist: end ? H.hist.map(h => ({round:h.round, rate:h.rate, rules:h.rules})) : null,
-    gi: H.phase === 'guide' ? H.gi : null,
+    gi: H.phase === 'guide' ? H.gi : null, gLocal: H.phase === 'guide' && H.room, gReady: H.phase === 'guide' && H.room ? H.ready.size + '/' + hHumans().length : '',
     next: H.next ? {mode:H.pace, ready: H.ready ? H.ready.size : 0, need: hNeedReady(), go: H.goAt ? Math.max(0, H.goAt - Date.now()) : 0} : null,
     /* Verlauf: Topf und Ø immer; wer was gezahlt hat nur für Runden mit 👁️ Einzahlungs-Transparenz */
     log: H.hist.map(h => { const ids = Object.keys(h.a), open = h.rules.includes('einzahl') || end;
@@ -1548,27 +1553,36 @@ function guideDraw(el, i, o = {}){
   else if (i === 5){ box.innerHTML = '<div class="gemo"><span>🏠</span><span>→</span><span>🏆</span></div><div class="gemo"><span>🌊</span><span>→</span><span>🥈</span></div>'; }
   else if (i === 6){ box.innerHTML = '<div class="gemo"><span>👑</span><span>📜</span><span>👍</span><span>👎</span></div>'; }
 }
+/* Wischen: links = weiter, rechts = zurück */
+function addSwipe(el, onNext, onPrev){
+  let x0 = null, y0 = 0;
+  el.addEventListener('pointerdown', e => { x0 = e.clientX; y0 = e.clientY; });
+  el.addEventListener('pointerup', e => { if (x0 == null) return; const dx = e.clientX - x0, dy = e.clientY - y0; x0 = null;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.3){ if (dx < 0) onNext(); else onPrev(); } });
+  el.style.touchAction = 'pan-y';
+}
 /* Anleitung ansehen (lokal, ohne Spiel – Lobby) */
 function guideOverlay(){
   document.querySelectorAll('.guideov').forEach(x => x.remove());
   const d = document.createElement('div'); d.className = 'guideov'; let i = 0; document.body.appendChild(d);
   const phone = innerWidth < 700;
   const draw = () => { d.innerHTML = guideHtml(i, {phone, rounds:(C.st && C.st.maxRounds) || H.maxRounds}) +
-      `<div class="gnav"><button class="chip" id="gPrev" ${i ? '' : 'disabled'}>◀</button><button class="gold" id="gNext">${i < GUIDE.length - 1 ? 'Weiter ▶' : 'Fertig ✓'}</button><button class="chip" id="gClose">Schließen ✕</button></div>`;
+      `<div class="gnav"><button class="chip gbig" id="gPrev" ${i ? '' : 'disabled'}>◀</button><button class="gold gbig" id="gNext">${i < GUIDE.length - 1 ? 'Weiter ▶' : 'Fertig ✓'}</button></div><div class="gskip"><button class="chip" id="gClose">Schließen ✕</button></div>`;
     guideDraw(d, i, {phone}); fitGuide(d);
     d.querySelector('#gPrev').onclick = () => { i--; draw(); };
     d.querySelector('#gNext').onclick = () => { if (i < GUIDE.length - 1){ i++; draw(); } else d.remove(); };
     d.querySelector('#gClose').onclick = () => d.remove(); };
+  addSwipe(d, () => { if (i < GUIDE.length - 1){ i++; draw(); } }, () => { if (i > 0){ i--; draw(); } });
   draw();
 }
 /* Bild so groß wie möglich, aber nie abgeschnitten */
 function fitGuide(root){
   requestAnimationFrame(() => { const im = [...root.querySelectorAll('.gimg')].find(e => !e.closest('.ghost')); if (!im) return;
-    const rest = [...root.querySelectorAll('.gline,.gsub,.gdots,.gnav')].filter(e => !e.closest('.ghost')).reduce((a, e) => a + e.offsetHeight + 8, 0);
+    const rest = [...root.querySelectorAll('.gline,.gsub,.gdots,.gnav,.gskip,.gcount')].filter(e => !e.closest('.ghost')).reduce((a, e) => a + e.offsetHeight + 8, 0);
     const bars = document.getElementById('pTabs'), bottom = bars && !bars.classList.contains('hidden') && bars.offsetParent ? bars.getBoundingClientRect().top : innerHeight;
     const h = Math.max(140, bottom - im.getBoundingClientRect().top - rest - 12), sv = [...im.querySelectorAll('svg')];
     const avW = im.clientWidth - 20 * Math.max(0, sv.length - 1);
-    sv.forEach(x => { const vb = (x.getAttribute('viewBox') || '0 0 1 1').split(/\s+/).map(Number), r = vb[2] / vb[3] || 1, tot = sv.reduce((a, y) => { const v = (y.getAttribute('viewBox') || '0 0 1 1').split(/\s+/).map(Number); return a + (v[2] / v[3] || 1); }, 0);
+    sv.forEach(x => { const vb = (x.getAttribute('viewBox') || '0 0 1 1').split(/\s+/).map(Number), r = vb[2] / vb[3] || 1, tot = sv.reduce((a, y) => { const v = (y.getAttribute('viewBox') || '0 0 1 1').split(/\s+/).map(Number); return a + (v[2] / v[3] || 1) * (+y.dataset.k || 1); }, 0);
       const hh = Math.min(h, avW / tot) * (+x.dataset.k || 1); x.style.height = hh + 'px'; x.style.width = hh * r + 'px'; x.style.maxHeight = 'none'; x.style.maxWidth = 'none'; }); });
 }
 const PH_NAME = {guide:'📖 So geht\'s', pay:'① Einzahlen', showdown:'② Showdown: der Topf', double:'③ Vervielfachung!', payout:'④ Ausschüttung', build:'⑤ Bau-Update', propose:'⑥ § Regelrunde', vote:'⑥ § Abstimmung', verdict:'⑥ § Ergebnis', end:'🏁 Spielende'};
@@ -1641,7 +1655,7 @@ function hRender(){
   $('hGame').classList.toggle('guidemode', s.phase === 'guide');
   if (s.phase === 'guide') show('hStatus', false);
   if (s.phase === 'guide'){ const gkey = 'g' + s.gi; if (gkey !== hLastKey){ hLastKey = gkey; const el = $('hCenter');
-      withTrans(el, true, 'pay', () => { el.innerHTML = guideHtml(s.gi, {rounds:s.maxRounds}) + `<div class="gnav"><button class="chip" id="gPrevB" ${s.gi ? '' : 'disabled'}>◀ zurück</button><button class="chip" id="gSkipB">Anleitung überspringen ⏭</button></div>`;
+      withTrans(el, true, 'pay', () => { el.innerHTML = guideHtml(s.gi, {rounds:s.maxRounds}) + `<div class="gnav"><button class="chip" id="gPrevB" ${s.gi ? '' : 'disabled'}>◀ zurück</button></div><div class="gskip"><button class="chip" id="gSkipB">Anleitung überspringen ⏭</button></div>`;
         guideDraw(el, s.gi); fitGuide(el); $('gPrevB').onclick = hGuidePrev; $('gSkipB').onclick = () => { ac(); hGuideSkip(); }; }); }
     return; }
   // Haus + Runden
@@ -2009,7 +2023,7 @@ function pState(s){
   const prev = C.st; C.st = s; if (s.goalMul) WALLET_M = s.goalMul;
   if (s.me){ C.score = s.me.money; }
   pTop(); pScreen('pPlay'); show('pTabs'); $('pTabs').classList.toggle('withhost', !!C.isCreator); document.body.classList.toggle('withhost', !!C.isCreator); pWide();
-  const key = s.phase + s.round + (s.phase === 'guide' ? 'g' + s.gi : ''), fresh = key !== pLastKey; pLastKey = key;
+  const key = s.phase + s.round + (s.phase === 'guide' && !s.gLocal ? 'g' + s.gi : ''), fresh = key !== pLastKey; pLastKey = key;
   if (fresh && s.phase === 'pay') C.amt = null;
   const inSeq = ['double','payout'].includes(s.phase) && C.seqRound === s.round;
   if (C.room && fresh && !['double','payout'].includes(s.phase)) phaseFx(s);
@@ -2025,8 +2039,24 @@ function pRender(fresh){
   const head = `<div class="pphase">${PH_NAME[s.phase] || ''}</div><div class="tip">${statusLine(s)}</div>${miniStand(s)}`;
   if (me.inGame === false){ el.innerHTML = head + '<div class="center2"><div class="bigemoji">🕐</div><div class="ti" style="font-size:1.6rem">Du bist ab der nächsten Runde dabei – mit 100 €.</div></div>'; pTabs(); return; }
   if (s.phase === 'guide'){
-    if (fresh || C.gi !== s.gi){ C.gi = s.gi; el.innerHTML = guideHtml(s.gi, {phone:true, rounds:s.maxRounds}) + (C.isCreator ? '<div class="gnav"><button class="chip" id="gSkipP">Anleitung überspringen ⏭</button></div>' : '');
-      guideDraw(el, s.gi, {phone:true}); fitGuide(el); if (C.isCreator) $('gSkipP').onclick = () => { ac(); hGuideSkip(); }; }
+    if (s.gLocal){   // ohne Beamer: selbst blättern (wischen oder Knöpfe)
+      if (fresh){ C.gli = 0; C.gDone = false; }
+      const last = C.gli >= GUIDE.length - 1;
+      if (fresh || C.gRend !== C.gli){ C.gRend = C.gli;
+        el.innerHTML = guideHtml(C.gli, {phone:true, rounds:s.maxRounds}) +
+          `<div class="gnav"><button class="chip gbig" id="gP" ${C.gli ? '' : 'disabled'}>◀</button><button class="gold gbig" id="gN">${last ? (C.gDone ? '✓ bereit' : 'Fertig ✓') : 'Weiter ▶'}</button></div>
+           <div class="gcount" id="gCnt">${C.gDone ? `⏳ warte auf die anderen (${s.gReady})` : `wischen ⇄ · fertig: ${s.gReady}`}</div>
+           <div class="gskip">${C.isCreator ? '<button class="chip" id="gSkipP">Spiel jetzt starten ▶</button>' : ''}</div>`;
+        guideDraw(el, C.gli, {phone:true}); fitGuide(el);
+        const go = d => { const n = C.gli + d; if (n < 0) return; if (n >= GUIDE.length){ if (!C.gDone){ C.gDone = true; ac(); C.conn && C.conn.open && C.conn.send({t:'ready'}); C.gRend = -1; pRender(false); } return; } C.gli = n; pRender(false); };
+        $('gP').onclick = () => go(-1); $('gN').onclick = () => go(1);
+        if (!el.__sw){ el.__sw = true; addSwipe(el, () => { if (C.st && C.st.phase === 'guide' && C.st.gLocal) $('gN') && $('gN').click(); }, () => { if (C.st && C.st.phase === 'guide' && C.st.gLocal) $('gP') && $('gP').click(); }); }
+        if (C.isCreator) $('gSkipP').onclick = () => { ac(); hGuideSkip(); };
+      } else { const cn = $('gCnt'); if (cn) cn.textContent = C.gDone ? `⏳ warte auf die anderen (${s.gReady})` : `wischen ⇄ · fertig: ${s.gReady}`; }
+      pTabs(); return;
+    }
+    if (fresh || C.gi !== s.gi){ C.gi = s.gi; el.innerHTML = guideHtml(s.gi, {phone:true, rounds:s.maxRounds});
+      guideDraw(el, s.gi, {phone:true}); fitGuide(el); }
     pTabs(); return;
   }
   if (s.phase === 'pay'){
@@ -2248,7 +2278,7 @@ function rHostUpdate(ps){
     list.forEach(x => { const d = document.createElement('div'); d.className = 'pchip'; d.style.background = x.color + '55'; d.innerHTML = '<span class="e"></span><span class="n"></span>'; d.querySelector('.e').textContent = x.avatar; d.querySelector('.n').textContent = x.name; fill.appendChild(d); });
     $('rStart').disabled = n < 2; $('rStart').textContent = n < 2 ? 'Warte auf Mitspieler (oder Bots) …' : "▶ Los geht's";
   }
-  show('pHostBar', !['lobby','end'].includes(H.phase));
+  show('pHostBar', !['lobby','end'].includes(H.phase) && !(H.phase === 'guide'));
   $('pHSkip').classList.toggle('wait', !!H.next);
   $('pHPace').textContent = {host:'⏸ aus', vote:'🙋 Gem.', auto:'⏱️ Auto'}[H.pace];
   $('pHostBar').querySelector('span').textContent = H.next && H.pace === 'vote' ? `👑 🙋${H.ready.size}/${hNeedReady()}` : '👑 Host';

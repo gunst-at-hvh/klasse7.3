@@ -73,3 +73,4 @@ Gemeinsames Projekt + Bedrohung mit Countdown – optisch könnten Projekt und C
 - v2k: Handy-Verteil-Sequenz passt immer komplett auf den Bildschirm (Höhe wird gemessen, Kopfzeilen während der Sequenz ausgeblendet)
 - v2l: ⏸ Timer aus → beim Einzahlen kein Countdown (Umschalten wirkt sofort); Zeit um → der am Schieber eingestellte Betrag wird genommen (nicht 0)
 - v2l: 📏 Mindestbeitrag neu: „mindestens X % einzahlen“ (Schieber 5–50 % beim Vorschlag), später nur „⬆️ erhöhen“ möglich, nie senken/abschaffen; 🧾 Grundsteuer entfällt (steckt im Mindestbeitrag)
+- v2m: Anleitung ohne Beamer: jede/r blättert selbst (wischen ⇄ oder ◀/Weiter ▶), „Fertig ✓“ → Spiel startet, wenn alle fertig sind (Ersteller kann „Spiel jetzt starten ▶“); mit Beamer synchron; Überspringen/Schließen klein mit Abstand darunter; Schrift + Bilder am Handy größer; Lobby-Anleitung auch wischbar
