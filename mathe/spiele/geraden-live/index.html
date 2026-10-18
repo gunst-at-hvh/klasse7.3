@@ -4,17 +4,17 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Geraden-Live</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Gochi+Hand&family=Patrick+Hand&display=swap" rel="stylesheet">
 <style>
+@font-face{font-family:"Shantell Sans";src:url(fonts/shantell-sans-latin-400-normal.woff2) format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Shantell Sans";src:url(fonts/shantell-sans-latin-700-normal.woff2) format("woff2");font-weight:700;font-display:swap}
 :root{--bg:#fbfaf5;--grid:#dbe7f3;--card:#fff;--ink:#1e1e1e;--muted:#6b6b6b;--gl:#a5c8ea;--board:rgba(255,255,255,.6);--gold:#ffe066;--btn:#fff;--glow:0}
 body.dark{--bg:#10131a;--grid:#1b2433;--card:#1a1f2b;--ink:#e9ecef;--muted:#9aa4b2;--gl:#26354d;--board:rgba(10,14,22,.55);--btn:#232a38;--glow:1}
 *{box-sizing:border-box}
 html,body{margin:0;min-height:100%}
-body{color:var(--ink);font-family:"Patrick Hand","Comic Sans MS",cursive;font-size:19px;background-color:var(--bg);
+body{color:var(--ink);font-family:"Shantell Sans","Comic Sans MS",cursive;font-size:17px;background-color:var(--bg);
   background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:26px 26px;transition:background-color .3s,color .3s}
 .hidden{display:none!important}
-.ti{font-family:"Gochi Hand",cursive}
+.ti{font-family:"Shantell Sans",cursive;font-weight:700}
 .muted{color:var(--muted)}
 .sk{border:2.5px solid var(--ink);border-radius:14px 6px 16px 6px/6px 16px 6px 14px;background:var(--card)}
 button{cursor:pointer;font:inherit;font-size:1.1rem;border:2.5px solid var(--ink);border-radius:14px 6px 16px 6px/6px 16px 6px 14px;background:var(--btn);color:var(--ink);padding:6px 14px;box-shadow:2px 2px 0 var(--ink)}
@@ -25,24 +25,24 @@ button.chip{font-size:.95rem;padding:3px 11px;box-shadow:1px 1px 0 var(--ink)}bu
 button.ghost{box-shadow:none}
 .row{display:flex;flex-wrap:wrap;gap:6px;margin:3px 0 8px}
 label{display:block;font-size:.95rem;color:var(--muted);margin-top:6px}
-.mi{font-family:Arial,Helvetica,sans-serif;font-weight:700;display:inline-block;transform:scaleX(1.25);margin:0 .06em}
+.mi{}
 .fr{display:inline-flex;flex-direction:column;vertical-align:middle;font-size:.62em;line-height:1;margin:0 2px;text-align:center}
 .fr span:first-child{border-bottom:2px solid currentColor;padding:0 2px}
 /* Start */
 #home{min-height:100dvh;display:grid;place-items:center;padding:16px}
 #home .box{width:min(560px,100%);text-align:center;padding:22px}
-#home h1{font-family:"Gochi Hand",cursive;font-size:2.8rem;margin:0}
+#home h1{font-family:"Shantell Sans",cursive;font-weight:700;font-size:2.8rem;margin:0}
 #home .choices{display:grid;gap:12px;margin-top:16px}#home .choices button{font-size:1.3rem;padding:12px}
 /* Host */
 .top{display:flex;align-items:center;gap:8px;padding:6px 10px;flex-wrap:nowrap}
-.top h1{margin:0;font-size:1.5rem;white-space:nowrap;font-family:"Gochi Hand",cursive}
-.top .phase{flex:1;text-align:center;font-family:"Gochi Hand",cursive;font-size:1.4rem;padding:1px 12px;min-width:0;white-space:nowrap;overflow:hidden}
-.top .code{font-family:"Gochi Hand",cursive;font-size:1.3rem;padding:1px 10px;letter-spacing:.1em}
+.top h1{margin:0;font-size:1.5rem;white-space:nowrap;font-family:"Shantell Sans",cursive;font-weight:700}
+.top .phase{flex:1;text-align:center;font-family:"Shantell Sans",cursive;font-weight:700;font-size:1.4rem;padding:1px 12px;min-width:0;white-space:nowrap;overflow:hidden}
+.top .code{font-family:"Shantell Sans",cursive;font-weight:700;font-size:1.3rem;padding:1px 10px;letter-spacing:.1em}
 .top .chip{white-space:nowrap}
 #hLobby{display:grid;grid-template-columns:minmax(240px,340px) 1fr;gap:16px;padding:6px 12px}
 @media(max-width:900px){#hLobby{grid-template-columns:1fr}}
 .joinbox{text-align:center;padding:12px}
-.joinbox .code{font-family:"Gochi Hand",cursive;font-size:3.4rem;letter-spacing:.12em;line-height:1.1}
+.joinbox .code{font-family:"Shantell Sans",cursive;font-weight:700;font-size:3.4rem;letter-spacing:.12em;line-height:1.1}
 .joinbox .qr svg{width:min(220px,70vw);height:auto;margin:6px auto;background:#fff;padding:4px;border-radius:6px}
 .joinbox .url{font-size:.85rem;word-break:break-all}
 .settings{padding:10px 14px}
@@ -53,11 +53,11 @@ label{display:block;font-size:.95rem;color:var(--muted);margin-top:6px}
 .boardwrap{position:relative;display:flex;justify-content:center}
 .board{display:block;width:100%;height:auto;touch-action:none;user-select:none;-webkit-user-select:none;background:var(--board);border-radius:10px;color:var(--ink)}
 #hBoard{width:min(100%, calc(100dvh - 58px));margin:0 auto}
-#pBoard{width:min(100%, calc(100dvh - 150px));margin:0 auto}
+#pBoard{width:min(100%, calc(100dvh - 160px));margin:0 auto}
 .sparkle{animation:fadeS .4s var(--w,0s) both, spark 1s linear var(--w,0s) infinite}@keyframes spark{to{stroke-dashoffset:-24}}
 .side{padding:10px 12px;display:flex;flex-direction:column;gap:8px;max-height:calc(100dvh - 64px);overflow:hidden}
-.eq{font-family:"Gochi Hand",cursive;font-size:clamp(2rem,5vh,3.2rem);line-height:1.1;text-align:center}
-.timer{font-family:"Gochi Hand",cursive;font-size:1.6rem;text-align:center}
+.eq{font-family:"Shantell Sans",cursive;font-weight:700;font-size:clamp(2rem,5vh,3.2rem);line-height:1.1;text-align:center}
+.timer{font-family:"Shantell Sans",cursive;font-weight:700;font-size:1.6rem;text-align:center}
 .timer.low{color:#e03131;animation:pulse .5s infinite alternate}
 @keyframes pulse{to{transform:scale(1.12)}}
 .rk{width:100%;border-collapse:collapse;font-size:1.05rem}
@@ -65,14 +65,15 @@ label{display:block;font-size:.95rem;color:var(--muted);margin-top:6px}
 .rk tr{animation:pop .4s cubic-bezier(.2,1.8,.4,1) both}.rk tr.me td{background:rgba(255,224,102,.35)}
 .rk .b{font-size:.8rem;color:var(--muted)}
 .rk.sm{font-size:.82rem}.rk.sm td{padding:0 4px}.rk.sm .b{display:none}.rk.sm .big{font-size:1rem}
-.big{font-family:"Gochi Hand",cursive;font-size:1.4rem}
+.big{font-family:"Shantell Sans",cursive;font-weight:700;font-size:1.4rem}
 @keyframes pop{from{transform:scale(.6);opacity:0}}
 /* Spieler */
 #player{min-height:100dvh;display:flex;flex-direction:column}
 .ptop{display:flex;align-items:center;gap:8px;padding:4px 10px;border-bottom:2px solid var(--ink);background:var(--card)}
 .ptop .e{font-size:1.6rem}.ptop .n{flex:1;font-size:1.15rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.ptop .s{font-family:"Gochi Hand",cursive;font-size:1.2rem;padding:0 8px;border:2px solid var(--ink);border-radius:10px 4px 12px 4px}
-.pbody{flex:1;padding:6px 6px 90px}
+.ptop .s{font-family:"Shantell Sans",cursive;font-weight:700;font-size:1.2rem;padding:0 8px;border:2px solid var(--ink);border-radius:10px 4px 12px 4px}
+.pbody{flex:1;padding:6px 6px 10px}
+body.hb .pbody{padding-bottom:64px}
 .center2{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px;min-height:60vh}
 .joinform{width:min(460px,100%);padding:16px;display:flex;flex-direction:column;gap:10px}
 .joinform input{padding:10px;font:inherit;font-size:1.3rem;border:2.5px solid var(--ink);border-radius:10px 4px 12px 4px;text-align:center;background:var(--card);color:var(--ink)}
@@ -81,7 +82,7 @@ label{display:block;font-size:.95rem;color:var(--muted);margin-top:6px}
 .emgrid button{font-size:1.6rem;padding:4px 0;box-shadow:none;border-width:1.5px}.emgrid button.sel{background:var(--gold)}
 .bigemoji{font-size:4.5rem;animation:bob 2s ease-in-out infinite}@keyframes bob{50%{transform:translateY(-8px)}}
 .roomcard{padding:12px;text-align:center;margin-bottom:10px}
-.roomcard .rcode{font-family:"Gochi Hand",cursive;font-size:2.6rem;letter-spacing:.12em}
+.roomcard .rcode{font-family:"Shantell Sans",cursive;font-weight:700;font-size:2.6rem;letter-spacing:.12em}
 .roomcard .rqr svg{width:min(170px,50vw);height:auto;margin:auto;background:#fff;padding:4px;border-radius:6px}
 .pbar{display:flex;align-items:center;gap:8px;padding:2px 4px 4px}
 .pbar .eq{flex:1;font-size:1.75rem;text-align:left}
@@ -90,37 +91,37 @@ label{display:block;font-size:.95rem;color:var(--muted);margin-top:6px}
 .pbtns button{font-size:1.2rem}
 .zoom{display:flex;gap:6px}.zoom button{font-size:1.25rem;padding:2px 12px}
 .hint{text-align:center;color:var(--muted);font-size:.95rem}
-.lock{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);padding:8px 18px;font-family:"Gochi Hand",cursive;font-size:1.6rem;white-space:nowrap;pointer-events:none}
+.lock{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);padding:8px 18px;font-family:"Shantell Sans",cursive;font-weight:700;font-size:1.6rem;white-space:nowrap;pointer-events:none}
 .resCard{padding:10px 12px;text-align:center;margin-top:8px;animation:pop .5s cubic-bezier(.2,1.8,.4,1) both}
-.resCard .pts{font-family:"Gochi Hand",cursive;font-size:3.4rem;line-height:1}
+.resCard .pts{font-family:"Shantell Sans",cursive;font-weight:700;font-size:3.4rem;line-height:1}
 .hostbar{position:fixed;left:0;right:0;bottom:0;display:flex;gap:8px;justify-content:center;align-items:center;padding:6px 10px calc(6px + env(safe-area-inset-bottom));background:#2b2140;z-index:21}
 .hostbar span{color:#fff;font-size:.95rem}.hostbar button{flex:1;max-width:300px;padding:6px}
 .netinfo{position:fixed;bottom:70px;left:50%;transform:translateX(-50%);background:var(--card);border:2px solid var(--ink);padding:4px 12px;border-radius:999px;font-size:.9rem;z-index:50}
 /* Overlays */
-.toast{position:fixed;left:50%;top:16%;transform:translateX(-50%);z-index:50;font-family:"Gochi Hand",cursive;font-size:2rem;padding:6px 22px;background:var(--card);color:var(--ink);border:3px solid var(--ink);border-radius:255px 18px 225px 18px/18px 225px 18px 255px;box-shadow:4px 4px 0 var(--ink);animation:toastA 1.7s both;pointer-events:none;white-space:nowrap}
+.toast{position:fixed;left:50%;top:16%;transform:translateX(-50%);z-index:50;font-family:"Shantell Sans",cursive;font-weight:700;font-size:2rem;padding:6px 22px;background:var(--card);color:var(--ink);border:3px solid var(--ink);border-radius:255px 18px 225px 18px/18px 225px 18px 255px;box-shadow:4px 4px 0 var(--ink);animation:toastA 1.7s both;pointer-events:none;white-space:nowrap}
 @keyframes toastA{0%{transform:translateX(-50%) scale(.3);opacity:0}15%{transform:translateX(-50%) scale(1.05);opacity:1}80%{opacity:1}100%{opacity:0;transform:translateX(-50%) translateY(-20px)}}
 #hitOv{position:fixed;inset:0;z-index:45;display:grid;place-items:center;pointer-events:none}
 #hitOv .in{text-align:center;animation:hitA 1.9s cubic-bezier(.2,1.4,.4,1) both}
 #hitOv .e{font-size:min(38vmin,320px);line-height:1;filter:drop-shadow(0 0 30px rgba(255,224,102,.9))}
-#hitOv .t{font-family:"Gochi Hand",cursive;font-size:min(11vmin,96px);color:#ffd43b;-webkit-text-stroke:2px #1e1e1e;text-shadow:0 0 24px rgba(255,212,59,.8)}
-#hitOv .n{font-family:"Gochi Hand",cursive;font-size:min(7vmin,56px);color:#fff;-webkit-text-stroke:1.5px #1e1e1e}
+#hitOv .t{font-family:"Shantell Sans",cursive;font-weight:700;font-size:min(11vmin,96px);color:#ffd43b;-webkit-text-stroke:2px #1e1e1e;text-shadow:0 0 24px rgba(255,212,59,.8)}
+#hitOv .n{font-family:"Shantell Sans",cursive;font-weight:700;font-size:min(7vmin,56px);color:#fff;-webkit-text-stroke:1.5px #1e1e1e}
 #hitOv.multi .e{font-size:min(15vmin,130px);max-width:92vw;line-height:1.15}#hitOv.multi .n{font-size:min(4.5vmin,34px);max-width:90vw}
 @keyframes hitA{0%{transform:scale(.1) rotate(-20deg);opacity:0}18%{transform:scale(1.12) rotate(4deg);opacity:1}30%{transform:scale(1) rotate(0)}78%{transform:scale(1);opacity:1}100%{transform:scale(2.2);opacity:0}}
 #dim{position:fixed;inset:0;z-index:30;background:radial-gradient(circle,transparent 30%,rgba(0,0,0,.55));pointer-events:none;animation:dimA 1.2s both}
 @keyframes dimA{0%{opacity:0}30%{opacity:1}100%{opacity:0}}
 .banner{position:fixed;inset:0;display:grid;place-items:center;z-index:44;pointer-events:none}
-.banner span{font-family:"Gochi Hand",cursive;font-size:clamp(2.4rem,9vw,6rem);background:var(--gold);color:#1e1e1e;border:4px solid #1e1e1e;border-radius:255px 18px 225px 18px/18px 225px 18px 255px;padding:4px 34px;box-shadow:6px 6px 0 #1e1e1e;animation:banA 1.4s both;white-space:nowrap}
+.banner span{font-family:"Shantell Sans",cursive;font-weight:700;font-size:clamp(2.4rem,9vw,6rem);background:var(--gold);color:#1e1e1e;border:4px solid #1e1e1e;border-radius:255px 18px 225px 18px/18px 225px 18px 255px;padding:4px 34px;box-shadow:6px 6px 0 #1e1e1e;animation:banA 1.4s both;white-space:nowrap}
 @keyframes banA{0%{transform:scale(3) rotate(-14deg);opacity:0}16%{transform:scale(.95) rotate(-4deg);opacity:1}72%{transform:scale(1) rotate(-4deg);opacity:1}100%{transform:scale(.35) translateY(-38vh);opacity:0}}
 #bigNum{position:fixed;inset:0;z-index:38;display:grid;place-items:center;background:rgba(0,0,0,.6)}
 .confetti{position:fixed;top:-20px;width:10px;height:16px;z-index:46;pointer-events:none;animation:fall linear forwards}
 @keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
 #podiumOv{position:fixed;inset:0;z-index:39;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:20px;overflow:hidden}
-#podiumOv h2{position:absolute;top:18px;left:0;right:0;text-align:center;font-family:"Gochi Hand",cursive;font-size:clamp(2rem,5vw,3.4rem);margin:0}
+#podiumOv h2{position:absolute;top:18px;left:0;right:0;text-align:center;font-family:"Shantell Sans",cursive;font-weight:700;font-size:clamp(2rem,5vw,3.4rem);margin:0}
 #podiumOv .close{position:absolute;top:14px;right:14px}
 .pod{display:flex;align-items:flex-end;gap:14px;width:min(1000px,100%)}
 .pod .col{flex:1;display:flex;flex-direction:column;align-items:center;opacity:0;transform:translateY(40px);transition:all .7s cubic-bezier(.2,1.4,.4,1)}
 .pod .col.on{opacity:1;transform:none}.pod .e{font-size:clamp(3rem,8vw,5.5rem)}.pod .nm{font-size:clamp(1.3rem,3.5vw,2.2rem);margin:4px 0}.pod .sc{font-size:clamp(1rem,2.5vw,1.4rem);margin-bottom:6px}
-.pod .blk{width:100%;border:3px solid var(--ink);border-bottom:none;border-radius:16px 6px 0 0;display:grid;place-items:center;font-family:"Gochi Hand",cursive;font-size:clamp(2.5rem,7vw,4.5rem);color:#1e1e1e}
+.pod .blk{width:100%;border:3px solid var(--ink);border-bottom:none;border-radius:16px 6px 0 0;display:grid;place-items:center;font-family:"Shantell Sans",cursive;font-weight:700;font-size:clamp(2.5rem,7vw,4.5rem);color:#1e1e1e}
 .pod .p1 .blk{height:40vh;background:#ffe066}.pod .p2 .blk{height:28vh;background:#dee2e6}.pod .p3 .blk{height:20vh;background:#ffd8a8}
 #podiumOv .rest{margin-top:10px;text-align:center}
 /* SVG-Animationen */
@@ -131,6 +132,37 @@ label{display:block;font-size:.95rem;color:var(--muted);margin-top:6px}
 .fadeS{animation:fadeS .4s var(--w,0s) both}@keyframes fadeS{from{opacity:0}}
 .flash{animation:flashS .6s var(--w,0s) 2 alternate}@keyframes flashS{to{opacity:.25}}
 .pulseS{transform-box:fill-box;transform-origin:center;animation:pulseS 1s ease-out var(--w,0s) 2}@keyframes pulseS{0%{transform:scale(1);opacity:.9}100%{transform:scale(3.2);opacity:0}}
+/* Spieler-Layout: schmal = untereinander, breit (PC/Tablet quer) = Brett links, Bedienung + Rangliste rechts */
+.pgrid{display:flex;flex-direction:column}
+.pside{display:flex;flex-direction:column;gap:6px}
+.rankbox{display:none;padding:8px 10px;max-height:46vh;overflow:auto}
+@media (min-width:760px) and (min-aspect-ratio:5/4){
+  .pgrid{display:grid;grid-template-columns:auto minmax(300px,1fr);grid-template-areas:"board bar" "board side";grid-template-rows:auto 1fr;gap:6px 16px;align-items:start}
+  .pgrid .pbar{grid-area:bar}.pgrid .pbw{grid-area:board}.pgrid .pside{grid-area:side}
+  #pBoard{width:min(calc(100vw - 380px), calc(100dvh - 64px))}
+  body.hb #pBoard{width:min(calc(100vw - 380px), calc(100dvh - 120px))}
+  .pbar .eq{font-size:2.2rem}
+  .rankbox{display:block}
+  #pRankBtn{display:none}
+  .pbtns{justify-content:flex-start}
+}
+.drawer{position:fixed;top:46px;right:8px;width:min(360px,calc(100vw - 16px));max-height:70vh;overflow:auto;z-index:35;background:var(--card);border:2.5px solid var(--ink);border-radius:14px 6px 16px 6px;padding:8px 10px;box-shadow:4px 4px 0 var(--ink);animation:pop .3s cubic-bezier(.2,1.6,.4,1) both}
+.drawer .dhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.drum{position:fixed;left:50%;top:22%;transform:translateX(-50%);z-index:44;font-family:"Shantell Sans",cursive;font-weight:700;font-size:clamp(1.6rem,4.5vw,3rem);padding:6px 26px;background:var(--card);color:var(--ink);border:3px solid var(--ink);border-radius:255px 18px 225px 18px/18px 225px 18px 255px;box-shadow:5px 5px 0 var(--ink);pointer-events:none;white-space:nowrap;animation:drumA 1.4s both}
+@keyframes drumA{0%{opacity:0;transform:translateX(-50%) scale(.5)}12%{opacity:1;transform:translateX(-50%) scale(1.05)}20%,40%,60%,80%{transform:translateX(-50%) rotate(-2deg)}30%,50%,70%{transform:translateX(-50%) rotate(2deg)}88%{opacity:1}100%{opacity:0;transform:translateX(-50%) scale(.9)}}
+.landS{transform-box:view-box;animation:landA .3s cubic-bezier(.2,1.5,.4,1) var(--w,0s) both}
+@keyframes landA{0%{opacity:0;transform:scale(1.5)}55%{opacity:1;transform:scale(.97)}100%{opacity:1;transform:scale(1)}}
+.faint{opacity:.13}
+.solway{margin-top:8px;padding:6px 8px;border:2px dashed #fab005;border-radius:10px;font-size:.95rem;line-height:1.35;animation:pop .4s both}
+.resCard.gold{background:linear-gradient(135deg,#ffe066,#ffd43b);color:#1e1e1e}
+.fbhead{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap}
+.fbhead .ti{font-size:1.25rem}.fbhead .pts{font-size:2.4rem}
+.fbtabs{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin:6px 0}
+.fbtab.ok{border-color:#2b8a3e}.fbtab.bad{border-color:#e03131}.fbtab.on{background:var(--gold);color:#1e1e1e}
+.fbtext{text-align:left;font-size:1rem;line-height:1.35;min-height:3.9em;padding:2px 4px}
+.resCard.gold .fbtab:not(.on){background:#fff;color:#1e1e1e}
+.resCard.gold .muted{color:#5c4a00}
+
 /* Handy: schmale Kopfzeile, mehr Platz fürs Koordinatensystem */
 @media (max-width:700px){
   .top h1{display:none}
@@ -196,7 +228,8 @@ label{display:block;font-size:.95rem;color:var(--muted);margin-top:6px}
 
 <!-- ================= Spieler ================= -->
 <section id="player" class="hidden">
-  <div class="ptop hidden" id="pTop"><span class="e" id="pTopE"></span><span class="n" id="pTopN"></span><span class="s" id="pTopS">0 P</span><button class="chip ghost" id="pDark">🌙</button></div>
+  <div class="ptop hidden" id="pTop"><span class="e" id="pTopE"></span><span class="n" id="pTopN"></span><span class="s" id="pTopS">0 P</span><button class="chip ghost" id="pRankBtn" title="Rangliste">🏆</button><button class="chip ghost" id="pDark">🌙</button></div>
+  <div class="drawer hidden" id="rankDrawer"><div class="dhead"><b>🏆 Rangliste</b><button class="chip" id="rankClose">✕</button></div><div id="rankDrawerBody"></div></div>
   <div class="pbody">
     <div class="center2" id="pJoin">
       <div class="joinform sk">
@@ -271,7 +304,7 @@ function keepRegistered(getPeer, lampId){
 }
 
 const PREFIX = 'hvh-geradenlive-';
-const APP_VERSION = '2026-10-18a';
+const APP_VERSION = '2026-10-18b';
 const AUTOJOIN_KEY = 'geradenlive-autojoin';
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const EMOJIS = ['😀','😎','🤓','🥳','🤩','😜','🤠','🥸','😇','🤖','👻','👽','💩','🐱','🐶','🦊','🐼','🐸','🦁','🐯','🐵','🐙','🦄','🐝','🐢','🦖','🐧','🦉','🐬','🦈','🍕','🍩','🍉','⚽','🏀','🎮','🎸','🚀','🌈','🔥','⭐','💎','👑','🌵'];
@@ -400,8 +433,8 @@ function fracHtml(p, q, lead){ if (q < 0){ p = -p; q = -q; } const g = gcd(p, q)
   if (q === 1) return lead && ap === 1 ? sg : sg + ap; return `${sg}<span class="fr"><span>${ap}</span><span>${q}</span></span>`; }
 function lineText(p, q, b){ let s = 'y = ' + (p === 0 ? '' : fracHtml(p, q, true) + 'x');
   if (b !== 0 || p === 0) s += p === 0 ? (b < 0 ? '−' + Math.abs(b) : b) : (b < 0 ? ' − ' + Math.abs(b) : ' + ' + b); return s; }
-function clipLine(P, Q, w){
-  const dx = Q.x - P.x, dy = Q.y - P.y; let t0 = -1e9, t1 = 1e9;
+function clipLine(P, Q, w, segOnly){
+  const dx = Q.x - P.x, dy = Q.y - P.y; let t0 = segOnly ? 0 : -1e9, t1 = segOnly ? 1 : 1e9;
   const edge = (p, q) => { if (Math.abs(p) < 1e-12) return q >= 0; const r = q / p; if (p < 0){ if (r > t1) return false; if (r > t0) t0 = r; } else { if (r < t0) return false; if (r < t1) t1 = r; } return true; };
   if (!edge(-dx, P.x - w.x0) || !edge(dx, w.x1 - P.x) || !edge(-dy, P.y - w.y0) || !edge(dy, w.y1 - P.y)) return null;
   return [{x:P.x + t0 * dx, y:P.y + t0 * dy}, {x:P.x + t1 * dx, y:P.y + t1 * dy}];
@@ -414,19 +447,19 @@ function makeEq(level, range){
     else p = rnd(pos ? [1, 2, 3, -1, -2] : [1, 2, 3, -1, -2, -3]);
     const b = pos ? Math.floor(Math.random() * 9) : Math.floor(Math.random() * 9) - 4, m = p / q;
     const seg = clipLine({x:0, y:b}, {x:1, y:m + b}, w); if (!seg || Math.hypot(seg[1].x - seg[0].x, seg[1].y - seg[0].y) < 6) continue;
-    let text = lineText(p, q, b), kind = 'y';
+    let text = lineText(p, q, b), kind = 'y', pts = [];
     if (lv === '3'){
       const f = rnd(['umst', 'punkt', 'zwei']), xs = [];
       for (let x = w.x0; x <= w.x1; x++){ const y = m * x + b; if (Number.isInteger(y) && y >= w.y0 && y <= w.y1) xs.push(x); }
       if (f === 'umst' && q === 1){ const k = -p; text = `y ${k < 0 ? '−' : '+'} ${Math.abs(k) === 1 ? '' : Math.abs(k)}x = ${b < 0 ? '−' + Math.abs(b) : b}`; kind = 'umst'; }
-      else if (f === 'punkt' && xs.length){ const x = rnd(xs); text = `<span style="font-size:.6em">durch</span> (${fmt(x)}|${fmt(m * x + b)}) <span style="font-size:.6em">mit</span> m = ${fracHtml(p, q)}`; kind = 'punkt'; }
+      else if (f === 'punkt' && xs.length){ const x = rnd(xs); text = `<span style="font-size:.6em">durch</span> (${fmt(x)}|${fmt(m * x + b)}) <span style="font-size:.6em">mit</span> m = ${fracHtml(p, q)}`; kind = 'punkt'; pts = [[x, m * x + b]]; }
       else if (xs.length >= 2){ const a = xs[Math.floor(xs.length * .2)], c = xs[Math.floor(xs.length * .8)]; if (a === c) continue;
-        text = `<span style="font-size:.6em">durch</span> (${fmt(a)}|${fmt(m * a + b)}) <span style="font-size:.6em">und</span> (${fmt(c)}|${fmt(m * c + b)})`; kind = 'zwei'; }
+        text = `<span style="font-size:.6em">durch</span> (${fmt(a)}|${fmt(m * a + b)}) <span style="font-size:.6em">und</span> (${fmt(c)}|${fmt(m * c + b)})`; kind = 'zwei'; pts = [[a, m * a + b], [c, m * c + b]]; }
       else continue;
     }
-    return {m, b, text, kind, plain: lineText(p, q, b)};
+    return {m, b, p, q, text, kind, pts, plain: lineText(p, q, b)};
   }
-  return {m:1, b:0, text:'y = x', kind:'y', plain:'y = x'};
+  return {m:1, b:0, p:1, q:1, text:'y = x', kind:'y', pts:[], plain:'y = x'};
 }
 /* Bewertung (max. 110 + Zeitbonus):
    📍 30 Ankerpunkt · 📏 50 Lage (Ankernähe doppelt) · 📐 20 Steigung · 🎯 +10 Volltreffer (Lösung komplett im dicken Strich) */
@@ -455,10 +488,10 @@ function makeBoard(svg, opt = {}){
   B.X = X; B.Y = Y; B.W = W;
   const el = (tag, at, parent) => { const e = document.createElementNS(NS, tag); for (const k in at) e.setAttribute(k, at[k]); (parent || svg).appendChild(e); return e; };
   B.el = el;
-  const setT = (e, t) => { e.innerHTML = esc(t).replace(/−/g, '<tspan font-family="Arial, Helvetica, sans-serif" font-weight="700">−</tspan>'); };
+  const setT = (e, t, html) => { if (html) e.innerHTML = t; else e.textContent = t; };
   B.FS = 1;
-  B.text = (g, x, y, t, o = {}) => { const e = el('text', {x, y, 'font-family':'Gochi Hand, cursive', 'font-size':(o.size || 22) * B.FS, fill:o.fill || 'currentColor', 'text-anchor':o.anchor || 'middle',
-    'paint-order':'stroke', stroke: o.halo === false ? 'none' : (DARK ? '#10131a' : '#fff'), 'stroke-width':5, class:o.cls || ''}, g); setT(e, t); if (o.style) e.setAttribute('style', o.style); return e; };
+  B.text = (g, x, y, t, o = {}) => { const e = el('text', {x, y, 'font-family':'Shantell Sans, cursive', 'font-weight':o.weight || 700, 'font-size':(o.size || 22) * B.FS, fill:o.fill || 'currentColor', 'text-anchor':o.anchor || 'middle',
+    'paint-order':'stroke', stroke: o.halo === false ? 'none' : (DARK ? '#10131a' : '#fff'), 'stroke-width':5, class:o.cls || ''}, g); setT(e, t, o.html); if (o.style) e.setAttribute('style', o.style); return e; };
   B.setVB = () => { const V = B.VB, BS = B.BASE; V.w = clamp(V.w, BS.w / 3.5, BS.w); V.h = V.w * BS.h / BS.w;
     V.x = clamp(V.x, -BS.w * .05, BS.w * 1.05 - V.w); V.y = clamp(V.y, -BS.h * .05, BS.h * 1.05 - V.h); if (V.w >= BS.w - .5){ V.x = 0; V.y = 0; }
     svg.setAttribute('viewBox', `${V.x} ${V.y} ${V.w} ${V.h}`); if (opt.onZoom) opt.onZoom(V.w < BS.w - .5); };
@@ -480,11 +513,11 @@ function makeBoard(svg, opt = {}){
     g.appendChild(rc.line(X(w.x0) - 18, Y(ay), X(w.x1) + 26, Y(ay), ro())); g.appendChild(rc.line(X(ax), Y(w.y0) + 18, X(ax), Y(w.y1) - 26, ro()));
     g.appendChild(rc.linearPath([[X(w.x1) + 14, Y(ay) - 9], [X(w.x1) + 27, Y(ay)], [X(w.x1) + 14, Y(ay) + 9]], ro()));
     g.appendChild(rc.linearPath([[X(ax) - 9, Y(w.y1) - 14], [X(ax), Y(w.y1) - 27], [X(ax) + 9, Y(w.y1) - 14]], ro()));
-    for (let x = w.x0; x <= w.x1; x++){ if (x === ax) continue; g.appendChild(rc.line(X(x), Y(ay) - 6, X(x), Y(ay) + 6, ro({strokeWidth:1.5}))); B.text(g, X(x), Y(ay) + 24 * B.FS, fmt(x), {size:19, halo:false, fill:'var(--muted)'}); }
-    for (let y = w.y0; y <= w.y1; y++){ if (y === ay) continue; g.appendChild(rc.line(X(ax) - 6, Y(y), X(ax) + 6, Y(y), ro({strokeWidth:1.5}))); B.text(g, X(ax) - 12, Y(y) + 6, fmt(y), {size:19, anchor:'end', halo:false, fill:'var(--muted)'}); }
-    B.text(g, X(ax) - 12, Y(ay) + 22, '0', {size:19, anchor:'end', halo:false, fill:'var(--muted)'});
+    for (let x = w.x0; x <= w.x1; x++){ if (x === ax) continue; g.appendChild(rc.line(X(x), Y(ay) - 6, X(x), Y(ay) + 6, ro({strokeWidth:1.5}))); B.text(g, X(x), Y(ay) + 24 * B.FS, fmt(x), {size:18, halo:false, fill:'var(--muted)', weight:400}); }
+    for (let y = w.y0; y <= w.y1; y++){ if (y === ay) continue; g.appendChild(rc.line(X(ax) - 6, Y(y), X(ax) + 6, Y(y), ro({strokeWidth:1.5}))); B.text(g, X(ax) - 12, Y(y) + 6, fmt(y), {size:18, anchor:'end', halo:false, fill:'var(--muted)', weight:400}); }
+    B.text(g, X(ax) - 12, Y(ay) + 22, '0', {size:18, anchor:'end', halo:false, fill:'var(--muted)', weight:400});
     B.text(g, X(w.x1) + 22, Y(ay) - 14, 'x', {size:24, halo:false}); B.text(g, X(ax) + 18, Y(w.y1) - 18, 'y', {size:24, halo:false});
-    B.lp = el('g', {}); B.le = el('g', {}); B.lc = el('g', {});
+    B.lp = el('g', {}); B.le = el('g', {}); B.lc = el('g', {}); B.lx = el('g', {});
   };
   /* dicke Gerade (halbtransparent) mit gestrichelter Mitte */
   B.thick = (L, color, parent, o = {}) => { const seg = clipLine(L.p1, L.p2, W()); if (!seg) return null; const g = el('g', {class:o.cls || ''}, parent || B.lc);
@@ -508,72 +541,238 @@ function makeBoard(svg, opt = {}){
   return B;
 }
 
-/* ---------- Auflösung: spektakuläre Animation (Beamer + Handys) ---------- */
-function revealTimes(n){ const per = clamp(6 / Math.max(1, n), .28, 1), per2 = clamp(5 / Math.max(1, n), .25, .9);
-  const tS = .8 + n * per + .5, tP = tS + 1.8; return {per, per2, tS, tP, end: tP + n * per2 + 1}; }
+/* ---------- Auflösung (Beamer + Handys, gleicher Zeitplan) ----------
+   1) Ziel-Gerade schwach gestrichelt  2) alle Nicht-Volltreffer schlagen schnell hintereinander ein (schlecht → knapp)
+   3) Trommelwirbel  4) alle Volltreffer gleichzeitig als Lichtschwert, langsam vom Ankerpunkt nach außen
+   5) Ziel leuchtet auf + alle Volltreffer-Smileys zusammen groß */
 let hitQueue = [], hitBusy = false;
 function hitShow(emoji, title, name, snd, multi){ hitQueue.push({emoji, title, name, snd, multi}); if (!hitBusy) hitNext(); }
 function hitNext(){ const h = hitQueue.shift(); if (!h){ hitBusy = false; return; } hitBusy = true;
   document.querySelectorAll('#hitOv').forEach(x => x.remove()); const d = document.createElement('div'); d.id = 'hitOv';
   d.innerHTML = `<div class="in"><div class="e"></div><div class="t"></div><div class="n"></div></div>`; d.querySelector('.e').textContent = h.emoji; d.querySelector('.t').textContent = h.title; d.querySelector('.n').textContent = h.name;
-  if (h.multi){ d.classList.add('multi'); }
-  const dur = h.multi ? 3 : hitQueue.length >= 3 ? 1 : hitQueue.length >= 1 ? 1.4 : 1.9; d.querySelector('.in').style.animationDuration = dur + 's';
+  if (h.multi) d.classList.add('multi');
+  const dur = h.multi ? 3.2 : 1.9; d.querySelector('.in').style.animationDuration = dur + 's';
   document.body.appendChild(d); if (h.snd) h.snd(); setTimeout(() => { d.remove(); hitNext(); }, dur * 1000); }
 function banner(t){ const d = document.createElement('div'); d.className = 'banner'; d.innerHTML = '<span></span>'; d.firstChild.textContent = t; document.body.appendChild(d); setTimeout(() => d.remove(), 1500); }
 function toast(t){ const d = document.createElement('div'); d.className = 'toast'; d.textContent = t; document.body.appendChild(d); setTimeout(() => d.remove(), 1800); }
+function drumBox(t, ms){ const d = document.createElement('div'); d.className = 'drum'; d.textContent = t; document.body.appendChild(d); setTimeout(() => d.remove(), ms); }
+const grade = r => r.full ? ['🎯', 'Volltreffer', '#fab005'] : r.pts >= 95 ? ['😱', 'knapp!', '#ff922b'] : r.pts >= 80 ? ['👍', 'fast', '#51cf66'] : r.pts >= 55 ? ['🙂', 'ok', '#4dabf7'] : ['🙈', 'daneben', '#adb5bd'];
+const sLand = (q, w = 0) => { tone(70 + q * 260, .1, 'triangle', .16, w); noise(.07, .12, 1800, 400, w); };
+function sRise(f1, f2, dur, when = 0){ if (!SND.on) return; const c = ac(); if (!c) return; const t = c.currentTime + when, o = c.createOscillator(), g = c.createGain();
+  o.type = 'sine'; o.frequency.setValueAtTime(f1, t); o.frequency.exponentialRampToValueAtTime(f2, t + dur);
+  g.gain.setValueAtTime(.001, t); g.gain.linearRampToValueAtTime(.06, t + dur * .8); g.gain.linearRampToValueAtTime(.001, t + dur);
+  o.connect(g).connect(c.destination); o.start(t); o.stop(t + dur + .05); }
+const sDrumRoll = (dur, w = 0) => { for (let t = 0; t < dur; t += .05) noise(.04, .05 + .07 * t / dur, 900, 300, w + t); };
+function revealPlan(s){
+  const P = (s.order || []).map(pid => s.players.find(p => p.pid === pid)).filter(p => p && p.line && p.res);
+  const miss = P.filter(p => !p.res.full), full = P.filter(p => p.res.full);
+  const t0 = 1.3, dt = miss.length ? clamp(3.2 / miss.length, .13, .45) : 0;
+  const tDrum = t0 + miss.length * dt + .5, tFull = tDrum + 1.5, dur = full.length ? 3.2 : 2.4, tSol = tFull + dur, end = tSol + (full.length ? 3.4 : 2.4);
+  return {P, miss, full, t0, dt, tDrum, tFull, dur, tSol, end};
+}
+/* Steigungsdreieck suchen, das ins Koordinatensystem passt */
+function findTri(m, b, w, run, prefer){
+  const rise = m * run, xs = [];
+  if (prefer != null) xs.push(prefer);
+  for (let x = w.x0; x <= w.x1; x++) xs.push(x);
+  xs.sort((a, c) => (a === prefer ? -1 : c === prefer ? 1 : Math.abs(a) - Math.abs(c)));
+  for (const x of xs) for (const d of [1, -1]){ const y = m * x + b, x2 = x + d * run, y2 = y + d * rise;
+    if ([x, x2].every(v => v >= w.x0 && v <= w.x1) && [y, y2].every(v => v >= w.y0 - 1e-9 && v <= w.y1 + 1e-9)) return {x, y, run: d * run, rise: d * rise}; }
+  return null;
+}
+/* Steigungsdreieck zeichnen (animiert) */
+function drawTri(B, T, color, g, w0 = 0, o = {}){
+  const X = B.X, Y = B.Y, x1 = X(T.x), y1 = Y(T.y), x2 = X(T.x + T.run), y2 = Y(T.y + T.rise);
+  const path = `M${x1} ${y1} L${x2} ${y1} L${x2} ${y2}`, len = Math.abs(x2 - x1) + Math.abs(y2 - y1) + 2;
+  B.el('path', {d:path, fill:'none', stroke:color, 'stroke-width':o.w || 4, 'stroke-linecap':'round', 'stroke-linejoin':'round', class:'grow', style:`--len:${len};--w:${w0}s;--d:.8s;stroke-dasharray:${len};stroke-dashoffset:${len}`}, g);
+  const rx = T.run > 0 ? '→' : '←', ry = T.rise > 0 ? '↑' : '↓';
+  B.text(g, (x1 + x2) / 2, y1 + (T.rise > 0 ? 26 : -12) * B.FS, `${fmt(Math.abs(T.run))} ${rx}`, {size:20, fill:color, cls:'popS', style:`--w:${w0 + .4}s`});
+  B.text(g, x2 + (T.run > 0 ? 10 : -10), (y1 + y2) / 2 + 7, `${ry} ${fmt(Math.abs(Math.round(T.rise * 100) / 100))}`, {size:20, fill:color, anchor: T.run > 0 ? 'start' : 'end', cls:'popS', style:`--w:${w0 + .7}s`});
+}
+/* Lösungsweg im Koordinatensystem: y-Achsenabschnitt bzw. gegebene Punkte + Steigungsdreieck */
+function solHelp(B, sol, g, w0 = 0){
+  const w = B.W(), gold = '#fab005', q = Math.abs(sol.q || 1), lines = [];
+  let start = null;
+  if (sol.kind === 'punkt' || sol.kind === 'zwei'){
+    sol.pts.forEach(([x, y], i) => { B.el('circle', {cx:B.X(x), cy:B.Y(y), r:11, fill:gold, stroke:'currentColor', 'stroke-width':2.5, class:'popS', style:`--w:${w0 + i * .3}s`}, g);
+      B.el('circle', {cx:B.X(x), cy:B.Y(y), r:12, fill:gold, class:'pulseS', style:`--w:${w0 + i * .3}s`}, g);
+      B.text(g, B.X(x) + (i ? 16 : -16), B.Y(y) - 14, `(${fmt(x)}|${fmt(y)})`, {size:22, fill:gold, anchor: i ? 'start' : 'end', cls:'popS', style:`--w:${w0 + i * .3}s`}); });
+    start = sol.pts[0][0];
+  }
+  if (sol.kind !== 'punkt' && sol.kind !== 'zwei' && 0 >= w.x0 && 0 <= w.x1 && sol.b >= w.y0 && sol.b <= w.y1){
+    // y-Achsenabschnitt auf der y-Achse markieren
+    B.el('circle', {cx:B.X(0), cy:B.Y(sol.b), r:12, fill:gold, stroke:'currentColor', 'stroke-width':2.5, class:'popS', style:`--w:${w0}s`}, g);
+    B.el('circle', {cx:B.X(0), cy:B.Y(sol.b), r:12, fill:gold, class:'pulseS', style:`--w:${w0}s`}, g);
+    B.el('rect', {x:B.X(0) - 54 * B.FS, y:B.Y(sol.b) - 16 * B.FS, width:48 * B.FS, height:30 * B.FS, rx:8, fill:'none', stroke:gold, 'stroke-width':3, class:'popS', style:`--w:${w0 + .2}s`}, g);
+    start = 0;
+  }
+  const T = findTri(sol.m, sol.b, w, sol.kind === 'zwei' ? Math.abs(sol.pts[1][0] - sol.pts[0][0]) : q, start) || findTri(sol.m, sol.b, w, q, null) || findTri(sol.m, sol.b, w, 1, null);
+  if (start === 0 && sol.kind !== 'punkt' && sol.kind !== 'zwei'){ const below = !T || T.x !== 0 || T.rise < 0;   // nicht auf die Dreiecks-Beschriftung
+    const rt = (T && T.run < 0) || w.x0 >= 0;
+    B.text(g, B.X(0) + (rt ? 18 : -18), B.Y(sol.b) + (below ? 34 : -20) * B.FS, `b = ${fmt(sol.b)}`, {size:22, fill:gold, anchor: rt ? 'start' : 'end', cls:'popS', style:`--w:${w0 + .2}s`}); }
+  if (T) drawTri(B, T, gold, g, w0 + .6);
+  return T;
+}
 function runReveal(B, s, o = {}){
-  const P = s.order.map(pid => s.players.find(p => p.pid === pid)).filter(p => p && p.line), n = P.length, T = revealTimes(n), snd = o.sound;
-  B.lp.innerHTML = ''; B.le.innerHTML = ''; B.lc.innerHTML = '';
-  const vign = () => { const dm = document.createElement('div'); dm.id = 'dim'; document.body.appendChild(dm); setTimeout(() => dm.remove(), 1300); };
-  if (snd) vign();
+  const R = revealPlan(s), n = R.P.length, snd = o.sound, w = B.W();
+  B.lp.innerHTML = ''; B.le.innerHTML = ''; B.lc.innerHTML = ''; B.lx.innerHTML = '';
   banner('⚔️ Auflösung!');
-  const timers = [], at = (t, f) => timers.push(setTimeout(f, t * 1000)), G = new Map();
-  const fs = n > 12 ? 15 : n > 6 ? 18 : 21, big = n > 8;
-  // 1) Lichtschwerter: jede Gerade wächst vom Ankerpunkt aus
-  P.forEach((p, i) => { const w = .8 + i * T.per, d = Math.min(.55, T.per * .9), r = B.saber(p.line, p.color, B.lp, w, d);
-    if (r){ G.set(p.pid, r.g); r.g.style.transition = 'opacity .5s';
-      const A = p.line.p1, dx = p.line.p2.x - A.x, dy = p.line.p2.y - A.y, L = Math.hypot(dx, dy) || 1, side = i % 2 ? 1 : -1;
-      let nx = -dy / L * side, ny = dx / L * side;              // senkrecht zur Geraden, abwechselnd links/rechts
-      const tw = (p.name.length + 3) * fs * B.FS * .5, ax = B.X(A.x), ay = B.Y(A.y);
-      if ((nx < 0 && ax + nx * 34 - tw < 4) || (nx >= 0 && ax + nx * 34 + tw > B.BASE.w - 4)){ nx = -nx; ny = -ny; }   // nicht über den Rand
-      const tx = ax + nx * 34, ty = clamp(ay - ny * 34 + 7, fs * B.FS + 4, B.BASE.h - fs * B.FS * 1.6);
-      B.text(r.g, tx, ty, `${p.avatar} ${p.name}`, {size:fs, fill:p.color, anchor: nx >= 0 ? 'start' : 'end', cls:'fadeS', style:`--w:${w + .3}s`});
-      r.lab = {x:tx, y:ty, anchor: nx >= 0 ? 'start' : 'end'}; G.set(p.pid + ':lab', r.lab); }
-    if (snd) sSaber(w, .9 + (i % 4) * .08, d, n > 12 ? .05 : .1); });
-  // 2) die Lösung: weiß-goldener Strahl, alle anderen werden dunkler
-  const seg = clipLine({x:0, y:s.sol.b}, {x:1, y:s.sol.m + s.sol.b}, B.W());
-  const sg = B.el('g', {}, B.le), glow = DARK ? `url(#glow${o.id || ''})` : 'none';
-  const x0 = B.X(seg[0].x), y0 = B.Y(seg[0].y), x1 = B.X(seg[1].x), y1 = B.Y(seg[1].y), len = Math.hypot(x1 - x0, y1 - y0) + 1, st = `--len:${len};--w:${T.tS}s;--d:1s;stroke-dasharray:${len};stroke-dashoffset:${len}`;
-  B.el('line', {x1:x0, y1:y0, x2:x1, y2:y1, stroke:'#ffd43b', 'stroke-width':2 * HALF * U + 10, 'stroke-linecap':'round', filter:glow, 'stroke-opacity':DARK ? .5 : .6, class:'grow', style:st}, sg);
-  B.el('line', {x1:x0, y1:y0, x2:x1, y2:y1, stroke: DARK ? '#fff' : '#1e1e1e', 'stroke-width':6, 'stroke-linecap':'round', class:'grow', style:st}, sg);
-  const sp = B.el('line', {x1:x0, y1:y0, x2:x1, y2:y1, stroke:'#ffd43b', 'stroke-width':4, 'stroke-dasharray':'2 22', 'stroke-linecap':'round', class:'fadeS sparkle', style:`--w:${T.tS + 1}s`}, sg);
-  void sp;
-  const lx = seg[0].x + (seg[1].x - seg[0].x) * .72, ly = seg[0].y + (seg[1].y - seg[0].y) * .72;
-  const right = B.X(lx) < B.BASE.w * .55;   // Beschriftung zur freien Seite hin
-  B.text(sg, B.X(lx) + (right ? 18 : -18), B.Y(ly) + 8, '🎯 ' + s.sol.plain.replace(/<span class="fr"><span>(\d+)<\/span><span>(\d+)<\/span><\/span>/g, '$1/$2').replace(/<[^>]+>/g, ''), {size:28, fill:'#fab005', anchor: right ? 'start' : 'end', cls:'popS', style:`--w:${T.tS + .9}s`});
-  at(T.tS, () => { B.lp.style.transition = 'opacity .6s'; G.forEach((g, k) => { if (g.style) g.style.opacity = .22; }); });
-  if (snd){ sSolution(T.tS); at(T.tS, vign); }
-  // 3) Punkte, schlechteste zuerst – jede Gerade leuchtet noch einmal auf; Volltreffer & Knapp ganz groß
-  P.forEach((p, i) => at(T.tP + i * T.per2, () => {
-    const g = G.get(p.pid), lab = G.get(p.pid + ':lab');
-    if (g){ g.style.opacity = 1; g.parentNode.appendChild(g);
-      if (lab && n <= 12) B.text(g, lab.x + (lab.anchor === 'start' ? 0 : 0), lab.y + fs * B.FS * 1.15, `+${p.res.pts + (p.bonus || 0)}${p.res.full ? ' 🎯' : ''}`, {size:fs + 6, fill: p.res.full ? '#fab005' : p.color, anchor:lab.anchor, cls:'popS'}); }
-    if (o.onPoint) o.onPoint(p, i);
-    if (big){ if (p.res.full){ if (snd){ sDing(); confetti(25); } } else if (snd) sSaber(0, 1.6, .2, .04); return; }
-    if (p.res.full) hitShow(p.avatar, '🎯 VOLLTREFFER!', p.name, snd ? () => { sFanfare(); confetti(90); } : null);
-    else if (p.res.pts >= 95) hitShow(p.avatar, '😱 Knapp!', `${p.name} · ${p.res.pts + (p.bonus || 0)} P`, snd ? () => sNear() : null);
-    else if (snd) sSaber(0, 1.6, .25, .05);
-  }));
-  // große Gruppe: alle Volltreffer zusammen ganz groß am Schluss
-  const fulls = P.filter(p => p.res.full);
-  if (big && fulls.length) at(T.end - .9, () => hitShow(fulls.map(p => p.avatar).join(' '), fulls.length > 1 ? `🎯 ${fulls.length}× VOLLTREFFER!` : '🎯 VOLLTREFFER!',
-    fulls.map(p => p.name).join(' · '), snd ? () => { sFanfare(); confetti(160); } : null, true));
-  // am Ende: alle wieder sichtbar, die Besten zuletzt oben
-  at(T.end - .6, () => G.forEach(g => { if (g.style) g.style.opacity = .85; }));
-  at(T.end, () => { if (o.onEnd) o.onEnd(); });
+  const timers = [], at = (t, f) => timers.push(setTimeout(f, t * 1000));
+  const fs = n > 14 ? 13 : n > 7 ? 15 : 17, placed = [];
+  // 1) Ziel schwach gestrichelt
+  const seg = clipLine({x:0, y:s.sol.b}, {x:1, y:s.sol.m + s.sol.b}, w), sx0 = B.X(seg[0].x), sy0 = B.Y(seg[0].y), sx1 = B.X(seg[1].x), sy1 = B.Y(seg[1].y);
+  const target = B.el('g', {class:'fadeS', style:'--w:.9s'}, B.lp);
+  B.el('line', {x1:sx0, y1:sy0, x2:sx1, y2:sy1, stroke:'#fab005', 'stroke-width':3, 'stroke-dasharray':'10 10', 'stroke-opacity':.75}, target);
+  const right = B.X((seg[0].x + seg[1].x) / 2) < B.BASE.w * .55;
+  // 2) Nicht-Volltreffer schlagen ein – schlecht → knapp
+  R.miss.forEach((p, i) => { const t = R.t0 + i * R.dt, sg = clipLine(p.line.p1, p.line.p2, w); if (!sg) return;
+    const g = B.el('g', {class:'landS', style:`--w:${t}s;transform-origin:${B.X(p.line.p1.x)}px ${B.Y(p.line.p1.y)}px`}, B.lp);
+    B.el('line', {x1:B.X(sg[0].x), y1:B.Y(sg[0].y), x2:B.X(sg[1].x), y2:B.Y(sg[1].y), stroke:p.color, 'stroke-opacity':.5, 'stroke-width':2 * HALF * U, 'stroke-linecap':'round'}, g);
+    B.el('line', {x1:B.X(sg[0].x), y1:B.Y(sg[0].y), x2:B.X(sg[1].x), y2:B.Y(sg[1].y), stroke:p.color, 'stroke-width':2.5}, g);
+    B.el('circle', {cx:B.X(p.line.p1.x), cy:B.Y(p.line.p1.y), r:7, fill:p.color, stroke:'currentColor', 'stroke-width':2}, g);
+    B.el('circle', {cx:B.X(p.line.p1.x), cy:B.Y(p.line.p1.y), r:10, fill:'none', stroke:p.color, 'stroke-width':3, class:'pulseS', style:`--w:${t}s`}, B.lp);
+    // Name klein am Ende der Geraden (rechtes Ende), gestaffelt
+    const e = sg[1].x >= sg[0].x ? sg[1] : sg[0], oo = e === sg[1] ? sg[0] : sg[1], [ic, tg, col] = grade(p.res);
+    const lw = (p.name.length + tg.length + 6) * fs * B.FS * .56, lh = fs * B.FS * 1.25;
+    let ex, ey;
+    for (let k = .02; k < .9; k += .06){ ex = B.X(e.x + (oo.x - e.x) * k) - 6; ey = clamp(B.Y(e.y + (oo.y - e.y) * k) - 10, 16, B.BASE.h - 8);
+      if (!placed.some(b => ex - lw < b.x && ex > b.x - b.w && Math.abs(ey - b.y) < lh)) break; }
+    placed.push({x:ex, y:ey, w:lw});
+    const lab = B.text(B.lc, ex, ey, '', {size:fs, anchor:'end', weight:400, html:true, cls:'fadeS', style:`--w:${t}s`});
+    lab.innerHTML = `<tspan fill="${p.color}">${esc(p.avatar)} ${esc(p.name)}</tspan><tspan fill="${col}" font-weight="700"> ${ic} ${tg}</tspan>`;
+    if (o.onPoint) at(t, () => o.onPoint(p));
+    if (snd) sLand(p.res.pts / 110, t);
+  });
+  // 3) Trommelwirbel
+  B.lc.style.transition = 'opacity .6s'; B.lp.style.transition = 'opacity .6s';
+  if (n > 8) at(R.tDrum, () => { B.lc.style.opacity = .35; });   // große Gruppe: Namen zurücknehmen
+  at(R.tDrum, () => drumBox(R.full.length ? '🥁 … und die Volltreffer?' : '🥁 … gibt es einen Volltreffer?', 1400));
+  if (snd) sDrumRoll(1.4, R.tDrum);
+  // 4) alle Volltreffer gleichzeitig – langsam vom Ankerpunkt nach außen
+  if (R.full.length){
+    R.full.forEach((p, i) => { const r = B.saber(p.line, p.color, B.le, R.tFull, R.dur * .95);
+      if (r) B.text(r.g, B.X(p.line.p1.x), B.Y(p.line.p1.y) - 16, p.avatar, {size:24, halo:false, cls:'popS', style:`--w:${R.tSol}s`}); });
+    if (snd){ sSaber(R.tFull, .8, R.dur, .16); sRise(220, 660, R.dur, R.tFull); }
+  } else {
+    // kein Volltreffer: die Lösung selbst fährt langsam aus
+    const mid = {x:(seg[0].x + seg[1].x) / 2, y:(seg[0].y + seg[1].y) / 2};
+    B.saber({p1:mid, p2:seg[1]}, '#fab005', B.le, R.tFull, R.dur * .95);
+    if (snd) sSaber(R.tFull, .6, R.dur, .14);
+  }
+  // 5) Ziel leuchtet auf
+  at(R.tSol, () => { const glow = DARK ? `url(#glow${o.id || ''})` : 'none', sg = B.el('g', {class:'fadeS'}, B.le);
+    B.el('line', {x1:sx0, y1:sy0, x2:sx1, y2:sy1, stroke:'#ffd43b', 'stroke-width':14, 'stroke-linecap':'round', filter:glow, 'stroke-opacity':.75}, sg);
+    B.el('line', {x1:sx0, y1:sy0, x2:sx1, y2:sy1, stroke: DARK ? '#fff' : '#1e1e1e', 'stroke-width':4, 'stroke-linecap':'round'}, sg);
+    B.el('line', {x1:sx0, y1:sy0, x2:sx1, y2:sy1, stroke:'#ffd43b', 'stroke-width':4, 'stroke-dasharray':'2 22', 'stroke-linecap':'round', class:'sparkle'}, sg);
+    const lx = seg[0].x + (seg[1].x - seg[0].x) * .72, ly = seg[0].y + (seg[1].y - seg[0].y) * .72, right = B.X(lx) < B.BASE.w * .5;
+    B.text(sg, B.X(lx) + (right ? 18 : -18), B.Y(ly) + 8, '🎯 ' + s.sol.plain.replace(/<span class="fr"><span>(\d+)<\/span><span>(\d+)<\/span><\/span>/g, '$1/$2').replace(/<[^>]+>/g, ''), {size:26, fill:'#fab005', anchor: right ? 'start' : 'end', cls:'popS'});
+    target.remove(); if (n > 8){ B.lc.style.opacity = 0; B.lp.style.opacity = .45; }
+    if (o.onFull) R.full.forEach(p => o.onFull(p));
+    if (R.full.length){
+      hitShow(R.full.map(p => p.avatar).join(' '), R.full.length > 1 ? `🎯 ${R.full.length}× VOLLTREFFER!` : '🎯 VOLLTREFFER!', R.full.map(p => p.name).join(' · '),
+        snd ? () => { sFanfare(); confetti(Math.min(220, 90 + R.full.length * 25)); } : null, true);
+    } else if (R.miss.length){ const best = R.miss[R.miss.length - 1];
+      hitShow(best.avatar, 'Kein Volltreffer 😮', `am nächsten: ${best.name} · ${best.res.pts + (best.bonus || 0)} P`, snd ? () => { sTada(); } : null, true);
+    } else if (snd) sTada();
+  });
+  at(R.end, () => { if (o.onEnd) o.onEnd(); });
   return () => { timers.forEach(clearTimeout); hitQueue.length = 0; };
 }
+/* Rangliste (Gesamtstand) – für Beamer, Handy-Seitenleiste und Handy-Schublade */
+function rankHtml(players, meId, max, opt = {}){
+  const tot = p => opt.prev ? p.total - (p.res ? p.res.pts + (p.bonus || 0) : 0) : p.total;
+  const l = [...players].sort((a, b) => tot(b) - tot(a)); let pl = 0, last = null;
+  const rows = l.map((p, i) => { if (tot(p) !== last){ pl = i + 1; last = tot(p); } return {p, pl}; });
+  let show = rows; if (max && rows.length > max){ show = rows.slice(0, max); const mine = rows.find(r => r.p.pid === meId); if (mine && !show.includes(mine)) show.push(mine); }
+  return `<table class="rk${l.length > 11 ? ' sm' : ''}">${show.map(({p, pl}) => `<tr class="${p.pid === meId ? 'me' : ''}"><td class="n muted">${pl}.</td><td>${esc(p.avatar)} <span style="color:${p.color}">${esc(p.name)}</span></td>`
+    + `<td class="n muted">${!opt.prev && opt.round && p.res ? '+' + (p.res.pts + (p.bonus || 0)) : ''}</td><td class="n big">${tot(p)}</td></tr>`).join('')}</table>`
+    + (max && rows.length > show.length ? `<div class="muted" style="font-size:.8rem;text-align:center">… ${rows.length - show.length} weitere</div>` : '');
+}
 
+/* ---------- individuelle Rückmeldung: warum so viele / so wenige Punkte? ---------- */
+function explain(sol, L, w){
+  const r = evaluate(sol, L, w), m = sol.m, b = sol.b;
+  const ft = (L.p1.x + (L.p1.y - b) * m) / (1 + m * m), foot = {x:ft, y:m * ft + b};
+  const dA = Math.hypot(L.p1.x - foot.x, L.p1.y - foot.y);
+  const dx = L.p2.x - L.p1.x, dy = L.p2.y - L.p1.y, n = Math.hypot(dx, dy) || 1, vert = Math.abs(dx) < 1e-9;
+  const mP = vert ? Infinity : dy / dx, bP = vert ? null : L.p1.y - mP * L.p1.x;
+  const seg = clipLine({x:0, y:b}, {x:1, y:m + b}, w), samples = []; let max = 0, maxS = null;
+  for (let i = 0; i <= 12; i++){ const t = i / 12, x = seg[0].x + t * (seg[1].x - seg[0].x), y = seg[0].y + t * (seg[1].y - seg[0].y);
+    const u = ((x - L.p1.x) * dx + (y - L.p1.y) * dy) / (n * n), fx = L.p1.x + u * dx, fy = L.p1.y + u * dy, d = Math.hypot(x - fx, y - fy);
+    const sm = {x, y, fx, fy, d}; samples.push(sm); if (d > max){ max = d; maxS = sm; } }
+  for (let i = 0; i <= 40; i++){ const t = i / 40, x = seg[0].x + t * (seg[1].x - seg[0].x), y = seg[0].y + t * (seg[1].y - seg[0].y);   // genaues Maximum
+    const u = ((x - L.p1.x) * dx + (y - L.p1.y) * dy) / (n * n), fx = L.p1.x + u * dx, fy = L.p1.y + u * dy, d = Math.hypot(x - fx, y - fy); if (d > max){ max = d; maxS = {x, y, fx, fy, d}; } }
+  const angT = Math.atan(m) * 180 / Math.PI; let angP = Math.atan2(dy, dx) * 180 / Math.PI; if (angP > 90) angP -= 180; if (angP <= -90) angP += 180;
+  let dAng = Math.abs(angT - angP); if (dAng > 90) dAng = 180 - dAng;
+  return {...r, foot, dA, mP, bP, vert, samples, max, maxS, dAng};
+}
+const r1 = v => fmt(Math.round(v * 10) / 10);
+function mText(sol){ const p = sol.p, q = Math.abs(sol.q || 1); return q === 1 ? fmt(sol.m) : `${p < 0 ? '−' : ''}${Math.abs(p)}/${q}`; }
+function solWay(sol){
+  const q = Math.abs(sol.q || 1), m = sol.m, up = r => `${fmt(Math.abs(r))} nach ${r > 0 ? 'oben' : 'unten'}`;
+  if (sol.kind === 'punkt'){ const [x, y] = sol.pts[0]; return `Start im Punkt <b>(${fmt(x)}|${fmt(y)})</b>. Steigung m = ${mText(sol)}: ${q} nach rechts, ${up(m * q)}.`; }
+  if (sol.kind === 'zwei'){ const [[x1, y1], [x2, y2]] = sol.pts; return `Die Punkte <b>(${fmt(x1)}|${fmt(y1)})</b> und <b>(${fmt(x2)}|${fmt(y2)})</b> verbinden. Steigung = ${fmt(y2 - y1)} : ${fmt(x2 - x1)} = ${mText(sol)}.`; }
+  return (sol.kind === 'umst' ? `Erst umstellen: <b>${sol.plain}</b>. ` : '') + `b = ${fmt(sol.b)} → Schnittpunkt mit der y-Achse <b>(0|${fmt(sol.b)})</b>. Steigung m = ${mText(sol)} → ${q} nach rechts, ${up(m * q)}.`;
+}
+function feedbackSteps(sol, L, me, w){
+  const E = explain(sol, L, w), steps = [];
+  const P1 = `(${fmt(L.p1.x)}|${fmt(L.p1.y)})`;
+  steps.push({k:'anker', ic:'📍', pts:E.pA, max:30, ok:E.pA >= 27,
+    text: E.dA <= .25 ? `✅ Dein Startpunkt ${P1} liegt genau auf der Lösungsgeraden.` : `Dein Startpunkt ${P1} liegt <b>${r1(E.dA)} Kästchen</b> neben der Lösung (gelber Punkt = nächster Punkt auf der Lösung).${E.dA >= 1.5 ? ' Ab 1,5 Kästchen gibt es hier 0 Punkte.' : ''}`});
+  steps.push({k:'lage', ic:'📏', pts:E.pL, max:50, ok:E.pL >= 45,
+    text: E.mean <= .2 ? '✅ Deine Gerade liegt auf der ganzen Länge dicht an der Lösung.' : `Im Schnitt <b>${r1(E.mean)} Kästchen</b> Abstand zur Lösung. <span style="color:#40c057">Grün</span> = im dicken Strich, <span style="color:#fa5252">rot</span> = daneben. Nahe am Startpunkt zählt doppelt.`});
+  let st;
+  if (E.vert) st = `Deine Gerade ist senkrecht – die Lösung hat die Steigung m = ${mText(sol)}.`;
+  else { const same = Math.sign(E.mP) === Math.sign(sol.m) || Math.abs(sol.m) < 1e-9 || Math.abs(E.mP) < .05;
+    const dir = v => v > 0 ? 'steigt' : v < 0 ? 'fällt' : 'ist waagerecht';
+    st = E.dAng <= 3 ? `✅ Die Steigung passt: m = ${mText(sol)}.` :
+      !same ? `❌ Falsche Richtung: deine Gerade ${dir(E.mP)}, die Lösung ${dir(sol.m)}. Deine Steigung ≈ ${r1(E.mP)}, richtig ist m = ${mText(sol)}.` :
+      `Deine Steigung ≈ <b>${r1(E.mP)}</b>, richtig ist <b>m = ${mText(sol)}</b> → deine Gerade ist zu ${Math.abs(E.mP) < Math.abs(sol.m) ? 'flach' : 'steil'} (${Math.round(E.dAng)}° daneben).`; }
+  steps.push({k:'steig', ic:'📐', pts:E.pS, max:20, ok:E.pS >= 18, text: st});
+  steps.push({k:'voll', ic:'🎯', pts:E.pB, max:10, ok:E.full,
+    text: E.full ? '✅ Volltreffer: Die Lösung liegt komplett in deinem dicken Strich.' : `Für 🎯 muss die Lösung ganz im dicken Strich liegen (höchstens 0,3 daneben) – bei dir an der weitesten Stelle <b>${r1(E.max)}</b> (roter Pfeil).`});
+  if (me.bonus) steps.push({k:'zeit', ic:'⚡', pts:me.bonus, max:15, ok:true, text:`Zeitbonus: Du warst schnell – <b>+${me.bonus}</b> Punkte.`});
+  else if (me.auto) steps.push({k:'zeit', ic:'⏱', pts:0, max:15, ok:false, text:'Die Zeit war abgelaufen – deine eingestellte Gerade wurde genommen (kein Zeitbonus).'});
+  let lw = solWay(sol);
+  if (!['punkt','zwei'].includes(sol.kind) && E.bP != null && Math.abs(E.bP - sol.b) > .3 && 0 >= w.x0) lw += ` Deine Gerade schneidet die y-Achse bei ≈ ${r1(E.bP)}.`;
+  steps.push({k:'weg', ic:'🧭', pts:null, text: lw});
+  return {E, steps};
+}
+function drawStep(B, k, sol, L, E, color){
+  const g = B.lx; g.innerHTML = ''; const X = B.X, Y = B.Y, w = B.W(), red = '#fa5252', green = '#40c057', gold = '#fab005';
+  if (k === 'anker'){
+    B.el('circle', {cx:X(L.p1.x), cy:Y(L.p1.y), r:16, fill:'none', stroke:color, 'stroke-width':4, class:'pulseS'}, g);
+    B.el('circle', {cx:X(L.p1.x), cy:Y(L.p1.y), r:11, fill:color, stroke:'currentColor', 'stroke-width':2.5, class:'popS'}, g);
+    if (E.dA > .05){ const len = Math.hypot(X(E.foot.x) - X(L.p1.x), Y(E.foot.y) - Y(L.p1.y)) + 1;
+      B.el('line', {x1:X(L.p1.x), y1:Y(L.p1.y), x2:X(E.foot.x), y2:Y(E.foot.y), stroke: E.dA <= .25 ? green : red, 'stroke-width':4, 'stroke-dasharray':len, class:'grow', style:`--len:${len};--w:.2s;--d:.6s;stroke-dashoffset:${len}`}, g);
+      B.el('circle', {cx:X(E.foot.x), cy:Y(E.foot.y), r:8, fill:gold, stroke:'currentColor', 'stroke-width':2, class:'popS', style:'--w:.7s'}, g);
+      B.text(g, (X(L.p1.x) + X(E.foot.x)) / 2 + 12, (Y(L.p1.y) + Y(E.foot.y)) / 2 - 8, `${r1(E.dA)}`, {size:24, fill: E.dA <= .25 ? green : red, anchor:'start', cls:'popS', style:'--w:.8s'}); }
+    B.text(g, X(L.p1.x), Y(L.p1.y) - 24, `(${fmt(L.p1.x)}|${fmt(L.p1.y)})`, {size:20, fill:color, cls:'popS'});
+  } else if (k === 'lage'){
+    E.samples.forEach((sm, i) => { const ok = sm.d <= HALF + 1e-9, c = ok ? green : red, cs = clipLine({x:sm.x, y:sm.y}, {x:sm.fx, y:sm.fy}, w, true);
+      const q = cs ? cs[1] : {x:sm.x, y:sm.y}, len = Math.hypot(X(q.x) - X(sm.x), Y(q.y) - Y(sm.y)) + 1;
+      if (len > 3) B.el('line', {x1:X(sm.x), y1:Y(sm.y), x2:X(q.x), y2:Y(q.y), stroke:c, 'stroke-width':3.5, 'stroke-linecap':'round', class:'grow', style:`--len:${len};--w:${i * .06}s;--d:.35s;stroke-dasharray:${len};stroke-dashoffset:${len}`}, g);
+      B.el('circle', {cx:X(sm.x), cy:Y(sm.y), r:4.5, fill:c, class:'popS', style:`--w:${i * .06}s`}, g); });
+  } else if (k === 'steig'){
+    const T = findTri(sol.m, sol.b, w, Math.abs(sol.q || 1), Math.round(E.foot.x)) || findTri(sol.m, sol.b, w, 1, null);
+    if (T) drawTri(B, T, gold, g, 0);
+    if (!E.vert){ const run = Math.abs(sol.q || 1), fits = (P, r) => { const y2 = P.y + E.mP * r, x2 = P.x + r; return y2 <= w.y1 && y2 >= w.y0 && x2 <= w.x1 && x2 >= w.x0; };
+      // eigenes Dreieck nicht über das Ziel-Dreieck legen: Startpunkt mit Abstand wählen
+      const cands = [];
+      [L.p1, L.p2].forEach(P => [run, -run].forEach(r => { if (fits(P, r)) cands.push({P, r, d: T ? Math.hypot(P.x + r / 2 - (T.x + T.run / 2), P.y - T.y) : 9}); }));
+      cands.sort((a, b) => (b.d >= 2.2) - (a.d >= 2.2) || (a.P === L.p1 ? -1 : 1));
+      const c = cands[0]; if (c) drawTri(B, {x:c.P.x, y:c.P.y, run:c.r, rise:E.mP * c.r}, color, g, .9, {w:3.5}); }
+  } else if (k === 'voll'){
+    const sg = clipLine(L.p1, L.p2, w);
+    if (sg){ const dx = sg[1].x - sg[0].x, dy = sg[1].y - sg[0].y, n = Math.hypot(dx, dy), ox = -dy / n * HALF, oy = dx / n * HALF;
+      [1, -1].forEach(sn => B.el('line', {x1:X(sg[0].x + sn * ox), y1:Y(sg[0].y + sn * oy), x2:X(sg[1].x + sn * ox), y2:Y(sg[1].y + sn * oy), stroke:color, 'stroke-width':2.5, 'stroke-dasharray':'8 6', class:'fadeS'}, g)); }
+    if (E.full) B.text(g, B.BASE.w / 2, 40, '🎯 komplett im Strich!', {size:26, fill:gold, cls:'popS'});
+    else if (E.maxS){ const m = E.maxS, cs = clipLine({x:m.x, y:m.y}, {x:m.fx, y:m.fy}, w, true), q = cs ? cs[1] : m, rt = X(m.x) > B.BASE.w * .6;
+      B.el('line', {x1:X(m.x), y1:Y(m.y), x2:X(q.x), y2:Y(q.y), stroke:red, 'stroke-width':5, 'stroke-linecap':'round', class:'popS'}, g);
+      B.el('circle', {cx:X(m.x), cy:Y(m.y), r:9, fill:red, class:'pulseS'}, g);
+      B.text(g, X(m.x) + (rt ? -14 : 14), clamp(Y(m.y) - 12, 24, B.BASE.h - 30), `${r1(E.max)} > 0,3`, {size:22, fill:red, anchor: rt ? 'end' : 'start', cls:'popS', style:'--w:.3s'}); }
+  } else if (k === 'weg') solHelp(B, sol, g, 0);
+}
 /* =====================================================================
    HOST
    ===================================================================== */
@@ -581,9 +780,9 @@ const H = {peer:null, code:'', players:new Map(), phase:'lobby', room:false, lat
   time:45, rounds:5, level:'1', range:'6', snap:.5, auto:'0', bots:0,
   round:0, eq:null, endsAt:0, timer:null, order:[], revealAt:0, autoT:null};
 const hs = f => { if (!H.room) f(); };
-const PCOL = ['#ff4d6d','#4dabf7','#51cf66','#cc5de8','#22d3ee','#ff922b','#f783ac','#94d82d','#9775fa','#20c997','#1c7ed6','#e8590c'];
+const PCOL = ['#ff4d6d','#4dabf7','#51cf66','#cc5de8','#22d3ee','#748ffc','#f783ac','#94d82d','#9775fa','#20c997','#1c7ed6','#63e6be'];   // kein Gelb/Orange – Gold = Lösung
 function freeCol(){ const used = [...H.players.values()].map(x => x.color), c = PCOL.find(c => !used.includes(c)); if (c) return c;
-  let h = (H.players.size * 47) % 360; if (h > 35 && h < 75) h += 45; return `hsl(${h} 75% 58%)`; }
+  let h = (H.players.size * 47) % 360; if (h > 15 && h < 75) h += 70; return `hsl(${h} 75% 58%)`; }
 const inGame = () => [...H.players.values()].filter(p => p.inGame);
 function hSend(p, m){ if (p.conn && p.conn.open) try { p.conn.send(m); } catch(e){} }
 function hBroadcast(m){ H.players.forEach(p => hSend(p, m)); }
@@ -695,7 +894,7 @@ function hReveal(){
     p.total += p.res.pts + p.bonus; } else { p.res = null; p.bonus = 0; } });
   H.order = inGame().filter(p => p.line).sort((a, b) => (a.res.pts + a.bonus) - (b.res.pts + b.bonus)).map(p => p.pid);
   H.phase = 'reveal'; H.revealAt = Date.now();
-  if (H.auto === '1') H.autoT = setTimeout(() => { if (H.phase === 'reveal') hAdvance(); }, (revealTimes(H.order.length).end + 7) * 1000);
+  if (H.auto === '1') H.autoT = setTimeout(() => { if (H.phase === 'reveal') hAdvance(); }, (revealPlan(hView(null)).end + 8) * 1000);
   hPush();
 }
 function hAdvance(){ ac();
@@ -708,7 +907,7 @@ function hRanking(){ const l = inGame().sort((a, b) => b.total - a.total); let p
 function hView(p){
   const rev = H.phase === 'reveal' || H.phase === 'end';
   const v = {t:'state', phase:H.phase, round:H.round, rounds:H.rounds, range:H.range, snap:H.snap, time:H.time, ends: H.endsAt ? Math.max(0, H.endsAt - Date.now()) : 0,
-    eq: H.eq ? {text:H.eq.text, kind:H.eq.kind} : null, sol: rev && H.eq ? {m:H.eq.m, b:H.eq.b, plain:H.eq.plain} : null, room:H.room, host:hCreatorName(), auto:H.auto,
+    eq: H.eq ? {text:H.eq.text, kind:H.eq.kind} : null, sol: rev && H.eq ? {m:H.eq.m, b:H.eq.b, p:H.eq.p, q:H.eq.q, kind:H.eq.kind, pts:H.eq.pts, plain:H.eq.plain} : null, room:H.room, host:hCreatorName(), auto:H.auto,
     order: rev ? H.order : [], revealAge: H.phase === 'reveal' ? Date.now() - H.revealAt : 0,
     players: inGame().map(q => ({pid:q.pid, name:q.name, avatar:q.avatar, color:q.color, total:q.total, sub:q.sub, bot:!!q.bot,
       line: rev ? q.line : null, res: rev && q.res ? q.res : null, bonus: rev ? q.bonus : 0, place: H.phase === 'end' ? (hRanking(), q.place) : null}))};
@@ -773,13 +972,18 @@ function hRender(){
   if (s.phase === 'draw'){
     if (fresh){ if (hStop) hStop(); HB.draw(s.range, s.snap); $('hEq').innerHTML = mfix(s.eq.text); banner(`Runde ${s.round}`); hs(sBlip); startTimer($('hTimer'), s.ends, true); }
     const done = s.players.filter(p => p.sub).length;
-    $('hSideList').innerHTML = `<div class="muted" style="text-align:center">✏️ ${done} / ${s.players.length} haben abgegeben</div><div class="plist" style="justify-content:center">${s.players.map(p => `<div class="pchip${p.sub ? ' ok' : ''}"><span class="e">${esc(p.avatar)}</span>${s.players.length > 12 ? '' : esc(p.name)}</div>`).join('')}</div>`;
+    $('hSideList').innerHTML = `<div class="muted" style="text-align:center">✏️ ${done} / ${s.players.length} haben abgegeben</div><div class="plist" style="justify-content:center">${s.players.map(p => `<div class="pchip${p.sub ? ' ok' : ''}"><span class="e">${esc(p.avatar)}</span>${s.players.length > 12 ? '' : esc(p.name)}</div>`).join('')}</div>`
+      + (s.round > 1 ? `<div class="muted" style="margin-top:8px">🏆 Gesamtstand</div>${rankHtml(s.players, null, s.players.length > 11 ? 8 : 10)}` : '');
   } else if (s.phase === 'reveal' && fresh){
     stopTimer($('hTimer')); $('hTimer').textContent = '';
-    if (s.eq.kind !== 'y') $('hEq').innerHTML = mfix(s.eq.text + `<div style="font-size:.55em;color:#f59f00">= ${s.sol.plain}</div>`);
+    if (s.eq.kind !== 'y') $('hEq').innerHTML = mfix(s.eq.text + `<div style="font-size:.5em;color:#fab005">= ${s.sol.plain}</div>`);
     HB.draw(s.range, s.snap); $('hSideList').innerHTML = '<table class="rk" id="hRank"></table>';
     const shown = [];
-    hStop = runReveal(HB, s, {id:'h', sound:!H.room, onPoint: p => { shown.push(p); hRankTable($('hRank'), shown, s); }, onEnd: () => hRankTable($('hRank'), shown, s, true)});
+    hStop = runReveal(HB, s, {id:'h', sound:!H.room,
+      onPoint: p => { shown.push(p); hRankTable($('hRank'), shown, s); },
+      onFull: p => { shown.push(p); hRankTable($('hRank'), shown, s); },
+      onEnd: () => { hRankTable($('hRank'), shown, s, true); solHelp(HB, s.sol, HB.lx, 0);
+        if (s.players.length > 14) return; const d = document.createElement('div'); d.className = 'solway'; d.innerHTML = '🧭 ' + solWay(s.sol); $('hSideList').appendChild(d); }});
   }
 }
 function hRankTable(t, shown, s, total){
@@ -925,54 +1129,79 @@ function pOnMsg(m){
   else if (m.t === 'state') pState(m);
   else if (m.t === 'closed'){ C.gen++; try { C.peer && C.peer.destroy(); } catch(e){} pScreen('pJoin'); $('pJoinBtn').disabled = false; $('pJoinMsg').textContent = '🔒 Beitreten ist gerade gesperrt.'; }
 }
-let PB = null, PTR = new Map(), pinch = null, dragging = false, before = null, draftT = null;
+let PB = null, PTR = new Map(), pinch = null, dragging = false, before = null, draftT = null, FB = null;
+/* Rangliste am Handy: Seitenleiste (breit) und Schublade (🏆) */
+function pRank(){
+  const s = C.st; if (!s || !s.players) return;
+  const prev = s.phase === 'reveal' && !C.revDone, html = (s.phase === 'reveal' && C.revDone ? '<div class="muted" style="font-size:.85rem">nach Runde ' + s.round + '</div>' : '') + rankHtml(s.players, (s.me || {}).pid, 0, {prev, round: s.phase === 'reveal' && C.revDone});
+  const box = $('pRankBox'); if (box) box.innerHTML = '<div class="ti" style="font-size:1.05rem;margin-bottom:2px">🏆 Rangliste</div>' + html;
+  if (!$('rankDrawer').classList.contains('hidden')) $('rankDrawerBody').innerHTML = html;
+}
+function pLayout(barHtml, sideHtml){
+  return `<div class="pgrid"><div class="pbar">${barHtml}</div>
+    <div class="boardwrap pbw"><svg class="board" id="pBoard"></svg><div class="lock sk hidden" id="pLock">✅ abgegeben – warte …</div></div>
+    <div class="pside">${sideHtml}<div class="rankbox sk" id="pRankBox"></div></div></div>`;
+}
 function pState(s){
-  C.st = s; if (s.me) C.score = s.me.total; pTop(); pScreen('pPlay'); document.querySelectorAll('#podiumOv').forEach(x => { if (s.phase !== 'end') x.remove(); });
-  show('pHostBar', !!C.isCreator && s.phase !== 'end');
+  C.st = s; if (s.me) C.score = (s.phase === 'reveal' && !(C.key === 'reveal' + s.round && C.revDone) && s.me.res) ? s.me.total - s.me.res.pts - (s.me.bonus || 0) : s.me.total;
+  pScreen('pPlay'); document.querySelectorAll('#podiumOv').forEach(x => { if (s.phase !== 'end') x.remove(); });
+  show('pHostBar', !!C.isCreator && s.phase !== 'end'); document.body.classList.toggle('hb', !!C.isCreator && s.phase !== 'end'); document.body.classList.toggle('hb', !!C.isCreator && s.phase !== 'end');
   if (C.isCreator) $('pHNext').textContent = s.phase === 'draw' ? '⏹ Zeit beenden' : s.round >= s.rounds ? '🏆 Siegerehrung' : '⏩ Nächste Runde';
-  const key = s.phase + s.round, fresh = key !== C.key; C.key = key;
+  const key = s.phase + s.round, fresh = key !== C.key; C.key = key; if (fresh) clearInterval(C.fbT);
   const el = $('pMain'), me = s.me || {};
   if (me.inGame === false){ el.innerHTML = '<div class="center2"><div class="bigemoji">🕐</div><div class="ti" style="font-size:1.6rem">Du bist ab der nächsten Runde dabei.</div></div>'; return; }
   if (s.phase === 'draw'){
-    if (fresh){ if (C.stop) C.stop(); C.cur = null;
-      el.innerHTML = `<div class="pbar"><div class="eq" id="pEq">${mfix(s.eq.text)}</div><div class="timer" id="pTimer"></div></div>
-        <div class="boardwrap"><svg class="board" id="pBoard"></svg><div class="lock sk hidden" id="pLock">✅ abgegeben – warte …</div></div>
-        <div class="pbtns"><button id="pClear">↺ neu</button><button class="go" id="pDone" disabled style="font-size:1.35rem">✓ Abgeben</button>
+    if (fresh){ if (C.stop) C.stop(); C.cur = null; C.revDone = false; C.score = me.total || 0;
+      el.innerHTML = pLayout(`<div class="eq" id="pEq">${mfix(s.eq.text)}</div><div class="timer" id="pTimer"></div>`,
+        `<div class="pbtns"><button id="pClear">↺ neu</button><button class="go" id="pDone" disabled style="font-size:1.3rem">✓ Abgeben</button>
           <span class="zoom"><button class="chip" id="zIn">＋</button><button class="chip" id="zOut">−</button><button class="chip" id="zR">⟲</button></span></div>
-        <div class="hint" id="pHint">👆 tippen = 1. Punkt · ziehen = 2. Punkt · 🔍 zwei Finger = zoomen</div>`;
+        <div class="hint" id="pHint">👆 tippen = 1. Punkt · ziehen = 2. Punkt · 🔍 zwei Finger = zoomen</div>`);
       PB = makeBoard($('pBoard'), {id:'p', onZoom: z => { const b = $('zR'); if (b) b.classList.toggle('on', z); }}); PB.draw(s.range, s.snap); pBindBoard();
       startTimer($('pTimer'), s.ends, !!C.room); if (C.room) banner(`Runde ${s.round}`);
     }
     const lk = !!me.sub; show('pLock', lk); $('pDone').disabled = lk || !validLine(C.cur); $('pClear').disabled = lk;
     if (lk && me.line){ PB.lc.innerHTML = ''; PB.thick(me.line, C.color, PB.lc); }
   } else if (s.phase === 'reveal'){
-    if (!fresh) return;
-    stopTimer($('pTimer') || document.createElement('div'));
-    el.innerHTML = `<div class="pbar"><div class="eq">${mfix(s.eq.text)}</div></div><div class="boardwrap"><svg class="board" id="pBoard"></svg></div><div id="pRes"></div>`;
+    if (!fresh){ pRank(); return; }
+    stopTimer($('pTimer') || document.createElement('div')); C.revDone = false;
+    el.innerHTML = pLayout(`<div class="eq">${mfix(s.eq.text)}</div>`, '<div id="pRes"></div>');
     PB = makeBoard($('pBoard'), {id:'p'}); PB.draw(s.range, s.snap);
-    const left = Math.max(0, revealTimes(s.order.length).end * 1000 - s.revealAge);
-    if (s.revealAge > 3000){ PB.lp.innerHTML = ''; s.players.filter(p => p.line).forEach(p => PB.thick(p.line, p.color, PB.lp, {dots:false})); pResult(s); return; }
-    C.stop = runReveal(PB, s, {id:'p', sound:!!C.room, onEnd: () => pResult(s)});
-    void left;
+    const done = () => { C.revDone = true; C.score = me.total; pTop(); pRank(); pFeedback(s); };
+    if (s.revealAge > 3000){ done(); }
+    else C.stop = runReveal(PB, s, {id:'p', sound:!!C.room, onEnd: done});
   } else if (s.phase === 'end'){
-    if (!fresh) return; if (C.stop) C.stop();
+    if (!fresh) return; if (C.stop) C.stop(); C.score = me.total;
     const meP = s.players.find(p => p.pid === me.pid) || {};
     el.innerHTML = `<div class="center2"><div class="bigemoji">${meP.place === 1 ? '🏆' : meP.place <= 3 ? ['','🥇','🥈','🥉'][meP.place] : '🎯'}</div>
       <div class="ti" style="font-size:2rem">Platz ${meP.place || '–'} von ${s.players.length}</div><div class="big">${me.total} Punkte</div>
-      <table class="rk" style="max-width:420px">${[...s.players].sort((a, b) => a.place - b.place).map(p => `<tr class="${p.pid === me.pid ? 'me' : ''}"><td>${p.place}. ${esc(p.avatar)} ${esc(p.name)}</td><td class="n big">${p.total}</td></tr>`).join('')}</table></div>`;
+      <div style="width:min(440px,100%)">${rankHtml(s.players, me.pid)}</div></div>`;
     if (C.room) setTimeout(() => showPodium([...s.players].sort((a, b) => a.place - b.place).map(p => ({avatar:p.avatar, name:p.name, score:p.total, place:p.place}))), 500);
   }
+  pTop(); pRank();
 }
-function pResult(s){
-  const me = s.me || {}, r = me.res, box = $('pRes'); if (!box) return;
-  if (!r){ box.innerHTML = `<div class="resCard sk"><div class="pts">0</div><div>Keine Gerade abgegeben 😶</div></div>`; return; }
+/* Auswertung am Handy: Schritt für Schritt erklärt – im Koordinatensystem animiert */
+function pFeedback(s){
+  const me = s.me || {}, r = me.res, box = $('pRes'); if (!box) return; clearInterval(C.fbT);
+  // Brett: nur Lösung (gold) + eigene Gerade, die anderen ganz blass
+  PB.lp.innerHTML = ''; PB.le.innerHTML = ''; PB.lc.innerHTML = ''; PB.lx.innerHTML = '';
+  s.players.filter(p => p.line && p.pid !== me.pid).forEach(p => PB.thick(p.line, p.color, PB.lp, {dots:false, cls:'faint'}));
+  PB.thick({p1:{x:0, y:s.sol.b}, p2:{x:1, y:s.sol.m + s.sol.b}}, '#fab005', PB.le, {dots:false});
+  if (!r){ box.innerHTML = `<div class="resCard sk"><div class="pts">0</div><div>Keine Gerade abgegeben 😶</div><div class="fbtext" id="fbText"></div></div>`;
+    const lw = feedbackSteps(s.sol, {p1:{x:0, y:s.sol.b}, p2:{x:1, y:s.sol.m + s.sol.b}}, me, PB.W()).steps.pop(); $('fbText').innerHTML = '🧭 ' + lw.text; solHelp(PB, s.sol, PB.lx, .2); return; }
+  PB.thick(me.line, C.color, PB.lc);
+  const {E, steps} = feedbackSteps(s.sol, me.line, me, PB.W()), [ic, tg] = grade(r);
   const all = s.players.filter(p => p.res).sort((a, b) => (b.res.pts + b.bonus) - (a.res.pts + a.bonus)), place = all.findIndex(p => p.pid === me.pid) + 1;
-  box.innerHTML = `<div class="resCard sk" style="${r.full ? 'background:linear-gradient(135deg,#ffe066,#ffd43b);color:#1e1e1e' : ''}">
-    <div class="ti" style="font-size:1.3rem">${r.full ? '🎯 VOLLTREFFER!' : r.pts >= 95 ? '😱 Knapp daneben!' : r.pts >= 70 ? '👍 Gut!' : r.pts >= 40 ? '🙂 Geht so' : '🙈 Daneben'}</div>
-    <div class="pts">+${r.pts + me.bonus}</div>
-    <div>📍 ${r.pA}/30 · 📏 ${r.pL}/50 · 📐 ${r.pS}/20${r.full ? ' · 🎯 +10' : ''}${me.bonus ? ` · ⚡ +${me.bonus} Zeitbonus` : ''}</div>
-    <div class="muted">Platz ${place} von ${all.length} in dieser Runde${me.auto ? ' · ⏱ Zeit abgelaufen – deine Gerade wurde genommen' : ''}</div></div>`;
-  if (r.full && !s.room) { try { navigator.vibrate && navigator.vibrate([60, 40, 120]); } catch(e){} }
+  box.innerHTML = `<div class="resCard sk${r.full ? ' gold' : ''}">
+    <div class="fbhead"><span class="ti">${ic} ${r.full ? 'VOLLTREFFER!' : tg[0].toUpperCase() + tg.slice(1)}</span><span class="pts">+${r.pts + (me.bonus || 0)}</span><span class="muted">Platz ${place}/${all.length}</span></div>
+    <div class="fbtabs">${steps.map((st, i) => `<button class="chip fbtab${st.ok ? ' ok' : st.pts === null ? '' : ' bad'}" data-i="${i}">${st.ic} ${st.pts === null ? 'Lösung' : st.pts + (st.max ? '/' + st.max : '')}</button>`).join('')}</div>
+    <div class="fbtext" id="fbText"></div></div>`;
+  let cur = -1;
+  const go = i => { if (!$('fbText')){ clearInterval(C.fbT); return; } cur = i; box.querySelectorAll('.fbtab').forEach((b, j) => b.classList.toggle('on', j === i)); const st = steps[i];
+    $('fbText').innerHTML = `<b>${st.ic} ${{anker:'Ankerpunkt', lage:'Lage', steig:'Steigung', voll:'Volltreffer', zeit:'Zeit', weg:'Lösungsweg'}[st.k]}${st.pts !== null ? ` · ${st.pts}${st.max ? '/' + st.max : ''} P` : ''}</b><br>${st.text}`;
+    drawStep(PB, st.k, s.sol, me.line, E, C.color); };
+  box.querySelectorAll('.fbtab').forEach(b => b.onclick = () => { clearInterval(C.fbT); go(+b.dataset.i); });
+  go(0); C.fbT = setInterval(() => { if (cur >= steps.length - 1){ clearInterval(C.fbT); return; } go(cur + 1); }, 3200);   // läuft einmal automatisch durch
+  if (r.full && !s.room){ try { navigator.vibrate && navigator.vibrate([60, 40, 120]); } catch(e){} }
 }
 function pBindBoard(){
   const svg = PB.svg; PTR = new Map(); pinch = null; dragging = false;
@@ -1045,6 +1274,8 @@ if (typeof Peer === 'undefined'){ document.body.innerHTML = '<div style="padding
 ['hCode2'].forEach(id => { if (!$(id)){ const s = document.createElement('span'); s.id = id; s.className = 'hidden'; document.body.appendChild(s); } });
 $('homeHost').onclick = startHost; $('homeJoin').onclick = () => startPlayer(''); $('homeRoom').onclick = startRoom;
 $('homeDark').onclick = toggleDark; $('pDark').onclick = toggleDark; applyDark();
+$('pRankBtn').onclick = () => { const d = $('rankDrawer'); d.classList.toggle('hidden'); if (!d.classList.contains('hidden')) pRank(); };
+$('rankClose').onclick = () => show('rankDrawer', false);
 { const v = document.createElement('div'); v.className = 'muted'; v.style.cssText = 'margin-top:12px;font-size:.8rem'; v.textContent = 'Prototyp · Version ' + APP_VERSION; document.querySelector('#home .box').appendChild(v); }
 if (Q.get('debug')) window.__dbg = {C, H, evaluate};
 if (Q.get('join') !== null) startPlayer(Q.get('join'));
