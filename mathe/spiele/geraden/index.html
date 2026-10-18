@@ -90,7 +90,7 @@ label.l{display:block;font-size:1rem;color:var(--muted);margin-top:8px}
     <label class="l">Runden</label><div class="row" id="optRounds"></div>
     <div style="text-align:center;margin-top:12px"><button class="go" id="startBtn" style="font-size:1.5rem;padding:10px 30px">▶ Los geht's</button></div>
   </div>
-  <div class="hint" style="margin-top:10px">Prototyp · Version 2026-10-18a</div>
+  <div class="hint" style="margin-top:10px">Prototyp · Version 2026-10-18b</div>
 </section>
 
 <!-- ============ Spiel ============ -->
@@ -107,7 +107,7 @@ label.l{display:block;font-size:1rem;color:var(--muted);margin-top:8px}
       </div>
       <div id="evalUi" class="hidden">
         <table class="rk" id="rankT"></table>
-        <div class="hint" id="evalHint" style="margin-top:6px">Tippe auf einen Namen: zeigt die Abstände.</div>
+        <div class="hint" id="evalHint" style="margin-top:6px">📍 Ankerpunkt (max 30) · 📏 Lage (50) · 📐 Steigung (20) · 🎯 Volltreffer +10<br>Tippe auf einen Namen: zeigt die Abstände.</div>
         <div class="btns" style="margin-top:8px"><button class="gold" id="nextBtn">Nächste Runde ▶</button></div>
       </div>
     </div>
@@ -220,18 +220,30 @@ function clipLine(P, Q){   // Gerade durch P,Q auf den sichtbaren Ausschnitt beg
   return [{x:P.x + t0 * dx, y:P.y + t0 * dy}, {x:P.x + t1 * dx, y:P.y + t1 * dy}];
 }
 const HALF = .3;   // halbe Strichbreite (Kästchen): liegt die Zielgerade ganz im Strich → Volltreffer
+/* Bewertung (max. 110):
+   📍 30  Ankerpunkt (wo der Finger aufsetzt): Abstand zur Lösung – voll ≤ 0,25 Kästchen, 0 ab 1,5
+   📏 50  Lage im Koordinatensystem: Ø senkrechter Abstand der Lösung zur Geraden im sichtbaren Bereich,
+          in der Nähe des Ankerpunkts doppelt gewichtet – voll ≤ 0,2, 0 ab 2,5
+   📐 20  Steigung als Winkel – voll ≤ 3°, 0 ab 30°
+   🎯 +10 Volltreffer: die Lösung liegt im sichtbaren Bereich komplett im dicken Strich */
+const lin = (v, full, zero) => clamp((zero - v) / (zero - full), 0, 1);
 function evaluate(eq, L){
   const seg = clipLine({x:0, y:eq.b}, {x:1, y:eq.m + eq.b});
   const dx = L.p2.x - L.p1.x, dy = L.p2.y - L.p1.y, n = Math.hypot(dx, dy);
   const a = dy / n, bb = -dx / n, c = -(a * L.p1.x + bb * L.p1.y);
-  let sum = 0, mx = 0; const N = 41, samples = [];
+  // Ankerpunkt: senkrechter Abstand von P1 zur Lösung, Fußpunkt auf der Lösung
+  const k = Math.hypot(eq.m, 1), dA = Math.abs(eq.m * L.p1.x - L.p1.y + eq.b) / k;
+  const ux = 1 / k, uy = eq.m / k, tA = L.p1.x * ux + (L.p1.y - eq.b) * uy;   // Lage des Fußpunkts entlang der Lösung
+  let sum = 0, wsum = 0, mx = 0; const N = 41, samples = [], sig = 2;
   for (let i = 0; i < N; i++){ const t = i / (N - 1), x = seg[0].x + t * (seg[1].x - seg[0].x), y = seg[0].y + t * (seg[1].y - seg[0].y);
-    const d = Math.abs(a * x + bb * y + c); sum += d; mx = Math.max(mx, d); samples.push({x, y, d, fx:x - a * (a * x + bb * y + c), fy:y - bb * (a * x + bb * y + c)}); }
-  const mean = sum / N, full = mx <= HALF + 1e-9;
+    const s0 = a * x + bb * y + c, d = Math.abs(s0), along = x * ux + (y - eq.b) * uy - tA, w = 1 + Math.exp(-(along * along) / (2 * sig * sig));
+    sum += d * w; wsum += w; mx = Math.max(mx, d); samples.push({x, y, d, fx:x - a * s0, fy:y - bb * s0}); }
+  const mean = sum / wsum, full = mx <= HALF + 1e-9;
   const angT = Math.atan(eq.m) * 180 / Math.PI; let angP = Math.atan2(dy, dx) * 180 / Math.PI; if (angP > 90) angP -= 180; if (angP <= -90) angP += 180;
   let dAng = Math.abs(angT - angP); if (dAng > 90) dAng = 180 - dAng;
   const bP = Math.abs(dx) > 1e-9 ? L.p1.y - dy / dx * L.p1.x : null;
-  return {pts: full ? 100 : Math.round(90 * clamp(1 - mean / 2.5, 0, 1)), mean, max:mx, full, slopeOk: dAng <= 3, interOk: bP != null && Math.abs(bP - eq.b) <= .3, samples};
+  const pA = Math.round(30 * lin(dA, .25, 1.5)), pL = Math.round(50 * lin(mean, .2, 2.5)), pS = Math.round(20 * lin(dAng, 3, 30)), pB = full ? 10 : 0;
+  return {pts: pA + pL + pS + pB, pA, pL, pS, pB, dA, mean, max:mx, full, dAng, slopeOk: dAng <= 3, interOk: bP != null && Math.abs(bP - eq.b) <= .3, samples};
 }
 
 /* ---------- Koordinatensystem zeichnen (leicht handgezeichnet) ---------- */
@@ -335,7 +347,7 @@ function showEval(){
     const r = lineOf(p.line, p.color, {parent:layerPlayers, cls:'fadein', dots:true});
     if (r){ const e = r.seg[1].x >= r.seg[0].x ? r.seg[1] : r.seg[0], o = r.seg[1].x >= r.seg[0].x ? r.seg[0] : r.seg[1], t = .1 + (k % 3) * .06;
       label(r.g, X(e.x + (o.x - e.x) * t), Y(e.y + (o.y - e.y) * t) - 22, `${p.emoji} ${pname(p)}`, {size:22, fill:p.color}); }
-    if (k === order.length - 1){ if (p.res.full){ sTada(); toast('🎯 Volltreffer!'); } else if (p.res.pts >= 60) sDing(); else sLow(); showDist(p); }
+    if (k === order.length - 1){ if (p.res.full){ sTada(); toast('🎯 Volltreffer!'); } else if (p.res.pts >= 65) sDing(); else sLow(); showDist(p); }
     else sTick();
     renderRank(k === order.length - 1 ? p : null);
   }, 1300 + k * (S.players.length > 1 ? 1100 : 0)));
@@ -350,7 +362,7 @@ function renderRank(sel){
   const shown = [...S.players].filter(p => layerPlayers.childElementCount && p.res).sort((a, b) => b.res.pts - a.res.pts);
   const done = layerPlayers.childElementCount, all = [...S.players].sort((a, b) => a.res.pts - b.res.pts || b.res.mean - a.res.mean).slice(0, done).sort((a, b) => b.res.pts - a.res.pts);
   $('rankT').innerHTML = all.map(p => `<tr data-i="${S.players.indexOf(p)}" class="${sel === p ? 'sel' : ''}"><td><span style="font-size:1.5rem">${p.emoji}</span> <span style="color:${p.color}">${pname(p)}</span>
-    <div class="badge">${p.res.full ? '🎯 Volltreffer · ' : ''}${p.res.slopeOk ? '✅ Steigung ' : ''}${p.res.interOk ? '✅ y-Achse ' : ''}· Ø ${fmt(p.res.mean)} Kästchen daneben</div></td>
+    <div class="badge">📍${p.res.pA} · 📏${p.res.pL} · 📐${p.res.pS}${p.res.full ? ' · 🎯+10' : ''}${p.res.slopeOk ? ' · ✅ Steigung' : ''}${p.res.interOk ? ' · ✅ y-Achse' : ''}</div></td>
     <td class="n big">+${p.res.pts}</td>${S.players.length > 1 ? `<td class="n" style="color:var(--muted)">${p.total}</td>` : ''}</tr>`).join('');
   $('rankT').querySelectorAll('tr').forEach(tr => tr.onclick = () => { const p = S.players[+tr.dataset.i]; showDist(p); renderRank(p); });
   void shown;
@@ -358,7 +370,7 @@ function renderRank(sel){
 $('nextBtn').onclick = () => { ac(); if (S.round >= S.rounds) showFinal(); else nextRound(); };
 function showFinal(){
   S.phase = 'final'; show('gameWrap', false); show('final');
-  const r = [...S.players].sort((a, b) => b.total - a.total), max = S.rounds * 100;
+  const r = [...S.players].sort((a, b) => b.total - a.total), max = S.rounds * 110;
   const pod = [r[1], r[0], r[2]].filter(Boolean), cols = {0:'#ffe066', 1:'#dee2e6', 2:'#ffd8a8'};
   $('pod').innerHTML = pod.map(p => { const pl = r.indexOf(p); return `<div><div class="e">${p.emoji}</div>${pname(p)}<div class="blk" style="height:${[130, 95, 70][pl]}px;background:${cols[pl]}">${pl + 1}.</div></div>`; }).join('');
   $('finalT').innerHTML = r.map((p, i) => `<tr><td>${i + 1}. ${p.emoji} ${pname(p)}</td><td class="n big">${p.total}</td><td class="n" style="color:var(--muted)">von ${max}</td></tr>`).join('');
