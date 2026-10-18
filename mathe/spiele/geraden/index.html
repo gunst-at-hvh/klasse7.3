@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Geraden-Treffer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Gochi+Hand&family=Patrick+Hand&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1e1e1e;--muted:#6b6b6b;--paper:#fbfaf5;--grid:#dbe7f3;--gold:#ffe066;--green:#d3f9d8;--red:#ffe3e3}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{color:var(--ink);font-family:"Patrick Hand","Comic Sans MS",cursive;font-size:19px;
+  background-color:var(--paper);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:26px 26px}
+.hidden{display:none!important}
+.ti{font-family:"Gochi Hand",cursive}
+.sk{border:2.5px solid var(--ink);border-radius:14px 6px 16px 6px/6px 16px 6px 14px;background:#fff}
+button{cursor:pointer;font:inherit;font-size:1.15rem;border:2.5px solid var(--ink);border-radius:14px 6px 16px 6px/6px 16px 6px 14px;background:#fff;padding:7px 16px;box-shadow:2px 2px 0 var(--ink);color:var(--ink)}
+button:active{transform:translate(2px,2px);box-shadow:none}
+button[disabled]{opacity:.4;cursor:default}
+button.go{background:#8ce99a}button.gold{background:var(--gold)}button.chip{font-size:1rem;padding:4px 12px;box-shadow:1px 1px 0 var(--ink)}
+button.chip.on{background:var(--gold)}
+.row{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 10px}
+label.l{display:block;font-size:1rem;color:var(--muted);margin-top:8px}
+.wrap{min-height:100dvh;padding:12px;display:flex;flex-direction:column;align-items:center}
+/* Start */
+#setup .card{width:min(620px,100%);padding:16px 20px;margin-top:10px}
+#setup h1{margin:0;font-family:"Gochi Hand",cursive;font-size:2.4rem;text-align:center}
+.prow{display:flex;gap:8px;align-items:center;margin:6px 0}
+.prow .em{font-size:1.7rem;padding:2px 10px}
+.prow input{flex:1;font:inherit;font-size:1.2rem;padding:6px 10px;border:2px solid var(--ink);border-radius:10px 4px 12px 4px}
+/* Spiel */
+#game{width:100%;max-width:1500px;flex:1;display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:14px;align-items:start}
+.boardbox{display:flex;justify-content:center}
+#board{display:block;width:100%;height:auto;max-height:calc(100dvh - 24px);touch-action:none;user-select:none;-webkit-user-select:none;background:rgba(255,255,255,.55);border-radius:10px}
+.panel{padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.eqbox{text-align:center;padding:10px 8px}
+.eq{font-family:"Gochi Hand",cursive;font-size:2.6rem;line-height:1.1}
+.eq .fr{display:inline-flex;flex-direction:column;vertical-align:middle;font-size:.62em;line-height:1;margin:0 2px;text-align:center}
+.eq .fr span:first-child{border-bottom:2px solid currentColor;padding:0 2px}
+.who{font-size:1.4rem;text-align:center}
+.who .ae{font-size:2rem;vertical-align:-.2em}
+.btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.btns button{font-size:1.3rem}
+.hint{text-align:center;color:var(--muted);font-size:1rem}
+.rk{width:100%;border-collapse:collapse;font-size:1.1rem}
+.rk td{padding:4px 6px;border-bottom:1px solid #eee}.rk td.n{text-align:right;white-space:nowrap}
+.rk tr{animation:pop .4s cubic-bezier(.2,1.8,.4,1) both;cursor:pointer}.rk tr.sel td{background:#fff3bf}
+.rk .badge{font-size:.85rem;color:var(--muted)}
+.big{font-family:"Gochi Hand",cursive;font-size:1.5rem}
+.toast{position:fixed;left:50%;top:18%;transform:translateX(-50%);z-index:50;font-family:"Gochi Hand",cursive;font-size:2.2rem;padding:6px 24px;background:#fff;border:3px solid var(--ink);border-radius:255px 18px 225px 18px/18px 225px 18px 255px;box-shadow:4px 4px 0 var(--ink);animation:toast 1.6s both;pointer-events:none;white-space:nowrap}
+@keyframes toast{0%{transform:translateX(-50%) scale(.3);opacity:0}15%{transform:translateX(-50%) scale(1.05);opacity:1}80%{opacity:1}100%{opacity:0;transform:translateX(-50%) translateY(-20px)}}
+@keyframes pop{from{transform:scale(.6);opacity:0}}
+/* Abdeck-Bildschirm */
+#cover{position:fixed;inset:0;z-index:40;display:grid;place-items:center;background:var(--paper);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:26px 26px}
+#cover .sk{padding:24px 30px;text-align:center;max-width:90vw}
+#cover .e{font-size:5rem;line-height:1}
+/* Endstand */
+#final .card{width:min(620px,100%);padding:16px 20px;margin-top:20px;text-align:center}
+.pod{display:flex;justify-content:center;align-items:flex-end;gap:10px;margin:16px 0}
+.pod div{display:flex;flex-direction:column;align-items:center;font-size:1.2rem}
+.pod .e{font-size:3rem}.pod .blk{width:90px;border:2.5px solid var(--ink);border-radius:8px 3px 9px 3px;display:grid;place-items:center;font-family:"Gochi Hand",cursive;font-size:1.6rem}
+/* SVG-Animationen */
+.drawin{stroke-dasharray:3000;stroke-dashoffset:3000;animation:drawin 1.1s ease-out forwards}
+@keyframes drawin{to{stroke-dashoffset:0}}
+.fadein{animation:fadein .5s both}@keyframes fadein{from{opacity:0}}
+@media (max-aspect-ratio:1/1), (max-width:900px){
+  #game{grid-template-columns:1fr;max-width:640px}
+  .panel{order:-1;padding:8px 10px;gap:6px}
+  .eq{font-size:2.1rem}
+  #board{max-height:none}
+}
+</style>
+</head>
+<body>
+<!-- ============ Start ============ -->
+<section id="setup" class="wrap">
+  <div class="card sk">
+    <h1>🎯 Geraden-Treffer</h1>
+    <div style="text-align:center;font-size:1.15rem;line-height:1.3">Lies die Gleichung – <b>tippe</b> einen Punkt der Geraden<br>und <b>ziehe</b> mit gedrücktem Finger zum zweiten Punkt.</div>
+    <label class="l">Wer spielt? (nacheinander an diesem Gerät)</label>
+    <div id="plist"></div>
+    <button class="chip" id="addP">＋ Spieler</button>
+    <label class="l">Koordinatensystem</label><div class="row" id="optRange"></div>
+    <label class="l">Einrasten am Gitter</label><div class="row" id="optSnap"></div>
+    <label class="l">Stufe</label><div class="row" id="optLevel"></div>
+    <label class="l">Runden</label><div class="row" id="optRounds"></div>
+    <div style="text-align:center;margin-top:12px"><button class="go" id="startBtn" style="font-size:1.5rem;padding:10px 30px">▶ Los geht's</button></div>
+  </div>
+  <div class="hint" style="margin-top:10px">Prototyp · Version 2026-10-18a</div>
+</section>
+
+<!-- ============ Spiel ============ -->
+<section id="gameWrap" class="wrap hidden">
+  <div id="game">
+    <div class="boardbox"><svg id="board"></svg></div>
+    <div class="panel sk">
+      <div class="hint" id="roundInfo">Runde 1 / 5</div>
+      <div class="eqbox"><div class="hint" id="eqLbl">Zeichne die Gerade:</div><div class="eq" id="eqTxt"></div></div>
+      <div class="who" id="who"></div>
+      <div id="drawUi">
+        <div class="hint" id="drawHint">👆 Tippen = 1. Punkt · ziehen = 2. Punkt</div>
+        <div class="btns" style="margin-top:8px"><button id="clearBtn">↺ neu</button><button class="go" id="doneBtn" disabled>✓ Abgeben</button></div>
+      </div>
+      <div id="evalUi" class="hidden">
+        <table class="rk" id="rankT"></table>
+        <div class="hint" id="evalHint" style="margin-top:6px">Tippe auf einen Namen: zeigt die Abstände.</div>
+        <div class="btns" style="margin-top:8px"><button class="gold" id="nextBtn">Nächste Runde ▶</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ Abdecken (wer ist dran) ============ -->
+<div id="cover" class="hidden"><div class="sk"><div class="e" id="coverE"></div><div class="ti" style="font-size:2.4rem" id="coverN"></div>
+  <div style="font-size:1.3rem;margin:6px 0 14px">ist dran – die anderen schauen weg 🙈</div><button class="go" id="coverBtn" style="font-size:1.5rem">Ich bin bereit ▶</button></div></div>
+
+<!-- ============ Endstand ============ -->
+<section id="final" class="wrap hidden">
+  <div class="card sk"><div class="ti" style="font-size:2.6rem">🏆 Endstand</div><div class="pod" id="pod"></div><table class="rk" id="finalT"></table>
+    <div class="btns" style="margin-top:14px"><button class="go" id="againBtn">🔄 Nochmal</button><button id="setupBtn">⚙️ Einstellungen</button></div></div>
+</section>
+
+<script src="rough.js"></script>
+<script>
+(() => {
+const $ = id => document.getElementById(id);
+const show = (id, on = true) => $(id).classList.toggle('hidden', !on);
+const NS = 'http://www.w3.org/2000/svg';
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const fmt = v => (Math.round(v * 100) / 100).toString().replace('.', ',').replace('-', '−');
+
+/* ---------- Töne ---------- */
+let AC = null;
+const ac = () => { try { AC = AC || new (window.AudioContext || window.webkitAudioContext)(); if (AC.state === 'suspended') AC.resume(); } catch(e){} return AC; };
+function tone(f, d = .15, type = 'sine', v = .12, w = 0){ const c = ac(); if (!c) return; const t = c.currentTime + w, o = c.createOscillator(), g = c.createGain();
+  o.type = type; o.frequency.setValueAtTime(f, t); g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(.001, t + d); o.connect(g).connect(c.destination); o.start(t); o.stop(t + d + .03); }
+const sTick = () => tone(1300, .03, 'square', .04);
+const sDing = () => { tone(880, .25, 'triangle', .18); tone(1320, .4, 'triangle', .12, .1); };
+const sTada = () => { [523, 659, 784, 1047].forEach((f, i) => tone(f, .22, 'square', .06, i * .12)); tone(1047, .8, 'triangle', .13, .5); };
+const sLow = () => { tone(300, .25, 'triangle', .1); tone(220, .4, 'triangle', .1, .2); };
+
+/* ---------- Einstellungen & Spieler ---------- */
+const EMOJIS = ['🦊','🐼','🐸','🦄','🐯','🐨','🐙','🦉','🐢','🐝','🦁','🐵','🚀','⚽','🌵','🍕','🎸','🦖'];
+const COLORS = ['#e8590c','#1971c2','#2f9e44','#ae3ec9','#c2255c','#0c8599','#f08c00','#5f3dc4','#d6336c','#364fc7'];
+const S = {players:[], range:'6', snap:.5, level:'1', rounds:5, round:0, turn:0, eq:null, cur:null, phase:'setup'};
+try { const sv = JSON.parse(localStorage.getItem('geraden-setup') || 'null'); if (sv) Object.assign(S, {players:sv.players || [], range:sv.range || '6', snap:sv.snap ?? .5, level:sv.level || '1', rounds:sv.rounds || 5}); } catch(e){}
+if (!S.players.length) S.players = [{name:'', emoji:'🦊'}];
+
+function chips(id, list, key, num){
+  const row = $(id); row.innerHTML = '';
+  list.forEach(([v, l]) => { const b = document.createElement('button'); b.className = 'chip' + (String(S[key]) === String(v) ? ' on' : ''); b.textContent = l;
+    b.onclick = () => { S[key] = num ? +v : v; chips(id, list, key, num); }; row.appendChild(b); });
+}
+function renderSetup(){
+  const pl = $('plist'); pl.innerHTML = '';
+  S.players.forEach((p, i) => {
+    const r = document.createElement('div'); r.className = 'prow';
+    r.innerHTML = `<button class="em">${p.emoji}</button><input maxlength="14" placeholder="Name ${i + 1}" value="${(p.name || '').replace(/"/g, '&quot;')}">${S.players.length > 1 ? '<button class="chip">✕</button>' : ''}`;
+    r.querySelector('.em').onclick = () => { p.emoji = EMOJIS[(EMOJIS.indexOf(p.emoji) + 1) % EMOJIS.length]; renderSetup(); };
+    r.querySelector('input').oninput = e => { p.name = e.target.value; };
+    const x = r.querySelector('.chip'); if (x) x.onclick = () => { S.players.splice(i, 1); renderSetup(); };
+    pl.appendChild(r);
+  });
+  $('addP').disabled = S.players.length >= 10;
+  chips('optRange', [['6','−6 … 6 (alle Quadranten)'],['10','0 … 10 (nur positiv)']], 'range');
+  chips('optSnap', [[0,'aus'],[.5,'½ Kästchen'],[1,'ganze Kästchen']], 'snap', true);
+  chips('optLevel', [['1','① ganze Zahlen'],['2','② Brüche'],['3','③ andere Formen'],['mix','🎲 gemischt']], 'level');
+  chips('optRounds', [[3,'3'],[5,'5'],[10,'10']], 'rounds', true);
+}
+$('addP').onclick = () => { const used = S.players.map(p => p.emoji); S.players.push({name:'', emoji: EMOJIS.find(e => !used.includes(e)) || '🙂'}); renderSetup(); };
+
+/* ---------- Gleichungen ---------- */
+const W = () => S.range === '6' ? {x0:-6, x1:6, y0:-6, y1:6} : {x0:0, x1:10, y0:0, y1:10};
+const rnd = a => a[Math.floor(Math.random() * a.length)];
+const gcd = (a, b) => b ? gcd(b, a % b) : Math.abs(a);
+function fracHtml(p, q, lead){   // Bruch p/q, lead = als Koeffizient vor x
+  if (q < 0){ p = -p; q = -q; } const g = gcd(p, q) || 1; p /= g; q /= g;
+  const sg = p < 0 ? '−' : '', ap = Math.abs(p);
+  if (q === 1) return lead && ap === 1 ? sg : sg + ap;
+  return `${sg}<span class="fr"><span>${ap}</span><span>${q}</span></span>`;
+}
+function lineText(p, q, b){   // y = (p/q)x + b
+  let s = 'y = ' + (p === 0 ? '' : fracHtml(p, q, true) + 'x');
+  if (b !== 0 || p === 0) s += p === 0 ? (b < 0 ? '−' + Math.abs(b) : b) : (b < 0 ? ' − ' + Math.abs(b) : ' + ' + b);
+  return s;
+}
+function visLen(m, b){ const seg = clipLine({x:0, y:b}, {x:1, y:m + b}); return seg ? Math.hypot(seg[1].x - seg[0].x, seg[1].y - seg[0].y) : 0; }
+function makeEq(){
+  const lv = S.level === 'mix' ? rnd(['1','2','3']) : S.level, pos = S.range === '10';
+  for (let tries = 0; tries < 400; tries++){
+    let p, q = 1, b;
+    if (lv === '2'){ [p, q] = rnd([[1,2],[-1,2],[1,3],[-1,3],[2,3],[-2,3],[3,2],[-3,2],[1,4],[-3,4]]); }
+    else p = rnd(pos ? [1, 2, 3, -1, -2] : [1, 2, 3, -1, -2, -3]);
+    b = pos ? Math.floor(Math.random() * 9) : Math.floor(Math.random() * 9) - 4;
+    const m = p / q; if (visLen(m, b) < 6) continue;
+    let text = lineText(p, q, b), kind = 'y';
+    if (lv === '3'){
+      const f = rnd(['umst', 'punkt', 'zwei']);
+      const xs = []; for (let x = W().x0; x <= W().x1; x++){ const y = m * x + b; if (Number.isInteger(y) && y >= W().y0 && y <= W().y1) xs.push(x); }
+      if (f === 'umst' && q === 1){ const k = -p; text = `y ${k < 0 ? '−' : '+'} ${Math.abs(k) === 1 ? '' : Math.abs(k)}x = ${b < 0 ? '−' + Math.abs(b) : b}`; kind = 'umst'; }
+      else if (f === 'punkt' && xs.length){ const x = rnd(xs); text = `<span style="font-size:.7em">durch</span> (${fmt(x)}|${fmt(m * x + b)})<br><span style="font-size:.7em">mit Steigung</span> m = ${fracHtml(p, q)}`; kind = 'punkt'; }
+      else if (xs.length >= 2){ const a = xs[Math.floor(xs.length * .2)], c = xs[Math.floor(xs.length * .8)]; if (a === c) continue;
+        text = `<span style="font-size:.7em">durch</span> (${fmt(a)}|${fmt(m * a + b)})<br><span style="font-size:.7em">und</span> (${fmt(c)}|${fmt(m * c + b)})`; kind = 'zwei'; }
+      else continue;
+    }
+    return {m, b, p, q, text, kind, plain: lineText(p, q, b)};
+  }
+  return {m:1, b:0, p:1, q:1, text:'y = x', kind:'y', plain:'y = x'};
+}
+
+/* ---------- Geometrie ---------- */
+function clipLine(P, Q){   // Gerade durch P,Q auf den sichtbaren Ausschnitt begrenzen
+  const w = W(), dx = Q.x - P.x, dy = Q.y - P.y; let t0 = -1e9, t1 = 1e9;
+  const edge = (p, q) => { if (Math.abs(p) < 1e-12) return q >= 0; const r = q / p; if (p < 0){ if (r > t1) return false; if (r > t0) t0 = r; } else { if (r < t0) return false; if (r < t1) t1 = r; } return true; };
+  if (!edge(-dx, P.x - w.x0) || !edge(dx, w.x1 - P.x) || !edge(-dy, P.y - w.y0) || !edge(dy, w.y1 - P.y)) return null;
+  return [{x:P.x + t0 * dx, y:P.y + t0 * dy}, {x:P.x + t1 * dx, y:P.y + t1 * dy}];
+}
+const HALF = .3;   // halbe Strichbreite (Kästchen): liegt die Zielgerade ganz im Strich → Volltreffer
+function evaluate(eq, L){
+  const seg = clipLine({x:0, y:eq.b}, {x:1, y:eq.m + eq.b});
+  const dx = L.p2.x - L.p1.x, dy = L.p2.y - L.p1.y, n = Math.hypot(dx, dy);
+  const a = dy / n, bb = -dx / n, c = -(a * L.p1.x + bb * L.p1.y);
+  let sum = 0, mx = 0; const N = 41, samples = [];
+  for (let i = 0; i < N; i++){ const t = i / (N - 1), x = seg[0].x + t * (seg[1].x - seg[0].x), y = seg[0].y + t * (seg[1].y - seg[0].y);
+    const d = Math.abs(a * x + bb * y + c); sum += d; mx = Math.max(mx, d); samples.push({x, y, d, fx:x - a * (a * x + bb * y + c), fy:y - bb * (a * x + bb * y + c)}); }
+  const mean = sum / N, full = mx <= HALF + 1e-9;
+  const angT = Math.atan(eq.m) * 180 / Math.PI; let angP = Math.atan2(dy, dx) * 180 / Math.PI; if (angP > 90) angP -= 180; if (angP <= -90) angP += 180;
+  let dAng = Math.abs(angT - angP); if (dAng > 90) dAng = 180 - dAng;
+  const bP = Math.abs(dx) > 1e-9 ? L.p1.y - dy / dx * L.p1.x : null;
+  return {pts: full ? 100 : Math.round(90 * clamp(1 - mean / 2.5, 0, 1)), mean, max:mx, full, slopeOk: dAng <= 3, interOk: bP != null && Math.abs(bP - eq.b) <= .3, samples};
+}
+
+/* ---------- Koordinatensystem zeichnen (leicht handgezeichnet) ---------- */
+const U = 50, PAD = .9;   // px pro Kästchen, Rand in Kästchen
+const svg = $('board');
+const X = x => (x - W().x0 + PAD) * U, Y = y => (W().y1 - y + PAD) * U;
+const el = (tag, at, parent) => { const e = document.createElementNS(NS, tag); for (const k in at) e.setAttribute(k, at[k]); (parent || svg).appendChild(e); return e; };
+let seedN = 1, FS = 1; const rc = () => rough.svg(svg);   // FS: Schrift größer auf kleinen Bildschirmen
+const ro = o => Object.assign({roughness:.55, bowing:.6, stroke:'#1e1e1e', strokeWidth:2, seed: seedN++}, o);
+let layerPlayers, layerCur, layerEval;
+function drawBoard(){
+  const w = W(); svg.innerHTML = ''; seedN = 7; FS = (svg.clientWidth || 700) < 520 ? 1.55 : 1;
+  svg.setAttribute('viewBox', `0 0 ${(w.x1 - w.x0 + 2 * PAD) * U} ${(w.y1 - w.y0 + 2 * PAD) * U}`);
+  const g = el('g', {});
+  for (let x = w.x0; x <= w.x1; x++) el('line', {x1:X(x), y1:Y(w.y0) + 10, x2:X(x), y2:Y(w.y1) - 10, stroke:'#a5c8ea', 'stroke-width':1.2}, g);
+  for (let y = w.y0; y <= w.y1; y++) el('line', {x1:X(w.x0) - 10, y1:Y(y), x2:X(w.x1) + 10, y2:Y(y), stroke:'#a5c8ea', 'stroke-width':1.2}, g);
+  const ax = Math.max(w.x0, 0), ay = Math.max(w.y0, 0);
+  g.appendChild(rc().line(X(w.x0) - 18, Y(ay), X(w.x1) + 26, Y(ay), ro({strokeWidth:2.6})));
+  g.appendChild(rc().line(X(ax), Y(w.y0) + 18, X(ax), Y(w.y1) - 26, ro({strokeWidth:2.6})));
+  g.appendChild(rc().linearPath([[X(w.x1) + 14, Y(ay) - 9], [X(w.x1) + 27, Y(ay)], [X(w.x1) + 14, Y(ay) + 9]], ro({strokeWidth:2.6})));
+  g.appendChild(rc().linearPath([[X(ax) - 9, Y(w.y1) - 14], [X(ax), Y(w.y1) - 27], [X(ax) + 9, Y(w.y1) - 14]], ro({strokeWidth:2.6})));
+  const txt = (x, y, t, o = {}) => { const e = el('text', {x, y, 'font-family':'Gochi Hand, cursive', 'font-size':(o.size || 19) * FS, fill:o.fill || '#333', 'text-anchor':o.anchor || 'middle'}, g); e.textContent = t; return e; };
+  for (let x = w.x0; x <= w.x1; x++){ if (x === ax) continue; g.appendChild(rc().line(X(x), Y(ay) - 6, X(x), Y(ay) + 6, ro({strokeWidth:1.6}))); txt(X(x), Y(ay) + 24 * FS, fmt(x)); }
+  for (let y = w.y0; y <= w.y1; y++){ if (y === ay) continue; g.appendChild(rc().line(X(ax) - 6, Y(y), X(ax) + 6, Y(y), ro({strokeWidth:1.6}))); txt(X(ax) - 12, Y(y) + 6, fmt(y), {anchor:'end'}); }
+  txt(X(ax) - 12, Y(ay) + 22, '0', {anchor:'end'});
+  txt(X(w.x1) + 24, Y(ay) - 14, 'x', {size:24}); txt(X(ax) + 18, Y(w.y1) - 18, 'y', {size:24});
+  layerPlayers = el('g', {}); layerEval = el('g', {}); layerCur = el('g', {});
+}
+function lineOf(L, color, o = {}){   // dicke, halbtransparente Spieler-Gerade (Breite 2·HALF Kästchen)
+  const seg = clipLine(L.p1, L.p2); if (!seg) return null;
+  const g = el('g', {class: o.cls || ''}, o.parent || layerCur);
+  el('line', {x1:X(seg[0].x), y1:Y(seg[0].y), x2:X(seg[1].x), y2:Y(seg[1].y), stroke:color, 'stroke-opacity':.42, 'stroke-width':2 * HALF * U, 'stroke-linecap':'round'}, g);
+  el('line', {x1:X(seg[0].x), y1:Y(seg[0].y), x2:X(seg[1].x), y2:Y(seg[1].y), stroke:color, 'stroke-width':2, 'stroke-dasharray':'6 6', 'stroke-opacity':.8}, g);
+  if (o.dots !== false){ el('circle', {cx:X(L.p1.x), cy:Y(L.p1.y), r:9, fill:color, stroke:'#1e1e1e', 'stroke-width':2}, g); el('circle', {cx:X(L.p2.x), cy:Y(L.p2.y), r:7, fill:'#fff', stroke:color, 'stroke-width':3}, g); }
+  return {g, seg};
+}
+function label(g, x, y, t, o = {}){ const e = el('text', {x, y, 'font-family':'Gochi Hand, cursive', 'font-size':(o.size || 22) * FS, fill:o.fill || '#1e1e1e', 'text-anchor':o.anchor || 'middle', 'paint-order':'stroke', stroke:'#fff', 'stroke-width':5}, g); e.textContent = t; return e; }
+
+/* ---------- Zeichnen mit dem Finger ---------- */
+function toUnits(e){
+  const pt = svg.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY; const q = pt.matrixTransform(svg.getScreenCTM().inverse()), w = W();
+  let x = q.x / U - PAD + w.x0, y = w.y1 - (q.y / U - PAD);
+  if (S.snap){ x = Math.round(x / S.snap) * S.snap; y = Math.round(y / S.snap) * S.snap; }
+  return {x: clamp(x, w.x0, w.x1), y: clamp(y, w.y0, w.y1)};
+}
+let dragging = false;
+function renderCur(){
+  layerCur.innerHTML = ''; const L = S.cur; if (!L) return; const p = S.players[S.turn];
+  const ok = Math.hypot(L.p2.x - L.p1.x, L.p2.y - L.p1.y) >= 1.5;
+  if (ok) lineOf(L, p.color); else { el('circle', {cx:X(L.p1.x), cy:Y(L.p1.y), r:10, fill:p.color, stroke:'#1e1e1e', 'stroke-width':2}, layerCur); }
+  label(layerCur, X(L.p1.x), Y(L.p1.y) - 18, `(${fmt(L.p1.x)}|${fmt(L.p1.y)})`, {size:20});
+  if (ok) label(layerCur, X(L.p2.x), Y(L.p2.y) - 16, `(${fmt(L.p2.x)}|${fmt(L.p2.y)})`, {size:18, fill:'#555'});
+  $('doneBtn').disabled = !ok;
+  $('drawHint').textContent = ok ? 'Passt? → ✓ Abgeben · sonst einfach neu zeichnen' : '👉 mit gedrücktem Finger weiter ziehen';
+}
+svg.addEventListener('pointerdown', e => { if (S.phase !== 'draw') return; e.preventDefault(); ac(); svg.setPointerCapture(e.pointerId); dragging = true; const p = toUnits(e); S.cur = {p1:p, p2:p}; sTick(); renderCur(); });
+svg.addEventListener('pointermove', e => { if (!dragging) return; const p = toUnits(e); if (p.x !== S.cur.p2.x || p.y !== S.cur.p2.y){ S.cur.p2 = p; if (S.snap) sTick(); renderCur(); } });
+const endDrag = () => { dragging = false; };
+svg.addEventListener('pointerup', endDrag); svg.addEventListener('pointercancel', endDrag);
+$('clearBtn').onclick = () => { S.cur = null; renderCur(); $('doneBtn').disabled = true; $('drawHint').textContent = '👆 Tippen = 1. Punkt · ziehen = 2. Punkt'; };
+
+/* ---------- Ablauf ---------- */
+function toast(t){ const d = document.createElement('div'); d.className = 'toast'; d.textContent = t; document.body.appendChild(d); setTimeout(() => d.remove(), 1700); }
+const pname = p => p.name || 'Spieler';
+function startGame(){
+  S.players = S.players.map((p, i) => ({...p, name: p.name.trim() || (S.players.length === 1 ? 'Ich' : 'Spieler ' + (i + 1)), color: COLORS[i % COLORS.length], total:0}));
+  try { localStorage.setItem('geraden-setup', JSON.stringify({players:S.players.map(p => ({name:p.name, emoji:p.emoji})), range:S.range, snap:S.snap, level:S.level, rounds:S.rounds})); } catch(e){}
+  S.round = 0; show('setup', false); show('final', false); show('gameWrap'); nextRound();
+}
+function nextRound(){
+  S.round++; S.eq = makeEq(); S.turn = 0; S.players.forEach(p => { p.line = null; p.res = null; });
+  $('roundInfo').textContent = `Runde ${S.round} / ${S.rounds}`; $('eqTxt').innerHTML = S.eq.text; $('eqLbl').textContent = 'Zeichne die Gerade:';
+  drawBoard(); startTurn();
+}
+function startTurn(){
+  const p = S.players[S.turn]; S.cur = null; layerCur.innerHTML = '';
+  show('drawUi'); show('evalUi', false); $('doneBtn').disabled = true; $('drawHint').textContent = '👆 Tippen = 1. Punkt · ziehen = 2. Punkt';
+  $('who').innerHTML = S.players.length > 1 ? `<span class="ae">${p.emoji}</span> ${pname(p)} ist dran` : '';
+  if (S.players.length > 1){ S.phase = 'cover'; $('coverE').textContent = p.emoji; $('coverN').textContent = pname(p); show('cover'); }
+  else S.phase = 'draw';
+}
+$('coverBtn').onclick = () => { ac(); show('cover', false); S.phase = 'draw'; };
+$('doneBtn').onclick = () => {
+  const p = S.players[S.turn]; p.line = {p1:{...S.cur.p1}, p2:{...S.cur.p2}}; sDing(); layerCur.innerHTML = '';
+  S.turn++; if (S.turn < S.players.length) startTurn(); else showEval();
+};
+function showEval(){
+  S.phase = 'eval'; show('drawUi', false); show('evalUi'); $('who').innerHTML = ''; $('eqLbl').textContent = 'Lösung:';
+  if (S.eq.kind !== 'y') $('eqTxt').innerHTML = S.eq.text + `<div style="font-size:.6em;color:#2b8a3e">= ${S.eq.plain}</div>`;
+  S.players.forEach(p => { p.res = evaluate(S.eq, p.line); p.total += p.res.pts; });
+  drawBoard();
+  const seg = clipLine({x:0, y:S.eq.b}, {x:1, y:S.eq.m + S.eq.b});
+  const tg = el('g', {}, layerEval);
+  el('line', {x1:X(seg[0].x), y1:Y(seg[0].y), x2:X(seg[1].x), y2:Y(seg[1].y), stroke:'#1e1e1e', 'stroke-width':5, 'stroke-linecap':'round', class:'drawin'}, tg);
+  const lx = seg[1].x - (seg[1].x - seg[0].x) * .08, ly = seg[1].y - (seg[1].y - seg[0].y) * .08;
+  const tl = label(tg, X(lx), Y(ly) - 16, '🎯 Lösung', {size:24}); tl.setAttribute('class', 'fadein');
+  $('rankT').innerHTML = '';
+  const order = [...S.players].sort((a, b) => a.res.pts - b.res.pts || b.res.mean - a.res.mean);
+  order.forEach((p, k) => setTimeout(() => {
+    if (S.phase !== 'eval') return;
+    const r = lineOf(p.line, p.color, {parent:layerPlayers, cls:'fadein', dots:true});
+    if (r){ const e = r.seg[1].x >= r.seg[0].x ? r.seg[1] : r.seg[0], o = r.seg[1].x >= r.seg[0].x ? r.seg[0] : r.seg[1], t = .1 + (k % 3) * .06;
+      label(r.g, X(e.x + (o.x - e.x) * t), Y(e.y + (o.y - e.y) * t) - 22, `${p.emoji} ${pname(p)}`, {size:22, fill:p.color}); }
+    if (k === order.length - 1){ if (p.res.full){ sTada(); toast('🎯 Volltreffer!'); } else if (p.res.pts >= 60) sDing(); else sLow(); showDist(p); }
+    else sTick();
+    renderRank(k === order.length - 1 ? p : null);
+  }, 1300 + k * (S.players.length > 1 ? 1100 : 0)));
+  $('nextBtn').textContent = S.round >= S.rounds ? 'Endstand 🏆' : 'Nächste Runde ▶';
+}
+function showDist(p){   // Abstands-Stäbchen von der Lösung zur Geraden des Spielers
+  layerEval.querySelectorAll('.dist').forEach(e => e.remove());
+  const g = el('g', {class:'dist fadein'}, layerEval);
+  p.res.samples.forEach((s, i) => { if (i % 4) return; el('line', {x1:X(s.x), y1:Y(s.y), x2:X(s.fx), y2:Y(s.fy), stroke: s.d <= HALF ? '#2b8a3e' : '#e03131', 'stroke-width':2.5, 'stroke-dasharray':'4 3'}, g); });
+}
+function renderRank(sel){
+  const shown = [...S.players].filter(p => layerPlayers.childElementCount && p.res).sort((a, b) => b.res.pts - a.res.pts);
+  const done = layerPlayers.childElementCount, all = [...S.players].sort((a, b) => a.res.pts - b.res.pts || b.res.mean - a.res.mean).slice(0, done).sort((a, b) => b.res.pts - a.res.pts);
+  $('rankT').innerHTML = all.map(p => `<tr data-i="${S.players.indexOf(p)}" class="${sel === p ? 'sel' : ''}"><td><span style="font-size:1.5rem">${p.emoji}</span> <span style="color:${p.color}">${pname(p)}</span>
+    <div class="badge">${p.res.full ? '🎯 Volltreffer · ' : ''}${p.res.slopeOk ? '✅ Steigung ' : ''}${p.res.interOk ? '✅ y-Achse ' : ''}· Ø ${fmt(p.res.mean)} Kästchen daneben</div></td>
+    <td class="n big">+${p.res.pts}</td>${S.players.length > 1 ? `<td class="n" style="color:var(--muted)">${p.total}</td>` : ''}</tr>`).join('');
+  $('rankT').querySelectorAll('tr').forEach(tr => tr.onclick = () => { const p = S.players[+tr.dataset.i]; showDist(p); renderRank(p); });
+  void shown;
+}
+$('nextBtn').onclick = () => { ac(); if (S.round >= S.rounds) showFinal(); else nextRound(); };
+function showFinal(){
+  S.phase = 'final'; show('gameWrap', false); show('final');
+  const r = [...S.players].sort((a, b) => b.total - a.total), max = S.rounds * 100;
+  const pod = [r[1], r[0], r[2]].filter(Boolean), cols = {0:'#ffe066', 1:'#dee2e6', 2:'#ffd8a8'};
+  $('pod').innerHTML = pod.map(p => { const pl = r.indexOf(p); return `<div><div class="e">${p.emoji}</div>${pname(p)}<div class="blk" style="height:${[130, 95, 70][pl]}px;background:${cols[pl]}">${pl + 1}.</div></div>`; }).join('');
+  $('finalT').innerHTML = r.map((p, i) => `<tr><td>${i + 1}. ${p.emoji} ${pname(p)}</td><td class="n big">${p.total}</td><td class="n" style="color:var(--muted)">von ${max}</td></tr>`).join('');
+  sTada();
+}
+$('againBtn').onclick = () => startGame();
+$('setupBtn').onclick = () => { show('final', false); show('setup'); renderSetup(); };
+$('startBtn').onclick = () => { ac(); startGame(); };
+if (new URLSearchParams(location.search).get('debug')) window.__dbg = {S, evaluate, makeEq};
+renderSetup();
+})();
+</script>
+</body>
+</html>
