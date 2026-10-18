@@ -9,6 +9,9 @@
 | 📐 Steigung (Winkel) | 35 | 4° | 15° |
 | 🎯 Volltreffer (Lösung ganz im dicken Strich, max. 0,3) | +10 | | |
 | ⚡ Zeitbonus (ab 50 P) | bis +15 | | |
+| 💎 Perfekt (Volltreffer, überall max. 0,1 daneben) | Animation | | |
+
+Einrasten heißt im Menü jetzt „🔰 Anfänger-Hilfe: Punkte einrasten“ (aus / auf ½ / auf ganze Zahlen), Standard: aus.
 
 Grundidee: Anker und Steigung zählen etwa gleich viel (wie in der Klassenarbeit: 1 BE Achsenabschnitt, 1 BE Steigung).
 Die Lage federt ab und belohnt „ungefähr richtig gezeichnet“. Bei Anker und Steigung kosten kleine Patscher nichts;
@@ -22,5 +25,5 @@ Idee:
 - Volltreffer (+10) bleibt wie er ist.
 - ✅ Lage ohne Toleranz-Plateau: volle 35 nur bei Ø ≤ 0,03, danach leichter Abzug.
   Folge: Volltreffer meist 106–109, exakt getroffen 110.
-- offen: „💎 Perfekt“-Stufe bei max. Abstand ≤ 0,1 – eigene Animation/Sound, evtl. +5.
+- ✅ „💎 Perfekt“: Volltreffer mit max. Abstand ≤ 0,1 → eigene Animation (Diamanten-Regen, Glitzer-Sound), keine Extrapunkte (offen: evtl. +5).
 - Anker- und Steigungs-Toleranz bleiben (Fingerpatscher sollen weiter nichts kosten).

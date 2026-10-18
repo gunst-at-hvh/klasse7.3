@@ -110,6 +110,12 @@ body.hb .pbody{padding-bottom:64px}
 #hitOv .e{font-size:min(38vmin,320px);line-height:1;filter:drop-shadow(0 0 30px rgba(255,224,102,.9))}
 #hitOv .t{font-family:"Shantell Sans",cursive;font-weight:700;font-size:min(11vmin,96px);color:#ffd43b;-webkit-text-stroke:2px #1e1e1e;text-shadow:0 0 24px rgba(255,212,59,.8)}
 #hitOv .n{font-family:"Shantell Sans",cursive;font-weight:700;font-size:min(7vmin,56px);color:#fff;-webkit-text-stroke:1.5px #1e1e1e}
+#hitOv.perfect{background:radial-gradient(circle at 50% 45%,rgba(102,217,232,.45),rgba(190,75,219,.18) 40%,transparent 70%)}
+#hitOv.perfect .e{filter:drop-shadow(0 0 26px rgba(102,217,232,.95)) drop-shadow(0 0 60px rgba(190,75,219,.6))}
+#hitOv.perfect .t{color:#99e9f2;-webkit-text-stroke:2px #0b3d4a;text-shadow:0 0 18px #66d9e8,0 0 40px #be4bdb;animation:shine 1.2s linear infinite}
+@keyframes shine{50%{color:#fff;text-shadow:0 0 30px #fff,0 0 60px #66d9e8}}
+.gem{position:fixed;top:-40px;z-index:46;pointer-events:none;animation:fall linear forwards}
+.resCard.gold.perfect{background:linear-gradient(135deg,#c5f6fa,#a5d8ff 45%,#eebefa);color:#1e1e1e}
 #hitOv.multi .e{font-size:min(15vmin,130px);max-width:92vw;line-height:1.15}#hitOv.multi .n{font-size:min(4.5vmin,34px);max-width:90vw}
 @keyframes hitA{0%{transform:scale(.1) rotate(-20deg);opacity:0}18%{transform:scale(1.12) rotate(4deg);opacity:1}30%{transform:scale(1) rotate(0)}78%{transform:scale(1);opacity:1}100%{transform:scale(2.2);opacity:0}}
 #dim{position:fixed;inset:0;z-index:30;background:radial-gradient(circle,transparent 30%,rgba(0,0,0,.55));pointer-events:none;animation:dimA 1.2s both}
@@ -212,7 +218,7 @@ body.hb .pbody{padding-bottom:64px}
         <label>Runden</label><div class="row" id="hRoundsRow"></div>
         <label>Stufe</label><div class="row" id="hLevelRow"></div>
         <label>Koordinatensystem</label><div class="row" id="hRangeRow"></div>
-        <label>Einrasten</label><div class="row" id="hSnapRow"></div>
+        <label>🔰 Anfänger-Hilfe: Punkte einrasten</label><div class="row" id="hSnapRow"></div>
         <label>Nach der Auflösung</label><div class="row" id="hAutoRow"></div>
         <label>🤖 Bots (zum Testen)</label><div class="row" id="hBotRow"></div>
       </div>
@@ -259,7 +265,7 @@ body.hb .pbody{padding-bottom:64px}
         <label>Runden</label><div class="row" id="rRoundsRow"></div>
         <label>Stufe</label><div class="row" id="rLevelRow"></div>
         <label>Koordinatensystem</label><div class="row" id="rRangeRow"></div>
-        <label>Einrasten</label><div class="row" id="rSnapRow"></div>
+        <label>🔰 Anfänger-Hilfe: Punkte einrasten</label><div class="row" id="rSnapRow"></div>
         <label>Nach der Auflösung</label><div class="row" id="rAutoRow"></div>
         <label>🤖 Bots</label><div class="row" id="rBotRow"></div>
       </div>
@@ -311,7 +317,7 @@ function keepRegistered(getPeer, lampId){
 }
 
 const PREFIX = 'hvh-geradenlive-';
-const APP_VERSION = '2026-10-18m';
+const APP_VERSION = '2026-10-18n';
 const AUTOJOIN_KEY = 'geradenlive-autojoin';
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const EMOJIS = ['😀','😎','🤓','🥳','🤩','😜','🤠','🥸','😇','🤖','👻','👽','💩','🐱','🐶','🦊','🐼','🐸','🦁','🐯','🐵','🐙','🦄','🐝','🐢','🦖','🐧','🦉','🐬','🦈','🍕','🍩','🍉','⚽','🏀','🎮','🎸','🚀','🌈','🔥','⭐','💎','👑','🌵'];
@@ -515,7 +521,7 @@ function evaluate(eq, L, w){
   const angT = Math.atan(eq.m) * 180 / Math.PI; let angP = Math.atan2(dy, dx) * 180 / Math.PI; if (angP > 90) angP -= 180; if (angP <= -90) angP += 180;
   let dAng = Math.abs(angT - angP); if (dAng > 90) dAng = 180 - dAng;
   const pA = Math.round(30 * lin(dA, HALF, 1.8)), pL = Math.round(35 * lin(mean, .03, 2.8)), pS = Math.round(35 * lin(dAng, 4, 15)), pB = full ? 10 : 0;
-  return {pts: pA + pL + pS + pB, pA, pL, pS, pB, full, mean};
+  return {pts: pA + pL + pS + pB, pA, pL, pS, pB, full, mean, perfect: full && mx <= .1};   // 💎 Perfekt: überall höchstens 0,1 daneben
 }
 const validLine = L => L && L.p1 && L.p2 && Math.hypot(L.p2.x - L.p1.x, L.p2.y - L.p1.y) >= 1.5;
 
@@ -585,29 +591,35 @@ function makeBoard(svg, opt = {}){
    3) Trommelwirbel  4) alle Volltreffer gleichzeitig als Lichtschwert, langsam vom Ankerpunkt nach außen
    5) Ziel leuchtet auf + alle Volltreffer-Smileys zusammen groß */
 let hitQueue = [], hitBusy = false;
-function hitShow(emoji, title, name, snd, multi){ hitQueue.push({emoji, title, name, snd, multi}); if (!hitBusy) hitNext(); }
+function hitShow(emoji, title, name, snd, multi, cls){ hitQueue.push({emoji, title, name, snd, multi, cls}); if (!hitBusy) hitNext(); }
 function hitNext(){ const h = hitQueue.shift(); if (!h){ hitBusy = false; return; } hitBusy = true;
   document.querySelectorAll('#hitOv').forEach(x => x.remove()); const d = document.createElement('div'); d.id = 'hitOv';
   d.innerHTML = `<div class="in"><div class="e"></div><div class="t"></div><div class="n"></div></div>`; d.querySelector('.e').textContent = h.emoji; d.querySelector('.t').textContent = h.title; d.querySelector('.n').textContent = h.name;
-  if (h.multi) d.classList.add('multi');
-  const dur = h.multi ? 3.2 : 1.9; d.querySelector('.in').style.animationDuration = dur + 's';
+  if (h.multi) d.classList.add('multi'); if (h.cls) d.classList.add(h.cls);
+  const dur = h.cls === 'perfect' ? 3.6 : h.multi ? 3.2 : 1.9; d.querySelector('.in').style.animationDuration = dur + 's';
   document.body.appendChild(d); if (h.snd) h.snd(); setTimeout(() => { d.remove(); hitNext(); }, dur * 1000); }
 function banner(t){ const d = document.createElement('div'); d.className = 'banner'; d.innerHTML = '<span></span>'; d.firstChild.textContent = t; document.body.appendChild(d); setTimeout(() => d.remove(), 1500); }
 function toast(t){ const d = document.createElement('div'); d.className = 'toast'; d.textContent = t; document.body.appendChild(d); setTimeout(() => d.remove(), 1800); }
 function drumBox(t, ms){ const d = document.createElement('div'); d.className = 'drum'; d.textContent = t; document.body.appendChild(d); setTimeout(() => d.remove(), ms); }
-const grade = r => r.full ? ['🎯', 'Volltreffer', '#fab005'] : r.pts >= 95 ? ['😱', 'knapp!', '#ff922b'] : r.pts >= 80 ? ['👍', 'fast', '#51cf66'] : r.pts >= 55 ? ['🙂', 'ok', '#4dabf7'] : ['🙈', 'daneben', '#adb5bd'];
+const grade = r => r.perfect ? ['💎', 'PERFEKT', '#15aabf'] : r.full ? ['🎯', 'Volltreffer', '#fab005'] : r.pts >= 95 ? ['😱', 'knapp!', '#ff922b'] : r.pts >= 80 ? ['👍', 'fast', '#51cf66'] : r.pts >= 55 ? ['🙂', 'ok', '#4dabf7'] : ['🙈', 'daneben', '#adb5bd'];
 const sLand = (q, w = 0) => { tone(70 + q * 260, .1, 'triangle', .16, w); noise(.07, .12, 1800, 400, w); };
 function sRise(f1, f2, dur, when = 0){ if (!SND.on) return; const c = ac(); if (!c) return; const t = c.currentTime + when, o = c.createOscillator(), g = c.createGain();
   o.type = 'sine'; o.frequency.setValueAtTime(f1, t); o.frequency.exponentialRampToValueAtTime(f2, t + dur);
   g.gain.setValueAtTime(.001, t); g.gain.linearRampToValueAtTime(.06, t + dur * .8); g.gain.linearRampToValueAtTime(.001, t + dur);
   o.connect(g).connect(c.destination); o.start(t); o.stop(t + dur + .05); }
+const sPerfect = () => { [1047, 1319, 1568, 2093, 2637].forEach((f, i) => { tone(f, .5, 'sine', .12, i * .08); tone(f * 2, .25, 'triangle', .03, i * .08 + .04); });
+  [2093, 2637, 3136, 2637, 3136, 4186].forEach((f, i) => tone(f, .18, 'sine', .05, .55 + i * .09)); tone(523, 1.2, 'triangle', .1, .4); };
+function gemRain(n = 40){ const g = ['💎', '✨', '💠', '✨'];
+  for (let i = 0; i < n; i++){ const d = document.createElement('div'); d.className = 'gem'; d.textContent = g[i % g.length];
+    d.style.left = Math.random() * 100 + 'vw'; d.style.fontSize = (18 + Math.random() * 26) + 'px'; d.style.animationDuration = (2.2 + Math.random() * 2) + 's'; d.style.animationDelay = (Math.random() * 1) + 's';
+    document.body.appendChild(d); setTimeout(() => d.remove(), 5000); } }
 const sDrumRoll = (dur, w = 0) => { for (let t = 0; t < dur; t += .05) noise(.04, .05 + .07 * t / dur, 900, 300, w + t); };
 function revealPlan(s){
   const P = (s.order || []).map(pid => s.players.find(p => p.pid === pid)).filter(p => p && p.line && p.res);
   const miss = P.filter(p => !p.res.full), full = P.filter(p => p.res.full);
   const t0 = 1.3, dt = miss.length ? clamp(3.2 / miss.length, .13, .45) : 0;
-  const tDrum = t0 + miss.length * dt + .5, tFull = tDrum + 1.5, dur = full.length ? 3.2 : 2.4, tSol = tFull + dur, end = tSol + (full.length ? 3.4 : 2.4);
-  return {P, miss, full, t0, dt, tDrum, tFull, dur, tSol, end};
+  const tDrum = t0 + miss.length * dt + .5, tFull = tDrum + 1.5, dur = full.length ? 3.2 : 2.4, tSol = tFull + dur, perf = full.filter(p => p.res.perfect), end = tSol + (full.length ? 3.4 : 2.4) + (perf.length ? 3.7 : 0);
+  return {P, miss, full, perf, t0, dt, tDrum, tFull, dur, tSol, end};
 }
 /* Steigungsdreieck suchen, das ins Koordinatensystem passt */
 function findTri(m, b, w, run, prefer){
@@ -713,6 +725,8 @@ function runReveal(B, s, o = {}){
     if (R.full.length){
       hitShow(R.full.map(p => p.avatar).join(' '), R.full.length > 1 ? `🎯 ${R.full.length}× VOLLTREFFER!` : '🎯 VOLLTREFFER!', R.full.map(p => p.name).join(' · '),
         snd ? () => { sFanfare(); confetti(Math.min(220, 90 + R.full.length * 25)); } : null, true);
+      if (R.perf.length) hitShow(R.perf.map(p => p.avatar).join(' '), R.perf.length > 1 ? `💎 ${R.perf.length}× PERFEKT!` : '💎 PERFEKT!', R.perf.map(p => p.name).join(' · ') + ' – exakt getroffen',
+        () => { if (snd) sPerfect(); gemRain(R.perf.length > 1 ? 60 : 40); }, true, 'perfect');
     } else if (R.miss.length){ const best = R.miss[R.miss.length - 1];
       hitShow(best.avatar, 'Kein Volltreffer 😮', `am nächsten: ${best.name} · ${best.res.pts + (best.bonus || 0)} P`, snd ? () => { sTada(); } : null, true);
     } else if (snd) sTada();
@@ -830,7 +844,7 @@ function feedbackSteps(sol, L, me, w){
       `Deine Steigung ≈ <b>${r1(E.mP)}</b>, richtig ist <b>m = ${mText(sol)}</b> → deine Gerade ist zu ${Math.abs(E.mP) < Math.abs(sol.m) ? 'flach' : 'steil'} (${Math.round(E.dAng)}° daneben).`; }
   steps.push({k:'steig', ic:'📐', pts:E.pS, max:35, ok:E.pS >= 32, text: st});
   steps.push({k:'voll', ic:'🎯', pts:E.pB, max:10, ok:E.full,
-    text: E.full ? '✅ Volltreffer: Die Lösung liegt komplett in deinem dicken Strich.' : `Für 🎯 muss die Lösung ganz im dicken Strich liegen (höchstens 0,3 daneben) – bei dir an der weitesten Stelle <b>${r1(E.max)}</b> (roter Pfeil).`});
+    text: E.perfect ? '💎 Perfekt! Deine Gerade liegt überall höchstens 0,1 neben der Lösung – exakt getroffen.' : E.full ? '✅ Volltreffer: Die Lösung liegt komplett in deinem dicken Strich. (Für 💎 Perfekt: überall höchstens 0,1 daneben.)' : `Für 🎯 muss die Lösung ganz im dicken Strich liegen (höchstens 0,3 daneben) – bei dir an der weitesten Stelle <b>${r1(E.max)}</b> (roter Pfeil).`});
   if (me.bonus) steps.push({k:'zeit', ic:'⚡', pts:me.bonus, max:15, ok:true, text:`Zeitbonus: Du warst schnell – <b>+${me.bonus}</b> Punkte.`});
   else if (me.auto) steps.push({k:'zeit', ic:'⏱', pts:0, max:15, ok:false, text:'Die Zeit war abgelaufen – deine eingestellte Gerade wurde genommen (kein Zeitbonus).'});
   let lw = solWay(sol);
@@ -945,7 +959,7 @@ function buildChips(){
   mk(['hRoundsRow','rRoundsRow'], [[3,'3'],[5,'5'],[8,'8'],[10,'10']], 'rounds', true);
   mk(['hLevelRow','rLevelRow'], [['1','① ganze Zahlen'],['2','② Brüche'],['3','③ andere Formen'],['mix','🎲 gemischt'],['crazy','🤪 crazy']], 'level');
   mk(['hRangeRow','rRangeRow'], [['6','−6 … 6'],['10','0 … 10']], 'range');
-  mk(['hSnapRow','rSnapRow'], [[0,'aus'],[.5,'½'],[1,'ganze']], 'snap', true);
+  mk(['hSnapRow','rSnapRow'], [[0,'aus'],[.5,'auf ½'],[1,'auf ganze Zahlen']], 'snap', true);
   mk(['hAutoRow','rAutoRow'], [['0','👆 Weiter per Klick'],['1','⏱️ automatisch weiter']], 'auto');
   mk(['hBotRow','rBotRow'], [[0,'keine'],[1,'1'],[3,'3'],[5,'5'],[10,'10'],[25,'25 🧪']], 'bots', true, hSyncBots);
   syncChips();
@@ -1132,7 +1146,7 @@ function hRankTable(t, shown, s, total){
   const sm = s.players.length > 11; t.classList.toggle('sm', sm);
   const old = new Set((t.dataset.seen || '').split(',')); t.dataset.seen = rows.map(p => p.pid).join(',');   // nur neue Zeilen animieren
   t.innerHTML = rows.map(p => `<tr class="${old.has(p.pid) ? '' : 'nw'} clk" data-pid="${esc(p.pid)}"><td><span style="font-size:${sm ? 1 : 1.4}rem">${esc(p.avatar)}</span> <span style="color:${p.color}">${esc(p.name)}</span>
-    <div class="b">📍${p.res.pA} 📏${p.res.pL} 📐${p.res.pS}${p.res.full ? ' 🎯+10' : ''}${p.bonus ? ' ⚡+' + p.bonus : ''}</div></td><td class="n big">+${p.res.pts + p.bonus}</td><td class="n muted">${p.total}</td></tr>`).join('')
+    <div class="b">📍${p.res.pA} 📏${p.res.pL} 📐${p.res.pS}${p.res.full ? (p.res.perfect ? ' 💎🎯+10' : ' 🎯+10') : ''}${p.bonus ? ' ⚡+' + p.bonus : ''}</div></td><td class="n big">+${p.res.pts + p.bonus}</td><td class="n muted">${p.total}</td></tr>`).join('')
     + miss.map(p => `<tr><td>${esc(p.avatar)} ${esc(p.name)} <span class="b">– keine Gerade</span></td><td class="n">0</td><td class="n muted">${p.total}</td></tr>`).join('');
 }
 const TIMERS = new Map();
@@ -1347,8 +1361,8 @@ function pFeedback(s){
     const lw = feedbackSteps(s.sol, {p1:{x:0, y:s.sol.b}, p2:{x:1, y:s.sol.m + s.sol.b}}, me, PB.W()).steps.pop(); $('fbText').innerHTML = '🧭 ' + lw.text; solHelp(PB, s.sol, PB.lx, .2); return; }
   const {E, steps} = feedbackSteps(s.sol, me.line, me, PB.W()), [ic, tg] = grade(r);
   const all = s.players.filter(p => p.res).sort((a, b) => (b.res.pts + b.bonus) - (a.res.pts + a.bonus)), place = all.findIndex(p => p.pid === me.pid) + 1;
-  box.innerHTML = `<div class="resCard sk${r.full ? ' gold' : ''}">
-    <div class="fbhead"><span class="ti">${ic} ${r.full ? 'VOLLTREFFER!' : tg[0].toUpperCase() + tg.slice(1)}</span><span class="pts">+${r.pts + (me.bonus || 0)}</span><span class="muted">Platz ${place}/${all.length}</span></div>
+  box.innerHTML = `<div class="resCard sk${r.perfect ? ' gold perfect' : r.full ? ' gold' : ''}">
+    <div class="fbhead"><span class="ti">${ic} ${r.perfect ? 'PERFEKT!' : r.full ? 'VOLLTREFFER!' : tg[0].toUpperCase() + tg.slice(1)}</span><span class="pts">+${r.pts + (me.bonus || 0)}</span><span class="muted">Platz ${place}/${all.length}</span></div>
     <div class="legend"><span><i style="background:${C.color}"></i>deine Gerade</span><span><i style="background:#fab005"></i>Lösung</span></div>
     <div class="fbtabs">${steps.map((st, i) => `<button class="chip fbtab${st.ok ? ' ok' : st.pts === null ? '' : ' bad'}" data-i="${i}">${st.ic} ${st.pts === null ? 'Lösung' : st.pts + (st.max ? '/' + st.max : '')}</button>`).join('')}</div>
     <div class="fbtext" id="fbText"></div></div>`;
