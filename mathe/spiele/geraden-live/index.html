@@ -55,7 +55,9 @@ label{display:block;font-size:.95rem;color:var(--muted);margin-top:6px}
 #hBoard{width:min(100%, calc(100dvh - 58px));margin:0 auto}
 #pBoard{width:min(100%, calc(100dvh - 160px));margin:0 auto}
 .sparkle{animation:fadeS .4s var(--w,0s) both, spark 1s linear var(--w,0s) infinite}@keyframes spark{to{stroke-dashoffset:-24}}
-.side{padding:10px 12px;display:flex;flex-direction:column;gap:8px;max-height:calc(100dvh - 64px);overflow:hidden}
+.side{padding:10px 12px;display:flex;flex-direction:column;gap:8px;max-height:calc(100dvh - 64px);overflow:auto}
+.rk tr.clk{cursor:pointer}.rk tr.clk:hover td{background:rgba(128,128,128,.16)}.rk tr.sel td{background:rgba(250,176,5,.38)!important}
+.isocard{position:absolute;left:10px;top:8px;padding:6px 12px;max-width:62%;z-index:5;animation:pop .3s cubic-bezier(.2,1.6,.4,1) both}
 .eq{font-family:"Shantell Sans",cursive;font-weight:700;font-size:clamp(2rem,5vh,3.2rem);line-height:1.1;text-align:center}
 .timer{font-family:"Shantell Sans",cursive;font-weight:700;font-size:1.6rem;text-align:center}
 .timer.low{color:#e03131;animation:pulse .5s infinite alternate}
@@ -216,7 +218,7 @@ body.hb .pbody{padding-bottom:64px}
     </div>
   </div>
   <div id="hGame" class="hidden">
-    <div class="boardwrap"><svg class="board" id="hBoard"></svg></div>
+    <div class="boardwrap"><svg class="board" id="hBoard"></svg><div class="isocard sk hidden" id="hIsoCard"></div></div>
     <div class="side sk">
       <div class="muted" id="hRound" style="text-align:center"></div>
       <div class="eq" id="hEq"></div>
@@ -304,7 +306,7 @@ function keepRegistered(getPeer, lampId){
 }
 
 const PREFIX = 'hvh-geradenlive-';
-const APP_VERSION = '2026-10-18d';
+const APP_VERSION = '2026-10-18e';
 const AUTOJOIN_KEY = 'geradenlive-autojoin';
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const EMOJIS = ['😀','😎','🤓','🥳','🤩','😜','🤠','🥸','😇','🤖','👻','👽','💩','🐱','🐶','🦊','🐼','🐸','🦁','🐯','🐵','🐙','🦄','🐝','🐢','🦖','🐧','🦉','🐬','🦈','🍕','🍩','🍉','⚽','🏀','🎮','🎸','🚀','🌈','🔥','⭐','💎','👑','🌵'];
@@ -517,7 +519,7 @@ function makeBoard(svg, opt = {}){
     for (let y = w.y0; y <= w.y1; y++){ if (y === ay) continue; g.appendChild(rc.line(X(ax) - 6, Y(y), X(ax) + 6, Y(y), ro({strokeWidth:1.5}))); B.text(g, X(ax) - 12, Y(y) + 6, fmt(y), {size:18, anchor:'end', halo:false, fill:'var(--muted)', weight:400}); }
     B.text(g, X(ax) - 12, Y(ay) + 22, '0', {size:18, anchor:'end', halo:false, fill:'var(--muted)', weight:400});
     B.text(g, X(w.x1) + 22, Y(ay) - 14, 'x', {size:24, halo:false}); B.text(g, X(ax) + 18, Y(w.y1) - 18, 'y', {size:24, halo:false});
-    B.lp = el('g', {}); B.le = el('g', {}); B.lc = el('g', {}); B.lx = el('g', {});
+    B.lp = el('g', {}); B.le = el('g', {}); B.lc = el('g', {}); B.lx = el('g', {}); B.iso = el('g', {}); B.isoOn = false;
   };
   /* dicke Gerade (halbtransparent) mit gestrichelter Mitte */
   B.thick = (L, color, parent, o = {}) => { const seg = clipLine(L.p1, L.p2, W()); if (!seg) return null; const g = el('g', {class:o.cls || ''}, parent || B.lc);
@@ -687,10 +689,44 @@ function rankHtml(players, meId, max, opt = {}){
   const l = [...players].sort((a, b) => tot(b) - tot(a)); let pl = 0, last = null;
   const rows = l.map((p, i) => { if (tot(p) !== last){ pl = i + 1; last = tot(p); } return {p, pl}; });
   let show = rows; if (max && rows.length > max){ show = rows.slice(0, max); const mine = rows.find(r => r.p.pid === meId); if (mine && !show.includes(mine)) show.push(mine); }
-  return `<table class="rk${l.length > 11 ? ' sm' : ''}">${show.map(({p, pl}) => `<tr class="${p.pid === meId ? 'me' : ''}"><td class="n muted">${pl}.</td><td>${esc(p.avatar)} <span style="color:${p.color}">${esc(p.name)}</span></td>`
+  return `<table class="rk${l.length > 11 ? ' sm' : ''}">${show.map(({p, pl}) => `<tr class="${opt.click ? 'clk' : ''}${p.pid === meId ? ' me' : ''}" data-pid="${esc(p.pid)}"><td class="n muted">${pl}.</td><td>${esc(p.avatar)} <span style="color:${p.color}">${esc(p.name)}</span></td>`
     + `<td class="n muted">${!opt.prev && opt.round && p.res ? '+' + (p.res.pts + (p.bonus || 0)) : ''}</td><td class="n big">${tot(p)}</td></tr>`).join('')}</table>`
     + (max && rows.length > show.length ? `<div class="muted" style="font-size:.8rem;text-align:center">… ${rows.length - show.length} weitere</div>` : '');
 }
+
+/* ---------- Einzelansicht: eine Gerade isoliert mit der Lösung (Rangliste antippen) ---------- */
+function isoShow(B, s, pid){
+  const layers = [B.lp, B.le, B.lc, B.lx];
+  if (!B.isoOn) layers.forEach(l => { l.dataset.op = l.style.opacity || ''; });
+  B.iso.innerHTML = '';
+  const p = pid && s.players.find(q => q.pid === pid);
+  if (!p || !p.line){ layers.forEach(l => { l.style.opacity = l.dataset.op || ''; }); B.isoOn = false; return null; }
+  B.isoOn = true; layers.forEach(l => { l.style.transition = 'opacity .3s'; l.style.opacity = 0; });
+  const g = B.iso, sol = {p1:{x:0, y:s.sol.b}, p2:{x:1, y:s.sol.m + s.sol.b}}, seg = clipLine(sol.p1, sol.p2, B.W());
+  B.thick(sol, '#fab005', g, {dots:false});
+  B.el('line', {x1:B.X(seg[0].x), y1:B.Y(seg[0].y), x2:B.X(seg[1].x), y2:B.Y(seg[1].y), stroke:'#fab005', 'stroke-width':3}, g);
+  B.thick(p.line, p.color, g, {cls:'fadeS'});
+  const E = explain(s.sol, p.line, B.W()), old = B.lx;
+  B.lx = B.el('g', {}, g); drawStep(B, 'lage', s.sol, p.line, E, p.color);
+  B.lx = B.el('g', {}, g); drawStep(B, 'anker', s.sol, p.line, E, p.color);
+  B.lx = old;
+  return p;
+}
+function isoCardHtml(p){
+  const r = p.res, [ic, tg, col] = grade(r);
+  return `<div class="ti" style="font-size:1.2rem">${esc(p.avatar)} <span style="color:${p.color}">${esc(p.name)}</span> <span style="color:${col}">${ic} ${tg}</span> <span class="big">+${r.pts + (p.bonus || 0)}</span></div>
+    <div style="font-size:.95rem">📍 ${r.pA}/30 · 📏 ${r.pL}/50 · 📐 ${r.pS}/20${r.full ? ' · 🎯 +10' : ''}${p.bonus ? ` · ⚡ +${p.bonus}` : ''}</div>`;
+}
+/* Rundenliste: Punkte dieser Runde (anklickbar) */
+function roundHtml(players, meId, max){
+  const l = players.filter(p => p.res).sort((a, b) => (b.res.pts + (b.bonus || 0)) - (a.res.pts + (a.bonus || 0))), none = players.filter(p => !p.res);
+  let show = l; if (max && l.length > max){ show = l.slice(0, max); const mine = l.find(p => p.pid === meId); if (mine && !show.includes(mine)) show.push(mine); }
+  return `<table class="rk${players.length > 11 ? ' sm' : ''}">${show.map(p => { const [ic] = grade(p.res);
+      return `<tr class="clk${p.pid === meId ? ' me' : ''}" data-pid="${esc(p.pid)}"><td class="n muted">${l.indexOf(p) + 1}.</td><td>${esc(p.avatar)} <span style="color:${p.color}">${esc(p.name)}</span> ${ic}</td><td class="n big">+${p.res.pts + (p.bonus || 0)}</td></tr>`; }).join('')
+    + none.map(p => `<tr><td></td><td class="muted">${esc(p.avatar)} ${esc(p.name)} – keine Gerade</td><td class="n">0</td></tr>`).join('')}</table>`
+    + (max && l.length > show.length ? `<div class="muted" style="font-size:.8rem;text-align:center">… ${l.length - show.length} weitere</div>` : '');
+}
+function markSel(root, pid){ if (root) root.querySelectorAll('tr[data-pid]').forEach(tr => tr.classList.toggle('sel', tr.dataset.pid === pid)); }
 
 /* ---------- individuelle Rückmeldung: warum so viele / so wenige Punkte? ---------- */
 function explain(sol, L, w){
@@ -719,7 +755,7 @@ function solWay(sol){
 }
 function feedbackSteps(sol, L, me, w){
   const E = explain(sol, L, w), steps = [];
-  const P1 = `(${fmt(L.p1.x)}|${fmt(L.p1.y)})`;
+  const P1 = `(${r1(L.p1.x)}|${r1(L.p1.y)})`;
   steps.push({k:'anker', ic:'📍', pts:E.pA, max:30, ok:E.pA >= 27,
     text: E.dA <= .25 ? `✅ Dein Startpunkt ${P1} liegt genau auf der Lösungsgeraden.` : `Dein Startpunkt ${P1} liegt <b>${r1(E.dA)} Kästchen</b> neben der Lösung (gelber Punkt = nächster Punkt auf der Lösung).${E.dA >= 1.5 ? ' Ab 1,5 Kästchen gibt es hier 0 Punkte.' : ''}`});
   steps.push({k:'lage', ic:'📏', pts:E.pL, max:50, ok:E.pL >= 45,
@@ -750,7 +786,7 @@ function drawStep(B, k, sol, L, E, color){
       B.el('line', {x1:X(L.p1.x), y1:Y(L.p1.y), x2:X(E.foot.x), y2:Y(E.foot.y), stroke: E.dA <= .25 ? green : red, 'stroke-width':4, 'stroke-dasharray':len, class:'grow', style:`--len:${len};--w:.2s;--d:.6s;stroke-dashoffset:${len}`}, g);
       B.el('circle', {cx:X(E.foot.x), cy:Y(E.foot.y), r:8, fill:gold, stroke:'currentColor', 'stroke-width':2, class:'popS', style:'--w:.7s'}, g);
       B.text(g, (X(L.p1.x) + X(E.foot.x)) / 2 + 12, (Y(L.p1.y) + Y(E.foot.y)) / 2 - 8, `${r1(E.dA)}`, {size:24, fill: E.dA <= .25 ? green : red, anchor:'start', cls:'popS', style:'--w:.8s'}); }
-    B.text(g, X(L.p1.x), Y(L.p1.y) - 24, `(${fmt(L.p1.x)}|${fmt(L.p1.y)})`, {size:20, fill:color, cls:'popS'});
+    B.text(g, X(L.p1.x), Y(L.p1.y) - 24, `(${r1(L.p1.x)}|${r1(L.p1.y)})`, {size:20, fill:color, cls:'popS'});
   } else if (k === 'lage'){
     E.samples.forEach((sm, i) => { const ok = sm.d <= HALF + 1e-9, c = ok ? green : red, cs = clipLine({x:sm.x, y:sm.y}, {x:sm.fx, y:sm.fy}, w, true);
       const q = cs ? cs[1] : {x:sm.x, y:sm.y}, len = Math.hypot(X(q.x) - X(sm.x), Y(q.y) - Y(sm.y)) + 1;
@@ -958,7 +994,8 @@ function startHost(){
   $('hNext').onclick = hAdvance;
   $('hSnd').onclick = () => { SND.on = !SND.on; $('hSnd').textContent = SND.on ? '🔊' : '🔇'; };
   $('hDark').onclick = toggleDark;
-  document.addEventListener('keydown', e => { if (H.room || H.phase === 'lobby') return; if ([' ', 'Enter', 'ArrowRight', 'PageDown'].includes(e.key) && H.phase !== 'end'){ e.preventDefault(); hAdvance(); } });
+  $('hSideList').onclick = e => { const tr = e.target.closest('tr[data-pid]'); if (tr) hIso(tr.dataset.pid); };
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && HREV.sel){ hIso(HREV.sel); return; } if (H.room || H.phase === 'lobby') return; if ([' ', 'Enter', 'ArrowRight', 'PageDown'].includes(e.key) && H.phase !== 'end'){ e.preventDefault(); hAdvance(); } });
   hOpenPeer(); hRender();
 }
 function hRender(){
@@ -973,27 +1010,40 @@ function hRender(){
   show('hNext', s.phase !== 'end'); $('hNext').textContent = s.phase === 'draw' ? '⏹ Zeit beenden' : s.round >= s.rounds ? '🏆 Siegerehrung' : 'Nächste Runde ▶';
   $('hRound').textContent = `Runde ${s.round} / ${s.rounds}`;
   if (s.phase === 'draw'){
-    if (fresh){ if (hStop) hStop(); HB.draw(s.range, s.snap); $('hEq').innerHTML = mfix(s.eq.text); banner(`Runde ${s.round}`); hs(sBlip); startTimer($('hTimer'), s.ends, true); }
+    if (fresh){ if (hStop) hStop(); HREV = {s:null, done:false, sel:null}; show('hIsoCard', false); HB.draw(s.range, s.snap); $('hEq').innerHTML = mfix(s.eq.text); banner(`Runde ${s.round}`); hs(sBlip); startTimer($('hTimer'), s.ends, true); }
     const done = s.players.filter(p => p.sub).length;
     $('hSideList').innerHTML = `<div class="muted" style="text-align:center">✏️ ${done} / ${s.players.length} haben abgegeben</div><div class="plist" style="justify-content:center">${s.players.map(p => `<div class="pchip${p.sub ? ' ok' : ''}"><span class="e">${esc(p.avatar)}</span>${s.players.length > 12 ? '' : esc(p.name)}</div>`).join('')}</div>`
       + (s.round > 1 ? `<div class="muted" style="margin-top:8px">🏆 Gesamtstand</div>${rankHtml(s.players, null, s.players.length > 11 ? 8 : 10)}` : '');
   } else if (s.phase === 'reveal' && fresh){
     stopTimer($('hTimer')); $('hTimer').textContent = '';
     if (s.eq.kind !== 'y') $('hEq').innerHTML = mfix(s.eq.text + `<div style="font-size:.5em;color:#fab005">= ${s.sol.plain}</div>`);
-    HB.draw(s.range, s.snap); $('hSideList').innerHTML = '<table class="rk" id="hRank"></table>';
+    HB.draw(s.range, s.snap); HREV = {s, done:false, sel:null}; show('hIsoCard', false);
+    $('hSideList').innerHTML = `<div class="ti" style="font-size:1.05rem">📋 Runde ${s.round}</div><table class="rk" id="hRank"></table>`;
     const shown = [];
     hStop = runReveal(HB, s, {id:'h', sound:!H.room,
       onPoint: p => { shown.push(p); hRankTable($('hRank'), shown, s); },
       onFull: p => { shown.push(p); hRankTable($('hRank'), shown, s); },
-      onEnd: () => { hRankTable($('hRank'), shown, s, true); solHelp(HB, s.sol, HB.lx, 0);
-        if (s.players.length > 14) return; const d = document.createElement('div'); d.className = 'solway'; d.innerHTML = '🧭 ' + solWay(s.sol); $('hSideList').appendChild(d); }});
+      onEnd: () => { hRankTable($('hRank'), shown, s, true); solHelp(HB, s.sol, HB.lx, 0); HREV.done = true;
+        const big = s.players.length > 11, side = $('hSideList');
+        side.insertAdjacentHTML('beforeend', `<div class="muted" style="font-size:.85rem;text-align:center">👆 Namen antippen = Gerade einzeln mit Lösung</div>`
+          + `<div class="ti" style="font-size:1.05rem;margin-top:6px">🏆 Gesamtstand</div>${rankHtml(s.players, null, big ? 6 : 0, {click:true})}`);
+        if (s.players.length > 14) return; const d = document.createElement('div'); d.className = 'solway'; d.innerHTML = '🧭 ' + solWay(s.sol); side.appendChild(d); }});
   }
+}
+let HREV = {s:null, done:false, sel:null};
+function hIso(pid){
+  if (!HREV.done || !HREV.s) return;
+  HREV.sel = HREV.sel === pid ? null : pid;
+  const p = isoShow(HB, HREV.s, HREV.sel); if (!p) HREV.sel = null;
+  markSel($('hSideList'), HREV.sel);
+  const card = $('hIsoCard'); show('hIsoCard', !!p);
+  if (p){ card.innerHTML = isoCardHtml(p) + '<button class="chip" id="hIsoAll" style="margin-top:4px">👥 alle zeigen</button>'; $('hIsoAll').onclick = () => hIso(HREV.sel); hs(sBlip); }
 }
 function hRankTable(t, shown, s, total){
   const rows = [...shown].sort((a, b) => (b.res.pts + b.bonus) - (a.res.pts + a.bonus)), miss = total ? s.players.filter(p => !p.line) : [];
   const sm = s.players.length > 11; t.classList.toggle('sm', sm);
   const old = new Set((t.dataset.seen || '').split(',')); t.dataset.seen = rows.map(p => p.pid).join(',');   // nur neue Zeilen animieren
-  t.innerHTML = rows.map(p => `<tr class="${old.has(p.pid) ? '' : 'nw'}"><td><span style="font-size:${sm ? 1 : 1.4}rem">${esc(p.avatar)}</span> <span style="color:${p.color}">${esc(p.name)}</span>
+  t.innerHTML = rows.map(p => `<tr class="${old.has(p.pid) ? '' : 'nw'}${total ? ' clk' : ''}" data-pid="${esc(p.pid)}"><td><span style="font-size:${sm ? 1 : 1.4}rem">${esc(p.avatar)}</span> <span style="color:${p.color}">${esc(p.name)}</span>
     <div class="b">📍${p.res.pA} 📏${p.res.pL} 📐${p.res.pS}${p.res.full ? ' 🎯+10' : ''}${p.bonus ? ' ⚡+' + p.bonus : ''}</div></td><td class="n big">+${p.res.pts + p.bonus}</td><td class="n muted">${p.total}</td></tr>`).join('')
     + miss.map(p => `<tr><td>${esc(p.avatar)} ${esc(p.name)} <span class="b">– keine Gerade</span></td><td class="n">0</td><td class="n muted">${p.total}</td></tr>`).join('');
 }
@@ -1137,9 +1187,22 @@ let PB = null, PTR = new Map(), pinch = null, dragging = false, before = null, d
 /* Rangliste am Handy: Seitenleiste (breit) und Schublade (🏆) */
 function pRank(){
   const s = C.st; if (!s || !s.players) return;
-  const prev = s.phase === 'reveal' && !C.revDone, html = (s.phase === 'reveal' && C.revDone ? '<div class="muted" style="font-size:.85rem">nach Runde ' + s.round + '</div>' : '') + rankHtml(s.players, (s.me || {}).pid, 0, {prev, round: s.phase === 'reveal' && C.revDone});
+  const prev = s.phase === 'reveal' && !C.revDone, after = s.phase === 'reveal' && C.revDone, meId = (s.me || {}).pid;
+  const html = (after ? `<div class="ti" style="font-size:1rem">📋 Runde ${s.round}</div>${roundHtml(s.players, meId)}<div class="muted" style="font-size:.8rem;text-align:center">👆 Namen antippen = Gerade einzeln</div><div class="ti" style="font-size:1rem;margin-top:6px">🏆 Gesamtstand</div>` : '')
+    + rankHtml(s.players, meId, 0, {prev, click: after});
   const box = $('pRankBox'); if (box) box.innerHTML = '<div class="ti" style="font-size:1.05rem;margin-bottom:2px">🏆 Rangliste</div>' + html;
   if (!$('rankDrawer').classList.contains('hidden')) $('rankDrawerBody').innerHTML = html;
+  markSel(box, C.isoSel); markSel($('rankDrawerBody'), C.isoSel);
+}
+/* Handy: Namen antippen → diese Gerade einzeln mit der Lösung; eigener Name / nochmal → zurück zur eigenen Auswertung */
+function pIso(pid){
+  const s = C.st; if (!s || s.phase !== 'reveal' || !C.revDone || !PB) return;
+  const me = s.me || {};
+  if (!pid || pid === C.isoSel || pid === me.pid){ C.isoSel = null; pFeedback(s); pRank(); return; }
+  clearInterval(C.fbT); const p = isoShow(PB, s, pid); if (!p) return;
+  C.isoSel = pid; pRank(); show('rankDrawer', false);
+  const box = $('pRes'); if (box) box.innerHTML = `<div class="resCard sk">${isoCardHtml(p)}<button class="chip" id="pIsoBack" style="margin-top:6px">↩ meine Auswertung</button></div>`;
+  const b = $('pIsoBack'); if (b) b.onclick = () => pIso(null);
 }
 function pLayout(barHtml, sideHtml){
   return `<div class="pgrid"><div class="pbar">${barHtml}</div>
@@ -1185,7 +1248,7 @@ function pState(s){
 }
 /* Auswertung am Handy: Schritt für Schritt erklärt – im Koordinatensystem animiert */
 function pFeedback(s){
-  const me = s.me || {}, r = me.res, box = $('pRes'); if (!box) return; clearInterval(C.fbT);
+  const me = s.me || {}, r = me.res, box = $('pRes'); if (!box) return; clearInterval(C.fbT); C.isoSel = null; isoShow(PB, s, null);
   // Brett: nur Lösung (gold) + eigene Gerade, die anderen ganz blass
   PB.lp.innerHTML = ''; PB.le.innerHTML = ''; PB.lc.innerHTML = ''; PB.lx.innerHTML = '';
   s.players.filter(p => p.line && p.pid !== me.pid).forEach(p => { const sg = clipLine(p.line.p1, p.line.p2, PB.W()); if (sg) PB.el('line', {x1:PB.X(sg[0].x), y1:PB.Y(sg[0].y), x2:PB.X(sg[1].x), y2:PB.Y(sg[1].y), stroke:p.color, 'stroke-width':3, class:'faint'}, PB.lp); });   // andere: nur dünn & blass
@@ -1213,8 +1276,8 @@ function pBindBoard(){
   const locked = () => !C.st || C.st.phase !== 'draw' || (C.st.me && C.st.me.sub);
   const render = () => { PB.lc.innerHTML = ''; const L = C.cur; if (!L) return; const ok = validLine(L);
     if (ok) PB.thick(L, C.color, PB.lc); else PB.el('circle', {cx:PB.X(L.p1.x), cy:PB.Y(L.p1.y), r:10, fill:C.color, stroke:'currentColor', 'stroke-width':2}, PB.lc);
-    PB.text(PB.lc, PB.X(L.p1.x), PB.Y(L.p1.y) - 18, `(${fmt(L.p1.x)}|${fmt(L.p1.y)})`, {size:20});
-    if (ok) PB.text(PB.lc, PB.X(L.p2.x), PB.Y(L.p2.y) - 16, `(${fmt(L.p2.x)}|${fmt(L.p2.y)})`, {size:17, fill:'var(--muted)'});
+    PB.text(PB.lc, PB.X(L.p1.x), PB.Y(L.p1.y) - 18, `(${r1(L.p1.x)}|${r1(L.p1.y)})`, {size:20});
+    if (ok) PB.text(PB.lc, PB.X(L.p2.x), PB.Y(L.p2.y) - 16, `(${r1(L.p2.x)}|${r1(L.p2.y)})`, {size:17, fill:'var(--muted)'});
     $('pDone').disabled = !ok || locked(); $('pHint').textContent = ok ? 'Passt? → ✓ Abgeben · sonst neu zeichnen' : '👉 mit gedrücktem Finger weiter ziehen'; };
   C.render = render;
   const sendDraft = () => { clearTimeout(draftT); draftT = setTimeout(() => { if (validLine(C.cur)) C.conn && C.conn.open && C.conn.send({t:'draft', line:C.cur}); }, 200); };
@@ -1280,6 +1343,7 @@ $('homeHost').onclick = startHost; $('homeJoin').onclick = () => startPlayer('')
 $('homeDark').onclick = toggleDark; $('pDark').onclick = toggleDark; applyDark();
 $('pRankBtn').onclick = () => { const d = $('rankDrawer'); d.classList.toggle('hidden'); if (!d.classList.contains('hidden')) pRank(); };
 $('rankClose').onclick = () => show('rankDrawer', false);
+['pMain', 'rankDrawerBody'].forEach(id => $(id).addEventListener('click', e => { const tr = e.target.closest('tr[data-pid]'); if (tr && tr.classList.contains('clk')) pIso(tr.dataset.pid); }));
 { const v = document.createElement('div'); v.className = 'muted'; v.style.cssText = 'margin-top:12px;font-size:.8rem'; v.textContent = 'Prototyp · Version ' + APP_VERSION; document.querySelector('#home .box').appendChild(v); }
 if (Q.get('debug')) window.__dbg = {C, H, evaluate};
 if (Q.get('join') !== null) startPlayer(Q.get('join'));
