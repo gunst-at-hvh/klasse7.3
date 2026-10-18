@@ -207,7 +207,7 @@ body.hb .pbody{padding-bottom:64px}
     <div>
       <div class="settings sk">
         <div class="ti" style="font-size:1.4rem">So geht's: Gleichung lesen → tippen (1. Punkt) → ziehen (2. Punkt) → abgeben.</div>
-        <div class="muted" style="font-size:.95rem">📍 30 Ankerpunkt · 📏 50 Lage · 📐 20 Steigung · 🎯 +10 Volltreffer · ⚡ bis +15 Zeitbonus (ab 50 P). Läuft die Zeit ab, zählt die gerade eingestellte Gerade.</div>
+        <div class="muted" style="font-size:.95rem">📍 30 Ankerpunkt · 📏 35 Lage · 📐 35 Steigung · 🎯 +10 Volltreffer · ⚡ bis +15 Zeitbonus (ab 50 P). Läuft die Zeit ab, zählt die gerade eingestellte Gerade.</div>
         <label>Zeit pro Runde</label><div class="row" id="hTimeRow"></div>
         <label>Runden</label><div class="row" id="hRoundsRow"></div>
         <label>Stufe</label><div class="row" id="hLevelRow"></div>
@@ -311,7 +311,7 @@ function keepRegistered(getPeer, lampId){
 }
 
 const PREFIX = 'hvh-geradenlive-';
-const APP_VERSION = '2026-10-18h';
+const APP_VERSION = '2026-10-18i';
 const AUTOJOIN_KEY = 'geradenlive-autojoin';
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const EMOJIS = ['😀','😎','🤓','🥳','🤩','😜','🤠','🥸','😇','🤖','👻','👽','💩','🐱','🐶','🦊','🐼','🐸','🦁','🐯','🐵','🐙','🦄','🐝','🐢','🦖','🐧','🦉','🐬','🦈','🍕','🍩','🍉','⚽','🏀','🎮','🎸','🚀','🌈','🔥','⭐','💎','👑','🌵'];
@@ -469,7 +469,8 @@ function makeEq(level, range){
   return {m:1, b:0, p:1, q:1, text:'y = x', kind:'y', pts:[], plain:'y = x'};
 }
 /* Bewertung (max. 110 + Zeitbonus):
-   📍 30 Ankerpunkt · 📏 50 Lage (Ankernähe doppelt) · 📐 20 Steigung · 🎯 +10 Volltreffer (Lösung komplett im dicken Strich) */
+   📍 30 Ankerpunkt · 📏 35 Lage (Ø-Abstand) · 📐 35 Steigung (bis 4° voll, ab 20° null) · 🎯 +10 Volltreffer (Lösung komplett im dicken Strich)
+   Anker und Steigung zählen etwa gleich viel – wie in der Klassenarbeit (1 BE y-Achsenabschnitt, 1 BE Steigung). */
 const HALF = .3, lin = (v, full, zero) => clamp((zero - v) / (zero - full), 0, 1);
 function evaluate(eq, L, w){
   const seg = clipLine({x:0, y:eq.b}, {x:1, y:eq.m + eq.b}, w);
@@ -478,11 +479,11 @@ function evaluate(eq, L, w){
   const k = Math.hypot(eq.m, 1), dA = Math.abs(eq.m * L.p1.x - L.p1.y + eq.b) / k, ux = 1 / k, uy = eq.m / k, tA = L.p1.x * ux + (L.p1.y - eq.b) * uy;
   let sum = 0, wsum = 0, mx = 0;
   for (let i = 0; i < 41; i++){ const t = i / 40, x = seg[0].x + t * (seg[1].x - seg[0].x), y = seg[0].y + t * (seg[1].y - seg[0].y);
-    const d = Math.abs(a * x + bb * y + c), al = x * ux + (y - eq.b) * uy - tA, wt = 1 + Math.exp(-(al * al) / 8); sum += d * wt; wsum += wt; mx = Math.max(mx, d); }
+    const d = Math.abs(a * x + bb * y + c), al = x * ux + (y - eq.b) * uy - tA, wt = 1; void al; sum += d * wt; wsum += wt; mx = Math.max(mx, d); }
   const mean = sum / wsum, full = mx <= HALF + 1e-9;
   const angT = Math.atan(eq.m) * 180 / Math.PI; let angP = Math.atan2(dy, dx) * 180 / Math.PI; if (angP > 90) angP -= 180; if (angP <= -90) angP += 180;
   let dAng = Math.abs(angT - angP); if (dAng > 90) dAng = 180 - dAng;
-  const pA = Math.round(30 * lin(dA, .25, 1.5)), pL = Math.round(50 * lin(mean, .2, 2.5)), pS = Math.round(20 * lin(dAng, 3, 30)), pB = full ? 10 : 0;
+  const pA = Math.round(30 * lin(dA, .25, 1.5)), pL = Math.round(35 * lin(mean, .2, 2.5)), pS = Math.round(35 * lin(dAng, 4, 20)), pB = full ? 10 : 0;
   return {pts: pA + pL + pS + pB, pA, pL, pS, pB, full, mean};
 }
 const validLine = L => L && L.p1 && L.p2 && Math.hypot(L.p2.x - L.p1.x, L.p2.y - L.p1.y) >= 1.5;
@@ -744,7 +745,7 @@ function isoStep(B, s, p, k){
 function isoCardHtml(p){
   const r = p.res, [ic, tg, col] = grade(r);
   return `<div class="ti" style="font-size:1.2rem">${esc(p.avatar)} <span style="color:${p.color}">${esc(p.name)}</span> <span style="color:${col}">${ic} ${tg}</span> <span class="big">+${r.pts + (p.bonus || 0)}</span></div>
-    <div style="font-size:.95rem">📍 ${r.pA}/30 · 📏 ${r.pL}/50 · 📐 ${r.pS}/20${r.full ? ' · 🎯 +10' : ''}${p.bonus ? ` · ⚡ +${p.bonus}` : ''}</div>`;
+    <div style="font-size:.95rem">📍 ${r.pA}/30 · 📏 ${r.pL}/35 · 📐 ${r.pS}/35${r.full ? ' · 🎯 +10' : ''}${p.bonus ? ` · ⚡ +${p.bonus}` : ''}</div>`;
 }
 /* Rundenliste: Punkte dieser Runde (anklickbar) */
 function roundHtml(players, meId, max){
@@ -787,16 +788,16 @@ function feedbackSteps(sol, L, me, w){
   const P1 = `(${r1(L.p1.x)}|${r1(L.p1.y)})`;
   steps.push({k:'anker', ic:'📍', pts:E.pA, max:30, ok:E.pA >= 27,
     text: E.dA <= .25 ? `✅ Dein Startpunkt ${P1} liegt genau auf der Lösungsgeraden.` : `Dein Startpunkt ${P1} liegt <b>${r1(E.dA)} Kästchen</b> neben der Lösung (gelber Punkt = nächster Punkt auf der Lösung).${E.dA >= 1.5 ? ' Ab 1,5 Kästchen gibt es hier 0 Punkte.' : ''}`});
-  steps.push({k:'lage', ic:'📏', pts:E.pL, max:50, ok:E.pL >= 45,
-    text: E.mean <= .2 ? '✅ Deine Gerade liegt auf der ganzen Länge dicht an der Lösung.' : `Im Schnitt <b>${r1(E.mean)} Kästchen</b> Abstand zur Lösung. <span style="color:#40c057">Grün</span> = im dicken Strich, <span style="color:#fa5252">rot</span> = daneben. Nahe am Startpunkt zählt doppelt.`});
+  steps.push({k:'lage', ic:'📏', pts:E.pL, max:35, ok:E.pL >= 32,
+    text: E.mean <= .2 ? '✅ Deine Gerade liegt auf der ganzen Länge dicht an der Lösung.' : `Im Schnitt <b>${r1(E.mean)} Kästchen</b> Abstand zur Lösung. <span style="color:#40c057">Grün</span> = im dicken Strich, <span style="color:#fa5252">rot</span> = daneben.`});
   let st;
   if (E.vert) st = `Deine Gerade ist senkrecht – die Lösung hat die Steigung m = ${mText(sol)}.`;
   else { const same = Math.sign(E.mP) === Math.sign(sol.m) || Math.abs(sol.m) < 1e-9 || Math.abs(E.mP) < .05;
     const dir = v => v > 0 ? 'steigt' : v < 0 ? 'fällt' : 'ist waagerecht';
-    st = E.dAng <= 3 ? `✅ Die Steigung passt: m = ${mText(sol)}.` :
+    st = E.dAng <= 4 ? `✅ Die Steigung passt: m = ${mText(sol)}.` :
       !same ? `❌ Falsche Richtung: deine Gerade ${dir(E.mP)}, die Lösung ${dir(sol.m)}. Deine Steigung ≈ ${r1(E.mP)}, richtig ist m = ${mText(sol)}.` :
       `Deine Steigung ≈ <b>${r1(E.mP)}</b>, richtig ist <b>m = ${mText(sol)}</b> → deine Gerade ist zu ${Math.abs(E.mP) < Math.abs(sol.m) ? 'flach' : 'steil'} (${Math.round(E.dAng)}° daneben).`; }
-  steps.push({k:'steig', ic:'📐', pts:E.pS, max:20, ok:E.pS >= 18, text: st});
+  steps.push({k:'steig', ic:'📐', pts:E.pS, max:35, ok:E.pS >= 32, text: st});
   steps.push({k:'voll', ic:'🎯', pts:E.pB, max:10, ok:E.full,
     text: E.full ? '✅ Volltreffer: Die Lösung liegt komplett in deinem dicken Strich.' : `Für 🎯 muss die Lösung ganz im dicken Strich liegen (höchstens 0,3 daneben) – bei dir an der weitesten Stelle <b>${r1(E.max)}</b> (roter Pfeil).`});
   if (me.bonus) steps.push({k:'zeit', ic:'⚡', pts:me.bonus, max:15, ok:true, text:`Zeitbonus: Du warst schnell – <b>+${me.bonus}</b> Punkte.`});
