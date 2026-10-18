@@ -32,12 +32,14 @@ label.l{display:block;font-size:1rem;color:var(--muted);margin-top:8px}
 .prow .em{font-size:1.7rem;padding:2px 10px}
 .prow input{flex:1;font:inherit;font-size:1.2rem;padding:6px 10px;border:2px solid var(--ink);border-radius:10px 4px 12px 4px}
 /* Spiel */
-#game{width:100%;max-width:1500px;flex:1;display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:14px;align-items:start}
-.boardbox{display:flex;justify-content:center}
+#game{width:100%;max-width:1500px;flex:1;display:grid;align-content:start;grid-template-columns:minmax(0,1fr) 380px;gap:14px;align-items:start}
+.boardbox{display:flex;justify-content:center;position:relative}
+.zoom{position:absolute;right:6px;bottom:6px;display:flex;gap:4px}.zoom button{font-size:1.2rem;padding:2px 10px;background:rgba(255,255,255,.9)}
 #board{display:block;width:100%;height:auto;max-height:calc(100dvh - 24px);touch-action:none;user-select:none;-webkit-user-select:none;background:rgba(255,255,255,.55);border-radius:10px}
 .panel{padding:12px 14px;display:flex;flex-direction:column;gap:10px}
 .eqbox{text-align:center;padding:10px 8px}
 .eq{font-family:"Gochi Hand",cursive;font-size:2.6rem;line-height:1.1}
+.mi{font-family:Arial,Helvetica,sans-serif;font-weight:700;display:inline-block;transform:scaleX(1.25);margin:0 .06em}
 .eq .fr{display:inline-flex;flex-direction:column;vertical-align:middle;font-size:.62em;line-height:1;margin:0 2px;text-align:center}
 .eq .fr span:first-child{border-bottom:2px solid currentColor;padding:0 2px}
 .who{font-size:1.4rem;text-align:center}
@@ -72,6 +74,15 @@ label.l{display:block;font-size:1rem;color:var(--muted);margin-top:8px}
   .panel{order:-1;padding:8px 10px;gap:6px}
   .eq{font-size:2.1rem}
   #board{max-height:none}
+  .wrap{padding:6px 2px}
+  #game{gap:6px}
+  .panel{border-radius:10px}
+  .eqbox{padding:2px 4px}#eqLbl{display:none}
+  .who{font-size:1.15rem}.who .ae{font-size:1.5rem}
+  .btns button{font-size:1.15rem;padding:5px 14px}
+  .boardbox{flex-direction:column;align-items:stretch}
+  .zoom{position:static;justify-content:center;margin-top:8px;gap:10px}.zoom button{font-size:1.5rem;padding:4px 20px}
+  .zoom::before{content:'🔍 zwei Finger oder';align-self:center;color:var(--muted);font-size:.95rem}
 }
 </style>
 </head>
@@ -90,13 +101,14 @@ label.l{display:block;font-size:1rem;color:var(--muted);margin-top:8px}
     <label class="l">Runden</label><div class="row" id="optRounds"></div>
     <div style="text-align:center;margin-top:12px"><button class="go" id="startBtn" style="font-size:1.5rem;padding:10px 30px">▶ Los geht's</button></div>
   </div>
-  <div class="hint" style="margin-top:10px">Prototyp · Version 2026-10-18b</div>
+  <div class="hint" style="margin-top:10px">Prototyp · Version 2026-10-18d</div>
 </section>
 
 <!-- ============ Spiel ============ -->
 <section id="gameWrap" class="wrap hidden">
   <div id="game">
-    <div class="boardbox"><svg id="board"></svg></div>
+    <div class="boardbox"><svg id="board"></svg>
+      <div class="zoom"><button class="chip" id="zIn" title="vergrößern">＋</button><button class="chip" id="zOut" title="verkleinern">−</button><button class="chip" id="zReset" title="alles zeigen">⟲</button></div></div>
     <div class="panel sk">
       <div class="hint" id="roundInfo">Runde 1 / 5</div>
       <div class="eqbox"><div class="hint" id="eqLbl">Zeichne die Gerade:</div><div class="eq" id="eqTxt"></div></div>
@@ -132,6 +144,10 @@ const show = (id, on = true) => $(id).classList.toggle('hidden', !on);
 const NS = 'http://www.w3.org/2000/svg';
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const fmt = v => (Math.round(v * 100) / 100).toString().replace('.', ',').replace('-', '−');
+/* Das Minus der Handschrift ist kaum zu sehen → Minus in einer klaren Schrift */
+const mfix = h => h.replace(/−/g, '<span class="mi">−</span>');
+const escH = t => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+function setT(e, t){ e.innerHTML = escH(t).replace(/−/g, '<tspan font-family="Arial, Helvetica, sans-serif" font-weight="700">−</tspan>'); }
 
 /* ---------- Töne ---------- */
 let AC = null;
@@ -247,8 +263,18 @@ function evaluate(eq, L){
 }
 
 /* ---------- Koordinatensystem zeichnen (leicht handgezeichnet) ---------- */
-const U = 50, PAD = .9;   // px pro Kästchen, Rand in Kästchen
+const U = 50, PAD = .7;   // px pro Kästchen, Rand in Kästchen
 const svg = $('board');
+let BASE = null, VB = null;   // sichtbarer Ausschnitt (Zoom)
+function setVB(){ const zw = BASE.w / VB.w; VB.w = clamp(VB.w, BASE.w / 3.5, BASE.w); VB.h = VB.w * BASE.h / BASE.w;
+  VB.x = clamp(VB.x, -BASE.w * .05, BASE.w * 1.05 - VB.w); VB.y = clamp(VB.y, -BASE.h * .05, BASE.h * 1.05 - VB.h);
+  if (VB.w >= BASE.w - .5){ VB.x = 0; VB.y = 0; }
+  svg.setAttribute('viewBox', `${VB.x} ${VB.y} ${VB.w} ${VB.h}`); void zw;
+  const z = $('zReset'); if (z) z.classList.toggle('on', VB.w < BASE.w - .5); }
+function zoomAt(f, cx, cy){   // f > 1 = vergrößern; cx/cy in Bildschirm-Pixeln
+  const r = svg.getBoundingClientRect(), ux = VB.x + (cx - r.left) / r.width * VB.w, uy = VB.y + (cy - r.top) / r.height * VB.h;
+  const nw = clamp(VB.w / f, BASE.w / 3.5, BASE.w), nh = nw * BASE.h / BASE.w;
+  VB.x = ux - (cx - r.left) / r.width * nw; VB.y = uy - (cy - r.top) / r.height * nh; VB.w = nw; VB.h = nh; setVB(); }
 const X = x => (x - W().x0 + PAD) * U, Y = y => (W().y1 - y + PAD) * U;
 const el = (tag, at, parent) => { const e = document.createElementNS(NS, tag); for (const k in at) e.setAttribute(k, at[k]); (parent || svg).appendChild(e); return e; };
 let seedN = 1, FS = 1; const rc = () => rough.svg(svg);   // FS: Schrift größer auf kleinen Bildschirmen
@@ -256,7 +282,8 @@ const ro = o => Object.assign({roughness:.55, bowing:.6, stroke:'#1e1e1e', strok
 let layerPlayers, layerCur, layerEval;
 function drawBoard(){
   const w = W(); svg.innerHTML = ''; seedN = 7; FS = (svg.clientWidth || 700) < 520 ? 1.55 : 1;
-  svg.setAttribute('viewBox', `0 0 ${(w.x1 - w.x0 + 2 * PAD) * U} ${(w.y1 - w.y0 + 2 * PAD) * U}`);
+  BASE = {x:0, y:0, w:(w.x1 - w.x0 + 2 * PAD) * U, h:(w.y1 - w.y0 + 2 * PAD) * U};
+  if (!VB || VB.bw !== BASE.w) VB = {...BASE, bw:BASE.w}; setVB();
   const g = el('g', {});
   for (let x = w.x0; x <= w.x1; x++) el('line', {x1:X(x), y1:Y(w.y0) + 10, x2:X(x), y2:Y(w.y1) - 10, stroke:'#a5c8ea', 'stroke-width':1.2}, g);
   for (let y = w.y0; y <= w.y1; y++) el('line', {x1:X(w.x0) - 10, y1:Y(y), x2:X(w.x1) + 10, y2:Y(y), stroke:'#a5c8ea', 'stroke-width':1.2}, g);
@@ -265,7 +292,7 @@ function drawBoard(){
   g.appendChild(rc().line(X(ax), Y(w.y0) + 18, X(ax), Y(w.y1) - 26, ro({strokeWidth:2.6})));
   g.appendChild(rc().linearPath([[X(w.x1) + 14, Y(ay) - 9], [X(w.x1) + 27, Y(ay)], [X(w.x1) + 14, Y(ay) + 9]], ro({strokeWidth:2.6})));
   g.appendChild(rc().linearPath([[X(ax) - 9, Y(w.y1) - 14], [X(ax), Y(w.y1) - 27], [X(ax) + 9, Y(w.y1) - 14]], ro({strokeWidth:2.6})));
-  const txt = (x, y, t, o = {}) => { const e = el('text', {x, y, 'font-family':'Gochi Hand, cursive', 'font-size':(o.size || 19) * FS, fill:o.fill || '#333', 'text-anchor':o.anchor || 'middle'}, g); e.textContent = t; return e; };
+  const txt = (x, y, t, o = {}) => { const e = el('text', {x, y, 'font-family':'Gochi Hand, cursive', 'font-size':(o.size || 19) * FS, fill:o.fill || '#333', 'text-anchor':o.anchor || 'middle'}, g); setT(e, t); return e; };
   for (let x = w.x0; x <= w.x1; x++){ if (x === ax) continue; g.appendChild(rc().line(X(x), Y(ay) - 6, X(x), Y(ay) + 6, ro({strokeWidth:1.6}))); txt(X(x), Y(ay) + 24 * FS, fmt(x)); }
   for (let y = w.y0; y <= w.y1; y++){ if (y === ay) continue; g.appendChild(rc().line(X(ax) - 6, Y(y), X(ax) + 6, Y(y), ro({strokeWidth:1.6}))); txt(X(ax) - 12, Y(y) + 6, fmt(y), {anchor:'end'}); }
   txt(X(ax) - 12, Y(ay) + 22, '0', {anchor:'end'});
@@ -280,7 +307,7 @@ function lineOf(L, color, o = {}){   // dicke, halbtransparente Spieler-Gerade (
   if (o.dots !== false){ el('circle', {cx:X(L.p1.x), cy:Y(L.p1.y), r:9, fill:color, stroke:'#1e1e1e', 'stroke-width':2}, g); el('circle', {cx:X(L.p2.x), cy:Y(L.p2.y), r:7, fill:'#fff', stroke:color, 'stroke-width':3}, g); }
   return {g, seg};
 }
-function label(g, x, y, t, o = {}){ const e = el('text', {x, y, 'font-family':'Gochi Hand, cursive', 'font-size':(o.size || 22) * FS, fill:o.fill || '#1e1e1e', 'text-anchor':o.anchor || 'middle', 'paint-order':'stroke', stroke:'#fff', 'stroke-width':5}, g); e.textContent = t; return e; }
+function label(g, x, y, t, o = {}){ const e = el('text', {x, y, 'font-family':'Gochi Hand, cursive', 'font-size':(o.size || 22) * FS, fill:o.fill || '#1e1e1e', 'text-anchor':o.anchor || 'middle', 'paint-order':'stroke', stroke:'#fff', 'stroke-width':5}, g); setT(e, t); return e; }
 
 /* ---------- Zeichnen mit dem Finger ---------- */
 function toUnits(e){
@@ -299,10 +326,29 @@ function renderCur(){
   $('doneBtn').disabled = !ok;
   $('drawHint').textContent = ok ? 'Passt? → ✓ Abgeben · sonst einfach neu zeichnen' : '👉 mit gedrücktem Finger weiter ziehen';
 }
-svg.addEventListener('pointerdown', e => { if (S.phase !== 'draw') return; e.preventDefault(); ac(); svg.setPointerCapture(e.pointerId); dragging = true; const p = toUnits(e); S.cur = {p1:p, p2:p}; sTick(); renderCur(); });
-svg.addEventListener('pointermove', e => { if (!dragging) return; const p = toUnits(e); if (p.x !== S.cur.p2.x || p.y !== S.cur.p2.y){ S.cur.p2 = p; if (S.snap) sTick(); renderCur(); } });
-const endDrag = () => { dragging = false; };
+const PTR = new Map(); let pinch = null, before = null;
+const mid = () => { const a = [...PTR.values()]; return {x:(a[0].x + a[1].x) / 2, y:(a[0].y + a[1].y) / 2, d:Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y)}; };
+svg.addEventListener('pointerdown', e => {
+  e.preventDefault(); ac(); try { svg.setPointerCapture(e.pointerId); } catch(_){} PTR.set(e.pointerId, {x:e.clientX, y:e.clientY});
+  if (PTR.size >= 2){   // zweiter Finger: Zoomen/Verschieben, Zeichnen abbrechen und alte Gerade behalten
+    if (dragging){ dragging = false; S.cur = before; renderCur(); }
+    const m = mid(); pinch = {m, vb:{...VB}}; return; }
+  if (pinch || S.phase !== 'draw') return;
+  before = S.cur ? {p1:{...S.cur.p1}, p2:{...S.cur.p2}} : null;
+  dragging = true; const p = toUnits(e); S.cur = {p1:p, p2:p}; sTick(); renderCur();
+});
+svg.addEventListener('pointermove', e => {
+  if (PTR.has(e.pointerId)) PTR.set(e.pointerId, {x:e.clientX, y:e.clientY});
+  if (pinch && PTR.size >= 2){ const m = mid(), r = svg.getBoundingClientRect(), v = pinch.vb;
+    const nw = clamp(v.w * pinch.m.d / Math.max(20, m.d), BASE.w / 3.5, BASE.w), nh = nw * BASE.h / BASE.w;
+    const ux = v.x + (pinch.m.x - r.left) / r.width * v.w, uy = v.y + (pinch.m.y - r.top) / r.height * v.h;
+    VB.x = ux - (m.x - r.left) / r.width * nw; VB.y = uy - (m.y - r.top) / r.height * nh; VB.w = nw; VB.h = nh; setVB(); return; }
+  if (!dragging) return; const p = toUnits(e); if (p.x !== S.cur.p2.x || p.y !== S.cur.p2.y){ S.cur.p2 = p; if (S.snap) sTick(); renderCur(); } });
+const endDrag = e => { PTR.delete(e.pointerId); if (PTR.size < 2 && pinch && PTR.size === 0) pinch = null; if (!PTR.size) pinch = null; dragging = false; };
 svg.addEventListener('pointerup', endDrag); svg.addEventListener('pointercancel', endDrag);
+svg.addEventListener('wheel', e => { e.preventDefault(); zoomAt(e.deltaY < 0 ? 1.15 : 1 / 1.15, e.clientX, e.clientY); }, {passive:false});
+const zc = f => { const r = svg.getBoundingClientRect(); zoomAt(f, r.left + r.width / 2, r.top + r.height / 2); };
+$('zIn').onclick = () => zc(1.4); $('zOut').onclick = () => zc(1 / 1.4); $('zReset').onclick = () => { VB = {...BASE, bw:BASE.w}; setVB(); };
 $('clearBtn').onclick = () => { S.cur = null; renderCur(); $('doneBtn').disabled = true; $('drawHint').textContent = '👆 Tippen = 1. Punkt · ziehen = 2. Punkt'; };
 
 /* ---------- Ablauf ---------- */
@@ -315,7 +361,7 @@ function startGame(){
 }
 function nextRound(){
   S.round++; S.eq = makeEq(); S.turn = 0; S.players.forEach(p => { p.line = null; p.res = null; });
-  $('roundInfo').textContent = `Runde ${S.round} / ${S.rounds}`; $('eqTxt').innerHTML = S.eq.text; $('eqLbl').textContent = 'Zeichne die Gerade:';
+  $('roundInfo').textContent = `Runde ${S.round} / ${S.rounds}`; $('eqTxt').innerHTML = mfix(S.eq.text); $('eqLbl').textContent = 'Zeichne die Gerade:';
   drawBoard(); startTurn();
 }
 function startTurn(){
@@ -332,7 +378,7 @@ $('doneBtn').onclick = () => {
 };
 function showEval(){
   S.phase = 'eval'; show('drawUi', false); show('evalUi'); $('who').innerHTML = ''; $('eqLbl').textContent = 'Lösung:';
-  if (S.eq.kind !== 'y') $('eqTxt').innerHTML = S.eq.text + `<div style="font-size:.6em;color:#2b8a3e">= ${S.eq.plain}</div>`;
+  if (S.eq.kind !== 'y') $('eqTxt').innerHTML = mfix(S.eq.text + `<div style="font-size:.6em;color:#2b8a3e">= ${S.eq.plain}</div>`);
   S.players.forEach(p => { p.res = evaluate(S.eq, p.line); p.total += p.res.pts; });
   drawBoard();
   const seg = clipLine({x:0, y:S.eq.b}, {x:1, y:S.eq.m + S.eq.b});
