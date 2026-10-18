@@ -196,6 +196,7 @@ body.hb .pbody{padding-bottom:64px}
     <button class="chip" id="hSnd">🔊</button>
     <button class="chip" id="hFs">⛶</button>
     <button class="chip gold hidden" id="hNext">Weiter ▶</button>
+    <button class="chip go hidden" id="hRestart">🔄 Neues Spiel</button>
   </div>
   <div id="hLobby">
     <div class="joinbox sk"><div class="muted">Mitmachen auf dem Handy:</div><div class="qr" id="hQr"></div><div class="url" id="hUrl"></div>
@@ -306,7 +307,7 @@ function keepRegistered(getPeer, lampId){
 }
 
 const PREFIX = 'hvh-geradenlive-';
-const APP_VERSION = '2026-10-18e';
+const APP_VERSION = '2026-10-18f';
 const AUTOJOIN_KEY = 'geradenlive-autojoin';
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const EMOJIS = ['😀','😎','🤓','🥳','🤩','😜','🤠','🥸','😇','🤖','👻','👽','💩','🐱','🐶','🦊','🐼','🐸','🦁','🐯','🐵','🐙','🦄','🐝','🐢','🦖','🐧','🦉','🐬','🦈','🍕','🍩','🍉','⚽','🏀','🎮','🎸','🚀','🌈','🔥','⭐','💎','👑','🌵'];
@@ -941,7 +942,21 @@ function hAdvance(){ ac();
   if (H.phase === 'reveal'){ if (H.round >= H.rounds) return hEnd(); return hNextRound(); }
 }
 function hEnd(){ clearTimeout(H.timer); clearTimeout(H.autoT); H.phase = 'end'; hPush();
-  const list = hRanking(); if (!H.room) setTimeout(() => showPodium(list.map(p => ({avatar:p.avatar, name:p.name, score:p.total, place:p.place}))), 600); }
+  const list = hRanking(); if (!H.room) setTimeout(() => { showPodium(list.map(p => ({avatar:p.avatar, name:p.name, score:p.total, place:p.place}))); addRestartBtn(); }, 600); }
+/* Neues Spiel im selben Raum: alle bleiben verbunden, zurück in die Lobby → Optionen neu setzen → starten */
+function hRestart(){
+  if (H.phase !== 'end') return;
+  clearTimeout(H.timer); clearTimeout(H.autoT); if (hStop) hStop();
+  H.phase = 'lobby'; H.round = 0; H.eq = null; H.order = []; H.endsAt = 0; H.lobbySig = '';
+  H.players.forEach(p => { p.total = 0; p.line = null; p.draft = null; p.sub = false; p.res = null; p.bonus = 0; p.auto = false; p.place = null; p.inGame = true; });
+  document.querySelectorAll('#podiumOv, #hitOv, .confetti').forEach(x => x.remove());
+  if (!H.room){ show('hGame', false); show('hLobby'); show('hRestart', false); show('hIsoCard', false); hKey = ''; HREV = {s:null, done:false, sel:null}; }
+  H.players.forEach(p => hSend(p, {t:'wait', lobby:true, restart:true, text: H.room ? `Neues Spiel! Warte, bis ${hCreatorName()} startet …` : 'Neues Spiel! Schau auf den Beamer – gleich geht\'s los.'}));
+  hRender(); hs(sBlip);
+}
+function addRestartBtn(){ const ov = document.getElementById('podiumOv'); if (!ov || ov.querySelector('.restart')) return;
+  const b = document.createElement('button'); b.className = 'go restart'; b.textContent = '🔄 Neues Spiel (alle bleiben im Raum)';
+  b.style.cssText = 'position:absolute;right:14px;bottom:14px;font-size:1.1rem;z-index:2;max-width:calc(100vw - 28px)'; b.onclick = hRestart; ov.appendChild(b); }
 function hRanking(){ const l = inGame().sort((a, b) => b.total - a.total); let pl = 0, last = null; l.forEach((p, i) => { if (p.total !== last){ pl = i + 1; last = p.total; } p.place = pl; }); return l; }
 function hView(p){
   const rev = H.phase === 'reveal' || H.phase === 'end';
@@ -978,10 +993,10 @@ function showPodium(src){
   ov.querySelector('.rest').textContent = rest;
   ov.querySelector('.close').onclick = () => ov.remove();
   document.body.appendChild(ov);
-  setTimeout(() => { c3.classList.add('on'); sBlip(); }, 700);
-  setTimeout(() => { c2.classList.add('on'); sBlip(); }, 2000);
-  setTimeout(() => sDrum(1.8), 3000);
-  setTimeout(() => { c1.classList.add('on'); sFanfare(); confetti(180); }, 4900);
+  setTimeout(() => { if (!ov.isConnected) return; c3.classList.add('on'); sBlip(); }, 700);
+  setTimeout(() => { if (!ov.isConnected) return; c2.classList.add('on'); sBlip(); }, 2000);
+  setTimeout(() => { if (ov.isConnected) sDrum(1.8); }, 3000);
+  setTimeout(() => { if (!ov.isConnected) return; c1.classList.add('on'); sFanfare(); confetti(180); }, 4900);
 }
 
 
@@ -991,7 +1006,7 @@ function startHost(){
   show('home', false); show('host'); setupFs($('hFs')); buildChips(); applyDark();
   HB = makeBoard($('hBoard'), {id:'h'});
   $('hStart').onclick = () => { ac(); hStartGame(); };
-  $('hNext').onclick = hAdvance;
+  $('hNext').onclick = hAdvance; $('hRestart').onclick = hRestart;
   $('hSnd').onclick = () => { SND.on = !SND.on; $('hSnd').textContent = SND.on ? '🔊' : '🔇'; };
   $('hDark').onclick = toggleDark;
   $('hSideList').onclick = e => { const tr = e.target.closest('tr[data-pid]'); if (tr) hIso(tr.dataset.pid); };
@@ -1007,7 +1022,7 @@ function hRender(){
   if (H.phase === 'lobby'){ $('hPhase').textContent = 'Lobby'; show('hNext', false); return; }
   const s = hView(null), key = s.phase + s.round, fresh = key !== hKey; hKey = key;
   $('hPhase').textContent = {draw:'✏️ Zeichnen!', reveal:'⚔️ Auflösung', end:'🏁 Ende'}[s.phase];
-  show('hNext', s.phase !== 'end'); $('hNext').textContent = s.phase === 'draw' ? '⏹ Zeit beenden' : s.round >= s.rounds ? '🏆 Siegerehrung' : 'Nächste Runde ▶';
+  show('hNext', s.phase !== 'end'); show('hRestart', s.phase === 'end'); $('hNext').textContent = s.phase === 'draw' ? '⏹ Zeit beenden' : s.round >= s.rounds ? '🏆 Siegerehrung' : 'Nächste Runde ▶';
   $('hRound').textContent = `Runde ${s.round} / ${s.rounds}`;
   if (s.phase === 'draw'){
     if (fresh){ if (hStop) hStop(); HREV = {s:null, done:false, sel:null}; show('hIsoCard', false); HB.draw(s.range, s.snap); $('hEq').innerHTML = mfix(s.eq.text); banner(`Runde ${s.round}`); hs(sBlip); startTimer($('hTimer'), s.ends, true); }
@@ -1178,7 +1193,8 @@ function pOnMsg(m){
   if (m.t === 'welcome' && m.v && m.v !== APP_VERSION){ let done = false; try { done = sessionStorage.getItem('vfix-' + m.v) === '1'; sessionStorage.setItem('vfix-' + m.v, '1'); sessionStorage.setItem(AUTOJOIN_KEY, C.code || ''); } catch(e){}
     if (!done){ netInfo('Neue Version – lade neu …'); location.replace(freshUrl()); return; } }
   if (m.t === 'welcome'){ C.name = m.name; C.avatar = m.avatar; C.color = m.color; C.room = !!m.room; pTop(); }
-  else if (m.t === 'wait'){ pTop(); if (C.isCreator && m.lobby){ pScreen('pRoom'); return; } $('pWaitE').textContent = C.avatar; $('pWaitS').textContent = m.text; pScreen('pWait'); }
+  else if (m.t === 'wait'){ if (m.restart){ document.querySelectorAll('#podiumOv, #hitOv, .confetti').forEach(x => x.remove()); if (C.stop) C.stop(); clearInterval(C.fbT); C.score = 0; C.key = ''; C.st = null; show('rankDrawer', false); show('pHostBar', false); document.body.classList.remove('hb'); }
+    pTop(); if (C.isCreator && m.lobby){ pScreen('pRoom'); return; } $('pWaitE').textContent = C.avatar; $('pWaitS').textContent = m.text; pScreen('pWait'); }
   else if (m.t === 'lobby'){ const html = m.players.map(x => `<div class="pchip"><span class="e">${esc(x.avatar)}</span>${esc(x.name)}</div>`).join(''); $('pWaitList').innerHTML = html; if (C.isCreator) $('rList').innerHTML = html; }
   else if (m.t === 'state') pState(m);
   else if (m.t === 'closed'){ C.gen++; try { C.peer && C.peer.destroy(); } catch(e){} pScreen('pJoin'); $('pJoinBtn').disabled = false; $('pJoinMsg').textContent = '🔒 Beitreten ist gerade gesperrt.'; }
@@ -1241,8 +1257,10 @@ function pState(s){
     const meP = s.players.find(p => p.pid === me.pid) || {};
     el.innerHTML = `<div class="center2"><div class="bigemoji">${meP.place === 1 ? '🏆' : meP.place <= 3 ? ['','🥇','🥈','🥉'][meP.place] : '🎯'}</div>
       <div class="ti" style="font-size:2rem">Platz ${meP.place || '–'} von ${s.players.length}</div><div class="big">${me.total} Punkte</div>
-      <div style="width:min(440px,100%)">${rankHtml(s.players, me.pid)}</div></div>`;
-    if (C.room) setTimeout(() => showPodium([...s.players].sort((a, b) => a.place - b.place).map(p => ({avatar:p.avatar, name:p.name, score:p.total, place:p.place}))), 500);
+      <div style="width:min(440px,100%)">${rankHtml(s.players, me.pid)}</div>
+      ${C.isCreator ? '<button class="go" id="pRestart" style="font-size:1.25rem">🔄 Neues Spiel – alle bleiben im Raum</button>' : `<div class="muted">Vielleicht startet ${esc(s.host || 'der Host')} gleich ein neues Spiel …</div>`}</div>`;
+    if (C.isCreator) $('pRestart').onclick = hRestart;
+    if (C.room) setTimeout(() => { showPodium([...s.players].sort((a, b) => a.place - b.place).map(p => ({avatar:p.avatar, name:p.name, score:p.total, place:p.place}))); if (C.isCreator) addRestartBtn(); }, 500);
   }
   pTop(); pRank();
 }
