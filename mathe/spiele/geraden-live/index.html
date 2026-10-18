@@ -311,7 +311,7 @@ function keepRegistered(getPeer, lampId){
 }
 
 const PREFIX = 'hvh-geradenlive-';
-const APP_VERSION = '2026-10-18i';
+const APP_VERSION = '2026-10-18j';
 const AUTOJOIN_KEY = 'geradenlive-autojoin';
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const EMOJIS = ['😀','😎','🤓','🥳','🤩','😜','🤠','🥸','😇','🤖','👻','👽','💩','🐱','🐶','🦊','🐼','🐸','🦁','🐯','🐵','🐙','🦄','🐝','🐢','🦖','🐧','🦉','🐬','🦈','🍕','🍩','🍉','⚽','🏀','🎮','🎸','🚀','🌈','🔥','⭐','💎','👑','🌵'];
@@ -469,7 +469,7 @@ function makeEq(level, range){
   return {m:1, b:0, p:1, q:1, text:'y = x', kind:'y', pts:[], plain:'y = x'};
 }
 /* Bewertung (max. 110 + Zeitbonus):
-   📍 30 Ankerpunkt · 📏 35 Lage (Ø-Abstand) · 📐 35 Steigung (bis 4° voll, ab 20° null) · 🎯 +10 Volltreffer (Lösung komplett im dicken Strich)
+   📍 30 Ankerpunkt · 📏 35 Lage (Ø-Abstand) · 📐 35 Steigung (bis 4° voll, ab 15° null) · 🎯 +10 Volltreffer (Lösung komplett im dicken Strich)
    Anker und Steigung zählen etwa gleich viel – wie in der Klassenarbeit (1 BE y-Achsenabschnitt, 1 BE Steigung). */
 const HALF = .3, lin = (v, full, zero) => clamp((zero - v) / (zero - full), 0, 1);
 function evaluate(eq, L, w){
@@ -483,7 +483,7 @@ function evaluate(eq, L, w){
   const mean = sum / wsum, full = mx <= HALF + 1e-9;
   const angT = Math.atan(eq.m) * 180 / Math.PI; let angP = Math.atan2(dy, dx) * 180 / Math.PI; if (angP > 90) angP -= 180; if (angP <= -90) angP += 180;
   let dAng = Math.abs(angT - angP); if (dAng > 90) dAng = 180 - dAng;
-  const pA = Math.round(30 * lin(dA, .25, 1.5)), pL = Math.round(35 * lin(mean, .2, 2.5)), pS = Math.round(35 * lin(dAng, 4, 20)), pB = full ? 10 : 0;
+  const pA = Math.round(30 * lin(dA, .25, 1.5)), pL = Math.round(35 * lin(mean, .2, 2.5)), pS = Math.round(35 * lin(dAng, 4, 15)), pB = full ? 10 : 0;
   return {pts: pA + pL + pS + pB, pA, pL, pS, pB, full, mean};
 }
 const validLine = L => L && L.p1 && L.p2 && Math.hypot(L.p2.x - L.p1.x, L.p2.y - L.p1.y) >= 1.5;
