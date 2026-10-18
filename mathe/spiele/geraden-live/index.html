@@ -62,7 +62,7 @@ label{display:block;font-size:.95rem;color:var(--muted);margin-top:6px}
 @keyframes pulse{to{transform:scale(1.12)}}
 .rk{width:100%;border-collapse:collapse;font-size:1.05rem}
 .rk td{padding:3px 5px;border-bottom:1px solid rgba(128,128,128,.25)}.rk td.n{text-align:right;white-space:nowrap}
-.rk tr{animation:pop .4s cubic-bezier(.2,1.8,.4,1) both}.rk tr.me td{background:rgba(255,224,102,.35)}
+.rk tr.nw{animation:pop .4s cubic-bezier(.2,1.8,.4,1) both}.rk tr.me td{background:rgba(255,224,102,.35)}
 .rk .b{font-size:.8rem;color:var(--muted)}
 .rk.sm{font-size:.82rem}.rk.sm td{padding:0 4px}.rk.sm .b{display:none}.rk.sm .big{font-size:1rem}
 .big{font-family:"Shantell Sans",cursive;font-weight:700;font-size:1.4rem}
@@ -131,7 +131,7 @@ body.hb .pbody{padding-bottom:64px}
 @keyframes popS{from{transform:scale(0);opacity:0}}
 .fadeS{animation:fadeS .4s var(--w,0s) both}@keyframes fadeS{from{opacity:0}}
 .flash{animation:flashS .6s var(--w,0s) 2 alternate}@keyframes flashS{to{opacity:.25}}
-.pulseS{transform-box:fill-box;transform-origin:center;animation:pulseS 1s ease-out var(--w,0s) 2}@keyframes pulseS{0%{transform:scale(1);opacity:.9}100%{transform:scale(3.2);opacity:0}}
+.pulseS{transform-box:fill-box;transform-origin:center;animation:pulseS 1s ease-out var(--w,0s) 2 both}@keyframes pulseS{0%{transform:scale(1);opacity:0}1%{transform:scale(1);opacity:.9}100%{transform:scale(3.2);opacity:0}}
 /* Spieler-Layout: schmal = untereinander, breit (PC/Tablet quer) = Brett links, Bedienung + Rangliste rechts */
 .pgrid{display:flex;flex-direction:column}
 .pside{display:flex;flex-direction:column;gap:6px}
@@ -152,7 +152,7 @@ body.hb .pbody{padding-bottom:64px}
 @keyframes drumA{0%{opacity:0;transform:translateX(-50%) scale(.5)}12%{opacity:1;transform:translateX(-50%) scale(1.05)}20%,40%,60%,80%{transform:translateX(-50%) rotate(-2deg)}30%,50%,70%{transform:translateX(-50%) rotate(2deg)}88%{opacity:1}100%{opacity:0;transform:translateX(-50%) scale(.9)}}
 .landS{transform-box:view-box;animation:landA .3s cubic-bezier(.2,1.5,.4,1) var(--w,0s) both}
 @keyframes landA{0%{opacity:0;transform:scale(1.5)}55%{opacity:1;transform:scale(.97)}100%{opacity:1;transform:scale(1)}}
-.faint{opacity:.13}
+.faint{opacity:.3}
 .solway{margin-top:8px;padding:6px 8px;border:2px dashed #fab005;border-radius:10px;font-size:.95rem;line-height:1.35;animation:pop .4s both}
 .resCard.gold{background:linear-gradient(135deg,#ffe066,#ffd43b);color:#1e1e1e}
 .fbhead{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap}
@@ -304,7 +304,7 @@ function keepRegistered(getPeer, lampId){
 }
 
 const PREFIX = 'hvh-geradenlive-';
-const APP_VERSION = '2026-10-18b';
+const APP_VERSION = '2026-10-18d';
 const AUTOJOIN_KEY = 'geradenlive-autojoin';
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const EMOJIS = ['😀','😎','🤓','🥳','🤩','😜','🤠','🥸','😇','🤖','👻','👽','💩','🐱','🐶','🦊','🐼','🐸','🦁','🐯','🐵','🐙','🦄','🐝','🐢','🦖','🐧','🦉','🐬','🦈','🍕','🍩','🍉','⚽','🏀','🎮','🎸','🚀','🌈','🔥','⭐','💎','👑','🌵'];
@@ -627,10 +627,13 @@ function runReveal(B, s, o = {}){
   // 2) Nicht-Volltreffer schlagen ein – schlecht → knapp
   R.miss.forEach((p, i) => { const t = R.t0 + i * R.dt, sg = clipLine(p.line.p1, p.line.p2, w); if (!sg) return;
     const g = B.el('g', {class:'landS', style:`--w:${t}s;transform-origin:${B.X(p.line.p1.x)}px ${B.Y(p.line.p1.y)}px`}, B.lp);
-    B.el('line', {x1:B.X(sg[0].x), y1:B.Y(sg[0].y), x2:B.X(sg[1].x), y2:B.Y(sg[1].y), stroke:p.color, 'stroke-opacity':.5, 'stroke-width':2 * HALF * U, 'stroke-linecap':'round'}, g);
-    B.el('line', {x1:B.X(sg[0].x), y1:B.Y(sg[0].y), x2:B.X(sg[1].x), y2:B.Y(sg[1].y), stroke:p.color, 'stroke-width':2.5}, g);
-    B.el('circle', {cx:B.X(p.line.p1.x), cy:B.Y(p.line.p1.y), r:7, fill:p.color, stroke:'currentColor', 'stroke-width':2}, g);
-    B.el('circle', {cx:B.X(p.line.p1.x), cy:B.Y(p.line.p1.y), r:10, fill:'none', stroke:p.color, 'stroke-width':3, class:'pulseS', style:`--w:${t}s`}, B.lp);
+    // Nicht-Volltreffer: nur eine einfache, farbige Gerade (kein dicker Strich)
+    if (o.me && p.pid === o.me){   // individuelle Ansicht: die eigene Gerade hervorgehoben (dicker Strich + Ankerpunkt)
+      B.el('line', {x1:B.X(sg[0].x), y1:B.Y(sg[0].y), x2:B.X(sg[1].x), y2:B.Y(sg[1].y), stroke:p.color, 'stroke-opacity':.5, 'stroke-width':2 * HALF * U, 'stroke-linecap':'round'}, g);
+      B.el('line', {x1:B.X(sg[0].x), y1:B.Y(sg[0].y), x2:B.X(sg[1].x), y2:B.Y(sg[1].y), stroke:p.color, 'stroke-width':3, 'stroke-dasharray':'6 6'}, g);
+      B.el('circle', {cx:B.X(p.line.p1.x), cy:B.Y(p.line.p1.y), r:9, fill:p.color, stroke:'currentColor', 'stroke-width':2}, g);
+      B.el('circle', {cx:B.X(p.line.p1.x), cy:B.Y(p.line.p1.y), r:12, fill:'none', stroke:p.color, 'stroke-width':3, class:'pulseS', style:`--w:${t}s`}, B.lp);
+    } else B.el('line', {x1:B.X(sg[0].x), y1:B.Y(sg[0].y), x2:B.X(sg[1].x), y2:B.Y(sg[1].y), stroke:p.color, 'stroke-width':4, 'stroke-linecap':'round'}, g);
     // Name klein am Ende der Geraden (rechtes Ende), gestaffelt
     const e = sg[1].x >= sg[0].x ? sg[1] : sg[0], oo = e === sg[1] ? sg[0] : sg[1], [ic, tg, col] = grade(p.res);
     const lw = (p.name.length + tg.length + 6) * fs * B.FS * .56, lh = fs * B.FS * 1.25;
@@ -777,7 +780,7 @@ function drawStep(B, k, sol, L, E, color){
    HOST
    ===================================================================== */
 const H = {peer:null, code:'', players:new Map(), phase:'lobby', room:false, late:'1', creatorPid:null, lobbySig:'',
-  time:45, rounds:5, level:'1', range:'6', snap:.5, auto:'0', bots:0,
+  time:45, rounds:5, level:'1', range:'6', snap:0, auto:'0', bots:0,
   round:0, eq:null, endsAt:0, timer:null, order:[], revealAt:0, autoT:null};
 const hs = f => { if (!H.room) f(); };
 const PCOL = ['#ff4d6d','#4dabf7','#51cf66','#cc5de8','#22d3ee','#748ffc','#f783ac','#94d82d','#9775fa','#20c997','#1c7ed6','#63e6be'];   // kein Gelb/Orange – Gold = Lösung
@@ -989,7 +992,8 @@ function hRender(){
 function hRankTable(t, shown, s, total){
   const rows = [...shown].sort((a, b) => (b.res.pts + b.bonus) - (a.res.pts + a.bonus)), miss = total ? s.players.filter(p => !p.line) : [];
   const sm = s.players.length > 11; t.classList.toggle('sm', sm);
-  t.innerHTML = rows.map(p => `<tr><td><span style="font-size:${sm ? 1 : 1.4}rem">${esc(p.avatar)}</span> <span style="color:${p.color}">${esc(p.name)}</span>
+  const old = new Set((t.dataset.seen || '').split(',')); t.dataset.seen = rows.map(p => p.pid).join(',');   // nur neue Zeilen animieren
+  t.innerHTML = rows.map(p => `<tr class="${old.has(p.pid) ? '' : 'nw'}"><td><span style="font-size:${sm ? 1 : 1.4}rem">${esc(p.avatar)}</span> <span style="color:${p.color}">${esc(p.name)}</span>
     <div class="b">📍${p.res.pA} 📏${p.res.pL} 📐${p.res.pS}${p.res.full ? ' 🎯+10' : ''}${p.bonus ? ' ⚡+' + p.bonus : ''}</div></td><td class="n big">+${p.res.pts + p.bonus}</td><td class="n muted">${p.total}</td></tr>`).join('')
     + miss.map(p => `<tr><td>${esc(p.avatar)} ${esc(p.name)} <span class="b">– keine Gerade</span></td><td class="n">0</td><td class="n muted">${p.total}</td></tr>`).join('');
 }
@@ -1168,7 +1172,7 @@ function pState(s){
     PB = makeBoard($('pBoard'), {id:'p'}); PB.draw(s.range, s.snap);
     const done = () => { C.revDone = true; C.score = me.total; pTop(); pRank(); pFeedback(s); };
     if (s.revealAge > 3000){ done(); }
-    else C.stop = runReveal(PB, s, {id:'p', sound:!!C.room, onEnd: done});
+    else C.stop = runReveal(PB, s, {id:'p', sound:!!C.room, me: me.pid, onEnd: done});
   } else if (s.phase === 'end'){
     if (!fresh) return; if (C.stop) C.stop(); C.score = me.total;
     const meP = s.players.find(p => p.pid === me.pid) || {};
@@ -1184,7 +1188,7 @@ function pFeedback(s){
   const me = s.me || {}, r = me.res, box = $('pRes'); if (!box) return; clearInterval(C.fbT);
   // Brett: nur Lösung (gold) + eigene Gerade, die anderen ganz blass
   PB.lp.innerHTML = ''; PB.le.innerHTML = ''; PB.lc.innerHTML = ''; PB.lx.innerHTML = '';
-  s.players.filter(p => p.line && p.pid !== me.pid).forEach(p => PB.thick(p.line, p.color, PB.lp, {dots:false, cls:'faint'}));
+  s.players.filter(p => p.line && p.pid !== me.pid).forEach(p => { const sg = clipLine(p.line.p1, p.line.p2, PB.W()); if (sg) PB.el('line', {x1:PB.X(sg[0].x), y1:PB.Y(sg[0].y), x2:PB.X(sg[1].x), y2:PB.Y(sg[1].y), stroke:p.color, 'stroke-width':3, class:'faint'}, PB.lp); });   // andere: nur dünn & blass
   PB.thick({p1:{x:0, y:s.sol.b}, p2:{x:1, y:s.sol.m + s.sol.b}}, '#fab005', PB.le, {dots:false});
   if (!r){ box.innerHTML = `<div class="resCard sk"><div class="pts">0</div><div>Keine Gerade abgegeben 😶</div><div class="fbtext" id="fbText"></div></div>`;
     const lw = feedbackSteps(s.sol, {p1:{x:0, y:s.sol.b}, p2:{x:1, y:s.sol.m + s.sol.b}}, me, PB.W()).steps.pop(); $('fbText').innerHTML = '🧭 ' + lw.text; solHelp(PB, s.sol, PB.lx, .2); return; }
