@@ -311,7 +311,7 @@ function keepRegistered(getPeer, lampId){
 }
 
 const PREFIX = 'hvh-geradenlive-';
-const APP_VERSION = '2026-10-18j';
+const APP_VERSION = '2026-10-18k';
 const AUTOJOIN_KEY = 'geradenlive-autojoin';
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const EMOJIS = ['😀','😎','🤓','🥳','🤩','😜','🤠','🥸','😇','🤖','👻','👽','💩','🐱','🐶','🦊','🐼','🐸','🦁','🐯','🐵','🐙','🦄','🐝','🐢','🦖','🐧','🦉','🐬','🦈','🍕','🍩','🍉','⚽','🏀','🎮','🎸','🚀','🌈','🔥','⭐','💎','👑','🌵'];
@@ -469,7 +469,7 @@ function makeEq(level, range){
   return {m:1, b:0, p:1, q:1, text:'y = x', kind:'y', pts:[], plain:'y = x'};
 }
 /* Bewertung (max. 110 + Zeitbonus):
-   📍 30 Ankerpunkt · 📏 35 Lage (Ø-Abstand) · 📐 35 Steigung (bis 4° voll, ab 15° null) · 🎯 +10 Volltreffer (Lösung komplett im dicken Strich)
+   📍 30 Ankerpunkt (bis 0,3 voll, ab 1,8 null) · 📏 35 Lage (Ø-Abstand, bis 0,3 voll, ab 2,8 null) · 📐 35 Steigung (bis 4° voll, ab 15° null) · 🎯 +10 Volltreffer (Lösung komplett im dicken Strich)
    Anker und Steigung zählen etwa gleich viel – wie in der Klassenarbeit (1 BE y-Achsenabschnitt, 1 BE Steigung). */
 const HALF = .3, lin = (v, full, zero) => clamp((zero - v) / (zero - full), 0, 1);
 function evaluate(eq, L, w){
@@ -483,7 +483,7 @@ function evaluate(eq, L, w){
   const mean = sum / wsum, full = mx <= HALF + 1e-9;
   const angT = Math.atan(eq.m) * 180 / Math.PI; let angP = Math.atan2(dy, dx) * 180 / Math.PI; if (angP > 90) angP -= 180; if (angP <= -90) angP += 180;
   let dAng = Math.abs(angT - angP); if (dAng > 90) dAng = 180 - dAng;
-  const pA = Math.round(30 * lin(dA, .25, 1.5)), pL = Math.round(35 * lin(mean, .2, 2.5)), pS = Math.round(35 * lin(dAng, 4, 15)), pB = full ? 10 : 0;
+  const pA = Math.round(30 * lin(dA, HALF, 1.8)), pL = Math.round(35 * lin(mean, HALF, 2.8)), pS = Math.round(35 * lin(dAng, 4, 15)), pB = full ? 10 : 0;
   return {pts: pA + pL + pS + pB, pA, pL, pS, pB, full, mean};
 }
 const validLine = L => L && L.p1 && L.p2 && Math.hypot(L.p2.x - L.p1.x, L.p2.y - L.p1.y) >= 1.5;
@@ -787,9 +787,9 @@ function feedbackSteps(sol, L, me, w){
   const E = explain(sol, L, w), steps = [];
   const P1 = `(${r1(L.p1.x)}|${r1(L.p1.y)})`;
   steps.push({k:'anker', ic:'📍', pts:E.pA, max:30, ok:E.pA >= 27,
-    text: E.dA <= .25 ? `✅ Dein Startpunkt ${P1} liegt genau auf der Lösungsgeraden.` : `Dein Startpunkt ${P1} liegt <b>${r1(E.dA)} Kästchen</b> neben der Lösung (gelber Punkt = nächster Punkt auf der Lösung).${E.dA >= 1.5 ? ' Ab 1,5 Kästchen gibt es hier 0 Punkte.' : ''}`});
+    text: E.dA <= HALF ? `✅ Dein Startpunkt ${P1} liegt genau auf der Lösungsgeraden.` : `Dein Startpunkt ${P1} liegt <b>${r1(E.dA)} Kästchen</b> neben der Lösung (gelber Punkt = nächster Punkt auf der Lösung).${E.dA >= 1.8 ? ' Ab 1,8 Kästchen gibt es hier 0 Punkte.' : ''}`});
   steps.push({k:'lage', ic:'📏', pts:E.pL, max:35, ok:E.pL >= 32,
-    text: E.mean <= .2 ? '✅ Deine Gerade liegt auf der ganzen Länge dicht an der Lösung.' : `Im Schnitt <b>${r1(E.mean)} Kästchen</b> Abstand zur Lösung. <span style="color:#40c057">Grün</span> = im dicken Strich, <span style="color:#fa5252">rot</span> = daneben.`});
+    text: E.mean <= HALF ? '✅ Deine Gerade liegt auf der ganzen Länge dicht an der Lösung.' : `Im Schnitt <b>${r1(E.mean)} Kästchen</b> Abstand zur Lösung. <span style="color:#40c057">Grün</span> = im dicken Strich, <span style="color:#fa5252">rot</span> = daneben.`});
   let st;
   if (E.vert) st = `Deine Gerade ist senkrecht – die Lösung hat die Steigung m = ${mText(sol)}.`;
   else { const same = Math.sign(E.mP) === Math.sign(sol.m) || Math.abs(sol.m) < 1e-9 || Math.abs(E.mP) < .05;
@@ -813,9 +813,9 @@ function drawStep(B, k, sol, L, E, color){
     B.el('circle', {cx:X(L.p1.x), cy:Y(L.p1.y), r:16, fill:'none', stroke:color, 'stroke-width':4, class:'pulseS'}, g);
     B.el('circle', {cx:X(L.p1.x), cy:Y(L.p1.y), r:11, fill:color, stroke:'currentColor', 'stroke-width':2.5, class:'popS'}, g);
     if (E.dA > .05){ const len = Math.hypot(X(E.foot.x) - X(L.p1.x), Y(E.foot.y) - Y(L.p1.y)) + 1;
-      B.el('line', {x1:X(L.p1.x), y1:Y(L.p1.y), x2:X(E.foot.x), y2:Y(E.foot.y), stroke: E.dA <= .25 ? green : red, 'stroke-width':4, 'stroke-dasharray':len, class:'grow', style:`--len:${len};--w:.2s;--d:.6s;stroke-dashoffset:${len}`}, g);
+      B.el('line', {x1:X(L.p1.x), y1:Y(L.p1.y), x2:X(E.foot.x), y2:Y(E.foot.y), stroke: E.dA <= HALF ? green : red, 'stroke-width':4, 'stroke-dasharray':len, class:'grow', style:`--len:${len};--w:.2s;--d:.6s;stroke-dashoffset:${len}`}, g);
       B.el('circle', {cx:X(E.foot.x), cy:Y(E.foot.y), r:8, fill:gold, stroke:'currentColor', 'stroke-width':2, class:'popS', style:'--w:.7s'}, g);
-      B.text(g, (X(L.p1.x) + X(E.foot.x)) / 2 + 12, (Y(L.p1.y) + Y(E.foot.y)) / 2 - 8, `${r1(E.dA)}`, {size:24, fill: E.dA <= .25 ? green : red, anchor:'start', cls:'popS', style:'--w:.8s'}); }
+      B.text(g, (X(L.p1.x) + X(E.foot.x)) / 2 + 12, (Y(L.p1.y) + Y(E.foot.y)) / 2 - 8, `${r1(E.dA)}`, {size:24, fill: E.dA <= HALF ? green : red, anchor:'start', cls:'popS', style:'--w:.8s'}); }
     B.text(g, X(L.p1.x), Y(L.p1.y) - 24, `(${r1(L.p1.x)}|${r1(L.p1.y)})`, {size:20, fill:color, cls:'popS'});
   } else if (k === 'lage'){
     E.samples.forEach((sm, i) => { const ok = sm.d <= HALF + 1e-9, c = ok ? green : red, cs = clipLine({x:sm.x, y:sm.y}, {x:sm.fx, y:sm.fy}, w, true);
