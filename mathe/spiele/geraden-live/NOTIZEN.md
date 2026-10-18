@@ -4,9 +4,9 @@
 
 | Teil | max. | volle Punkte bis | 0 Punkte ab |
 |---|---|---|---|
-| 📍 Anker (Abstand 1. Punkt zur Lösung) | 30 | 0,3 | 1,8 |
+| 📍 Anker (Abstand 1. Punkt zur Lösung) | 30 | nur exakt ≤ 0,03 (bis 0,3 → 28) | 1,8 |
 | 📏 Lage (Ø-Abstand entlang der Lösung) | 35 | 0,03 (exakt) | 2,8 |
-| 📐 Steigung (Winkel) | 35 | 4° | 15° |
+| 📐 Steigung (Winkel) | 35 | nur exakt ≤ 0,2° (bis 4° → 32) | 15° |
 | 🎯 Volltreffer (Lösung ganz im dicken Strich, max. 0,3) | +10 | | |
 | ⚡ Zeitbonus (ab 50 P) | bis +15 | | |
 | 💎 Perfekt (Volltreffer, überall max. 0,1 daneben) | Animation | | |
@@ -14,8 +14,10 @@
 Einrasten heißt im Menü jetzt „🔰 Anfänger-Hilfe: Punkte einrasten“ (aus / auf ½ / auf ganze Zahlen), Standard: aus.
 
 Grundidee: Anker und Steigung zählen etwa gleich viel (wie in der Klassenarbeit: 1 BE Achsenabschnitt, 1 BE Steigung).
-Die Lage federt ab und belohnt „ungefähr richtig gezeichnet“. Bei Anker und Steigung kosten kleine Patscher nichts;
-die Lage zieht dagegen für jede sichtbare Abweichung ein wenig ab (Ø 0,1 → 34, Ø 0,2 → 33, Ø 0,3 → 32) – wie im Prozentspiel.
+Die Lage federt ab und belohnt „ungefähr richtig gezeichnet“.
+Jede sichtbare Abweichung kostet etwas (wie im Prozentspiel), innerhalb der Toleranz aber nur wenig:
+Anker 0,1 → 29, 0,3 → 28 · Lage Ø 0,1 → 34, Ø 0,3 → 32 · Steigung 1,6° → 34, 4° → 32. Außerhalb der Toleranz fällt es normal ab.
+Der Anker zählt als Abstand zur Lösungsgeraden (nächster Punkt), nicht zum vorgegebenen Punkt der Aufgabe.
 
 ## Idee „Super-Volltreffer-Gefühl“ (Lage-Teil umgesetzt am 18.10.)
 
@@ -26,4 +28,4 @@ Idee:
 - ✅ Lage ohne Toleranz-Plateau: volle 35 nur bei Ø ≤ 0,03, danach leichter Abzug.
   Folge: Volltreffer meist 106–109, exakt getroffen 110.
 - ✅ „💎 Perfekt“: Volltreffer mit max. Abstand ≤ 0,1 → eigene Animation (Diamanten-Regen, Glitzer-Sound), keine Extrapunkte (offen: evtl. +5).
-- Anker- und Steigungs-Toleranz bleiben (Fingerpatscher sollen weiter nichts kosten).
+- Anker und Steigung: volle Punkte nur noch exakt; innerhalb der Toleranz nur kleiner Abzug (max. −2 bzw. −3).
