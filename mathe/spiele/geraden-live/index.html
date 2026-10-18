@@ -58,8 +58,9 @@ label{display:block;font-size:.95rem;color:var(--muted);margin-top:6px}
 .side{padding:10px 12px;display:flex;flex-direction:column;gap:8px;max-height:calc(100dvh - 64px);overflow:auto}
 .rk tr.clk{cursor:pointer}.rk tr.clk td span[style*=color]{text-decoration:underline dotted;text-underline-offset:3px}
 .legend{display:flex;gap:14px;justify-content:center;font-size:.9rem}.legend i{display:inline-block;width:22px;height:5px;border-radius:3px;margin-right:5px;vertical-align:middle}
-.isocard .fbtext{min-height:0;max-width:440px}.rk tr.clk:hover td{background:rgba(128,128,128,.16)}.rk tr.sel td{background:rgba(250,176,5,.38)!important}
-.isocard{position:sticky;top:-10px;padding:6px 10px;z-index:5;box-shadow:3px 3px 0 var(--ink);animation:pop .3s cubic-bezier(.2,1.6,.4,1) both}
+.isocard .fbtext{min-height:0;max-width:440px}
+.side.iso .rk .b{display:none}.side.iso .rk td{padding:1px 5px}.side.iso #hEq{font-size:1.6rem}.side.iso #hRound{display:none}.rk tr.clk:hover td{background:rgba(128,128,128,.16)}.rk tr.sel td{background:rgba(250,176,5,.38)!important}
+.isocard{padding:6px 10px;box-shadow:3px 3px 0 var(--ink);flex-shrink:0;animation:pop .3s cubic-bezier(.2,1.6,.4,1) both}
 .eq{font-family:"Shantell Sans",cursive;font-weight:700;font-size:clamp(2rem,5vh,3.2rem);line-height:1.1;text-align:center}
 .timer{font-family:"Shantell Sans",cursive;font-weight:700;font-size:1.6rem;text-align:center}
 .timer.low{color:#e03131;animation:pulse .5s infinite alternate}
@@ -310,7 +311,7 @@ function keepRegistered(getPeer, lampId){
 }
 
 const PREFIX = 'hvh-geradenlive-';
-const APP_VERSION = '2026-10-18g';
+const APP_VERSION = '2026-10-18h';
 const AUTOJOIN_KEY = 'geradenlive-autojoin';
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const EMOJIS = ['😀','😎','🤓','🥳','🤩','😜','🤠','🥸','😇','🤖','👻','👽','💩','🐱','🐶','🦊','🐼','🐸','🦁','🐯','🐵','🐙','🦄','🐝','🐢','🦖','🐧','🦉','🐬','🦈','🍕','🍩','🍉','⚽','🏀','🎮','🎸','🚀','🌈','🔥','⭐','💎','👑','🌵'];
@@ -1052,14 +1053,14 @@ function hRender(){
   show('hNext', s.phase !== 'end'); show('hRestart', s.phase === 'end'); $('hNext').textContent = s.phase === 'draw' ? '⏹ Zeit beenden' : s.round >= s.rounds ? '🏆 Siegerehrung' : 'Nächste Runde ▶';
   $('hRound').textContent = `Runde ${s.round} / ${s.rounds}`;
   if (s.phase === 'draw'){
-    if (fresh){ if (hStop) hStop(); HREV = {s:null, done:false, sel:null}; show('hIsoCard', false); HB.draw(s.range, s.snap); $('hEq').innerHTML = mfix(s.eq.text); banner(`Runde ${s.round}`); hs(sBlip); startTimer($('hTimer'), s.ends, true); }
+    if (fresh){ if (hStop) hStop(); HREV = {s:null, done:false, sel:null}; show('hIsoCard', false); $('hIsoCard').closest('.side').classList.remove('iso'); HB.draw(s.range, s.snap); $('hEq').innerHTML = mfix(s.eq.text); banner(`Runde ${s.round}`); hs(sBlip); startTimer($('hTimer'), s.ends, true); }
     const done = s.players.filter(p => p.sub).length;
     $('hSideList').innerHTML = `<div class="muted" style="text-align:center">✏️ ${done} / ${s.players.length} haben abgegeben</div><div class="plist" style="justify-content:center">${s.players.map(p => `<div class="pchip${p.sub ? ' ok' : ''}"><span class="e">${esc(p.avatar)}</span>${s.players.length > 12 ? '' : esc(p.name)}</div>`).join('')}</div>`
       + (s.round > 1 ? `<div class="muted" style="margin-top:8px">🏆 Gesamtstand</div>${rankHtml(s.players, null, s.players.length > 11 ? 8 : 10)}` : '');
   } else if (s.phase === 'reveal' && fresh){
     stopTimer($('hTimer')); $('hTimer').textContent = '';
     if (s.eq.kind !== 'y') $('hEq').innerHTML = mfix(s.eq.text + `<div style="font-size:.5em;color:#fab005">= ${s.sol.plain}</div>`);
-    HB.draw(s.range, s.snap); HREV = {s, done:false, sel:null}; show('hIsoCard', false);
+    HB.draw(s.range, s.snap); HREV = {s, done:false, sel:null}; show('hIsoCard', false); $('hIsoCard').closest('.side').classList.remove('iso');
     $('hSideList').innerHTML = `<div class="ti" style="font-size:1.05rem">📋 Runde ${s.round}</div><table class="rk" id="hRank"></table>`;
     const shown = [];
     HREV.finish = () => {   // Endzustand der Auflösung (auch wenn man vorher auf einen Namen klickt)
@@ -1083,7 +1084,8 @@ function hIso(pid){
   HREV.sel = HREV.sel === pid ? null : pid;
   const p = isoShow(HB, HREV.s, HREV.sel); if (!p) HREV.sel = null;
   markSel($('hSideList'), HREV.sel);
-  const card = $('hIsoCard'); show('hIsoCard', !!p);
+  const card = $('hIsoCard'); show('hIsoCard', !!p); const side = card.closest('.side'); side.classList.toggle('iso', !!p);
+  if (p) side.scrollTo({top:0, behavior:'smooth'});   // Karte + Rundenliste oben sichtbar
   if (p){ const steps = feedbackSteps(HREV.s.sol, p.line, p, HB.W()).steps.filter(st => st.k !== 'zeit');
     card.innerHTML = isoCardHtml(p) + `<div class="fbtabs" style="justify-content:flex-start">${steps.map((st, i) => `<button class="chip fbtab${st.ok ? ' ok' : st.pts === null ? '' : ' bad'}" data-i="${i}">${st.ic} ${st.pts === null ? 'Lösung' : st.pts + '/' + st.max}</button>`).join('')}<button class="chip" id="hIsoAll">👥 alle zeigen</button></div><div class="fbtext" id="hIsoText"></div>`;
     const go = i => { card.querySelectorAll('.fbtab').forEach((b, j) => b.classList.toggle('on', j === i)); const st = steps[i];
