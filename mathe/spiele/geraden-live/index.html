@@ -317,7 +317,7 @@ function keepRegistered(getPeer, lampId){
 }
 
 const PREFIX = 'hvh-geradenlive-';
-const APP_VERSION = '2026-10-19d';
+const APP_VERSION = '2026-10-19e';
 const AUTOJOIN_KEY = 'geradenlive-autojoin';
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const EMOJIS = ['😀','😎','🤓','🥳','🤩','😜','🤠','🥸','😇','🤖','👻','👽','💩','🐱','🐶','🦊','🐼','🐸','🦁','🐯','🐵','🐙','🦄','🐝','🐢','🦖','🐧','🦉','🐬','🦈','🍕','🍩','🍉','⚽','🏀','🎮','🎸','🚀','🌈','🔥','⭐','💎','👑','🌵'];
@@ -836,7 +836,12 @@ function feedbackSteps(sol, L, me, w){
   const E = explain(sol, L, w), steps = [];
   const P1 = `(${r1(L.p1.x)}|${r1(L.p1.y)})`;
   steps.push({k:'anker', ic:'📍', pts:E.pA, max:30, ok:E.pA >= 27,
-    text: E.dA <= .03 ? `✅ Dein Startpunkt ${P1} liegt genau auf der Lösungsgeraden.` : E.dA <= HALF ? `Fast genau: Dein Startpunkt ${P1} liegt <b>${fmt(Math.round(E.dA * 100) / 100)} Kästchen</b> neben der Lösung – kleiner Abzug.` : `Dein Startpunkt ${P1} liegt <b>${r1(E.dA)} Kästchen</b> neben der Lösung (gelber Punkt = nächster Punkt auf der Lösung).${E.dA >= 1.8 ? ' Ab 1,8 Kästchen gibt es hier 0 Punkte.' : ''}`});
+    text: E.dA <= .03 ? `✅ Dein Startpunkt ${P1} liegt genau auf der Lösungsgeraden.` : (() => {
+      // für Kinder verständlich: senkrecht nach oben/unten gemessen (y-Unterschied) – gewertet wird der kürzeste Abstand (gelber Punkt)
+      const dyv = L.p1.y - (sol.m * L.p1.x + sol.b), ud = `<b>${fmt(Math.round(Math.abs(dyv) * 100) / 100)} ${dyv > 0 ? 'über' : 'unter'}</b> der Lösungsgeraden`;
+      const kurz = `kürzester Abstand ${fmt(Math.round(E.dA * 100) / 100)} – gelber Punkt`;
+      return E.dA <= HALF ? `Fast genau: Dein Startpunkt ${P1} liegt ${ud} (${kurz}) – kleiner Abzug.`
+        : `Dein Startpunkt ${P1} liegt ${ud} (${kurz}).${E.dA >= 1.8 ? ' Ab 1,8 kürzestem Abstand gibt es hier 0 Punkte.' : ''}`; })()});
   steps.push({k:'lage', ic:'📏', pts:E.pL, max:35, ok:E.pL >= 32,
     text: E.mean <= .03 ? '✅ Exakt: Deine Gerade liegt genau auf der Lösung.' : E.mean <= HALF ? `Fast exakt: im Schnitt <b>${fmt(Math.round(E.mean * 100) / 100)} Kästchen</b> daneben – jede sichtbare Abweichung kostet ein bisschen.` : `Im Schnitt <b>${r1(E.mean)} Kästchen</b> Abstand zur Lösung. <span style="color:#40c057">Grün</span> = im dicken Strich, <span style="color:#fa5252">rot</span> = daneben.`});
   let st;
