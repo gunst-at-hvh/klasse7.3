@@ -30,3 +30,10 @@ Idee:
   Folge: Volltreffer meist 106–109, exakt getroffen 110.
 - ✅ „💎 Perfekt“: Volltreffer mit max. Abstand ≤ 0,1 → eigene Animation (Diamanten-Regen, Glitzer-Sound), keine Extrapunkte (offen: evtl. +5).
 - Anker und Steigung: volle Punkte nur noch exakt; innerhalb der Toleranz nur kleiner Abzug (max. −2 bzw. −3).
+
+## Offene Punkte (zum Merken)
+
+- **💎 Perfekt vs. volle Punkte (19.10.):** „PERFEKT!“ erscheint schon bei max. 0,1 Abstand, volle Punkte gibt es
+  aber erst bei exakt (Anker ≤ 0,03, Lage Ø ≤ 0,03, Steigung ≤ 0,2°). Beispiel: Perfekt mit 📍 29/30 · 📏 34/35 · 📐 35/35.
+  Wirkt leicht widersprüchlich. Optionen: Perfekt nur bei allen vollen Punkten (110) – oder Perfekt-Schwelle auf ~0,05 senken
+  – oder so lassen („Perfekt“ = sichtbar exakt, Punkte = rechnerisch exakt).
