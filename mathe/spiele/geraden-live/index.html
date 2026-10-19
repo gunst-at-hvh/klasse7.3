@@ -317,7 +317,7 @@ function keepRegistered(getPeer, lampId){
 }
 
 const PREFIX = 'hvh-geradenlive-';
-const APP_VERSION = '2026-10-18o';
+const APP_VERSION = '2026-10-19a';
 const AUTOJOIN_KEY = 'geradenlive-autojoin';
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const EMOJIS = ['😀','😎','🤓','🥳','🤩','😜','🤠','🥸','😇','🤖','👻','👽','💩','🐱','🐶','🦊','🐼','🐸','🦁','🐯','🐵','🐙','🦄','🐝','🐢','🦖','🐧','🦉','🐬','🦈','🍕','🍩','🍉','⚽','🏀','🎮','🎸','🚀','🌈','🔥','⭐','💎','👑','🌵'];
@@ -522,7 +522,9 @@ function evaluate(eq, L, w){
   const mean = sum / wsum, full = mx <= HALF + 1e-9;
   const angT = Math.atan(eq.m) * 180 / Math.PI; let angP = Math.atan2(dy, dx) * 180 / Math.PI; if (angP > 90) angP -= 180; if (angP <= -90) angP += 180;
   let dAng = Math.abs(angT - angP); if (dAng > 90) dAng = 180 - dAng;
-  const pA = Math.round(30 * soft(dA, .03, HALF, 28 / 30, 1.8)), pL = Math.round(35 * lin(mean, .03, 2.8)), pS = Math.round(35 * soft(dAng, .2, 4, 32 / 35, 15)), pB = full ? 10 : 0;
+  // nicht exakt → nie volle Punkte (mind. 1 Punkt Abzug), damit „fast genau“ und Punktzahl zusammenpassen
+  const pt = (max, f, v, exact) => v <= exact ? max : Math.min(max - 1, Math.round(max * f));
+  const pA = pt(30, soft(dA, .03, HALF, 28 / 30, 1.8), dA, .03), pL = pt(35, lin(mean, .03, 2.8), mean, .03), pS = pt(35, soft(dAng, .2, 4, 32 / 35, 15), dAng, .2), pB = full ? 10 : 0;
   return {pts: pA + pL + pS + pB, pA, pL, pS, pB, full, mean, perfect: full && mx <= .1};   // 💎 Perfekt: überall höchstens 0,1 daneben
 }
 const validLine = L => L && L.p1 && L.p2 && Math.hypot(L.p2.x - L.p1.x, L.p2.y - L.p1.y) >= 1.5;
