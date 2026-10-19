@@ -11,7 +11,8 @@
 | ⚡ Zeitbonus (ab 50 P) | bis +15 | | |
 | 💎 Perfekt (Volltreffer, überall max. 0,1 daneben) | Animation | | |
 
-Einrasten heißt im Menü jetzt „🔰 Anfänger-Hilfe: Punkte einrasten“ (aus / auf ½ / auf ganze Zahlen), Standard: aus.
+Punkte einrasten: **auf 0,1 (Standard)** · auf ½ 🔰 · auf ganze Zahlen 🔰 · frei.
+Grund: Was als Koordinate angezeigt wird (1 Nachkommastelle), ist genau der Punkt, der gewertet wird – keine unsichtbaren Hundertstel.
 
 Grundidee: Anker und Steigung zählen etwa gleich viel (wie in der Klassenarbeit: 1 BE Achsenabschnitt, 1 BE Steigung).
 Die Lage federt ab und belohnt „ungefähr richtig gezeichnet“.

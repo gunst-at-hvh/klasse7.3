@@ -218,7 +218,7 @@ body.hb .pbody{padding-bottom:64px}
         <label>Runden</label><div class="row" id="hRoundsRow"></div>
         <label>Stufe</label><div class="row" id="hLevelRow"></div>
         <label>Koordinatensystem</label><div class="row" id="hRangeRow"></div>
-        <label>🔰 Anfänger-Hilfe: Punkte einrasten</label><div class="row" id="hSnapRow"></div>
+        <label>Punkte einrasten (🔰 = Anfänger-Hilfe)</label><div class="row" id="hSnapRow"></div>
         <label>Nach der Auflösung</label><div class="row" id="hAutoRow"></div>
         <label>🤖 Bots (zum Testen)</label><div class="row" id="hBotRow"></div>
       </div>
@@ -265,7 +265,7 @@ body.hb .pbody{padding-bottom:64px}
         <label>Runden</label><div class="row" id="rRoundsRow"></div>
         <label>Stufe</label><div class="row" id="rLevelRow"></div>
         <label>Koordinatensystem</label><div class="row" id="rRangeRow"></div>
-        <label>🔰 Anfänger-Hilfe: Punkte einrasten</label><div class="row" id="rSnapRow"></div>
+        <label>Punkte einrasten (🔰 = Anfänger-Hilfe)</label><div class="row" id="rSnapRow"></div>
         <label>Nach der Auflösung</label><div class="row" id="rAutoRow"></div>
         <label>🤖 Bots</label><div class="row" id="rBotRow"></div>
       </div>
@@ -317,7 +317,7 @@ function keepRegistered(getPeer, lampId){
 }
 
 const PREFIX = 'hvh-geradenlive-';
-const APP_VERSION = '2026-10-19a';
+const APP_VERSION = '2026-10-19b';
 const AUTOJOIN_KEY = 'geradenlive-autojoin';
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const EMOJIS = ['😀','😎','🤓','🥳','🤩','😜','🤠','🥸','😇','🤖','👻','👽','💩','🐱','🐶','🦊','🐼','🐸','🦁','🐯','🐵','🐙','🦄','🐝','🐢','🦖','🐧','🦉','🐬','🦈','🍕','🍩','🍉','⚽','🏀','🎮','🎸','🚀','🌈','🔥','⭐','💎','👑','🌵'];
@@ -585,7 +585,7 @@ function makeBoard(svg, opt = {}){
       el('line', {x1:A.x, y1:A.y, x2:ex, y2:ey, stroke: DARK ? '#fff' : color, 'stroke-width':DARK ? 5 : 3, 'stroke-linecap':'round', class:'grow', style:st}, g); });
     return {g, seg}; };
   B.toUnits = e => { const pt = svg.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY; const q = pt.matrixTransform(svg.getScreenCTM().inverse()), w = W();
-    let x = q.x / U - PAD + w.x0, y = w.y1 - (q.y / U - PAD); if (B.snap){ x = Math.round(x / B.snap) * B.snap; y = Math.round(y / B.snap) * B.snap; }
+    let x = q.x / U - PAD + w.x0, y = w.y1 - (q.y / U - PAD); if (B.snap){ x = Math.round(Math.round(x / B.snap) * B.snap * 1000) / 1000; y = Math.round(Math.round(y / B.snap) * B.snap * 1000) / 1000; }
     return {x: clamp(x, w.x0, w.x1), y: clamp(y, w.y0, w.y1)}; };
   return B;
 }
@@ -895,7 +895,7 @@ function drawStep(B, k, sol, L, E, color){
    HOST
    ===================================================================== */
 const H = {peer:null, code:'', players:new Map(), phase:'lobby', room:false, late:'1', creatorPid:null, lobbySig:'',
-  time:45, rounds:5, level:'1', range:'6', snap:0, auto:'0', bots:0,
+  time:45, rounds:5, level:'1', range:'6', snap:.1, auto:'0', bots:0,
   round:0, eq:null, endsAt:0, timer:null, order:[], revealAt:0, autoT:null};
 const hs = f => { if (!H.room) f(); };
 const PCOL = ['#ff4d6d','#4dabf7','#51cf66','#cc5de8','#22d3ee','#748ffc','#f783ac','#94d82d','#9775fa','#20c997','#1c7ed6','#63e6be'];   // kein Gelb/Orange – Gold = Lösung
@@ -963,7 +963,7 @@ function buildChips(){
   mk(['hRoundsRow','rRoundsRow'], [[3,'3'],[5,'5'],[8,'8'],[10,'10']], 'rounds', true);
   mk(['hLevelRow','rLevelRow'], [['1','① ganze Zahlen'],['2','② Brüche'],['3','③ andere Formen'],['mix','🎲 gemischt'],['crazy','🤪 crazy']], 'level');
   mk(['hRangeRow','rRangeRow'], [['6','−6 … 6'],['10','0 … 10']], 'range');
-  mk(['hSnapRow','rSnapRow'], [[0,'aus'],[.5,'auf ½'],[1,'auf ganze Zahlen']], 'snap', true);
+  mk(['hSnapRow','rSnapRow'], [[.1,'auf 0,1'],[.5,'auf ½ 🔰'],[1,'auf ganze Zahlen 🔰'],[0,'frei']], 'snap', true);
   mk(['hAutoRow','rAutoRow'], [['0','👆 Weiter per Klick'],['1','⏱️ automatisch weiter']], 'auto');
   mk(['hBotRow','rBotRow'], [[0,'keine'],[1,'1'],[3,'3'],[5,'5'],[10,'10'],[25,'25 🧪']], 'bots', true, hSyncBots);
   syncChips();
@@ -1397,7 +1397,7 @@ function pBindBoard(){
     if (pinch && PTR.size >= 2){ const m = mid(), r = svg.getBoundingClientRect(), v = pinch.vb, BS = PB.BASE, nw = clamp(v.w * pinch.m.d / Math.max(20, m.d), BS.w / 3.5, BS.w), nh = nw * BS.h / BS.w;
       const ux = v.x + (pinch.m.x - r.left) / r.width * v.w, uy = v.y + (pinch.m.y - r.top) / r.height * v.h;
       PB.VB.x = ux - (m.x - r.left) / r.width * nw; PB.VB.y = uy - (m.y - r.top) / r.height * nh; PB.VB.w = nw; PB.VB.h = nh; PB.setVB(); return; }
-    if (!dragging) return; const p = PB.toUnits(e); if (p.x !== C.cur.p2.x || p.y !== C.cur.p2.y){ C.cur.p2 = p; if (PB.snap) sTick(); render(); sendDraft(); } });
+    if (!dragging) return; const p = PB.toUnits(e); if (p.x !== C.cur.p2.x || p.y !== C.cur.p2.y){ C.cur.p2 = p; if (PB.snap >= .5) sTick(); render(); sendDraft(); } });
   const end = e => { PTR.delete(e.pointerId); if (!PTR.size) pinch = null; if (dragging){ dragging = false; sendDraft(); } };
   svg.addEventListener('pointerup', end); svg.addEventListener('pointercancel', end);
   svg.addEventListener('wheel', e => { e.preventDefault(); PB.zoomAt(e.deltaY < 0 ? 1.15 : 1 / 1.15, e.clientX, e.clientY); }, {passive:false});
