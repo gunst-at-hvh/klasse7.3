@@ -54,6 +54,8 @@ Idee:
   - Vor der **nächsten Runde** hält das Spiel an: Eingabefeld für die Gleichung erscheint, Handys zeigen „Gleich kommt die nächste Aufgabe …“.
   - Gleichung eingeben → **„▶ Los“** → Runde startet mit dieser Aufgabe.
   - Das bleibt so (jede Runde Eingabe), bis man wieder auf **🎲 automatisch** stellt – dann kommen wieder Zufallsaufgaben.
+  - Stellt man **während des Wartens auf Eingabe** auf 🎲 automatisch, wird **sofort** eine Zufallsgleichung erzeugt und das Spiel läuft weiter.
+  - In den **Startoptionen (Lobby)** wählbar: „Aufgaben: 🎲 automatisch / ✍️ manuell“ – mit manuell startet schon Runde 1 mit Eingabe.
   - Erlaubte Formen: y = mx + b, umgestellt (y + 2x = 3, 2y = …), „durch (x|y) mit m = …“, „durch (x1|y1) und (x2|y2)“.
   - **Vereinfachte Bruch-Eingabe:** z. B. „2/5“ oder „2//5“ wird automatisch als Bruch angezeigt (Live-Vorschau während der Eingabe),
     Minus/Komma tolerant („-“ → „−“, „0.5“/„0,5“).
