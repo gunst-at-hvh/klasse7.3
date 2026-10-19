@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 <title>Geraden-Live</title>
 <style>
 @font-face{font-family:"Shantell Sans";src:url(fonts/shantell-sans-latin-400-normal.woff2) format("woff2");font-weight:400;font-display:swap}
@@ -164,6 +164,7 @@ body.hb .pbody{padding-bottom:64px}
 .landS{transform-box:view-box;animation:landA .3s cubic-bezier(.2,1.5,.4,1) var(--w,0s) both}
 @keyframes landA{0%{opacity:0;transform:scale(1.5)}55%{opacity:1;transform:scale(.97)}100%{opacity:1;transform:scale(1)}}
 .faint{opacity:.3}
+.zctl{position:absolute;right:6px;bottom:6px;display:flex;gap:4px;z-index:3;opacity:.9}.zctl button{font-size:1.05rem;padding:1px 10px;box-shadow:1px 1px 0 var(--ink)}
 .solway{margin-top:8px;padding:6px 8px;border:2px dashed #fab005;border-radius:10px;font-size:.95rem;line-height:1.35;animation:pop .4s both}
 .resCard.gold{background:linear-gradient(135deg,#ffe066,#ffd43b);color:#1e1e1e}
 .fbhead{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap}
@@ -317,7 +318,7 @@ function keepRegistered(getPeer, lampId){
 }
 
 const PREFIX = 'hvh-geradenlive-';
-const APP_VERSION = '2026-10-19e';
+const APP_VERSION = '2026-10-19f';
 const AUTOJOIN_KEY = 'geradenlive-autojoin';
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const EMOJIS = ['😀','😎','🤓','🥳','🤩','😜','🤠','🥸','😇','🤖','👻','👽','💩','🐱','🐶','🦊','🐼','🐸','🦁','🐯','🐵','🐙','🦄','🐝','🐢','🦖','🐧','🦉','🐬','🦈','🍕','🍩','🍉','⚽','🏀','🎮','🎸','🚀','🌈','🔥','⭐','💎','👑','🌵'];
@@ -541,17 +542,53 @@ function makeBoard(svg, opt = {}){
   B.FS = 1;
   B.text = (g, x, y, t, o = {}) => { const e = el('text', {x, y, 'font-family':'Shantell Sans, cursive', 'font-weight':o.weight || 700, 'font-size':(o.size || 22) * B.FS, fill:o.fill || 'currentColor', 'text-anchor':o.anchor || 'middle',
     'paint-order':'stroke', stroke: o.halo === false ? 'none' : (DARK ? '#10131a' : '#fff'), 'stroke-width':5, class:o.cls || ''}, g); setT(e, t, o.html); if (o.style) e.setAttribute('style', o.style); return e; };
-  B.setVB = () => { const V = B.VB, BS = B.BASE; V.w = clamp(V.w, BS.w / 3.5, BS.w); V.h = V.w * BS.h / BS.w;
-    V.x = clamp(V.x, -BS.w * .05, BS.w * 1.05 - V.w); V.y = clamp(V.y, -BS.h * .05, BS.h * 1.05 - V.h); if (V.w >= BS.w - .5){ V.x = 0; V.y = 0; }
-    svg.setAttribute('viewBox', `${V.x} ${V.y} ${V.w} ${V.h}`); if (opt.onZoom) opt.onZoom(V.w < BS.w - .5); };
-  B.zoomAt = (f, cx, cy) => { const r = svg.getBoundingClientRect(), V = B.VB, ux = V.x + (cx - r.left) / r.width * V.w, uy = V.y + (cy - r.top) / r.height * V.h;
-    const nw = clamp(V.w / f, B.BASE.w / 3.5, B.BASE.w), nh = nw * B.BASE.h / B.BASE.w; V.x = ux - (cx - r.left) / r.width * nw; V.y = uy - (cy - r.top) / r.height * nh; V.w = nw; V.h = nh; B.setVB(); };
-  B.resetZoom = () => { B.VB = {...B.BASE}; B.setVB(); };
+  /* ---------- Zoomen: flüssig per requestAnimationFrame, bis 5×, mit Animation ---------- */
+  const ZMAX = 5;
+  B.clampVB = V => { const BS = B.BASE, w = clamp(V.w, BS.w / ZMAX, BS.w), h = w * BS.h / BS.w;
+    let x = clamp(V.x, -BS.w * .05, BS.w * 1.05 - w), y = clamp(V.y, -BS.h * .05, BS.h * 1.05 - h); if (w >= BS.w - .5){ x = 0; y = 0; }
+    return {x, y, w, h, bw: B.VB ? B.VB.bw : BS.w}; };
+  B.applyVB = () => { const V = B.VB; svg.setAttribute('viewBox', `${V.x} ${V.y} ${V.w} ${V.h}`); if (opt.onZoom) opt.onZoom(B.zoomed()); };
+  B.setVB = () => { B.VB = B.clampVB(B.VB); if (!B._raf) B._raf = requestAnimationFrame(() => { B._raf = 0; B.applyVB(); }); };   // höchstens 1× pro Bild
+  B.zoomed = () => B.VB && B.BASE && B.VB.w < B.BASE.w - .5;
+  B.animTo = (T, ms = 220) => { cancelAnimationFrame(B._anim); T = B.clampVB(T); const F = {...B.VB}, t0 = performance.now();
+    const step = now => { const k = Math.min(1, (now - t0) / ms), e = 1 - Math.pow(1 - k, 3);
+      B.VB = {x:F.x + (T.x - F.x) * e, y:F.y + (T.y - F.y) * e, w:F.w + (T.w - F.w) * e, h:F.h + (T.h - F.h) * e, bw:F.bw}; B.applyVB();
+      if (k < 1) B._anim = requestAnimationFrame(step); };
+    B._anim = requestAnimationFrame(step); };
+  B.zoomAt = (f, cx, cy, anim = true) => { const r = svg.getBoundingClientRect(), V = B.VB, ux = V.x + (cx - r.left) / r.width * V.w, uy = V.y + (cy - r.top) / r.height * V.h;
+    const nw = clamp(V.w / f, B.BASE.w / ZMAX, B.BASE.w), nh = nw * B.BASE.h / B.BASE.w, T = {x:ux - (cx - r.left) / r.width * nw, y:uy - (cy - r.top) / r.height * nh, w:nw, h:nh};
+    if (anim) B.animTo(T); else { cancelAnimationFrame(B._anim); B.VB = {...T, bw:V.bw}; B.setVB(); } };
+  B.resetZoom = (anim = true) => { if (anim) B.animTo({...B.BASE}); else { cancelAnimationFrame(B._anim); B.VB = {...B.BASE, bw:B.BASE.w}; B.setVB(); } };
+  /* zwei Finger: zoomen + verschieben (Ausgangslage pin = {m, vb, r}) */
+  B.pinchTo = (pin, m) => { const v = pin.vb, r = pin.r, BS = B.BASE, nw = clamp(v.w * pin.m.d / Math.max(20, m.d), BS.w / ZMAX, BS.w), nh = nw * BS.h / BS.w;
+    const ux = v.x + (pin.m.x - r.left) / r.width * v.w, uy = v.y + (pin.m.y - r.top) / r.height * v.h;
+    cancelAnimationFrame(B._anim); B.VB = {x:ux - (m.x - r.left) / r.width * nw, y:uy - (m.y - r.top) / r.height * nh, w:nw, h:nh, bw:v.bw}; B.setVB(); };
+  B.mid = P => { const a = [...P.values()]; return {x:(a[0].x + a[1].x) / 2, y:(a[0].y + a[1].y) / 2, d:Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y)}; };
+  /* Ansehen (Auswertung, Beamer): 2 Finger zoomen, 1 Finger verschieben wenn gezoomt, Doppeltipp = Zoom an/aus, Mausrad */
+  B.bindNav = () => { const P = new Map(); let pin = null, pan = null, lastTap = 0, lastXY = null;
+    svg.addEventListener('pointerdown', e => { e.preventDefault(); try { svg.setPointerCapture(e.pointerId); } catch(_){} P.set(e.pointerId, {x:e.clientX, y:e.clientY});
+      if (P.size >= 2){ pan = null; pin = {m:B.mid(P), vb:{...B.VB}, r:svg.getBoundingClientRect()}; return; }
+      const now = Date.now();
+      if (now - lastTap < 320 && lastXY && Math.hypot(e.clientX - lastXY.x, e.clientY - lastXY.y) < 40){ lastTap = 0; if (B.zoomed()) B.resetZoom(); else B.zoomAt(2.5, e.clientX, e.clientY); return; }
+      lastTap = now; lastXY = {x:e.clientX, y:e.clientY};
+      if (B.zoomed()) pan = {x:e.clientX, y:e.clientY, vb:{...B.VB}, r:svg.getBoundingClientRect()}; });
+    svg.addEventListener('pointermove', e => { if (!P.has(e.pointerId)) return; P.set(e.pointerId, {x:e.clientX, y:e.clientY});
+      if (pin && P.size >= 2) return B.pinchTo(pin, B.mid(P));
+      if (pan){ const v = pan.vb; cancelAnimationFrame(B._anim); B.VB = {...v, x:v.x - (e.clientX - pan.x) / pan.r.width * v.w, y:v.y - (e.clientY - pan.y) / pan.r.height * v.h}; B.setVB(); } });
+    const up = e => { P.delete(e.pointerId); if (P.size < 2) pin = null; if (!P.size) pan = null; };
+    svg.addEventListener('pointerup', up); svg.addEventListener('pointercancel', up);
+    svg.addEventListener('wheel', e => { e.preventDefault(); B.zoomAt(e.deltaY < 0 ? 1.18 : 1 / 1.18, e.clientX, e.clientY, false); }, {passive:false}); };
+  /* kleine Zoom-Knöpfe in der Ecke des Bretts */
+  B.zoomCtl = () => { const wrap = svg.parentNode; if (!wrap || wrap.querySelector('.zctl')) return; const d = document.createElement('div'); d.className = 'zctl';
+    d.innerHTML = '<button class="chip" data-z="in" title="hineinzoomen">＋</button><button class="chip" data-z="out" title="herauszoomen">−</button><button class="chip" data-z="r" title="ganzes Koordinatensystem">⟲</button>';
+    const zc = f => { const r = svg.getBoundingClientRect(); B.zoomAt(f, r.left + r.width / 2, r.top + r.height / 2); };
+    d.onclick = e => { const z = e.target.dataset && e.target.dataset.z; if (z === 'in') zc(1.6); else if (z === 'out') zc(1 / 1.6); else if (z === 'r') B.resetZoom(); };
+    wrap.appendChild(d); };
   B.draw = (range, snap) => {
     B.range = range; B.snap = snap; const w = W(); svg.innerHTML = '';
     B.FS = (svg.clientWidth || 700) < 520 ? 1.5 : 1;
     B.BASE = {x:0, y:0, w:(w.x1 - w.x0 + 2 * PAD) * U, h:(w.y1 - w.y0 + 2 * PAD) * U};
-    if (!B.VB || Math.abs(B.VB.bw - B.BASE.w) > 1) B.VB = {...B.BASE, bw:B.BASE.w}; B.setVB();
+    if (!B.VB || Math.abs(B.VB.bw - B.BASE.w) > 1) B.VB = {...B.BASE, bw:B.BASE.w}; B.VB = B.clampVB(B.VB); B.applyVB();
     const defs = el('defs', {});
     defs.innerHTML = `<filter id="glow${opt.id || ''}" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="7" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>`;
     const g = el('g', {});
@@ -1087,7 +1124,7 @@ function showPodium(src){
 let HB = null, hKey = '', hStop = null, hTick = null;
 function startHost(){
   show('home', false); show('host'); setupFs($('hFs')); buildChips(); applyDark();
-  HB = makeBoard($('hBoard'), {id:'h'});
+  HB = makeBoard($('hBoard'), {id:'h'}); HB.bindNav(); HB.zoomCtl();
   $('hStart').onclick = () => { ac(); hStartGame(); };
   $('hNext').onclick = hAdvance; $('hRestart').onclick = hRestart;
   $('hSnd').onclick = () => { SND.on = !SND.on; $('hSnd').textContent = SND.on ? '🔊' : '🔇'; };
@@ -1108,7 +1145,7 @@ function hRender(){
   show('hNext', s.phase !== 'end'); show('hRestart', s.phase === 'end'); $('hNext').textContent = s.phase === 'draw' ? '⏹ Zeit beenden' : s.round >= s.rounds ? '🏆 Siegerehrung' : 'Nächste Runde ▶';
   $('hRound').textContent = `Runde ${s.round} / ${s.rounds}`;
   if (s.phase === 'draw'){
-    if (fresh){ if (hStop) hStop(); HREV = {s:null, done:false, sel:null}; show('hIsoCard', false); $('hIsoCard').closest('.side').classList.remove('iso'); HB.draw(s.range, s.snap); $('hEq').innerHTML = mfix(s.eq.text); banner(`Runde ${s.round}`); hs(sBlip); startTimer($('hTimer'), s.ends, true); }
+    if (fresh){ if (hStop) hStop(); HREV = {s:null, done:false, sel:null}; show('hIsoCard', false); $('hIsoCard').closest('.side').classList.remove('iso'); HB.draw(s.range, s.snap); HB.resetZoom(false); $('hEq').innerHTML = mfix(s.eq.text); banner(`Runde ${s.round}`); hs(sBlip); startTimer($('hTimer'), s.ends, true); }
     const done = s.players.filter(p => p.sub).length;
     $('hSideList').innerHTML = `<div class="muted" style="text-align:center">✏️ ${done} / ${s.players.length} haben abgegeben</div><div class="plist" style="justify-content:center">${s.players.map(p => `<div class="pchip${p.sub ? ' ok' : ''}"><span class="e">${esc(p.avatar)}</span>${s.players.length > 12 ? '' : esc(p.name)}</div>`).join('')}</div>`
       + (s.round > 1 ? `<div class="muted" style="margin-top:8px">🏆 Gesamtstand</div>${rankHtml(s.players, null, s.players.length > 11 ? 8 : 10)}` : '');
@@ -1334,7 +1371,7 @@ function pState(s){
       el.innerHTML = pLayout(`<div class="eq" id="pEq">${mfix(s.eq.text)}</div><div class="timer" id="pTimer"></div>`,
         `<div class="pbtns"><button id="pClear">↺ neu</button><button class="go" id="pDone" disabled style="font-size:1.3rem">✓ Abgeben</button>
           <span class="zoom"><button class="chip" id="zIn">＋</button><button class="chip" id="zOut">−</button><button class="chip" id="zR">⟲</button></span></div>
-        <div class="hint" id="pHint">👆 tippen = 1. Punkt · ziehen = 2. Punkt · 🔍 zwei Finger = zoomen</div>`);
+        <div class="hint" id="pHint">👆 tippen = 1. Punkt · ziehen = 2. Punkt · 🔍 zwei Finger = zoomen & schieben</div>`);
       PB = makeBoard($('pBoard'), {id:'p', onZoom: z => { const b = $('zR'); if (b) b.classList.toggle('on', z); }}); PB.draw(s.range, s.snap); pBindBoard();
       startTimer($('pTimer'), s.ends, !!C.room); if (C.room) banner(`Runde ${s.round}`);
     }
@@ -1344,7 +1381,7 @@ function pState(s){
     if (!fresh){ pRank(); return; }
     stopTimer($('pTimer') || document.createElement('div')); C.revDone = false;
     el.innerHTML = pLayout(`<div class="eq">${mfix(s.eq.text)}</div>`, '<div id="pRes"></div>');
-    PB = makeBoard($('pBoard'), {id:'p'}); PB.draw(s.range, s.snap);
+    PB = makeBoard($('pBoard'), {id:'p'}); PB.draw(s.range, s.snap); PB.bindNav(); PB.zoomCtl();
     const done = () => { C.revDone = true; C.score = me.total; pTop(); pRank(); pFeedback(s); };
     if (s.revealAge > 3000){ done(); }
     else C.stop = runReveal(PB, s, {id:'p', sound:!!C.room, me: me.pid, onEnd: done});
@@ -1395,19 +1432,17 @@ function pBindBoard(){
   C.render = render;
   const sendDraft = () => { clearTimeout(draftT); draftT = setTimeout(() => { if (validLine(C.cur)) C.conn && C.conn.open && C.conn.send({t:'draft', line:C.cur}); }, 200); };
   svg.addEventListener('pointerdown', e => { e.preventDefault(); ac(); try { svg.setPointerCapture(e.pointerId); } catch(_){} PTR.set(e.pointerId, {x:e.clientX, y:e.clientY});
-    if (PTR.size >= 2){ if (dragging){ dragging = false; C.cur = before; render(); } pinch = {m:mid(), vb:{...PB.VB}}; return; }
+    if (PTR.size >= 2){ if (dragging){ dragging = false; C.cur = before; render(); } pinch = {m:mid(), vb:{...PB.VB}, r:svg.getBoundingClientRect()}; return; }
     if (pinch || locked()) return; before = C.cur ? JSON.parse(JSON.stringify(C.cur)) : null;
     dragging = true; const p = PB.toUnits(e); C.cur = {p1:p, p2:p}; sTick(); render(); });
   svg.addEventListener('pointermove', e => { if (PTR.has(e.pointerId)) PTR.set(e.pointerId, {x:e.clientX, y:e.clientY});
-    if (pinch && PTR.size >= 2){ const m = mid(), r = svg.getBoundingClientRect(), v = pinch.vb, BS = PB.BASE, nw = clamp(v.w * pinch.m.d / Math.max(20, m.d), BS.w / 3.5, BS.w), nh = nw * BS.h / BS.w;
-      const ux = v.x + (pinch.m.x - r.left) / r.width * v.w, uy = v.y + (pinch.m.y - r.top) / r.height * v.h;
-      PB.VB.x = ux - (m.x - r.left) / r.width * nw; PB.VB.y = uy - (m.y - r.top) / r.height * nh; PB.VB.w = nw; PB.VB.h = nh; PB.setVB(); return; }
+    if (pinch && PTR.size >= 2) return PB.pinchTo(pinch, mid());
     if (!dragging) return; const p = PB.toUnits(e); if (p.x !== C.cur.p2.x || p.y !== C.cur.p2.y){ C.cur.p2 = p; if (PB.snap >= .5) sTick(); render(); sendDraft(); } });
   const end = e => { PTR.delete(e.pointerId); if (!PTR.size) pinch = null; if (dragging){ dragging = false; sendDraft(); } };
   svg.addEventListener('pointerup', end); svg.addEventListener('pointercancel', end);
-  svg.addEventListener('wheel', e => { e.preventDefault(); PB.zoomAt(e.deltaY < 0 ? 1.15 : 1 / 1.15, e.clientX, e.clientY); }, {passive:false});
+  svg.addEventListener('wheel', e => { e.preventDefault(); PB.zoomAt(e.deltaY < 0 ? 1.18 : 1 / 1.18, e.clientX, e.clientY, false); }, {passive:false});
   const zc = f => { const r = svg.getBoundingClientRect(); PB.zoomAt(f, r.left + r.width / 2, r.top + r.height / 2); };
-  $('zIn').onclick = () => zc(1.4); $('zOut').onclick = () => zc(1 / 1.4); $('zR').onclick = () => PB.resetZoom();
+  $('zIn').onclick = () => zc(1.6); $('zOut').onclick = () => zc(1 / 1.6); $('zR').onclick = () => PB.resetZoom();
   $('pClear').onclick = () => { if (locked()) return; C.cur = null; render(); $('pDone').disabled = true; };
   $('pDone').onclick = () => { if (!validLine(C.cur) || locked()) return; ac(); sDing(); C.conn && C.conn.open && C.conn.send({t:'submit', line:C.cur}); $('pDone').disabled = true; show('pLock'); try { navigator.vibrate && navigator.vibrate(30); } catch(e){} };
 }
@@ -1452,6 +1487,7 @@ function rHostUpdate(ps){
 if (typeof Peer === 'undefined'){ document.body.innerHTML = '<div style="padding:30px">Die Verbindungs-Bibliothek konnte nicht geladen werden.</div>'; return; }
 // Platzhalter-Elemente, die die gemeinsamen Bausteine erwarten
 ['hCode2'].forEach(id => { if (!$(id)){ const s = document.createElement('span'); s.id = id; s.className = 'hidden'; document.body.appendChild(s); } });
+['gesturestart', 'gesturechange'].forEach(t => document.addEventListener(t, e => e.preventDefault(), {passive:false}));
 $('homeHost').onclick = startHost; $('homeJoin').onclick = () => startPlayer(''); $('homeRoom').onclick = startRoom;
 $('homeDark').onclick = toggleDark; $('pDark').onclick = toggleDark; applyDark();
 $('pRankBtn').onclick = () => { const d = $('rankDrawer'); d.classList.toggle('hidden'); if (!d.classList.contains('hidden')) pRank(); };
