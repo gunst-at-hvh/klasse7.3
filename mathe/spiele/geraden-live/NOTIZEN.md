@@ -48,9 +48,14 @@ Idee:
   - **b und m vertauscht**, **b mit falschem Vorzeichen** (Anker-Erklärung).
   Erkennung mit Toleranz (z. B. ±15 % bzw. Winkel), nur melden, wenn eindeutig näher an der Fehler-Variante als an der Lösung.
 
-- **Neuer Modus „Eigene Gleichungen“ (19.10.):** Lehrkraft gibt die Gleichungen selbst ein (Beamer-Modus, ggf. auch Raum-Host).
-  - Liste von Aufgaben für die Runden vorab eingeben (Reihenfolge fest oder gemischt), evtl. speichern/laden.
+- **Neuer Modus „Manuelle Aufgaben“ (19.10., präzisiert):** keine Liste vorab, sondern umschalten während des Spiels.
+  - Umschalter **🎲 automatisch / ✍️ manuell** am Beamer (Kopfleiste) und in den Einstellungen; evtl. auch für den Raum-Host.
+  - Schaltet man auf ✍️ manuell, läuft die **aktuelle Runde normal zu Ende** (sie wird nicht abgebrochen).
+  - Vor der **nächsten Runde** hält das Spiel an: Eingabefeld für die Gleichung erscheint, Handys zeigen „Gleich kommt die nächste Aufgabe …“.
+  - Gleichung eingeben → **„▶ Los“** → Runde startet mit dieser Aufgabe.
+  - Das bleibt so (jede Runde Eingabe), bis man wieder auf **🎲 automatisch** stellt – dann kommen wieder Zufallsaufgaben.
   - Erlaubte Formen: y = mx + b, umgestellt (y + 2x = 3, 2y = …), „durch (x|y) mit m = …“, „durch (x1|y1) und (x2|y2)“.
   - **Vereinfachte Bruch-Eingabe:** z. B. „2/5“ oder „2//5“ wird automatisch als Bruch angezeigt (Live-Vorschau während der Eingabe),
     Minus/Komma tolerant („-“ → „−“, „0.5“/„0,5“).
-  - Prüfen, ob die Gerade im gewählten Koordinatensystem sichtbar ist (Warnung sonst).
+  - Prüfen, ob die Gerade im gewählten Koordinatensystem sichtbar ist (Warnung sonst); Live-Vorschau der Geraden für die Lehrkraft
+    (nicht am Beamer sichtbar, damit die Lösung nicht verraten wird – oder nur klein/verdeckt).
