@@ -317,7 +317,7 @@ function keepRegistered(getPeer, lampId){
 }
 
 const PREFIX = 'hvh-geradenlive-';
-const APP_VERSION = '2026-10-19b';
+const APP_VERSION = '2026-10-19c';
 const AUTOJOIN_KEY = 'geradenlive-autojoin';
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const EMOJIS = ['😀','😎','🤓','🥳','🤩','😜','🤠','🥸','😇','🤖','👻','👽','💩','🐱','🐶','🦊','🐼','🐸','🦁','🐯','🐵','🐙','🦄','🐝','🐢','🦖','🐧','🦉','🐬','🦈','🍕','🍩','🍉','⚽','🏀','🎮','🎸','🚀','🌈','🔥','⭐','💎','👑','🌵'];
@@ -1453,6 +1453,15 @@ $('pRankBtn').onclick = () => { const d = $('rankDrawer'); d.classList.toggle('h
 $('rankClose').onclick = () => show('rankDrawer', false);
 ['pMain', 'rankDrawerBody'].forEach(id => $(id).addEventListener('click', e => { const tr = e.target.closest('tr[data-pid]'); if (tr && tr.classList.contains('clk')) pIso(tr.dataset.pid); }));
 { const v = document.createElement('div'); v.className = 'muted'; v.style.cssText = 'margin-top:12px;font-size:.8rem'; v.textContent = 'Prototyp · Version ' + APP_VERSION; document.querySelector('#home .box').appendChild(v); }
+/* Immer die neueste Version: beim Start ohne Zwischenspeicher nachsehen und ggf. einmal neu laden
+   (wichtig für Beamer und Raum-Ersteller – Mitspieler werden schon über den Host aktualisiert) */
+(async () => { try {
+  if (Q.get('debug')) return;
+  const r = await fetch(location.pathname + '?nc=' + Date.now(), {cache:'no-store'}); if (!r.ok) return;
+  const m = (await r.text()).match(/const APP_VERSION = '([^']+)'/); if (!m || m[1] === APP_VERSION) return;
+  const key = 'geraden-upd-' + m[1]; if (sessionStorage.getItem(key)) return; sessionStorage.setItem(key, '1');
+  if (!document.getElementById('home').classList.contains('hidden') || H.phase === 'lobby' && !H.peer){ const u = new URL(location.href); u.searchParams.set('r', Date.now().toString(36)); location.replace(u.toString()); }
+} catch(e){} })();
 if (Q.get('debug')) window.__dbg = {C, H, evaluate, makeEq};
 if (Q.get('join') !== null) startPlayer(Q.get('join'));
 else if (Q.get('host') !== null) startHost();
