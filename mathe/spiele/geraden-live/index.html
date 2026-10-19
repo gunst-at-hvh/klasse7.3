@@ -78,7 +78,7 @@ label{display:block;font-size:.95rem;color:var(--muted);margin-top:6px}
 .ptop .e{font-size:1.6rem}.ptop .n{flex:1;font-size:1.15rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ptop .s{font-family:"Shantell Sans",cursive;font-weight:700;font-size:1.2rem;padding:0 8px;border:2px solid var(--ink);border-radius:10px 4px 12px 4px}
 .pbody{flex:1;padding:6px 6px 10px}
-body.hb .pbody{padding-bottom:64px}
+body.hb .pbody{padding-bottom:calc(var(--hbH, 70px) + 14px)}
 .center2{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px;min-height:60vh}
 .joinform{width:min(460px,100%);padding:16px;display:flex;flex-direction:column;gap:10px}
 .joinform input{padding:10px;font:inherit;font-size:1.3rem;border:2.5px solid var(--ink);border-radius:10px 4px 12px 4px;text-align:center;background:var(--card);color:var(--ink)}
@@ -100,7 +100,7 @@ body.hb .pbody{padding-bottom:64px}
 .resCard{padding:10px 12px;text-align:center;margin-top:8px;animation:pop .5s cubic-bezier(.2,1.8,.4,1) both}
 .resCard .pts{font-family:"Shantell Sans",cursive;font-weight:700;font-size:3.4rem;line-height:1}
 .hostbar{position:fixed;left:0;right:0;bottom:0;display:flex;gap:8px;justify-content:center;align-items:center;padding:6px 10px calc(6px + env(safe-area-inset-bottom));background:#2b2140;z-index:21}
-.hostbar span{color:#fff;font-size:.95rem}.hostbar button{flex:1;max-width:300px;padding:6px}
+.hostbar span{color:#fff;font-size:.95rem}.hostbar button{flex:1;max-width:300px;padding:6px;white-space:nowrap;font-size:1.05rem}.hostbar #pHEnd{flex:0 0 auto;padding:6px 16px}
 .netinfo{position:fixed;bottom:70px;left:50%;transform:translateX(-50%);background:var(--card);border:2px solid var(--ink);padding:4px 12px;border-radius:999px;font-size:.9rem;z-index:50}
 /* Overlays */
 .toast{position:fixed;left:50%;top:16%;transform:translateX(-50%);z-index:50;font-family:"Shantell Sans",cursive;font-weight:700;font-size:2rem;padding:6px 22px;background:var(--card);color:var(--ink);border:3px solid var(--ink);border-radius:255px 18px 225px 18px/18px 225px 18px 255px;box-shadow:4px 4px 0 var(--ink);animation:toastA 1.7s both;pointer-events:none;white-space:nowrap}
@@ -171,7 +171,7 @@ body.hb .pbody{padding-bottom:64px}
 .fbhead .ti{font-size:1.25rem}.fbhead .pts{font-size:2.4rem}
 .fbtabs{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin:6px 0}
 .fbtab.ok{border-color:#2b8a3e}.fbtab.bad{border-color:#e03131}.fbtab.on{background:var(--gold);color:#1e1e1e}
-.fbtext{text-align:left;font-size:1rem;line-height:1.35;min-height:3.9em;padding:2px 4px}
+.fbtext{text-align:left;font-size:1rem;line-height:1.35;min-height:5.5em;padding:2px 4px}
 .resCard.gold .fbtab:not(.on){background:#fff;color:#1e1e1e}
 .resCard.gold .muted{color:#5c4a00}
 
@@ -318,7 +318,7 @@ function keepRegistered(getPeer, lampId){
 }
 
 const PREFIX = 'hvh-geradenlive-';
-const APP_VERSION = '2026-10-19f';
+const APP_VERSION = '2026-10-19g';
 const AUTOJOIN_KEY = 'geradenlive-autojoin';
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const EMOJIS = ['😀','😎','🤓','🥳','🤩','😜','🤠','🥸','😇','🤖','👻','👽','💩','🐱','🐶','🦊','🐼','🐸','🦁','🐯','🐵','🐙','🦄','🐝','🐢','🦖','🐧','🦉','🐬','🦈','🍕','🍩','🍉','⚽','🏀','🎮','🎸','🚀','🌈','🔥','⭐','💎','👑','🌵'];
@@ -1361,7 +1361,8 @@ function pLayout(barHtml, sideHtml){
 function pState(s){
   C.st = s; if (s.me) C.score = (s.phase === 'reveal' && !(C.key === 'reveal' + s.round && C.revDone) && s.me.res) ? s.me.total - s.me.res.pts - (s.me.bonus || 0) : s.me.total;
   pScreen('pPlay'); document.querySelectorAll('#podiumOv').forEach(x => { if (s.phase !== 'end') x.remove(); });
-  show('pHostBar', !!C.isCreator && s.phase !== 'end'); document.body.classList.toggle('hb', !!C.isCreator && s.phase !== 'end'); document.body.classList.toggle('hb', !!C.isCreator && s.phase !== 'end');
+  show('pHostBar', !!C.isCreator && s.phase !== 'end'); document.body.classList.toggle('hb', !!C.isCreator && s.phase !== 'end');
+  requestAnimationFrame(() => { const hb = $('pHostBar'); if (hb.offsetHeight) document.body.style.setProperty('--hbH', hb.offsetHeight + 'px'); });   // Platz unten = echte Höhe der Leiste
   if (C.isCreator) $('pHNext').textContent = s.phase === 'draw' ? '⏹ Zeit beenden' : s.round >= s.rounds ? '🏆 Siegerehrung' : '⏩ Nächste Runde';
   const key = s.phase + s.round, fresh = key !== C.key; C.key = key; if (fresh) clearInterval(C.fbT);
   const el = $('pMain'), me = s.me || {};
