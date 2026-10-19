@@ -37,3 +37,20 @@ Idee:
   aber erst bei exakt (Anker ≤ 0,03, Lage Ø ≤ 0,03, Steigung ≤ 0,2°). Beispiel: Perfekt mit 📍 29/30 · 📏 34/35 · 📐 35/35.
   Wirkt leicht widersprüchlich. Optionen: Perfekt nur bei allen vollen Punkten (110) – oder Perfekt-Schwelle auf ~0,05 senken
   – oder so lassen („Perfekt“ = sichtbar exakt, Punkte = rechnerisch exakt).
+
+- **Typische Fehler in der Steigungs-Erklärung erkennen (19.10.) – beim nächsten Mal nachfragen, ob umsetzen:**
+  Wenn naheliegend, gezielten Hinweis statt nur „falsche Richtung“ geben:
+  - **Vorzeichen vergessen:** gleicher Betrag, anderes Vorzeichen (z. B. +2/5 statt −2/5).
+    Bei umgestellten Formen konkret: „y + 2/5x = −4,1 → beim Umstellen wird aus +2/5x auf der rechten Seite −2/5x.“
+    (Beispiel aus dem Test: Aufgabe y + 2/5x = −4,1, gezeichnet m ≈ 0,3 statt −2/5.)
+  - **Kehrwert verwechselt:** gezeichnet ≈ 1/m (z. B. 5/2 statt 2/5) → „Δx und Δy vertauscht: 5 nach rechts, 2 nach oben – nicht umgekehrt.“
+  - **Beides:** gezeichnet ≈ −1/m.
+  - **b und m vertauscht**, **b mit falschem Vorzeichen** (Anker-Erklärung).
+  Erkennung mit Toleranz (z. B. ±15 % bzw. Winkel), nur melden, wenn eindeutig näher an der Fehler-Variante als an der Lösung.
+
+- **Neuer Modus „Eigene Gleichungen“ (19.10.):** Lehrkraft gibt die Gleichungen selbst ein (Beamer-Modus, ggf. auch Raum-Host).
+  - Liste von Aufgaben für die Runden vorab eingeben (Reihenfolge fest oder gemischt), evtl. speichern/laden.
+  - Erlaubte Formen: y = mx + b, umgestellt (y + 2x = 3, 2y = …), „durch (x|y) mit m = …“, „durch (x1|y1) und (x2|y2)“.
+  - **Vereinfachte Bruch-Eingabe:** z. B. „2/5“ oder „2//5“ wird automatisch als Bruch angezeigt (Live-Vorschau während der Eingabe),
+    Minus/Komma tolerant („-“ → „−“, „0.5“/„0,5“).
+  - Prüfen, ob die Gerade im gewählten Koordinatensystem sichtbar ist (Warnung sonst).
