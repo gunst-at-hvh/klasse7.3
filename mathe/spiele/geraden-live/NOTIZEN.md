@@ -57,5 +57,8 @@ Idee:
   - Erlaubte Formen: y = mx + b, umgestellt (y + 2x = 3, 2y = …), „durch (x|y) mit m = …“, „durch (x1|y1) und (x2|y2)“.
   - **Vereinfachte Bruch-Eingabe:** z. B. „2/5“ oder „2//5“ wird automatisch als Bruch angezeigt (Live-Vorschau während der Eingabe),
     Minus/Komma tolerant („-“ → „−“, „0.5“/„0,5“).
-  - Prüfen, ob die Gerade im gewählten Koordinatensystem sichtbar ist (Warnung sonst); Live-Vorschau der Geraden für die Lehrkraft
-    (nicht am Beamer sichtbar, damit die Lösung nicht verraten wird – oder nur klein/verdeckt).
+  - **Keine Vorschau der Geraden** (würde am Beamer die Lösung verraten) – nur die Gleichung als Text-Vorschau.
+  - **Warnung**, wenn die Gerade im gewählten Koordinatensystem nicht (ausreichend) sichtbar ist.
+  - Dazu Knopf **„🔧 Anpassen“**: Steigung bleibt gleich, nur der y-Achsenabschnitt wird so verschoben, dass die Gerade gut sichtbar ist
+    (möglichst nah am eingegebenen Wert, möglichst „schöner“ Wert, z. B. ganze Zahl oder eine Nachkommastelle).
+    Bei Punkt-Formen („durch (x|y) …“) die Punkte entsprechend mitverschieben bzw. in y = mx + b umwandeln – beim Bauen klären.
