@@ -317,7 +317,7 @@ function keepRegistered(getPeer, lampId){
 }
 
 const PREFIX = 'hvh-geradenlive-';
-const APP_VERSION = '2026-10-19c';
+const APP_VERSION = '2026-10-19d';
 const AUTOJOIN_KEY = 'geradenlive-autojoin';
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const EMOJIS = ['😀','😎','🤓','🥳','🤩','😜','🤠','🥸','😇','🤖','👻','👽','💩','🐱','🐶','🦊','🐼','🐸','🦁','🐯','🐵','🐙','🦄','🐝','🐢','🦖','🐧','🦉','🐬','🦈','🍕','🍩','🍉','⚽','🏀','🎮','🎸','🚀','🌈','🔥','⭐','💎','👑','🌵'];
@@ -1452,7 +1452,9 @@ $('homeDark').onclick = toggleDark; $('pDark').onclick = toggleDark; applyDark()
 $('pRankBtn').onclick = () => { const d = $('rankDrawer'); d.classList.toggle('hidden'); if (!d.classList.contains('hidden')) pRank(); };
 $('rankClose').onclick = () => show('rankDrawer', false);
 ['pMain', 'rankDrawerBody'].forEach(id => $(id).addEventListener('click', e => { const tr = e.target.closest('tr[data-pid]'); if (tr && tr.classList.contains('clk')) pIso(tr.dataset.pid); }));
-{ const v = document.createElement('div'); v.className = 'muted'; v.style.cssText = 'margin-top:12px;font-size:.8rem'; v.textContent = 'Prototyp · Version ' + APP_VERSION; document.querySelector('#home .box').appendChild(v); }
+{ const v = document.createElement('div'); v.className = 'muted'; v.style.cssText = 'margin-top:12px;font-size:.8rem'; v.textContent = 'Prototyp · Version ' + APP_VERSION + ' · '; const rl = document.createElement('a'); rl.href = '#'; rl.textContent = '🔄 neu laden'; rl.style.color = 'inherit';
+  rl.onclick = e => { e.preventDefault(); const u = new URL(location.href); u.searchParams.set('r', Date.now().toString(36)); location.replace(u.toString()); };
+  v.appendChild(rl); document.querySelector('#home .box').appendChild(v); }
 /* Immer die neueste Version: beim Start ohne Zwischenspeicher nachsehen und ggf. einmal neu laden
    (wichtig für Beamer und Raum-Ersteller – Mitspieler werden schon über den Host aktualisiert) */
 (async () => { try {
