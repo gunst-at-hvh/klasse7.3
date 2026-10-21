@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mos Werkstatt · Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Gochi+Hand&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#e8e1cd;--ink:#1e1e1e;--muted:#6b6b6b;--green:#d3f9d8;--red:#ffc9c9;--blue:#a5d8ff;--gold:#ffe066;--cream:#fff8e6}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;overflow:hidden}
+body{background:var(--paper);color:var(--ink);font-family:"Patrick Hand","Comic Sans MS",cursive;font-size:22px;
+  background-image:radial-gradient(#d2c7a6 1.4px,transparent 1.4px);background-size:26px 26px}
+h1,h2,h3,.ti{font-family:"Gochi Hand","Patrick Hand",cursive;font-weight:400;margin:0}
+a{color:inherit}
+
+/* ---------- Skizzen-Bausteine (wie in den Spielen) ---------- */
+.sk{border:3px solid var(--ink);border-radius:255px 14px 225px 14px/14px 225px 14px 255px;background:#fff}
+.sk2{border:3px solid var(--ink);border-radius:14px 225px 14px 255px/255px 14px 225px 14px;background:#fff}
+.btn{display:inline-block;cursor:pointer;border:3px solid var(--ink);border-radius:255px 14px 225px 14px/14px 225px 14px 255px;
+  background:#fff;padding:6px 18px;font:inherit;font-size:1.05rem;color:var(--ink);text-decoration:none;
+  box-shadow:4px 4px 0 var(--ink);transition:transform .08s,box-shadow .08s}
+.btn:hover{animation:wobble .5s}
+.btn:active{transform:translate(4px,4px);box-shadow:0 0 0 var(--ink)}
+.btn.go{background:#8ce99a}.btn.blue{background:var(--blue)}.btn.gold{background:var(--gold)}.btn.red{background:var(--red)}
+
+/* ---------- impress.js ---------- */
+#impress{height:100%}
+.step{width:920px;height:580px;padding:0;opacity:.28;filter:saturate(.7);
+  transition:opacity .8s,filter .8s}
+.step.active,.show-all .step{opacity:1;filter:none}
+.card{position:absolute;inset:0;padding:30px 40px;background:var(--cream);overflow:hidden;
+  border:4px solid var(--ink);border-radius:30px 8px 34px 8px/8px 34px 8px 30px;box-shadow:8px 8px 0 var(--ink)}
+.card.white{background:#fff}
+.card h2{font-size:2.6rem;line-height:1.05;margin-bottom:6px}
+.card p{margin:.4em 0}
+.lead{font-size:1.25rem;color:#3a3a3a}
+
+/* Comic-Einflug: nur im aktiven Schritt, startet bei jedem Besuch neu */
+.pop{opacity:0}
+.step.active .pop,.show-all .pop{animation:popIn .7s cubic-bezier(.2,1.8,.4,1) both;animation-delay:calc(var(--d,0)*.12s + .25s)}
+@keyframes popIn{from{opacity:0;transform:translateY(40px) scale(.4) rotate(-6deg)}to{opacity:1}}
+@keyframes wobble{25%{transform:rotate(-3deg)}75%{transform:rotate(3deg)}}
+@keyframes bob{50%{transform:translateY(-10px)}}
+@keyframes twinkle{50%{transform:scale(1.35) rotate(18deg);opacity:.7}}
+@keyframes wag{50%{transform:rotate(8deg)}}
+
+.doodle{position:absolute;pointer-events:none}
+.star{animation:twinkle 2.4s ease-in-out infinite}
+.arrow{animation:bob 1.4s ease-in-out infinite}
+
+/* Titel: Buchstaben hüpfen nacheinander */
+.big{font-family:"Gochi Hand",cursive;font-size:5.4rem;line-height:1;margin:34px 0 4px}
+.big span{display:inline-block;animation:bob 2.2s ease-in-out infinite;animation-delay:calc(var(--i)*.09s)}
+.scribble{display:block;width:420px;height:22px;margin-top:-4px}
+
+/* Projekt-Karten */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:26px;margin-top:26px}
+.proj{display:block;padding:20px 20px 16px;text-decoration:none;transition:transform .15s}
+.proj:nth-child(odd){transform:rotate(-1.4deg)}.proj:nth-child(even){transform:rotate(1.2deg)}
+.proj:hover{transform:rotate(0) scale(1.04)}
+.proj b{font-family:"Gochi Hand",cursive;font-weight:400;font-size:1.55rem;display:block}
+.proj span{font-size:1rem;color:#444;display:block;line-height:1.15}
+.tag{display:inline-block;font-size:.85rem;border:2px solid var(--ink);border-radius:999px 12px 999px 12px;padding:0 10px;margin:4px 4px 0 0;background:var(--gold)}
+.tag.b{background:var(--blue)}.tag.g{background:var(--green)}
+
+/* Blog */
+.post{padding:10px 18px;margin-top:14px;background:#fff}
+.post:nth-of-type(2){transform:rotate(-.8deg)}.post:nth-of-type(3){transform:rotate(.7deg)}
+.post h3{font-size:1.5rem}
+.post small{color:var(--muted);font-size:.95rem}
+
+/* Über mich */
+.about{display:flex;gap:26px;align-items:center;margin-top:10px}
+.face{flex:none;width:150px;height:150px;border:4px solid var(--ink);border-radius:50% 46% 52% 44%/55% 50% 56% 48%;
+  background:var(--gold);display:grid;place-items:center;font-size:4.4rem;animation:wag 3s ease-in-out infinite}
+.chips span{display:inline-block;margin:6px 8px 0 0;padding:2px 14px;border:3px solid var(--ink);border-radius:12px 4px 14px 4px;background:#fff}
+
+/* Spiel */
+.gamewrap{position:relative;margin-top:6px}
+canvas#g{display:block;width:100%;height:auto;border:3px solid var(--ink);border-radius:14px 4px 16px 4px;background:#fffdf5;touch-action:none}
+.pad{display:flex;gap:10px;margin-top:10px;align-items:center;flex-wrap:wrap}
+.pad .btn{padding:4px 16px;font-size:1.3rem;user-select:none;-webkit-user-select:none;touch-action:none}
+.hint{font-size:.95rem;color:#444;margin-left:auto;text-align:right}
+
+/* Navigation unten */
+#nav{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);display:flex;gap:8px;z-index:50;flex-wrap:wrap;justify-content:center;padding:0 8px}
+#nav .btn{padding:2px 14px;font-size:1rem;box-shadow:3px 3px 0 var(--ink);background:#fff}
+#nav .btn.on{background:var(--gold)}
+.impress-not-supported #nav{display:none}
+.fallback-message{display:none;padding:24px}
+.impress-not-supported .fallback-message{display:block}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}.pop{opacity:1}}
+</style>
+</head>
+<body class="impress-not-supported">
+
+<div class="fallback-message">Dein Browser kann die Zoom-Präsentation leider nicht anzeigen. Bitte nimm einen aktuellen Browser.</div>
+
+<div id="impress" data-transition-duration="1100" data-width="1100" data-height="720" data-max-scale="3" data-min-scale="0.15">
+
+  <!-- 1 · Start -->
+  <div id="start" class="step" data-x="0" data-y="0">
+    <div class="card">
+      <svg class="doodle star" style="right:70px;top:36px" width="70" height="70" viewBox="0 0 70 70"><path d="M35 4l7 22 23 1-18 14 6 23-18-13-18 13 6-23L5 27l23-1z" fill="#ffe066" stroke="#1e1e1e" stroke-width="3" stroke-linejoin="round"/></svg>
+      <svg class="doodle star" style="right:170px;top:120px;animation-delay:.7s" width="38" height="38" viewBox="0 0 70 70"><path d="M35 4l7 22 23 1-18 14 6 23-18-13-18 13 6-23L5 27l23-1z" fill="#a5d8ff" stroke="#1e1e1e" stroke-width="4" stroke-linejoin="round"/></svg>
+      <h1 class="big pop" style="--d:0" id="title">Mos Werkstatt</h1>
+      <svg class="scribble pop" style="--d:3" viewBox="0 0 420 22"><path d="M4 12c40-10 80 8 120-2s80 8 120-2 80 6 170-2" fill="none" stroke="#e21b3c" stroke-width="5" stroke-linecap="round"/></svg>
+      <p class="lead pop" style="--d:4;margin-top:22px;max-width:620px">Spiele, Tools und Notizen für den Unterricht. Zum Ausprobieren, Mitspielen und Weiterklauen.</p>
+      <p class="pop" style="--d:6;margin-top:30px"><button class="btn go" data-go="projekte">Los geht's ➜</button>
+        <span style="margin-left:14px;font-size:1rem;color:#555">oder Pfeiltaste&nbsp;→ drücken</span></p>
+      <p class="pop" style="--d:8;position:absolute;left:40px;bottom:24px;font-size:.95rem;color:#666;margin:0">(Demo-Seite · alle Texte sind Platzhalter)</p>
+      <svg class="doodle arrow" style="right:60px;bottom:40px" width="120" height="80" viewBox="0 0 120 80"><path d="M8 40c30-30 60-30 96 0M84 18l22 22-26 8" fill="none" stroke="#1e1e1e" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+  </div>
+
+  <!-- 2 · Projekte -->
+  <div id="projekte" class="step" data-x="1350" data-y="-230" data-rotate="4">
+    <div class="card">
+      <h2 class="pop" style="--d:0">🧰 Projekte</h2>
+      <p class="lead pop" style="--d:1">Tools, die ich im Unterricht benutze. Klick drauf, dann öffnen sie sich in einem neuen Tab.</p>
+      <div class="grid">
+        <a class="proj sk pop" style="--d:2;background:#fff" href="../mathe/spiele/schaetzspiel/" target="_blank" rel="noopener">
+          <b>🎯 Prozent-Schätzspiel</b><span>Prozente schätzen statt rechnen.</span><i class="tag">Mathe</i><i class="tag b">Klasse 7</i></a>
+        <a class="proj sk2 pop" style="--d:3;background:#fff" href="../mathe/spiele/farbtaeuschung/" target="_blank" rel="noopener">
+          <b>🎨 Farb-Täuschung</b><span>Wie verlässlich ist unser Blick?</span><i class="tag">Mathe</i><i class="tag g">Live</i></a>
+        <a class="proj sk2 pop" style="--d:4;background:#fff" href="../mathe/spiele/geraden/" target="_blank" rel="noopener">
+          <b>🎯 Geraden-Treffer</b><span>Lineare Funktionen zum Anfassen.</span><i class="tag">Mathe</i></a>
+        <a class="proj sk pop" style="--d:5;background:#fff" href="../gw/gemeinwohl-v2/" target="_blank" rel="noopener">
+          <b>🏗️ Gemeinwohl-Spiel</b><span>Regeln aushandeln, gemeinsam entscheiden.</span><i class="tag b">GW</i><i class="tag g">Live</i></a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3 · Blog -->
+  <div id="blog" class="step" data-x="2750" data-y="330" data-rotate="-3">
+    <div class="card white">
+      <h2 class="pop" style="--d:0">📝 Blog</h2>
+      <div class="post sk pop" style="--d:1">
+        <h3>Wie ich das Schätzspiel einsetze</h3>
+        <small>Beispieleintrag · 21.10.2026</small>
+        <p style="font-size:1.05rem">Kurzer Text, was im Unterricht gut geklappt hat und was ich nächstes Mal anders mache.</p></div>
+      <div class="post sk2 pop" style="--d:2">
+        <h3>Spiele ohne Admin-Rechte im PC-Raum</h3>
+        <small>Beispieleintrag · 14.10.2026</small>
+        <p style="font-size:1.05rem">Ein paar Tipps, wie Browserspiele auch auf den Schul-PCs laufen.</p></div>
+      <div class="post sk pop" style="--d:3">
+        <h3>Neu: Ideen für die nächste Einheit</h3>
+        <small>Beispieleintrag · 02.10.2026</small>
+        <p style="font-size:1.05rem">Skizzen, Material und offene Fragen zum Mitdenken.</p></div>
+    </div>
+  </div>
+
+  <!-- 4 · Über mich -->
+  <div id="ueber" class="step" data-x="2900" data-y="1450" data-rotate="5">
+    <div class="card">
+      <h2 class="pop" style="--d:0">👋 Über mich</h2>
+      <div class="about">
+        <div class="face pop" style="--d:1">🧑‍🏫</div>
+        <div>
+          <p class="lead pop" style="--d:2">Hallo! Ich unterrichte und baue nebenbei kleine Lernspiele für den Browser.</p>
+          <div class="chips pop" style="--d:3"><span>Mathe</span><span>Informatik</span><span>Geschichte</span><span>Ethik</span><span>Mediales Gestalten</span></div>
+        </div>
+      </div>
+      <p class="pop" style="--d:5;margin-top:26px">Wenn dir ein Tool gefällt, darfst du es gern benutzen und anpassen.</p>
+      <p class="pop" style="--d:6"><button class="btn blue" data-go="spiel">Pause? Spiel mit dem Klecks ➜</button></p>
+    </div>
+  </div>
+
+  <!-- 5 · Minispiel -->
+  <div id="spiel" class="step" data-x="1300" data-y="1650" data-rotate="-4" data-scale="1.1">
+    <div class="card white">
+      <h2 class="pop" style="--d:0">🎨 Der Klecks</h2>
+      <div class="gamewrap pop" style="--d:1">
+        <canvas id="g" width="840" height="400"></canvas>
+      </div>
+      <div class="pad pop" style="--d:2">
+        <button class="btn" id="bl">◀</button><button class="btn" id="bj">⬆</button><button class="btn" id="br">▶</button>
+        <button class="btn gold" id="bc">🌈 Farbe</button><button class="btn red" id="bw">🧽 Wischen</button>
+        <span class="hint">Pfeiltasten / A D W / Leertaste<br>weiter mit Bild↓ oder unten</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6 · Übersicht -->
+  <div id="karte" class="step" data-x="1400" data-y="700" data-scale="4.7">
+    <div class="card" style="background:transparent;border:none;box-shadow:none"></div>
+  </div>
+</div>
+
+<div id="nav">
+  <button class="btn" data-go="start">Start</button>
+  <button class="btn" data-go="projekte">Projekte</button>
+  <button class="btn" data-go="blog">Blog</button>
+  <button class="btn" data-go="ueber">Über mich</button>
+  <button class="btn" data-go="spiel">Klecks</button>
+  <button class="btn" data-go="karte">🔭 Karte</button>
+</div>
+
+<script src="impress.min.js"></script>
+<script>
+(function(){
+  var api = impress();
+  api.init();
+
+  // Titel in hüpfende Buchstaben zerlegen
+  var t = document.getElementById('title');
+  var txt = t.textContent; t.textContent = '';
+  txt.split('').forEach(function(c,i){
+    var s = document.createElement('span'); s.style.setProperty('--i', i);
+    s.textContent = c === ' ' ? ' ' : c; t.appendChild(s);
+  });
+
+  // Navigation (eigene Knöpfe)
+  var navBtns = document.querySelectorAll('[data-go]');
+  navBtns.forEach(function(b){ b.addEventListener('click', function(e){ e.stopPropagation(); api.goto(b.getAttribute('data-go')); }); });
+  function markNav(id){
+    document.querySelectorAll('#nav .btn').forEach(function(b){ b.classList.toggle('on', b.getAttribute('data-go') === id); });
+  }
+  document.addEventListener('impress:stepenter', function(e){
+    markNav(e.target.id);
+    document.body.classList.toggle('show-all', e.target.id === 'karte');
+  });
+
+  /* ================= Klecks-Minispiel ================= */
+  var cv = document.getElementById('g'), ctx = cv.getContext('2d');
+  var W = cv.width, H = cv.height;
+  var paint = document.createElement('canvas'); paint.width = W; paint.height = H;
+  var pc = paint.getContext('2d');
+  var plats = [ {x:0,y:H-30,w:W,h:30}, {x:90,y:290,w:190,h:16}, {x:360,y:225,w:170,h:16}, {x:600,y:300,w:190,h:16}, {x:520,y:130,w:130,h:16}, {x:150,y:150,w:130,h:16} ];
+  var b = {x:60,y:H-70,vx:0,vy:0,r:17,on:false,sx:1,sy:1,hue:200,face:1};
+  var keys = {l:0,r:0,j:0}, rainbow = true, running = false, last = 0, dist = 0;
+
+  var MAP = {ArrowLeft:'l',a:'l',A:'l',ArrowRight:'r',d:'r',D:'r',ArrowUp:'j',w:'j',W:'j',' ':'j'};
+  function onKey(e, down){
+    if (!running) return;
+    var k = MAP[e.key];
+    if (k){ keys[k] = down ? 1 : 0; }
+    if (k || e.key === 'ArrowDown' || e.key === 's' || e.key === 'S'){
+      e.stopPropagation(); e.preventDefault();   // impress.js soll nicht weiterblättern
+    }
+  }
+  window.addEventListener('keydown', function(e){ onKey(e,true); }, true);
+  window.addEventListener('keyup', function(e){ onKey(e,false); }, true);
+
+  function hold(id,k){
+    var el = document.getElementById(id);
+    ['pointerdown'].forEach(function(n){ el.addEventListener(n, function(e){ e.preventDefault(); e.stopPropagation(); keys[k]=1; }); });
+    ['pointerup','pointerleave','pointercancel'].forEach(function(n){ el.addEventListener(n, function(){ keys[k]=0; }); });
+  }
+  hold('bl','l'); hold('br','r'); hold('bj','j');
+  document.getElementById('bc').addEventListener('click', function(){ rainbow = !rainbow; this.textContent = rainbow ? '🌈 Farbe' : '🎨 Farbe'; b.hue = (b.hue+90)%360; });
+  document.getElementById('bw').addEventListener('click', function(){ pc.clearRect(0,0,W,H); });
+
+  function step(dt){
+    var acc = 1500, max = 300;
+    if (keys.l) { b.vx -= acc*dt; b.face = -1; }
+    if (keys.r) { b.vx += acc*dt; b.face = 1; }
+    if (!keys.l && !keys.r) b.vx *= Math.pow(0.0008, dt);
+    b.vx = Math.max(-max, Math.min(max, b.vx));
+    if (keys.j && b.on){ b.vy = -560; b.on = false; b.sx = .7; b.sy = 1.35; }
+    b.vy += 1500*dt;
+    var px = b.x, py = b.y;
+    b.x += b.vx*dt; b.y += b.vy*dt;
+    if (b.x < b.r){ b.x = b.r; b.vx = 0; } if (b.x > W-b.r){ b.x = W-b.r; b.vx = 0; }
+    var was = b.on; b.on = false;
+    plats.forEach(function(p){
+      var feetPrev = py + b.r, feet = b.y + b.r;
+      if (b.vy >= 0 && b.x > p.x-4 && b.x < p.x+p.w+4 && feetPrev <= p.y+4 && feet >= p.y){
+        b.y = p.y - b.r; b.vy = 0; b.on = true;
+        if (!was){ b.sx = 1.4; b.sy = .6; }       // Aufprall: platt drücken
+      }
+    });
+    if (b.y > H+60){ b.x = 60; b.y = H-70; b.vx = b.vy = 0; }
+    b.sx += (1-b.sx)*Math.min(1,dt*12); b.sy += (1-b.sy)*Math.min(1,dt*12);
+
+    // Spur malen
+    var sp = Math.hypot(b.x-px, b.y-py);
+    if (sp > 0.2){
+      dist += sp; if (rainbow) b.hue = (dist*0.9) % 360;
+      var n = Math.ceil(sp/3);
+      for (var i=0;i<n;i++){
+        var f = i/n, x = px+(b.x-px)*f, y = py+(b.y-py)*f;
+        pc.fillStyle = 'hsl('+b.hue+',85%,58%)';
+        pc.beginPath();
+        pc.arc(x + (Math.random()-.5)*3, y + (Math.random()-.5)*3, b.on ? 7 : 4.5, 0, 6.283);
+        pc.fill();
+      }
+    }
+  }
+
+  function platform(p){
+    ctx.fillStyle = p.h > 20 ? '#e8e1cd' : '#ffe066';
+    ctx.strokeStyle = '#1e1e1e'; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.roundRect(p.x, p.y, p.w, p.h, 6); ctx.fill(); ctx.stroke();
+  }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle = '#fffdf5'; ctx.fillRect(0,0,W,H);
+    ctx.fillStyle = '#d9cfb4';
+    for (var x=13;x<W;x+=26) for (var y=13;y<H;y+=26){ ctx.fillRect(x,y,2,2); }
+    ctx.drawImage(paint,0,0);
+    plats.forEach(platform);
+    // Klecks
+    ctx.save(); ctx.translate(b.x, b.y + b.r*(1-b.sy)); ctx.scale(b.sx, b.sy);
+    ctx.fillStyle = 'hsl('+b.hue+',85%,62%)'; ctx.strokeStyle = '#1e1e1e'; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.ellipse(0,0,b.r,b.r,0,0,6.283); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#fff';
+    [-6,7].forEach(function(ex){ ctx.beginPath(); ctx.arc(ex+b.face*3,-4,5,0,6.283); ctx.fill(); ctx.stroke(); });
+    ctx.fillStyle = '#1e1e1e';
+    [-6,7].forEach(function(ex){ ctx.beginPath(); ctx.arc(ex+b.face*5,-4,2,0,6.283); ctx.fill(); });
+    ctx.restore();
+  }
+  function loop(ts){
+    if (!running) return;
+    var dt = Math.min(.033, (ts-last)/1000 || .016); last = ts;
+    step(dt); draw(); requestAnimationFrame(loop);
+  }
+  var gameStep = document.getElementById('spiel');
+  gameStep.addEventListener('impress:stepenter', function(){ running = true; last = performance.now(); requestAnimationFrame(loop); });
+  gameStep.addEventListener('impress:stepleave', function(){ running = false; keys.l = keys.r = keys.j = 0; });
+  draw();
+})();
+</script>
+</body>
+</html>
