@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nulltest Mathe 7 – Grundlagen</title>
+<style>
+@font-face{font-family:"Shantell Sans";src:url(../../fonts/shantell-sans-latin-400-normal.woff2) format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Shantell Sans";src:url(../../fonts/shantell-sans-latin-700-normal.woff2) format("woff2");font-weight:700;font-display:swap}
+:root{
+  --bg:#f5f3ee;--card:#fff;--ink:#1d2433;--muted:#6b7280;--line:#d6d2c7;--accent:#2f6fde;
+  --red:#e03131;--blue:#1971c2;--green:#2f9e44;--purple:#9c36b5;--orange:#f08c00;
+  --empty:#ebe8e1;--soft:#eef3ff;--key:#f0ede6;
+}
+@media (prefers-color-scheme: dark){
+  :root{--bg:#14171d;--card:#1e222a;--ink:#e8e9ec;--muted:#9aa1ad;--line:#363b46;--accent:#6b9cff;
+    --red:#ff6b6b;--blue:#74b9ff;--green:#51cf66;--purple:#da77f2;--orange:#ffa94d;
+    --empty:#2a2f39;--soft:#222a3d;--key:#2a2f39}
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:18px}
+main{max-width:980px;margin:0 auto;padding:14px 16px 40px}
+button{font:inherit;color:inherit;cursor:pointer}
+.crumb{color:var(--muted);font-weight:700;font-size:.9rem}
+.crumb a{color:inherit}
+h1{font-size:1.7rem;margin:6px 0 10px;font-family:"Shantell Sans",system-ui,sans-serif}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px}
+.big{font-family:"Shantell Sans",system-ui,sans-serif}
+.btn{background:var(--card);border:2px solid var(--line);border-radius:12px;padding:10px 16px;font-weight:600}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn.primary:disabled{opacity:.4;cursor:not-allowed}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.muted{color:var(--muted)}
+.c-red{color:var(--red);font-weight:700}.c-blue{color:var(--blue);font-weight:700}.c-green{color:var(--green);font-weight:700}
+input.name{font:inherit;padding:10px 12px;border-radius:12px;border:2px solid var(--line);background:var(--card);color:var(--ink);width:min(320px,100%)}
+/* Kopfzeile Test */
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap}
+.chip{background:var(--soft);border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-weight:700}
+.bar{height:10px;background:var(--empty);border-radius:6px;overflow:hidden;margin-bottom:12px;display:flex;gap:2px}
+.bar i{flex:1;background:var(--empty)}
+.bar i.done{background:var(--accent)}
+.bar i.cur{background:var(--orange)}
+.bar i.sep{flex:0 0 6px;background:transparent}
+.grid2{display:grid;grid-template-columns:1fr 290px;gap:14px;align-items:start}
+@media (max-width:760px){.grid2{grid-template-columns:1fr}}
+.q{font-size:1.15rem;margin:0 0 8px}
+.vis{display:flex;justify-content:center;margin:6px 0 10px}
+.vis svg{max-width:100%;height:auto}
+.ans{font-family:"Shantell Sans",system-ui,sans-serif;font-size:2rem;line-height:1.5;display:flex;flex-wrap:wrap;align-items:center;gap:.15em .2em;
+  padding:12px 6px;background:var(--soft);border-radius:14px;justify-content:center;text-align:center;min-height:5.2rem}
+.ans.shake{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.gap{display:inline-block;min-width:2.1em;height:1.4em;line-height:1.4em;border-bottom:4px solid var(--ink);text-align:center;color:var(--blue);font-weight:700;
+  background:var(--card);border-radius:6px 6px 0 0;margin:0 .1em;cursor:pointer;vertical-align:middle}
+.gap.act{border-bottom-color:var(--orange);animation:blink 1s infinite;box-shadow:0 0 0 3px rgba(240,140,0,.35)}
+.gap.act:empty::after{content:"";display:inline-block;width:3px;height:1em;background:var(--orange);vertical-align:middle;animation:blink2 1s steps(1) infinite}
+@keyframes blink{50%{box-shadow:0 0 0 3px rgba(240,140,0,.05)}}
+@keyframes blink2{50%{opacity:0}}
+.fr .gap{border:3px solid var(--ink);border-radius:8px;margin:.12em 0;min-width:1.9em}
+.fr .gap.act{border-color:var(--orange)}
+.fr{display:inline-grid;grid-template-rows:auto auto;vertical-align:middle;text-align:center;margin:0 .15em}
+.fr i{font-style:normal;padding:0 .25em;line-height:1.25}
+.fr i:first-child{border-bottom:.09em solid currentColor}
+.ex{display:inline-flex;align-items:center;gap:.2em;font-family:"Shantell Sans",system-ui,sans-serif;font-size:1.8rem}
+.jump{display:inline-grid;grid-template-rows:auto auto;color:var(--purple);font-weight:700}
+.jump i{font-style:normal;line-height:1.25;padding:0 .25em;white-space:nowrap}
+.jump i:first-child{border-bottom:.09em solid transparent}
+/* Ziffernblock */
+.pad{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px;position:sticky;top:8px}
+.keys{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.keys button{background:var(--key);border:2px solid var(--line);border-radius:14px;font-size:1.7rem;font-weight:700;padding:12px 0;font-family:"Shantell Sans",system-ui,sans-serif;user-select:none;touch-action:manipulation}
+.keys button:active{transform:scale(.95);background:var(--soft)}
+.keys button:disabled{opacity:.35}
+.keys button.von{font-size:1rem;line-height:1.1;color:var(--purple);border-color:var(--purple)}
+.keys button.von b{display:block;font-size:1.5rem}
+.keys button.wide{grid-column:span 3;font-size:1.05rem;padding:10px 0;font-family:system-ui,sans-serif}
+.keys button.ok{background:var(--accent);border-color:var(--accent);color:#fff;font-size:1.3rem}
+.keys button.skip{color:var(--muted)}
+.hintline{min-height:1.4em;color:var(--red);font-weight:600;font-size:.95rem;margin-top:6px;text-align:center}
+.tip{font-size:.85rem;color:var(--muted);margin-top:8px;text-align:center}
+/* Intro */
+.ex-box{background:var(--soft);border:2px dashed var(--accent);border-radius:14px;padding:12px;margin:12px 0;text-align:center}
+.ex-box .lab{font-size:.85rem;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.ex-box .gap{cursor:default}
+.ex-box .gap.act{animation:blink 1s infinite}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.9rem;margin-top:8px}
+/* Ergebnis */
+.res-row{display:grid;grid-template-columns:40px 1fr auto;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.res-row:last-child{border-bottom:none}
+.dots{display:flex;gap:5px}
+.dot{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:.8rem;font-weight:800;color:#fff;background:var(--empty)}
+.dot.ok{background:var(--green)}.dot.part{background:var(--orange)}.dot.wrong{background:var(--red)}.dot.skip{background:var(--muted)}
+.tag{border-radius:999px;padding:2px 10px;font-weight:700;font-size:.85rem;color:#fff}
+.tag.g{background:var(--green)}.tag.y{background:var(--orange)}.tag.r{background:var(--red)}
+.hint{font-size:.9rem;color:var(--muted)}
+table{border-collapse:collapse;width:100%;font-size:.88rem}
+th,td{border-bottom:1px solid var(--line);padding:5px 6px;text-align:left;vertical-align:top}
+th{color:var(--muted);font-size:.75rem;text-transform:uppercase}
+td.ok{color:var(--green);font-weight:700}td.part{color:var(--orange);font-weight:700}td.wrong,td.skip{color:var(--red);font-weight:700}
+.details{display:none;margin-top:14px;overflow:auto}
+.hidden{display:none!important}
+@media print{
+  body{background:#fff;color:#000}
+  .noprint,.crumb{display:none!important}
+  .details{display:block!important}
+  .card{border:none;padding:0}
+}
+</style>
+</head>
+<body>
+<main>
+  <div class="crumb noprint"><a href="../../../">Klasse 7.3</a> › <a href="../../">Mathe</a> › <a href="../">Spiele</a> › Nulltest</div>
+  <div id="app"></div>
+</main>
+
+<script>
+(function(){
+'use strict';
+/* ---------- Helfer ---------- */
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const pick=a=>a[rnd(0,a.length-1)];
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=rnd(0,i);[a[i],a[j]]=[a[j],a[i]]}return a};
+const gcd=(a,b)=>b?gcd(b,a%b):a;
+const divisors=n=>{const d=[];for(let i=1;i<=n;i++)if(n%i===0)d.push(i);return d};
+const fr=(a,b)=>`<span class="fr"><i>${a}</i><i>${b}</i></span>`;
+const exFrac=(a,b,c,d,op)=>`<span class="ex">${fr(a,b)}<span class="jump"><i>${op} →</i><i>${op} →</i></span>${fr(c,d)}</span>`;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+const BLOCKS=[
+ {t:'Daten & Zählen',ic:'📊',hint:'Zählen, Strichliste, „wie viele von wie vielen“ üben.'},
+ {t:'Teilen & Teiler',ic:'➗',hint:'Einmaleins/Teilen wiederholen – Arbeitsblatt Teil 1 (Teiler mit Mal-Nehmen).'},
+ {t:'Brüche: Teil vom Ganzen',ic:'🍕',hint:'Bruch als „x von y“ – Bruch-Pizza; Bruch von einer Menge.'},
+ {t:'Erweitern',ic:'↗️',hint:'Arbeitsblatt Teil 2: Erweitern (oben und unten mal dieselbe Zahl).'},
+ {t:'Kürzen',ic:'↙️',hint:'Arbeitsblatt Teil 2: Kürzen (gemeinsamen Teiler suchen, beide durch ihn teilen).'},
+ {t:'Prozent = von 100',ic:'💯',hint:'Arbeitsblatt Teil 3: „x von y“ auf „von 100“ erweitern.'}
+];
+
+/* ---------- Bilder (SVG) ---------- */
+function tally(n){
+  const g=Math.floor(n/5),r=n%5,w=g*74+r*14+20,h=90;let s='';let x=10;
+  for(let i=0;i<g;i++){
+    for(let k=0;k<4;k++)s+=`<line x1="${x+k*14}" y1="12" x2="${x+k*14}" y2="74" />`;
+    s+=`<line x1="${x-6}" y1="58" x2="${x+54}" y2="28" />`;x+=74;
+  }
+  for(let k=0;k<r;k++){s+=`<line x1="${x+k*14}" y1="12" x2="${x+k*14}" y2="74" />`}
+  return `<svg viewBox="0 0 ${Math.max(w,60)} ${h}" width="${Math.max(w,60)}" role="img" aria-label="Strichliste"><g stroke="currentColor" stroke-width="5" stroke-linecap="round">${s}</g></svg>`;
+}
+function shapeSVG(type,cx,cy,r,fill){
+  if(type===0)return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${fill}"/>`;
+  if(type===1)return `<rect x="${cx-r}" y="${cy-r}" width="${2*r}" height="${2*r}" rx="3" fill="${fill}"/>`;
+  if(type===2)return `<polygon points="${cx},${cy-r-2} ${cx+r+2},${cy+r} ${cx-r-2},${cy+r}" fill="${fill}"/>`;
+  let p=[];for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,rr=i%2?r*.45:r*1.1;p.push((cx+rr*Math.cos(a)).toFixed(1)+','+(cy+rr*Math.sin(a)).toFixed(1))}
+  return `<polygon points="${p.join(' ')}" fill="${fill}"/>`;
+}
+function symbols(T,k){
+  const cols=T===12?6:5,rows=Math.ceil(T/cols),cell=54;
+  const flags=shuffle(Array.from({length:T},(_,i)=>i<k));
+  let s='';
+  flags.forEach((red,i)=>{
+    const cx=(i%cols)*cell+cell/2,cy=Math.floor(i/cols)*cell+cell/2;
+    s+=shapeSVG(rnd(0,3),cx,cy,17,red?'#e03131':pick(['#1971c2','#495057']));
+  });
+  return `<svg viewBox="0 0 ${cols*cell} ${rows*cell}" width="${cols*cell}" role="img" aria-label="Symbole">${s}</svg>`;
+}
+function barChart(){
+  const sets=[['Fußball','Basketball','Schwimmen','Tanzen'],['Hund','Katze','Fisch','Hamster'],['Pizza','Nudeln','Döner','Salat']];
+  const titles=['Lieblingssport','Lieblingstier','Lieblingsessen'];
+  const si=rnd(0,2),vals=[rnd(3,9),rnd(3,9),rnd(3,9),rnd(3,9)];
+  const W=470,H=250,L=44,B=40,T=28,top=10,pw=W-L-10,ph=H-B-T,bw=62;
+  let s=`<text x="${W/2}" y="18" text-anchor="middle" font-size="15" font-weight="700" fill="currentColor">${titles[si]} – so viele Kinder haben abgestimmt</text>`;
+  for(let v=0;v<=top;v+=2){const y=T+ph-ph*v/top;
+    s+=`<line x1="${L}" y1="${y}" x2="${W-10}" y2="${y}" stroke="currentColor" opacity=".25"/><text x="${L-8}" y="${y+5}" text-anchor="end" font-size="14" fill="currentColor">${v}</text>`}
+  vals.forEach((v,i)=>{
+    const x=L+(pw/4)*i+(pw/4-bw)/2,h=ph*v/top;
+    s+=`<rect x="${x}" y="${T+ph-h}" width="${bw}" height="${h}" fill="#e03131" rx="3"/><text x="${x+bw/2}" y="${H-16}" text-anchor="middle" font-size="14" fill="currentColor">${sets[si][i]}</text>`;
+  });
+  return {svg:`<svg viewBox="0 0 ${W} ${H}" width="${W}" role="img" aria-label="Balkendiagramm">${s}</svg>`,sum:vals.reduce((a,b)=>a+b,0)};
+}
+function pizza(n,k){
+  const cx=80,cy=80,r=72;let s=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="var(--empty)"/>`;
+  for(let i=0;i<n;i++){
+    const a0=-Math.PI/2+i*2*Math.PI/n,a1=-Math.PI/2+(i+1)*2*Math.PI/n;
+    const x0=cx+r*Math.cos(a0),y0=cy+r*Math.sin(a0),x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1);
+    const fill=i<k?'#1971c2':'var(--empty)';
+    s+=`<path d="M${cx} ${cy} L${x0.toFixed(1)} ${y0.toFixed(1)} A${r} ${r} 0 ${(a1-a0)>Math.PI?1:0} 1 ${x1.toFixed(1)} ${y1.toFixed(1)} Z" fill="${fill}" stroke="currentColor" stroke-width="2.5"/>`;
+  }
+  return `<svg viewBox="0 0 160 160" width="170" role="img" aria-label="Kreis in ${n} Teile geteilt">${s}</svg>`;
+}
+function stripe(n,k){
+  const W=360,H=70,w=W/n;let s='';
+  for(let i=0;i<n;i++)s+=`<rect x="${i*w+2}" y="4" width="${w}" height="${H-8}" fill="${i<k?'#1971c2':'var(--empty)'}" stroke="currentColor" stroke-width="2.5"/>`;
+  return `<svg viewBox="0 0 ${W+4} ${H}" width="${W+4}" role="img" aria-label="Streifen in ${n} Teile geteilt">${s}</svg>`;
+}
+function grid100(k){
+  let s='';
+  for(let i=0;i<100;i++){const x=(i%10)*24,y=Math.floor(i/10)*24;
+    s+=`<rect x="${x+2}" y="${y+2}" width="21" height="21" rx="3" fill="${i<k?'#1971c2':'var(--empty)'}" stroke="currentColor" stroke-opacity=".35"/>`}
+  return `<svg viewBox="0 0 244 244" width="220" role="img" aria-label="Hunderterfeld">${s}</svg>`;
+}
+
+/* ---------- Aufgaben erzeugen ---------- */
+const G=i=>({g:i}), FR=(a,b)=>({f:[a,b]});
+function task(block,level,o){return Object.assign({block,level,vis:'',q:'',check:null},o)}
+function genTasks(){
+  const t=[];
+  // Block 0: Daten
+  {const n=rnd(11,24);t.push(task(0,1,{q:'Zähle die Striche. Ein Bündel (4 Striche + Schrägstrich) sind <b>5</b>.',vis:tally(n),parts:['Anzahl: ',G(0)],sol:[n]}))}
+  {const T=pick([10,12,15,20]),k=rnd(3,T-4);t.push(task(0,2,{q:'Wie viele Symbole sind <span class="c-red">rot</span>?',vis:symbols(T,k),parts:[G(0),' Symbole sind rot.'],sol:[k]}))}
+  {const T=pick([10,12,15,20]),k=rnd(3,T-4);t.push(task(0,3,{q:'Zähle erst die roten, dann alle Symbole. <span class="muted">(Die Taste <b>von</b> springt zur nächsten Lücke.)</span>',vis:symbols(T,k),parts:[G(0),' von ',G(1),' Symbolen sind rot.'],sol:[k,T]}))}
+  {const b=barChart();t.push(task(0,4,{q:'Lies alle Balken ab. Wie viele Kinder haben <span class="c-green">insgesamt</span> abgestimmt?',vis:b.svg,parts:['Insgesamt: ',G(0),' Kinder'],sol:[b.sum]}))}
+  // Block 1: Teilen & Teiler
+  {const b=pick([3,4,5,6,7,8,9]),q=rnd(3,9),a=b*q;t.push(task(1,1,{q:'Teilen.',parts:[`${a} : ${b} = `,G(0)],sol:[q]}))}
+  {const b=pick([4,6,7,8,9]),q=rnd(3,9),a=b*q;t.push(task(1,2,{q:'Welche Zahl fehlt? (Malnehmen, Einmaleins)',parts:[G(0),` · ${b} = ${a}`],sol:[q]}))}
+  {const n=pick([12,18,20,24,30,36]),d=divisors(n),miss=pick(d.slice(1,-1));
+   const parts=[`Alle Teiler von ${n}: `];d.forEach((x,i)=>{if(i)parts.push(', ');parts.push(x===miss?G(0):String(x))});
+   t.push(task(1,3,{q:'Ein Teiler passt <b>ohne Rest</b> in die Zahl. Eine Zahl in der Liste fehlt.',parts,sol:[miss]}))}
+  {const p=pick([[12,18,6],[8,12,4],[20,30,10],[24,36,12],[15,20,5],[16,24,8],[18,27,9],[14,21,7]]);
+   t.push(task(1,4,{q:`Welche ist die <b>größte</b> Zahl, die sowohl in ${p[0]} als auch in ${p[1]} passt (Teiler von beiden)?`,parts:['Größter gemeinsamer Teiler: ',G(0)],sol:[p[2]]}))}
+  // Block 2: Brüche
+  {const n=pick([4,6,8]),k=rnd(1,n-1);t.push(task(2,1,{q:'Wie viele Stücke sind <span class="c-blue">gefärbt</span>, und aus wie vielen Stücken besteht der Kreis?',vis:pizza(n,k),parts:[G(0),' von ',G(1),' Stücken sind gefärbt.'],sol:[k,n]}))}
+  {const n=pick([3,5,6,8,10]),k=rnd(1,n-1);t.push(task(2,2,{q:'Schreibe den gefärbten Teil als <b>Bruch</b>. <span class="muted">Tippe die obere Zahl, dann die Taste <b>von ―</b>, dann die untere Zahl.</span>',vis:stripe(n,k),parts:['Bruch: ',FR(G(0),G(1))],sol:[k,n],check:'frac'}))}
+  {const n=pick([2,4,5,10]),m=n*rnd(2,Math.min(8,Math.floor(40/n)));t.push(task(2,3,{q:'Bruch von einer Menge: Teile die Menge in gleiche Teile.',parts:[fr(1,n),' von '+m+' = ',G(0)],sol:[m/n]}))}
+  {const n=pick([4,5,10]),k=rnd(2,3),m=n*rnd(2,Math.min(6,Math.floor(40/n)));t.push(task(2,4,{q:'Erst durch den Nenner teilen, dann mal den Zähler nehmen.',parts:[fr(k,n),' von '+m+' = ',G(0)],sol:[k*m/n]}))}
+  // Block 3: Erweitern
+  {const [a,b]=pick([[1,2],[1,3],[1,4],[2,3],[3,4],[2,5]]),f=pick([2,3]);
+   t.push(task(3,1,{q:'Erweitern heißt: oben <b>und</b> unten mal dieselbe Zahl.',parts:[fr(a,b),` mit ${f} erweitert = `,FR(G(0),G(1))],sol:[a*f,b*f]}))}
+  {const [a,b]=pick([[1,2],[1,3],[1,4],[2,3],[3,4],[2,5]]),f=pick([2,3,4,5]);
+   t.push(task(3,2,{q:'Welche Zahl gehört in die Lücke? (Womit wurde unten erweitert?)',parts:[fr(a,b),' = ',FR(G(0),String(b*f))],sol:[a*f]}))}
+  {const b=pick([4,5,6,8]),a=rnd(1,b-1),f=pick([4,5,6,7]);
+   t.push(task(3,3,{q:'Welche Zahl gehört in die Lücke?',parts:[fr(a,b),' = ',FR(G(0),String(b*f))],sol:[a*f]}))}
+  {const [a,b]=pick([[2,5],[3,4],[1,6],[3,7],[5,8],[2,9]]),f=rnd(3,8);
+   t.push(task(3,4,{q:'Mit welcher Zahl wurde erweitert?',parts:[fr(a,b),' = ',fr(a*f,b*f),'  mit ',G(0),' erweitert'],sol:[f]}))}
+  // Block 4: Kürzen
+  const pool=[[1,2],[1,3],[2,3],[1,4],[3,4],[1,5],[2,5],[3,5],[1,6],[5,6],[3,8],[5,8],[7,10],[3,10]];
+  {const [s,u]=pick(pool.filter(x=>x[1]<=5)),f=pick([2,3]);
+   t.push(task(4,1,{q:'Kürzen heißt: oben <b>und</b> unten durch dieselbe Zahl teilen.',parts:[fr(s*f,u*f),` durch ${f} gekürzt = `,FR(G(0),G(1))],sol:[s,u]}))}
+  {const [s,u]=pick(pool.filter(x=>x[1]<=8)),f=pick([2,3,4,5]);
+   t.push(task(4,2,{q:'Welche Zahl gehört in die Lücke? (Wodurch wurde unten gekürzt?)',parts:[fr(s*f,u*f),' = ',FR(G(0),String(u))],sol:[s]}))}
+  {const [s,u]=pick(pool.filter(x=>x[1]<=8)),f=pick([2,3,4,5]);
+   t.push(task(4,3,{q:'Kürze <b>so weit wie möglich</b>.',parts:[fr(s*f,u*f),' = ',FR(G(0),G(1))],sol:[s,u],check:'frac'}))}
+  {const [s,u]=pick(pool.filter(x=>x[1]<=8)),f=pick([6,7,8,9,10,12]);
+   t.push(task(4,4,{q:'Kürze <b>so weit wie möglich</b>. Tipp: Welche Zahl passt in beide?',parts:[fr(s*f,u*f),' = ',FR(G(0),G(1))],sol:[s,u],check:'frac'}))}
+  // Block 5: Prozent
+  {const k=rnd(11,89);t.push(task(5,1,{q:'Das Hunderterfeld hat 100 Kästchen. Prozent heißt „<b>von hundert</b>“.',vis:grid100(k),parts:[G(0),' von 100 sind gefärbt = ',G(1),' %'],sol:[k,k]}))}
+  {const b=pick([2,4,5,10]),a=rnd(1,b-1),p=a*100/b;
+   t.push(task(5,2,{q:'Erweitere den Bruch auf <b>von 100</b> (Nenner 100). Die Zahl oben ist die Prozentzahl.',parts:[fr(a,b),' = ',FR(G(0),'100'),' = ',G(1),' %'],sol:[p,p]}))}
+  {const n=pick([10,20,25,50]),k=rnd(2,n-1),p=k*100/n;
+   const st=pick([`In der Klasse sind ${n} Kinder. ${k} Kinder haben ein Haustier.`,`Eine Tafel Schokolade hat ${n} Stücke. ${k} Stücke sind gegessen.`,`Auf dem Schulhof sind ${n} Kinder. ${k} Kinder spielen Fußball.`]);
+   t.push(task(5,3,{q:st+' <span class="muted">Wie viel von 100? Wie viel Prozent?</span>',parts:[`${k} von ${n} = `,G(0),' von 100 = ',G(1),' %'],sol:[p,p]}))}
+  {const n=pick([20,25,50]),k=rnd(2,n-1),p=k*100/n;
+   const st=pick([`In der Klasse sind ${n} Kinder. ${k} Kinder fehlen heute. Wie viel Prozent der Klasse fehlen?`,`Ein Bus hat ${n} Plätze. ${k} Plätze sind besetzt. Wie viel Prozent sind besetzt?`,`Ein Korb hat ${n} Äpfel. ${k} Äpfel sind faul. Wie viel Prozent sind faul?`]);
+   t.push(task(5,4,{q:st,parts:[G(0),' %'],sol:[p]}))}
+  return t;
+}
+
+/* ---------- Auswertung ---------- */
+function evaluate(t,vals){
+  const v=vals.map(x=>parseInt(x,10));
+  if(t.check==='frac'){
+    const [z,n]=v,[sz,sn]=t.sol;
+    if(z===sz&&n===sn)return 'ok';
+    if(z>0&&n>0&&z*sn===n*sz)return 'part';
+    return 'wrong';
+  }
+  const hit=t.sol.filter((s,i)=>v[i]===s).length;
+  if(hit===t.sol.length)return 'ok';
+  if(t.sol.length>1&&hit>0)return 'part';
+  return 'wrong';
+}
+function cellPlain(x,vals){return typeof x==='string'?x:'['+((vals&&vals[x.g]!==undefined&&vals[x.g]!=='')?vals[x.g]:'__')+']'}
+function plain(parts,vals){
+  return parts.map(p=>{
+    if(typeof p==='string')return p.replace(/<span class="fr"><i>(.*?)<\/i><i>(.*?)<\/i><\/span>/g,'$1/$2').replace(/<[^>]+>/g,'');
+    if(p.g!==undefined)return cellPlain(p,vals);
+    return cellPlain(p.f[0],vals)+'/'+cellPlain(p.f[1],vals);
+  }).join('');
+}
+const strip=h=>h.replace(/<[^>]+>/g,'');
+function blockScore(rows,b){
+  const r=rows.filter(x=>x.b===b);let s=0;r.forEach(x=>{if(x.res==='ok')s+=1;else if(x.res==='part')s+=.5});
+  return {s,n:r.length,cls:s>=3.5?'g':s>=2?'y':'r',label:s>=3.5?'sitzt':s>=2?'wackelig':'üben'};
+}
+
+/* ---------- Zustand & Rendering ---------- */
+const app=document.getElementById('app');
+let S={name:'',tasks:[],idx:0,rows:[],vals:[],act:0,screen:'start'};
+const ICON={ok:'✓',part:'~',wrong:'✗',skip:'–'};
+
+function barHTML(){
+  let h='';S.tasks.forEach((t,i)=>{
+    if(i>0&&t.block!==S.tasks[i-1].block)h+='<i class="sep"></i>';
+    h+=`<i class="${i<S.idx?'done':i===S.idx?'cur':''}"></i>`});
+  return `<div class="bar" aria-hidden="true">${h}</div>`;
+}
+
+function renderStart(){
+  S.screen='start';
+  let saved=[];try{saved=JSON.parse(localStorage.getItem('nulltest7_results')||'[]')}catch(e){}
+  app.innerHTML=`
+  <h1>🧪 Nulltest · Mathe 7 Aufbaukurs</h1>
+  <div class="card">
+    <p class="q">Hier schauen wir, <b>was schon sitzt</b> – und was wir zusammen noch üben. Das gibt <b>keine Note</b>.</p>
+    <ul style="margin:6px 0 12px;padding-left:1.2em;line-height:1.6">
+      <li>24 Aufgaben in 6 Bereichen: Zählen, Teiler, Brüche, Erweitern, Kürzen, Prozent</li>
+      <li>Vor jedem Bereich siehst du ein <b>fertiges Beispiel</b></li>
+      <li>Du tippst mit dem Ziffernblock (oder der Tastatur) in die <b>blinkende Lücke</b></li>
+      <li>Weißt du etwas nicht? Dann drück <b>„Weiß nicht“</b> – das ist völlig okay und hilft uns mehr als raten.</li>
+    </ul>
+    <div class="row">
+      <input id="nm" class="name" placeholder="Dein Vorname" maxlength="30" autocomplete="off" value="${esc(S.name)}">
+      <button id="go" class="btn primary">Los geht’s ➜</button>
+    </div>
+  </div>
+  <div class="card noprint" style="margin-top:14px">
+    <b>Für die Lehrkraft:</b> <span class="muted">Ergebnisse werden auf diesem Gerät gespeichert (${saved.length}).</span>
+    <div class="row" style="margin-top:8px">
+      <button id="showSaved" class="btn" ${saved.length?'':'disabled'}>Gespeicherte Ergebnisse ansehen</button>
+      <button id="clearSaved" class="btn" ${saved.length?'':'disabled'}>Alle löschen</button>
+    </div>
+    <div id="savedList"></div>
+  </div>`;
+  const nm=document.getElementById('nm');
+  const go=()=>{S.name=nm.value.trim();if(!S.name){nm.focus();nm.style.borderColor='var(--red)';return}start()};
+  document.getElementById('go').onclick=go;
+  nm.addEventListener('keydown',e=>{if(e.key==='Enter')go()});
+  nm.focus();
+  document.getElementById('showSaved').onclick=()=>{
+    document.getElementById('savedList').innerHTML=saved.map((r,i)=>{
+      const sc=BLOCKS.map((b,bi)=>blockScore(r.rows,bi));
+      return `<div class="res-row" style="grid-template-columns:1fr auto"><div><b>${esc(r.name)}</b> <span class="muted">${esc(r.date)}</span></div>
+        <div class="row">${sc.map((s,bi)=>`<span class="tag ${s.cls}" title="${BLOCKS[bi].t}">${BLOCKS[bi].ic} ${s.s}/4</span>`).join('')}
+        <button class="btn" data-open="${i}">Details</button></div></div>`}).join('');
+    document.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>renderResult(saved[+b.dataset.open],true));
+  };
+  document.getElementById('clearSaved').onclick=()=>{if(confirm('Alle gespeicherten Ergebnisse auf diesem Gerät löschen?')){try{localStorage.removeItem('nulltest7_results')}catch(e){}renderStart()}};
+}
+
+function start(){S.tasks=genTasks();S.idx=0;S.rows=[];renderIntro(0)}
+
+const INTRO={
+ 0:()=>`<p class="q">Daten sammeln heißt: <b>zählen</b>. Mal zählst du Striche, mal Symbole, mal liest du ein Diagramm ab.</p>
+   <div class="ex-box"><div class="lab">Fertiges Beispiel</div><div class="vis">${tally(7)}</div>
+   <div class="ans" style="min-height:0;background:transparent">Anzahl: <span class="gap">7</span></div>
+   <div class="muted">1 Bündel = 5, dazu noch 2 einzelne Striche → 5 + 2 = 7</div></div>
+   <div class="legend"><span><span class="c-red">Rot</span> = Anzahl (wie viele?)</span><span><span class="c-blue">Blau</span> = Anteil („x von y“)</span><span><span class="c-green">Grün</span> = Summe (alles zusammen)</span></div>
+   <p class="muted" style="margin-top:10px">So tippst du: Zahl eintippen. Gibt es zwei Lücken, springt die Taste <b>von</b> zur nächsten. Dann <b>OK</b>.</p>`,
+ 1:()=>`<p class="q">Ein <b>Teiler</b> passt <b>ohne Rest</b> in eine Zahl. Teilen und Malnehmen gehören zusammen.</p>
+   <div class="ex-box"><div class="lab">Fertiges Beispiel</div>
+   <div class="ans" style="min-height:0;background:transparent">12 : 4 = <span class="gap">3</span></div>
+   <div class="muted">Weil 3 · 4 = 12. Also ist 4 ein Teiler von 12.</div>
+   <div class="ans" style="min-height:0;background:transparent;font-size:1.5rem">Alle Teiler von 12: 1, 2, 3, 4, 6, 12</div></div>`,
+ 2:()=>`<p class="q">Ein Bruch sagt: <b>wie viele von wie vielen</b>. Der Bruchstrich heißt „von“.</p>
+   <div class="ex-box"><div class="lab">Fertiges Beispiel</div><div class="vis">${pizza(4,3)}</div>
+   <div class="ans" style="min-height:0;background:transparent"><span class="gap">3</span> von <span class="gap">4</span> Stücken sind gefärbt = ${fr(3,4)}</div></div>
+   <p class="muted">Bei Brüchen tippst du: obere Zahl, Taste <b>von ―</b>, untere Zahl.</p>`,
+ 3:()=>`<p class="q"><b>Erweitern</b> heißt: oben <b>und</b> unten mit derselben Zahl malnehmen. Der Wert bleibt gleich – nur die Stücke werden kleiner.</p>
+   <div class="ex-box"><div class="lab">Fertiges Beispiel</div>${exFrac(1,2,3,6,'· 3')}
+   <div class="muted">1 · 3 = 3 und 2 · 3 = 6</div></div>`,
+ 4:()=>`<p class="q"><b>Kürzen</b> heißt: oben <b>und</b> unten durch dieselbe Zahl teilen. Das ist das Gegenteil von Erweitern.</p>
+   <div class="ex-box"><div class="lab">Fertiges Beispiel</div>${exFrac(6,8,3,4,': 2')}
+   <div class="muted">6 : 2 = 3 und 8 : 2 = 4 – 2 passt in beide Zahlen.</div></div>
+   <p class="muted">„So weit wie möglich“ heißt: Probiere, ob noch eine Zahl in beide passt.</p>`,
+ 5:()=>`<p class="q"><b>Prozent</b> heißt „<b>von hundert</b>“. 25 % sind 25 von 100.</p>
+   <div class="ex-box"><div class="lab">Fertiges Beispiel</div>
+   <div class="ans" style="min-height:0;background:transparent;font-size:1.6rem">5 von 20 Kindern → ${exFrac(5,20,25,100,'· 5')} → <span class="gap">25</span> von 100 = <span class="gap">25</span> %</div>
+   <div class="muted">20 · 5 = 100, also oben auch · 5.</div></div>`
+};
+
+function renderIntro(b){
+  S.screen='intro';
+  const first=S.tasks.findIndex(t=>t.block===b);
+  S.idx=first;
+  app.innerHTML=`${barHTML()}
+  <div class="card"><div class="top"><span class="chip">${BLOCKS[b].ic} Bereich ${b+1} von 6</span></div>
+  <h1>${BLOCKS[b].t}</h1>${INTRO[b]()}
+  <div class="row" style="margin-top:14px"><button id="start" class="btn primary">Verstanden – weiter ➜</button></div></div>`;
+  const go=()=>renderTask();
+  document.getElementById('start').onclick=go;
+  document.getElementById('start').focus();
+}
+
+function renderTask(){
+  S.screen='task';
+  const t=S.tasks[S.idx];
+  S.vals=Array(t.sol.length).fill('');S.act=0;
+  const parts=t.parts.map(p=>typeof p==='string'?p:p.g!==undefined?gapHTML(p):`<span class="fr"><i>${cellHTML(p.f[0])}</i><i>${cellHTML(p.f[1])}</i></span>`).join('');
+  app.innerHTML=`${barHTML()}
+  <div class="top"><span class="chip">${BLOCKS[t.block].ic} ${BLOCKS[t.block].t}</span><span class="muted">Aufgabe ${S.idx+1} von ${S.tasks.length}</span></div>
+  <div class="grid2">
+    <div class="card"><p class="q">${t.q}</p>${t.vis?`<div class="vis">${t.vis}</div>`:''}
+      <div class="ans" id="ans">${parts}</div><div class="hintline" id="hl"></div></div>
+    <div class="pad"><div class="keys">
+      ${[1,2,3,4,5,6,7,8,9].map(n=>`<button data-k="${n}">${n}</button>`).join('')}
+      <button data-k="back" aria-label="Löschen">⌫</button><button data-k="0">0</button>
+      <button class="von" data-k="von"><b>von ―</b>nächste Lücke</button>
+      <button class="wide skip" data-k="skip">Weiß nicht</button>
+      <button class="wide ok" data-k="ok">OK ✓</button>
+    </div><div class="tip">Tastatur geht auch: Ziffern, ⌫, Leertaste = von, Enter = OK</div></div>
+  </div>`;
+  refreshGaps();
+  document.querySelectorAll('.pad [data-k]').forEach(b=>b.onclick=()=>key(b.dataset.k));
+  document.querySelectorAll('#ans .gap').forEach(g=>g.onclick=()=>{S.act=+g.dataset.i;refreshGaps()});
+}
+function gapHTML(x){return `<span class="gap" data-i="${x.g}"></span>`}
+function cellHTML(x){return typeof x==='string'?x:gapHTML(x)}
+function refreshGaps(){
+  document.querySelectorAll('#ans .gap').forEach(g=>{const i=+g.dataset.i;g.textContent=S.vals[i];g.classList.toggle('act',i===S.act)});
+}
+function say(m){const h=document.getElementById('hl');if(h)h.textContent=m||''}
+
+function key(k){
+  if(S.screen!=='task')return;
+  const n=S.vals.length;say('');
+  if(/^\d$/.test(k)){
+    if(S.vals[S.act].length>=3)return;
+    if(S.vals[S.act]==='0')S.vals[S.act]='';
+    S.vals[S.act]+=k;refreshGaps();
+  }else if(k==='back'){
+    if(S.vals[S.act]!=='')S.vals[S.act]=S.vals[S.act].slice(0,-1);
+    else if(S.act>0)S.act--;
+    refreshGaps();
+  }else if(k==='von'||k==='next'){
+    if(S.act<n-1){S.act++;refreshGaps()}
+  }else if(k==='prev'){
+    if(S.act>0){S.act--;refreshGaps()}
+  }else if(k==='ok'){
+    if(S.vals.some(v=>v==='')){
+      const a=document.getElementById('ans');a.classList.remove('shake');void a.offsetWidth;a.classList.add('shake');
+      const e=S.vals.findIndex(v=>v==='');S.act=e;refreshGaps();
+      say('Eine Lücke ist noch leer. Fülle sie aus – oder drück „Weiß nicht“.');return;
+    }
+    finishTask(evaluate(S.tasks[S.idx],S.vals));
+  }else if(k==='skip'){
+    finishTask('skip');
+  }
+}
+function finishTask(res){
+  const t=S.tasks[S.idx];
+  S.rows.push({b:t.block,l:t.level,q:strip(t.q).trim(),task:plain(t.parts,null),ans:res==='skip'?'weiß nicht':plain(t.parts,S.vals),sol:plain(t.parts,t.sol.map(String)),res});
+  S.idx++;
+  if(S.idx>=S.tasks.length){finishTest();return}
+  if(S.tasks[S.idx].block!==t.block)renderIntro(S.tasks[S.idx].block);else renderTask();
+}
+document.addEventListener('keydown',e=>{
+  if(S.screen!=='task')return;
+  if(e.ctrlKey||e.metaKey||e.altKey)return;
+  if(/^\d$/.test(e.key))key(e.key);
+  else if(e.key==='Backspace'){e.preventDefault();key('back')}
+  else if(e.key==='Enter'){e.preventDefault();key('ok')}
+  else if(e.key===' '||e.key==='/'||e.key==='Tab'||e.key==='ArrowRight'){e.preventDefault();key('von')}
+  else if(e.key==='ArrowLeft'){e.preventDefault();key('prev')}
+});
+
+function finishTest(){
+  const rec={name:S.name,date:new Date().toLocaleString('de-DE',{dateStyle:'short',timeStyle:'short'}),rows:S.rows};
+  try{const a=JSON.parse(localStorage.getItem('nulltest7_results')||'[]');a.push(rec);localStorage.setItem('nulltest7_results',JSON.stringify(a))}catch(e){}
+  renderResult(rec,false);
+}
+
+function resultText(rec){
+  let s=`Nulltest Mathe 7 – ${rec.name} (${rec.date})\n`;
+  BLOCKS.forEach((b,i)=>{const sc=blockScore(rec.rows,i);s+=`${b.t}: ${sc.s}/4 (${sc.label})\n`});
+  s+='\nDetails:\n';
+  rec.rows.forEach((r,i)=>{s+=`${i+1}. [${BLOCKS[r.b].t} · Stufe ${r.l}] ${r.q?r.q+' ':''}${r.ans} → Lösung ${r.sol} → ${r.res}\n`});
+  return s;
+}
+
+function renderResult(rec,fromSaved){
+  S.screen='result';
+  const blocks=BLOCKS.map((b,i)=>{
+    const sc=blockScore(rec.rows,i),rows=rec.rows.filter(r=>r.b===i);
+    return `<div class="res-row"><div class="big" style="font-size:1.6rem">${b.ic}</div>
+      <div><b>${b.t}</b><div class="dots" style="margin-top:4px">${rows.map(r=>`<span class="dot ${r.res}" title="Stufe ${r.l}">${ICON[r.res]}</span>`).join('')}</div>
+      ${sc.cls!=='g'?`<div class="hint noprint" style="margin-top:4px">${b.hint}</div>`:''}</div>
+      <span class="tag ${sc.cls}">${sc.label}</span></div>`}).join('');
+  const total=BLOCKS.reduce((a,_,i)=>a+blockScore(rec.rows,i).s,0);
+  const table=`<table><thead><tr><th>#</th><th>Bereich</th><th>Aufgabe / Antwort</th><th>Lösung</th><th></th></tr></thead><tbody>${rec.rows.map((r,i)=>
+    `<tr><td>${i+1}</td><td>${BLOCKS[r.b].t} · ${r.l}</td><td>${esc(r.q?r.q+' ':'')}<b>${esc(r.ans)}</b></td><td>${esc(r.sol)}</td><td class="${r.res}">${ICON[r.res]}</td></tr>`).join('')}</tbody></table>`;
+  app.innerHTML=`<h1>${fromSaved?'📋':'🎉'} ${fromSaved?'Ergebnis von ':'Geschafft, '}${esc(rec.name)}${fromSaved?'':'!'}</h1>
+  <div class="card"><p class="q">${fromSaved?esc(rec.date):'Danke fürs Mitmachen! So sieht es aus – grün sitzt, gelb ist wackelig, rot üben wir zusammen:'}</p>
+    ${blocks}
+    <p class="muted" style="margin-top:8px">Punkte: ${total} von 24 <span class="noprint">(✓ = richtig, ~ = fast richtig, ✗ = falsch, – = weiß nicht)</span></p>
+    <div class="row noprint" style="margin-top:10px">
+      <button id="tg" class="btn">Lehrkraft-Details</button>
+      <button id="cp" class="btn">Als Text kopieren</button>
+      <button id="pr" class="btn">Drucken</button>
+      <button id="again" class="btn primary">${fromSaved?'Zurück':'Fertig'}</button>
+    </div>
+    <div class="details" id="det">${table}</div></div>`;
+  document.getElementById('tg').onclick=()=>{const d=document.getElementById('det');d.style.display=d.style.display==='block'?'none':'block'};
+  document.getElementById('pr').onclick=()=>{document.getElementById('det').style.display='block';window.print()};
+  document.getElementById('cp').onclick=()=>{
+    const txt=resultText(rec);
+    const ok=()=>{document.getElementById('cp').textContent='Kopiert ✓'};
+    if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(txt).then(ok,()=>fallbackCopy(txt,ok));else fallbackCopy(txt,ok);
+  };
+  document.getElementById('again').onclick=()=>{S.name='';renderStart()};
+}
+function fallbackCopy(txt,ok){const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');ok()}catch(e){}ta.remove()}
+
+window.__nulltest={genTasks,evaluate,plain,state:()=>S};
+renderStart();
+})();
+</script>
+</body>
+</html>
