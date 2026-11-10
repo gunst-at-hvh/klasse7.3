@@ -230,14 +230,14 @@ function score(expr, target, opts = {}) {
 }
 
 /* ---------- Zielzahlen ---------- */
-const RANGES = {'1': [10, 50], '2': [20, 100], '3': [50, 500], '4': [100, 1000]};
+const RANGES = {'20': [8, 20], '50': [10, 50], '100': [11, 100], '500': [11, 500], '1000': [11, 1000]};
 function rangeFor(level, round, rounds) {
   if (level === 'up') {   // didaktische Treppe: erst klein, dann größer
     const f = rounds > 1 ? (round - 1) / (rounds - 1) : 0;
     const hi = Math.round((30 + f * f * 970) / 10) * 10;
-    return [Math.max(10, Math.round((hi / 4) / 5) * 5), hi];
+    return [Math.max(8, Math.round(hi / 10)), hi];
   }
-  return RANGES[level] || RANGES['2'];
+  return RANGES[level] || RANGES['100'];
 }
 function makeTarget(level, round, rounds, last) {
   const [lo, hi] = rangeFor(level, round, rounds);

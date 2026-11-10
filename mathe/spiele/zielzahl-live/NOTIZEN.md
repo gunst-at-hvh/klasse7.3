@@ -24,7 +24,7 @@ Beispiele (Ziel 24, ohne Zeitbonus): 24+0 → 0 · 25−1 → 2 · 20+4 → 3 ·
 Falsch: 5·5 = 25 → −1, 7·3 = 21 → −2.
 
 ## Einstellungen
-Zeit (20–90 s, ∞) · Runden · Zielzahlen (10–50 … 100–1000 oder **📈 steigend** = didaktische Treppe, Runde für Runde größer) ·
+Zeit (20–90 s, ∞) · Runden · Zielzahlen (bis 20 · 50 · 100 · 500 · 1000, Standard 100, oder **📈 steigend** = didaktische Treppe, Runde für Runde größer) ·
 Rechenarten (alle / ohne : / nur + −, Tasten werden gesperrt) · automatisch weiter · 🤖 Bots zum Testen.
 Zielzahlen sind nie glatte Zehner (sonst 20 + 30).
 
