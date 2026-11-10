@@ -714,7 +714,7 @@ function pOnMsg(m){
     pTop(); show('pHostBar', false); document.body.classList.remove('hb'); if (C.isCreator && m.lobby){ pScreen('pRoom'); return; } $('pWaitE').textContent = C.avatar; $('pWaitS').textContent = m.text; pScreen('pWait'); }
   else if (m.t === 'lobby'){ $('pWaitList').innerHTML = m.players.map(x => `<div class="pchip"><span class="e">${esc(x.avatar)}</span>${esc(x.name)}</div>`).join(''); }
   else if (m.t === 'state') pState(m);
-  else if (m.t === 'ack'){ if (m.ok){ C.sub = true; C.sent = C.expr; setStat('✓ abgegeben – du darfst noch ändern und neu abgeben', 'ok'); sCoin(); updExpr(); }
+  else if (m.t === 'ack'){ if (m.ok){ C.sub = true; C.sent = C.expr; setStat('', ''); sCoin(); updExpr(); }
     else setStat('Das geht so nicht: ' + m.err, 'bad'); }
 }
 
@@ -763,8 +763,8 @@ function updExpr(){
 function onExprChange(){
   updExpr();
   const c = C.expr ? R.check(C.expr, {allowed:C.ops}) : null;
-  if (!C.expr) setStat(C.sub ? '✓ abgegeben' : '', C.sub ? 'ok' : '');
-  else if (c.ok) setStat(C.sub && C.sent === C.expr ? '✓ abgegeben – du darfst noch ändern und neu abgeben' : '✓ gültige Rechnung – das Ergebnis siehst du erst bei der Auflösung', 'ok');
+  if (!C.expr) setStat('', '');
+  else if (c.ok) setStat('', '');
   else if (/Nur|Teilen/.test(c.err)) setStat(c.err, 'bad'); else setStat('', '');
   clearTimeout(C.draftT); C.draftT = setTimeout(() => { if (C.conn && C.conn.open) try { C.conn.send({t:'draft', expr:C.expr}); } catch(e){} }, 250);
 }
@@ -789,7 +789,7 @@ function pState(m){
     if (C.key !== key){
       C.key = key; C.ops = m.ops; C.locked = false; C.expr = me.sub ? me.expr : ''; C.sub = !!me.sub; C.sent = me.sub ? me.expr : '';
       $('pRound').textContent = `Runde ${m.round}/${m.rounds}`; $('pNum').textContent = m.target; pScreen('pPlay'); drawTargets();
-      startTimer($('pTimer'), m.ends, false); setStat(C.sub ? '✓ abgegeben' : '', C.sub ? 'ok' : ''); updExpr(); ac(); sBlip();
+      startTimer($('pTimer'), m.ends, false); setStat('', ''); updExpr(); ac(); sBlip();
     }
     C.ops = m.ops; $('pPad').querySelectorAll('button').forEach(b => { const k = b.dataset.k; b.disabled = (k === ':' && m.ops !== 'all') || (k === '·' && m.ops === 'pm'); });
     $('pDone').textContent = `${m.players.filter(p => p.sub).length}/${m.players.length} fertig`;
