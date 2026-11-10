@@ -81,6 +81,8 @@ h1{font-size:2.3rem}
 .confetti{position:fixed;pointer-events:none;font-size:1.8rem;z-index:50;animation:fly 1.3s ease-out forwards}
 @keyframes fly{from{opacity:1;transform:translate(0,0) rotate(0)}to{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(var(--r))}}
 .streak{font-weight:700;color:#e8590c}
+textarea.code{width:100%;font:.95rem ui-monospace,Consolas,monospace;padding:8px;border:2.5px solid var(--ink);border-radius:10px;background:var(--card);color:var(--ink);resize:none;word-break:break-all}
+.save h2{margin-top:0}
 /* Karte (Stationen) */
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px;margin:12px 0}
 .st{padding:14px;text-align:left;display:block;width:100%;box-shadow:3px 3px 0 var(--ink);background:var(--card)}
@@ -185,6 +187,7 @@ h1{font-size:2.3rem}
   <div id="app"></div>
 </main>
 <script src="inhalt.js"></script>
+<script src="ergebnis.js"></script>
 <script>
 (function(){
 'use strict';
@@ -404,8 +407,8 @@ function homeView(){
       <li><b>Abschluss-Quiz:</b> Zeig, was du kannst, und hol dir deine Urkunde.</li>
     </ol>
     <button class="go big" data-a="start">Los geht's →</button>
-    <p class="muted small">Es wird nichts gespeichert oder gesendet. Gib hier nie echte Passwörter ein.</p>
-    <div class="teach">Lehrkraft: <a href="#" data-a="jump" data-to="nutz">Check-in</a><a href="#" data-a="jump" data-to="erl">Erlaubt-Quiz</a><a href="#" data-a="jump" data-to="map">Stationen</a><a href="#" data-a="jump" data-to="fin">Abschluss-Quiz</a><a href="stunde.html">Stundenverlauf &amp; Lösungen</a></div>
+    <p class="muted small">Am Ende speicherst du dein Ergebnis selbst als Code oder Datei. Es wird nichts automatisch gesendet. Gib hier nie echte Passwörter ein.</p>
+    <div class="teach">Lehrkraft: <a href="#" data-a="jump" data-to="nutz">Check-in</a><a href="#" data-a="jump" data-to="erl">Erlaubt-Quiz</a><a href="#" data-a="jump" data-to="map">Stationen</a><a href="#" data-a="jump" data-to="fin">Abschluss-Quiz</a><a href="stunde.html">Stundenverlauf &amp; Lösungen</a><a href="../auswertung.html">Auswertung</a></div>
   </div>`;
 }
 function sumNutzView(){
@@ -758,6 +761,23 @@ function matchView(s,T){
     <div class="qcard sk"><div class="qq" style="font-size:1.3rem">„${esc(m.d)}“</div></div><div class="tiles n4">${tiles}</div>${rev}</div>`;
 }
 
+/* ======================= SPEICHERN ======================= */
+function record(){
+  const stars = {}; D.stationen.forEach(s=>{ if(S.done[s.id]) stars[s.id] = S.stars[s.id]; });
+  return { name:S.name, date:new Date().toLocaleDateString('de-DE'), total:S.erl.pts+S.fin.pts, erl:S.erl.pts, fin:S.fin.pts,
+    finOk:S.fin.ok, finN:S.fin.n, pass:(S.fin.ok>=8 && doneCount()>=4), stars };
+}
+function fileText(){
+  const r = record(), n = Object.keys(r.stars).length, sterne = Object.values(r.stars).reduce((a,b)=>a+b,0);
+  return ['Internet-Führerschein · Klasse 7.3 · ITG','Name: '+(r.name||'(ohne Namen)'),'Datum: '+r.date,
+    'Punkte gesamt: '+r.total+' (Erlaubt-Quiz '+r.erl+', Abschluss-Quiz '+r.fin+')',
+    'Abschluss-Quiz: '+r.finOk+' von '+r.finN+' richtig','Stationen: '+n+' bearbeitet, '+sterne+' Sterne','Bestanden: '+(r.pass?'ja':'noch nicht'),
+    '','Ergebnis-Code (bitte unverändert abgeben):', window.ITGE.encode(r), ''].join('\r\n');
+}
+function refreshCode(){ const t = document.getElementById('code'); if(t) t.value = window.ITGE.encode(record()); }
+function saveMsg(m){ const e = document.getElementById('savemsg'); if(e) e.textContent = m; }
+window.addEventListener('beforeunload', e=>{ if(S.erl.n || S.fin.n || doneCount()>0){ e.preventDefault(); e.returnValue = ''; } });
+
 /* ======================= ERGEBNIS ======================= */
 function resultView(){
   const n = doneCount(), pass = S.fin.ok >= 8 && n >= 4;
@@ -775,7 +795,11 @@ function resultView(){
   const merk = `<div class="merkblatt"><h2>📌 Mein Merkzettel</h2><ul>${merks||'<li>Bearbeite Stationen, dann erscheinen hier deine Merksätze.</li>'}</ul>
       <h3>Meine 3 wichtigsten Regeln – in meinen eigenen Worten:</h3><div class="lines"><div></div><div></div><div></div></div></div>`;
   return header('Ergebnis') + top
-    + (pass?`<div class="panel sk noprint center"><label for="nm2" class="muted">Name für die Urkunde:</label> <input id="nm2" class="name" maxlength="30" value="${esc(S.name)}"></div>`:'')
+    + `<div class="panel sk noprint center"><label for="nm2" class="muted">Dein Name:</label> <input id="nm2" class="name" maxlength="30" placeholder="Vorname" value="${esc(S.name)}"></div>`
+    + `<div class="panel sk noprint save"><h2>💾 Ergebnis speichern und abgeben</h2>
+      <p class="muted" style="margin-top:0">Speichere dein Ergebnis als Datei oder kopiere den Code. Gib es deiner Lehrkraft ab. Ohne Speichern ist alles weg, sobald du die Seite schließt.</p>
+      <textarea id="code" class="code" readonly rows="3" onclick="this.select()"></textarea>
+      <div class="row" style="margin-top:8px"><button class="go" data-a="saveFile">💾 Datei speichern</button><button data-a="copyCode">📋 Code kopieren</button><span id="savemsg" class="muted small"></span></div></div>`
     + `<div id="printarea">${cert}<div class="sk panel">${merk}</div></div>
     <div class="row noprint" style="justify-content:center;margin-top:12px"><button class="go big" data-a="print">🖨️ Urkunde &amp; Merkzettel drucken</button>
       <button data-a="jump" data-to="map">Stationen wiederholen</button><button data-a="startFin">Abschluss-Quiz nochmal</button><button class="red" data-a="restart">Ganz von vorn</button></div>`;
@@ -787,8 +811,9 @@ function render(){
   const f = VIEWS[V.screen]; app.innerHTML = f();
   if(V.screen==='quiz') startTimer(); else stopTimer();
   if(V.screen==='station' && FLOW[ST.id][ST.ph]==='werkstatt') wBind();
+  refreshCode();
   const nm = document.getElementById('nm'); if(nm) nm.addEventListener('input', ()=>{ S.name = nm.value; });
-  const nm2 = document.getElementById('nm2'); if(nm2) nm2.addEventListener('input', ()=>{ S.name = nm2.value; const c = document.getElementById('certnm'); if(c) c.textContent = S.name || ' '; });
+  const nm2 = document.getElementById('nm2'); if(nm2) nm2.addEventListener('input', ()=>{ S.name = nm2.value; refreshCode(); const c = document.getElementById('certnm'); if(c) c.textContent = S.name || ' '; });
 }
 const A = {
   dark(){ document.body.classList.toggle('dark'); },
@@ -838,6 +863,18 @@ const A = {
   /* Match */
   maPick(d){ const T = ST.T; if(T.rev) return; T.sel = d.t; T.rev = true; const ok = T.sel===T.list[T.i].b; if(ok) T.ok++; burst(ok); render(); },
   maNext(){ const T = ST.T; if(T.i+1<T.list.length){ T.i++; T.rev=false; T.sel=null; render(); } else nextPhase(T.ok>=4?3:T.ok>=3?2:1); },
+  saveFile(){
+    if(!S.name.trim()){ saveMsg('Bitte trage oben zuerst deinen Namen ein.'); const i = document.getElementById('nm2'); if(i) i.focus(); return; }
+    const blob = new Blob(['\ufeff'+fileText()], {type:'text/plain;charset=utf-8'}), a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = 'ITG-Ergebnis-'+S.name.trim().replace(/[^\wäöüÄÖÜß-]+/g,'_')+'.txt';
+    document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 500);
+    saveMsg('✅ Datei gespeichert (Ordner „Downloads“).'); },
+  copyCode(){
+    if(!S.name.trim()){ saveMsg('Bitte trage oben zuerst deinen Namen ein.'); const i = document.getElementById('nm2'); if(i) i.focus(); return; }
+    const t = document.getElementById('code'); refreshCode(); t.select();
+    const done = ()=>saveMsg('✅ Code kopiert.');
+    if(navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(t.value).then(done, ()=>{ try{ document.execCommand('copy'); done(); }catch(e){ saveMsg('Markiert – drücke Strg+C.'); } });
+    else { try{ document.execCommand('copy'); done(); }catch(e){ saveMsg('Markiert – drücke Strg+C.'); } } },
   print(){ window.print(); },
   restart(){ if(confirm('Wirklich ganz von vorn anfangen?')){ S.erl={pts:0,ok:0,n:0}; S.fin={pts:0,ok:0,n:0}; S.nutz={ans:[],risk:0}; S.done={}; S.stars={}; go('home'); } }
 };

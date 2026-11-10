@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Auswertung – Internet-Führerschein</title>
+<style>
+@font-face{font-family:"Shantell Sans";src:url(internet-fuehrerschein/fonts/shantell-sans-latin-400-normal.woff2) format("woff2");font-weight:400}
+@font-face{font-family:"Shantell Sans";src:url(internet-fuehrerschein/fonts/shantell-sans-latin-700-normal.woff2) format("woff2");font-weight:700}
+*{box-sizing:border-box}
+body{margin:0;background:#fbfaf5;color:#1e1e1e;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.45}
+main{max-width:1000px;margin:0 auto;padding:12px 18px 50px}
+h1,h2{font-family:"Shantell Sans",system-ui,sans-serif;margin:.3em 0}
+.crumb{font-size:.85rem;color:#555}
+.crumb a{color:inherit}
+.box{border:2px solid #1e1e1e;border-radius:12px;padding:12px 14px;margin:12px 0;background:#fff}
+textarea{width:100%;min-height:120px;font:.9rem ui-monospace,Consolas,monospace;padding:8px;border:2px solid #1e1e1e;border-radius:8px}
+button,label.btn{font:inherit;padding:7px 14px;border:2px solid #1e1e1e;border-radius:10px;background:#fff;cursor:pointer;display:inline-block}
+button.go{background:#b2f2bb}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:8px}
+table{border-collapse:collapse;width:100%;font-size:.95rem}
+th,td{border:2px solid #1e1e1e;padding:5px 8px;text-align:left}
+th{background:#eee;cursor:pointer;user-select:none}
+td.n,th.n{text-align:right}
+.warn{background:#ffe3e3}
+.muted{color:#555}
+.bad{font-family:ui-monospace,Consolas,monospace;font-size:.8rem;word-break:break-all}
+@media print{
+  body{background:#fff;font-size:11pt}
+  .noprint{display:none!important}
+  th{background:#fff}
+  .box{border:none;padding:0}
+}
+</style>
+</head>
+<body>
+<main>
+  <div class="crumb noprint"><a href="../">Klasse 7.3</a> › <a href="./">ITG</a> › Auswertung</div>
+  <h1>Auswertung: Internet-Führerschein</h1>
+  <p class="muted noprint">Füge die Ergebnis-Codes der Schüler ein oder lade ihre Dateien (.txt). Die Seite sortiert, zählt und erzeugt eine Liste zum Drucken oder für Excel. Es wird nichts gespeichert oder gesendet, die Daten bleiben nur in diesem Fenster.</p>
+
+  <div class="box noprint">
+    <b>1. Codes einsammeln</b>
+    <textarea id="in" placeholder="Hier Codes einfügen (einer pro Zeile oder einfach alles durcheinander kopieren). Sie beginnen mit ITG-"></textarea>
+    <div class="row">
+      <button class="go" id="add">➕ Codes übernehmen</button>
+      <label class="btn">📂 Dateien laden<input id="files" type="file" accept=".txt,text/plain" multiple hidden></label>
+      <button id="clear">🗑️ Liste leeren</button>
+      <span id="msg" class="muted"></span>
+    </div>
+  </div>
+
+  <div class="box">
+    <h2>Ergebnisse <span id="count" class="muted" style="font-size:1rem"></span></h2>
+    <div id="sum" class="muted"></div>
+    <div class="row noprint" style="margin:8px 0">
+      <button id="csv">⬇️ Als CSV (Excel)</button><button id="print">🖨️ Drucken</button>
+      <span class="muted">Klick auf eine Spaltenüberschrift sortiert.</span>
+    </div>
+    <div id="tbl"></div>
+    <div id="bad"></div>
+  </div>
+</main>
+<script src="internet-fuehrerschein/inhalt.js"></script>
+<script src="internet-fuehrerschein/ergebnis.js"></script>
+<script>
+(function(){
+  const D = window.ITG, E = window.ITGE, $ = id => document.getElementById(id);
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const rows = new Map();   // code -> Datensatz
+  const bad = new Set();
+  let sortKey = 'total', sortDir = -1;
+  const cols = [
+    {k:'name', t:'Name', f:r=>r.name, s:r=>r.name.toLowerCase()},
+    {k:'total', t:'Punkte', n:1, f:r=>r.total, s:r=>r.total},
+    {k:'quiz', t:'Abschluss-Quiz', n:1, f:r=>r.finOk+' / '+r.finN, s:r=>r.finOk},
+    {k:'st', t:'Stationen', n:1, f:r=>Object.keys(r.stars).length, s:r=>Object.keys(r.stars).length},
+    {k:'stars', t:'Sterne', n:1, f:r=>sum(r), s:r=>sum(r)},
+    {k:'pass', t:'Bestanden', f:r=>r.pass?'ja':'nein', s:r=>r.pass?1:0},
+    {k:'date', t:'Datum', f:r=>r.date, s:r=>r.date}
+  ];
+  const sum = r => Object.values(r.stars).reduce((a,b)=>a+b,0);
+
+  function take(text){
+    let neu = 0, dup = 0, fehl = 0;
+    E.findAll(text).forEach(code=>{
+      if(rows.has(code)){ dup++; return; }
+      const d = E.decode(code);
+      if(!d || d.bad){ bad.add(code); fehl++; return; }
+      rows.set(code, d); neu++;
+    });
+    $('msg').textContent = neu+' neu'+(dup?', '+dup+' doppelt übersprungen':'')+(fehl?', '+fehl+' ungültig':'');
+    render();
+  }
+  function render(){
+    const list = [...rows.values()];
+    const c = cols.find(x=>x.k===sortKey);
+    list.sort((a,b)=>{ const x = c.s(a), y = c.s(b); return (x<y?-1:x>y?1:0)*sortDir || a.name.localeCompare(b.name); });
+    $('count').textContent = list.length ? '('+list.length+')' : '';
+    if(!list.length){ $('tbl').innerHTML = '<p class="muted">Noch keine Ergebnisse.</p>'; $('sum').textContent = ''; }
+    else {
+      const avg = Math.round(list.reduce((a,r)=>a+r.total,0)/list.length), ps = list.filter(r=>r.pass).length;
+      $('sum').textContent = list.length+' Schüler/innen · Ø '+avg+' Punkte · '+ps+' bestanden (mind. 8 richtig und 4 Stationen)';
+      const names = {}; list.forEach(r=>{ names[r.name.toLowerCase()] = (names[r.name.toLowerCase()]||0)+1; });
+      $('tbl').innerHTML = '<table><thead><tr><th>#</th>'+cols.map(c=>`<th data-k="${c.k}" class="${c.n?'n':''}">${c.t}${c.k===sortKey?(sortDir<0?' ▼':' ▲'):''}</th>`).join('')+'</tr></thead><tbody>'
+        + list.map((r,i)=>`<tr class="${names[r.name.toLowerCase()]>1?'warn':''}"><td class="n">${i+1}</td>`+cols.map(c=>`<td class="${c.n?'n':''}">${esc(c.f(r))}</td>`).join('')+'</tr>').join('')
+        + '</tbody></table>' + (Object.values(names).some(n=>n>1)?'<p class="muted">Rot hinterlegt: derselbe Name kommt mehrfach vor (z. B. zwei Durchgänge).</p>':'')
+        + '<p class="muted">Sterne je Station (0–3): '+D.stationen.map(s=>s.icon+' '+esc(s.titel)).join(' · ')+'</p>';
+    }
+    $('bad').innerHTML = bad.size ? '<div class="box warn"><b>'+bad.size+' Code(s) ungültig oder verändert.</b> Bitte beim Schüler nachfragen (Tippfehler beim Abschreiben?):<br>'+[...bad].map(b=>'<span class="bad">'+esc(b)+'</span>').join('<br>')+'</div>' : '';
+  }
+  $('add').onclick = () => { take($('in').value); $('in').value = ''; };
+  $('files').onchange = async e => { for(const f of e.target.files){ take(await f.text()); } e.target.value = ''; };
+  $('clear').onclick = () => { if(!rows.size && !bad.size || confirm('Gesamte Liste leeren?')){ rows.clear(); bad.clear(); $('msg').textContent = ''; render(); } };
+  $('tbl').onclick = e => { const th = e.target.closest('th[data-k]'); if(!th) return; const k = th.dataset.k; if(sortKey===k) sortDir *= -1; else { sortKey = k; sortDir = (k==='name'||k==='date')?1:-1; } render(); };
+  $('print').onclick = () => window.print();
+  $('csv').onclick = () => {
+    const q = v => '"'+String(v).replace(/"/g,'""')+'"';
+    const ids = D.stationen.map(s=>s.id);
+    const head = ['Name','Punkte gesamt','Erlaubt-Quiz','Abschluss-Quiz Punkte','Abschluss richtig','Abschluss gesamt','Stationen','Sterne','Bestanden','Datum'].concat(D.stationen.map(s=>s.titel));
+    const lines = [...rows.values()].map(r=>[r.name,r.total,r.erl,r.fin,r.finOk,r.finN,Object.keys(r.stars).length,sum(r),r.pass?'ja':'nein',r.date].concat(ids.map(id=>r.stars[id]===undefined?'':r.stars[id])));
+    const csv = '﻿'+[head].concat(lines).map(l=>l.map(q).join(';')).join('\r\n');
+    const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'})); a.download = 'ITG-Auswertung.csv';
+    document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },500);
+  };
+  render();
+})();
+</script>
+</body>
+</html>
