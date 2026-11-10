@@ -8,13 +8,14 @@ const smallDivs = n => SMALL.filter(d => n % d === 0);
 function pickNumber(max, mode, used) {
   used = used || [];
   const cand = [];
-  for (let n = 12; n <= max; n++) {
+  const lo = max <= 30 ? 4 : 12;
+  for (let n = lo; n <= max; n++) {
     if (used.includes(n)) continue;
     const d = smallDivs(n).length - 1;               // ohne die 1
     if (mode === 'many') { if (d >= 2) cand.push([n, Math.pow(d, 3)]); }
     else cand.push([n, 1]);
   }
-  if (!cand.length) return 24;
+  if (!cand.length) return used.length ? pickNumber(max, mode, []) : Math.min(24, max);
   const sum = cand.reduce((s, c) => s + c[1], 0); let r = Math.random() * sum;
   for (const [n, w] of cand) { r -= w; if (r <= 0) return n; }
   return cand[cand.length - 1][0];
