@@ -1,0 +1,864 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Internet-Führerschein – ITG Klasse 7.3</title>
+<style>
+@font-face{font-family:"Shantell Sans";src:url(fonts/shantell-sans-latin-400-normal.woff2) format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Shantell Sans";src:url(fonts/shantell-sans-latin-700-normal.woff2) format("woff2");font-weight:700;font-display:swap}
+:root{--bg:#fbfaf5;--grid:#dbe7f3;--card:#fff;--ink:#1e1e1e;--muted:#6b6b6b;--gold:#ffe066;--btn:#fff;--ok:#2b8a3e;--bad:#e03131;--okbg:#d3f9d8;--badbg:#ffe3e3;--soft:#e7f5ff;
+  --cr:#e03131;--cb:#1971c2;--ca:#f08c00;--cg:#2f9e44;--cp:#9c36b5}
+body.dark{--bg:#10131a;--grid:#1b2433;--card:#1a1f2b;--ink:#e9ecef;--muted:#9aa4b2;--btn:#232a38;--ok:#69db7c;--bad:#ff8787;--okbg:#14301c;--badbg:#3a1c1f;--soft:#1c2a3d}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%}
+body{color:var(--ink);font-family:"Shantell Sans","Comic Sans MS",cursive;font-size:17px;background-color:var(--bg);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:26px 26px;transition:background-color .3s,color .3s}
+.hidden{display:none!important}
+.muted{color:var(--muted)}.small{font-size:.85rem}
+a{color:inherit}
+.sk{border:2.5px solid var(--ink);border-radius:14px 6px 16px 6px/6px 16px 6px 14px;background:var(--card)}
+button{cursor:pointer;font:inherit;font-size:1.05rem;border:2.5px solid var(--ink);border-radius:14px 6px 16px 6px/6px 16px 6px 14px;background:var(--btn);color:var(--ink);padding:7px 16px;box-shadow:2px 2px 0 var(--ink)}
+button:active:not(:disabled){transform:translate(2px,2px);box-shadow:none}
+button:disabled{opacity:.4;cursor:default}
+button.go{background:#8ce99a;color:#1e1e1e}button.gold{background:var(--gold);color:#1e1e1e}button.red{background:#ffc9c9;color:#1e1e1e}
+button.ghost{box-shadow:none;padding:4px 10px}
+button.big{font-size:1.35rem;padding:11px 24px}
+input.name,input.txt{font:inherit;font-size:1.1rem;padding:8px 12px;border:2.5px solid var(--ink);border-radius:12px 5px 14px 5px/5px 14px 5px 12px;background:var(--card);color:var(--ink);width:min(380px,100%)}
+main{max-width:1000px;margin:0 auto;padding:6px 14px 50px}
+.crumb{font-size:.85rem;color:var(--muted);padding:6px 0 0}
+.top{display:flex;align-items:center;gap:10px;padding:8px 0;flex-wrap:wrap}
+.top .ti{font-weight:700;font-size:1.35rem}
+.top .phase{flex:1;text-align:center;font-weight:700;min-width:140px}
+.chip{border:2px solid var(--ink);border-radius:999px 14px 999px 14px;background:var(--card);padding:2px 12px;font-weight:700;white-space:nowrap}
+.panel{padding:16px 18px;margin:10px 0}
+h1,h2,h3{margin:.2em 0}
+h1{font-size:2.3rem}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.center{text-align:center}
+/* Home */
+.home{padding:22px;text-align:center;max-width:720px;margin:14px auto}
+.home .steps{text-align:left;margin:14px auto;max-width:560px;padding-left:1.2em}
+.home .steps li{margin:6px 0}
+.teach{margin-top:14px;font-size:.9rem;color:var(--muted)}
+.teach a{margin-right:10px}
+/* Illustrationen */
+.ill{background:#fbfaf5;border:2.5px solid #1e1e1e;border-radius:14px 6px 16px 6px/6px 16px 6px 14px;padding:6px}
+.ill svg{width:100%;height:auto;display:block;filter:url(#wob)}
+.ill .s{fill:none;stroke:#1e1e1e;stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round}
+.ill .f1{fill:#ffd8a8}.ill .f2{fill:#a5d8ff}.ill .f3{fill:#b2f2bb}.ill .f4{fill:#ffc9c9}.ill .f5{fill:#ffec99}.ill .f6{fill:#d0bfff}
+.ill text{fill:#1e1e1e;font-weight:700;text-anchor:middle}
+/* Quiz */
+.qcard{padding:16px 20px;margin:8px 0;text-align:center}
+.qno{font-size:.9rem;color:var(--muted)}
+.qq{font-size:clamp(1.25rem,2.6vw,1.8rem);font-weight:700;line-height:1.3;margin-top:4px}
+.timer{height:14px;border:2.5px solid var(--ink);border-radius:999px;background:var(--card);overflow:hidden;margin:8px 0}
+.timer i{display:block;height:100%;background:var(--cg);width:100%}
+.timer.low i{background:var(--cr)}
+.tnum{font-weight:700;text-align:right;font-size:.95rem}
+.tiles{display:grid;gap:12px;margin:12px 0}
+.tiles.n2{grid-template-columns:1fr 1fr}.tiles.n3{grid-template-columns:repeat(3,1fr)}.tiles.n4{grid-template-columns:1fr 1fr}
+@media(max-width:640px){.tiles.n2,.tiles.n3,.tiles.n4{grid-template-columns:1fr}}
+.tile{display:flex;align-items:center;gap:12px;text-align:left;font-size:clamp(1.05rem,2vw,1.4rem);font-weight:700;color:#fff;padding:18px 16px;min-height:84px;box-shadow:4px 4px 0 var(--ink);transition:opacity .25s,transform .2s}
+.tile .shape{font-size:1.9rem;line-height:1}
+.tile.cr{background:var(--cr)}.tile.cb{background:var(--cb)}.tile.cg{background:var(--cg)}.tile.cp{background:var(--cp)}
+.tile.ca{background:var(--ca);color:#1e1e1e}
+.tile:hover:not(:disabled){transform:translate(-1px,-1px) rotate(-.4deg)}
+.tile:disabled{opacity:1;cursor:default}
+.tile.dim{opacity:.28}
+.tile.right{box-shadow:0 0 0 5px var(--gold),4px 4px 0 var(--ink);animation:wob 1s ease-in-out 2}
+.tile.wrong{opacity:.55;text-decoration:line-through}
+.tile.picked{box-shadow:0 0 0 5px #fff,0 0 0 8px var(--ink)}
+@keyframes wob{25%{transform:rotate(-1.4deg) scale(1.03)}75%{transform:rotate(1.4deg) scale(1.03)}}
+.rev{padding:14px 18px;margin:10px 0;animation:pop .45s cubic-bezier(.2,1.5,.4,1) both}
+.rev .banner{font-size:1.5rem;font-weight:700}
+.rev.ok{background:var(--okbg)}.rev.bad{background:var(--badbg)}
+.rev .merk{margin-top:8px;padding:6px 12px;border:2.5px dashed var(--ink);border-radius:10px;background:var(--soft);font-weight:700}
+.pts{color:var(--ok);font-weight:700;font-size:1.4rem;animation:pop .5s cubic-bezier(.2,1.8,.4,1) both}
+@keyframes pop{from{transform:scale(.6);opacity:0}}
+.shake{animation:shake .4s}
+@keyframes shake{25%{transform:translateX(-9px)}75%{transform:translateX(9px)}}
+.confetti{position:fixed;pointer-events:none;font-size:1.8rem;z-index:50;animation:fly 1.3s ease-out forwards}
+@keyframes fly{from{opacity:1;transform:translate(0,0) rotate(0)}to{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(var(--r))}}
+.streak{font-weight:700;color:#e8590c}
+/* Karte (Stationen) */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px;margin:12px 0}
+.st{padding:14px;text-align:left;display:block;width:100%;box-shadow:3px 3px 0 var(--ink);background:var(--card)}
+.st .ic{font-size:2.2rem}
+.st b{font-size:1.15rem}
+.st .tag{display:inline-block;border:2px solid var(--ink);border-radius:999px;padding:0 9px;font-size:.78rem;font-weight:700;margin-left:6px;background:var(--gold);color:#1e1e1e}
+.st .tag.opt{background:var(--card);color:var(--ink)}
+.st.done{background:var(--okbg)}
+.stars{letter-spacing:2px;font-size:1.2rem}
+.progress{height:16px;border:2.5px solid var(--ink);border-radius:999px;overflow:hidden;background:var(--card)}
+.progress i{display:block;height:100%;background:var(--cg);transition:width .5s}
+/* Wissenskarten */
+.cardwrap{display:grid;grid-template-columns:minmax(220px,360px) 1fr;gap:18px;align-items:center;margin:10px 0}
+@media(max-width:760px){.cardwrap{grid-template-columns:1fr}}
+.kcard{padding:18px 22px}
+.kcard .kh{font-size:1.5rem;font-weight:700;margin-bottom:6px}
+.kcard p{font-size:1.2rem;line-height:1.55;margin:.3em 0}
+.dots{display:flex;gap:8px;justify-content:center;margin:8px 0}
+.dots i{width:14px;height:14px;border:2.5px solid var(--ink);border-radius:50%;background:var(--card)}
+.dots i.on{background:var(--gold)}
+/* Aufgaben */
+.task h2{font-size:1.5rem}
+.aufg{padding:8px 14px;border-left:6px solid var(--ca);background:var(--soft);margin:8px 0;border-radius:6px;font-weight:700}
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0;min-height:48px}
+.chipb{font-size:1.05rem;padding:6px 14px;box-shadow:2px 2px 0 var(--ink);background:var(--card)}
+.chipb.sel{background:var(--gold);color:#1e1e1e;transform:rotate(-1.5deg) scale(1.05)}
+.chipb.ok{background:var(--okbg);border-color:var(--ok)}
+.chipb.bad{background:var(--badbg);border-color:var(--bad);text-decoration:line-through}
+.zones{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media(max-width:760px){.zones{grid-template-columns:1fr}}
+.zone{padding:10px;min-height:150px;cursor:pointer}
+.zone h3{font-size:1.1rem;margin:0 0 6px}
+.zone.z-g{background:#d3f9d8;color:#1e1e1e}.zone.z-y{background:#fff3bf;color:#1e1e1e}.zone.z-r{background:#ffe3e3;color:#1e1e1e}
+.zone .chips{margin:0}
+.why{font-size:.95rem;margin:4px 0;padding-left:8px;border-left:4px solid var(--bad)}
+.why.g{border-left-color:var(--ok)}
+.chat{max-width:560px;margin:8px auto;padding:10px}
+.chat .head{font-weight:700;border-bottom:2px dashed var(--muted);padding-bottom:6px;margin-bottom:8px}
+.bub{display:block;max-width:82%;margin:6px 0;padding:8px 12px;border:2.5px solid var(--ink);border-radius:16px 16px 16px 4px;background:#e7f5ff;color:#1e1e1e;text-align:left;font-size:1.05rem;box-shadow:none;transition:transform .15s}
+.bub.me{margin-left:auto;border-radius:16px 16px 4px 16px;background:#d3f9d8}
+.bub.sel{outline:4px solid #f08c00;transform:scale(1.03)}
+.bub.ok{background:#ffe3e3;outline:4px solid var(--ok)}
+.bub.miss{outline:4px dashed #f08c00}
+.bub.fp{background:#ffd8a8;text-decoration:line-through}
+.bubwhy{font-size:.9rem;margin:-2px 6px 8px;max-width:82%}
+.bubwhy.me{margin-left:auto;text-align:right}
+.check{display:flex;flex-direction:column;gap:8px;max-width:560px;margin:8px auto}
+.check .chipb{text-align:left}
+.four{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}
+@media(max-width:700px){.four{grid-template-columns:1fr 1fr}}
+.four>div{padding:8px;text-align:center;font-weight:700;border:2.5px solid var(--ink);border-radius:12px 5px 14px 5px/5px 14px 5px 12px;background:var(--card)}
+.four .n{font-size:1.6rem}
+.duel{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0}
+@media(max-width:700px){.duel{grid-template-columns:1fr}}
+.pwcard{padding:22px 12px;text-align:center;font-size:clamp(1.2rem,2.6vw,1.8rem);font-weight:700;word-break:break-all;font-family:"Courier New",monospace;box-shadow:4px 4px 0 var(--ink);background:var(--card)}
+.pwcard.right{background:var(--okbg);border-color:var(--ok)}
+.pwcard.wrong{background:var(--badbg);border-color:var(--bad)}
+.meter{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:8px 0}
+.meter i{height:18px;border:2.5px solid var(--ink);border-radius:8px;background:var(--card)}
+.meter i.on0{background:#ff8787}.meter i.on1{background:#ffa94d}.meter i.on2{background:#ffe066}.meter i.on3{background:#8ce99a}
+.chk{list-style:none;padding:0;margin:8px 0}
+.chk li{padding:2px 0}
+.msg{max-width:520px;margin:10px auto;padding:14px 16px;text-align:left}
+.msg .meta{font-size:.85rem;color:var(--muted);margin-bottom:6px}
+.msg .art{font-weight:700;background:var(--gold);color:#1e1e1e;border:2px solid var(--ink);border-radius:999px;padding:0 10px;margin-right:6px;font-size:.8rem}
+.msg .txt{font-size:1.15rem;line-height:1.5}
+.msg .link{margin-top:8px;font-family:"Courier New",monospace;font-size:.95rem;word-break:break-all;background:var(--soft);padding:4px 8px;border-radius:6px}
+.slot{padding:8px 12px;margin:6px 0;display:flex;gap:10px;align-items:center;min-height:44px}
+.slot .no{font-weight:700;font-size:1.2rem;min-width:1.4em}
+.slot.ok{background:var(--okbg)}.slot.bad{background:var(--badbg)}
+.slot.empty{border-style:dashed;color:var(--muted)}
+.pool .chipb{max-width:100%;text-align:left}
+.done-box{text-align:center;padding:20px}
+.merkbox{border:3px dashed var(--ink);border-radius:14px;padding:12px 16px;margin:12px auto;background:var(--soft);max-width:640px;font-size:1.2rem;font-weight:700}
+/* Zertifikat */
+.cert{border:6px double var(--ink);border-radius:16px;padding:28px 20px;text-align:center;background:var(--card);max-width:720px;margin:12px auto}
+.cert h1{font-size:2.2rem}
+.cert .nm{font-size:2rem;font-weight:700;border-bottom:3px solid var(--ink);display:inline-block;min-width:260px;padding:0 12px;margin:10px 0}
+.printonly{display:none}
+.lines div{border-bottom:2px solid #000;height:46px}
+@media print{
+  @page{margin:14mm}
+  body{background:#fff!important;color:#000!important;font-size:14pt}
+  body *{visibility:hidden}
+  #printarea,#printarea *{visibility:visible}
+  #printarea{position:absolute;left:0;top:0;width:100%}
+  .noprint{display:none!important}
+  .printonly{display:block}
+  .cert{border:6px double #000;background:#fff;color:#000;page-break-after:always;break-after:page}
+  .cert .nm{border-bottom:3px solid #000}
+  .merkblatt h2{margin:0 0 8px}
+  .merkblatt li{margin:6px 0}
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="wob" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="0.025" numOctaves="2" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="3.2"/></filter>
+</svg>
+<main>
+  <div class="crumb noprint"><a href="../../">Klasse 7.3</a> › <a href="../">ITG</a> › Internet-Führerschein</div>
+  <div id="app"></div>
+</main>
+<script src="inhalt.js"></script>
+<script>
+(function(){
+'use strict';
+const D = window.ITG;
+const app = document.getElementById('app');
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const rnd = (a,b) => a + Math.floor(Math.random()*(b-a+1));
+const shuffle = a => { a = a.slice(); for(let i=a.length-1;i>0;i--){ const j=rnd(0,i); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+const starStr = n => '★'.repeat(n) + '☆'.repeat(3-n);
+
+/* ---------- Zustand ---------- */
+const V = { screen: 'home' };
+const S = { name: '', erl: {pts:0, ok:0, n:0}, fin: {pts:0, ok:0, n:0}, nutz: {ans:[], risk:0}, done: {}, stars: {} };
+let Q = null;      // laufendes Quiz
+let ST = null;     // laufende Station
+let timer = null;
+
+if (window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches) document.body.classList.add('dark');
+
+/* ---------- Illustrationen ---------- */
+const ILL = {
+daten: `<svg viewBox="0 0 320 200" role="img" aria-label="Person mit Spitzname und Tresor">
+  <circle class="s f2" cx="62" cy="88" r="22"/><path class="s f2" d="M24 170 Q24 118 62 118 Q100 118 100 170 Z"/>
+  <circle class="s" cx="55" cy="84" r="2"/><circle class="s" cx="69" cy="84" r="2"/><path class="s" d="M54 95 Q62 102 70 95"/>
+  <path class="s f5" d="M80 20 H250 Q260 20 260 30 V52 Q260 62 250 62 H140 L112 82 L118 62 H90 Q80 62 80 52 Z"/>
+  <text x="170" y="48" font-size="16">Hi, ich bin „Blitz07“</text>
+  <rect class="s f1" x="200" y="100" width="100" height="84" rx="8"/><circle class="s f5" cx="250" cy="142" r="22"/><path class="s" d="M250 142 L262 134"/><circle class="s" cx="250" cy="142" r="3"/>
+  <path class="s" d="M212 184 v8 M288 184 v8"/>
+  <rect class="s f4" x="118" y="108" width="62" height="22" rx="6"/><text x="149" y="124" font-size="12">Adresse</text>
+  <rect class="s f4" x="118" y="136" width="62" height="22" rx="6"/><text x="149" y="152" font-size="12">Nummer</text>
+  <rect class="s f4" x="118" y="164" width="62" height="22" rx="6"/><text x="149" y="180" font-size="12">Schule</text>
+  <path class="s" d="M182 119 H198 M182 147 H198 M182 175 H198"/></svg>`,
+chat: `<svg viewBox="0 0 320 200" role="img" aria-label="Handy mit Chat und Stopp-Hand">
+  <text x="48" y="120" font-size="54" style="text-anchor:middle">👤</text><text x="48" y="150" font-size="22">?</text>
+  <rect class="s f6" x="104" y="8" width="112" height="184" rx="16"/><rect class="s" x="114" y="22" width="92" height="150" rx="6" style="fill:#fff"/>
+  <rect class="s f3" x="120" y="30" width="56" height="26" rx="10"/><text x="148" y="48" font-size="12">hi! 😊</text>
+  <rect class="s f2" x="140" y="64" width="60" height="26" rx="10"/><text x="170" y="82" font-size="12">hey</text>
+  <rect class="s f4" x="120" y="98" width="70" height="26" rx="10"/><text x="155" y="116" font-size="12">Foto? 📷</text>
+  <rect class="s f4" x="122" y="132" width="80" height="26" rx="10"/><text x="161" y="150" font-size="10">Wo wohnst du?</text>
+  <text x="262" y="112" font-size="62" style="text-anchor:middle">✋</text><text x="262" y="156" font-size="20">STOPP</text></svg>`,
+pw: `<svg viewBox="0 0 320 200" role="img" aria-label="Schlüssel und Schloss">
+  <circle class="s f5" cx="82" cy="84" r="36"/><circle class="s" cx="82" cy="84" r="12" style="fill:#fbfaf5"/>
+  <path class="s f5" d="M116 76 H250 V94 H116 Z"/><path class="s f5" d="M210 94 V122 H228 V94 M236 94 V112 H250 V94"/>
+  <rect class="s f4" x="240" y="14" width="56" height="44" rx="8"/><path class="s" d="M254 14 V6 Q268 -8 282 6 V14"/><circle class="s" cx="268" cy="34" r="5"/>
+  <text x="160" y="150" font-size="17">mind. 12 Zeichen!</text>
+  <circle class="s f3" cx="52" cy="176" r="9"/><circle class="s f3" cx="76" cy="176" r="9"/><circle class="s f3" cx="100" cy="176" r="9"/><circle class="s f3" cx="124" cy="176" r="9"/><circle class="s f3" cx="148" cy="176" r="9"/><circle class="s f3" cx="172" cy="176" r="9"/><circle class="s f3" cx="196" cy="176" r="9"/><circle class="s f3" cx="220" cy="176" r="9"/><circle class="s f3" cx="244" cy="176" r="9"/><circle class="s f3" cx="268" cy="176" r="9"/></svg>`,
+phish: `<svg viewBox="0 0 320 200" role="img" aria-label="Angelhaken mit Brief">
+  <path class="s" d="M160 0 V112 a24 24 0 0 0 48 0 V100"/><path class="s" d="M200 108 L208 98 L216 108"/>
+  <rect class="s f5" x="60" y="96" width="92" height="64" rx="6"/><path class="s" d="M60 100 L106 134 L152 100"/>
+  <text x="106" y="182" font-size="14">„Dein Konto!“</text>
+  <text x="256" y="120" font-size="58" style="text-anchor:middle">🐟</text><text x="256" y="156" font-size="14">deine Daten</text>
+  <path class="s" d="M0 44 q20 -8 40 0 t40 0 t40 0" style="stroke:#74c0fc"/><path class="s" d="M200 44 q20 -8 40 0 t40 0 t40 0" style="stroke:#74c0fc"/></svg>`,
+hass: `<svg viewBox="0 0 320 200" role="img" aria-label="Wütende Sprechblase und Schutzschild">
+  <path class="s f4" d="M20 30 H140 Q152 30 152 42 V92 Q152 104 140 104 H80 L56 134 L58 104 H32 Q20 104 20 92 V42 Q20 30 32 30 Z"/>
+  <text x="86" y="78" font-size="34">!#?%</text>
+  <path class="s f3" d="M244 22 L296 38 V96 Q296 150 244 176 Q192 150 192 96 V38 Z"/>
+  <text x="244" y="116" font-size="56" style="text-anchor:middle">✋</text>
+  <text x="170" y="170" font-size="15">STOPP</text>
+  <path class="s" d="M156 70 H186" style="stroke-dasharray:6 6"/></svg>`,
+netz: `<svg viewBox="0 0 320 200" role="img" aria-label="Laptop, Router, DNS und Server">
+  <text x="36" y="108" font-size="44" style="text-anchor:middle">💻</text><text x="36" y="136" font-size="12">Browser</text>
+  <rect class="s f2" x="88" y="84" width="54" height="30" rx="6"/><path class="s" d="M100 84 l-6 -18 M130 84 l6 -18"/><text x="115" y="104" font-size="12">Router</text>
+  <path class="s f6" d="M150 30 q-24 0 -22 18 q-16 6 -6 20 H210 q16 -6 6 -22 q-4 -16 -22 -14 q-8 -14 -22 -2 Z"/><text x="170" y="56" font-size="14">DNS</text>
+  <rect class="s f5" x="246" y="70" width="58" height="68" rx="6"/><rect class="s f1" x="254" y="78" width="42" height="12" rx="3"/><rect class="s f1" x="254" y="96" width="42" height="12" rx="3"/><rect class="s f1" x="254" y="114" width="42" height="12" rx="3"/><text x="275" y="158" font-size="13">Server</text>
+  <path class="s" d="M62 99 H86 M144 99 H244" style="stroke-dasharray:3 7"/><path class="s" d="M128 84 L150 64" style="stroke-dasharray:3 7"/>
+  <rect class="s f3" x="160" y="90" width="12" height="12"><animate attributeName="x" values="150;236;150" dur="3.2s" repeatCount="indefinite"/></rect>
+  <rect class="s f4" x="176" y="106" width="12" height="12"><animate attributeName="x" values="236;150;236" dur="3.6s" repeatCount="indefinite"/></rect>
+  <text x="160" y="186" font-size="13">Daten reisen in Paketen</text></svg>`,
+viren: `<svg viewBox="0 0 320 200" role="img" aria-label="Virus, Trojanisches Pferd und Wurm">
+  <circle class="s f4" cx="62" cy="86" r="28"/>
+  <path class="s" d="M62 58 V44 M62 114 V128 M34 86 H20 M90 86 H104 M42 66 L32 56 M82 66 L92 56 M42 106 L32 116 M82 106 L92 116"/>
+  <circle class="s f4" cx="62" cy="40" r="5"/><circle class="s f4" cx="62" cy="132" r="5"/><circle class="s f4" cx="16" cy="86" r="5"/><circle class="s f4" cx="108" cy="86" r="5"/>
+  <circle class="s" cx="52" cy="82" r="3"/><circle class="s" cx="72" cy="82" r="3"/><path class="s" d="M52 96 Q62 90 72 96"/><text x="62" y="170" font-size="15">Virus</text>
+  <text x="160" y="104" font-size="64" style="text-anchor:middle">🐴</text><circle class="s f5" cx="132" cy="130" r="10"/><circle class="s f5" cx="188" cy="130" r="10"/><path class="s" d="M132 130 H188"/><text x="160" y="170" font-size="15">Trojaner</text>
+  <path class="s" d="M232 120 q12 -50 28 -8 t28 -8" style="stroke:#2f9e44;stroke-width:14"/><circle class="s f3" cx="292" cy="106" r="11"/><circle class="s" cx="296" cy="103" r="2"/><text x="262" y="170" font-size="15">Wurm</text></svg>`
+};
+
+/* ---------- Helfer: Seitenkopf ---------- */
+function header(phase){
+  const pts = S.erl.pts + S.fin.pts;
+  return `<div class="top noprint"><span class="ti">🪪 Internet-Führerschein</span><span class="phase">${phase||''}</span>
+    <span class="chip" title="Punkte aus den Quizrunden">⭐ ${pts}</span>
+    <button class="ghost" data-a="dark" title="Hell/Dunkel">🌓</button>
+    ${V.screen!=='home'?'<button class="ghost" data-a="home" title="Zurück zum Start">⌂</button>':''}</div>`;
+}
+function go(screen){ V.screen = screen; render(); window.scrollTo(0,0); }
+function stopTimer(){ if(timer){ clearInterval(timer); timer = null; } }
+
+/* ---------- Konfetti ---------- */
+function burst(good){
+  const em = good ? ['🎉','⭐','✨','🟢','💥'] : ['💭'];
+  const n = good ? 16 : 3;
+  for(let i=0;i<n;i++){
+    const s = document.createElement('span');
+    s.className = 'confetti'; s.textContent = em[rnd(0,em.length-1)];
+    s.style.left = (30 + rnd(0,40)) + 'vw'; s.style.top = '45vh';
+    s.style.setProperty('--dx', rnd(-260,260)+'px'); s.style.setProperty('--dy', rnd(-260,60)+'px'); s.style.setProperty('--r', rnd(-300,300)+'deg');
+    document.body.appendChild(s); setTimeout(()=>s.remove(), 1400);
+  }
+}
+
+/* ======================= QUIZ-MOTOR ======================= */
+function startQuiz(kind){
+  let items;
+  if(kind==='nutz'){
+    items = D.nutzung.map(x=>({ q:x.q, opts:[{k:'ja',t:'Ja',col:'cb',sh:'●'},{k:'nein',t:'Nein',col:'cp',sh:'■'}], info:x.info, risk:x.risk }));
+  } else if(kind==='erl'){
+    items = D.erlaubt.map(x=>({ q:x.q, a:x.a, why:x.why, merk:x.merk,
+      opts:[{k:'ja',t:'Ja, erlaubt',col:'cg',sh:'✅'},{k:'nein',t:'Nein, nicht ok',col:'cr',sh:'❌'},{k:'kommt',t:'Kommt drauf an',col:'ca',sh:'🤔'}] }));
+  } else {
+    const cols = [['cr','▲'],['cb','◆'],['ca','●'],['cg','■']];
+    items = shuffle(D.finale).slice(0,12).map(x=>{
+      const o = shuffle(x.o.map((t,i)=>({t,right:i===x.a})));
+      return { q:x.q, why:x.why, a:o.findIndex(z=>z.right), opts:o.map((z,i)=>({k:i,t:z.t,col:cols[i][0],sh:cols[i][1]})) };
+    });
+  }
+  Q = { kind, items, i:0, streak:0, pts:0, ok:0, rev:false, sel:null, last:null, tl: kind==='erl'?20:(kind==='fin'?25:0), t0:0 };
+  go('quiz');
+}
+function quizPhase(){
+  return Q.kind==='nutz' ? 'Teil 1 · Check-in' : Q.kind==='erl' ? 'Teil 1 · Erlaubt oder nicht?' : 'Teil 3 · Abschluss-Quiz';
+}
+function quizView(){
+  const it = Q.items[Q.i], n = Q.items.length, rev = Q.rev;
+  const tiles = it.opts.map((o,i)=>{
+    let cls = 'tile sk ' + o.col, dis = rev ? 'disabled' : '';
+    if(rev){
+      if(Q.kind==='nutz'){ if(i===Q.sel) cls += ' picked'; else cls += ' dim'; }
+      else if(i===it.a || o.k===it.a) cls += ' right';
+      else if(i===Q.sel) cls += ' wrong';
+      else cls += ' dim';
+    }
+    return `<button class="${cls}" data-a="ans" data-i="${i}" ${dis}><span class="shape">${o.sh}</span><span>${esc(o.t)}</span></button>`;
+  }).join('');
+  const nTiles = it.opts.length;
+  let timerHtml = '';
+  if(Q.tl && !rev) timerHtml = `<div class="timer" id="tbox"><i id="tbar"></i></div><div class="tnum"><span id="tnum">${Q.tl}</span> s${Q.streak>=2?` · <span class="streak">🔥 ${Q.streak} in Folge</span>`:''}</div>`;
+  let revHtml = '';
+  if(rev){
+    if(Q.kind==='nutz'){
+      revHtml = `<div class="rev sk"><div class="banner">💬 Einordnung</div><p>${esc(it.info)}</p><p class="muted small">Es gibt hier kein Richtig oder Falsch – nur du siehst deine Antworten.</p></div>`;
+    } else {
+      const L = Q.last;
+      const head = L.ok ? `✅ Richtig! <span class="pts">+${L.pts}</span>${Q.streak>=2?` <span class="streak">🔥 ${Q.streak} in Folge</span>`:''}` : (L.timeout ? '⏰ Zeit abgelaufen' : '❌ Leider nicht');
+      revHtml = `<div class="rev sk ${L.ok?'ok':'bad'}"><div class="banner">${head}</div><p>${esc(it.why)}</p>${it.merk?`<div class="merk">📌 ${esc(it.merk)}</div>`:''}</div>`;
+    }
+    revHtml += `<div class="row"><button class="go big" data-a="next">${Q.i+1<n?'Weiter →':'Fertig →'}</button><span class="muted small">Enter / Leertaste = weiter</span></div>`;
+  }
+  const hint = !rev ? `<p class="muted small center">Tipp: Antworten geht auch mit den Zifferntasten${Q.kind==='nutz'?' oder J / N':''}${Q.kind==='erl'?' oder J / N / K':''}.</p>` : '';
+  return header(quizPhase()) + `<div class="qcard sk${rev&&Q.last&&!Q.last.ok&&Q.kind!=='nutz'?' shake':''}"><div class="qno">Frage ${Q.i+1} von ${n}</div><div class="qq">${esc(it.q)}</div></div>`
+    + timerHtml + `<div class="tiles n${nTiles}">${tiles}</div>` + revHtml + hint;
+}
+function startTimer(){
+  stopTimer();
+  if(!Q || !Q.tl || Q.rev) return;
+  Q.t0 = performance.now();
+  timer = setInterval(()=>{
+    const left = Q.tl - (performance.now()-Q.t0)/1000;
+    const bar = document.getElementById('tbar'), num = document.getElementById('tnum'), box = document.getElementById('tbox');
+    if(!bar){ stopTimer(); return; }
+    bar.style.width = Math.max(0,left/Q.tl*100) + '%';
+    num.textContent = Math.max(0,Math.ceil(left));
+    box.classList.toggle('low', left<=5);
+    if(left<=0){ stopTimer(); answer(null); }
+  }, 100);
+}
+function answer(i){
+  if(!Q || Q.rev) return;
+  stopTimer();
+  const it = Q.items[Q.i];
+  Q.sel = i; Q.rev = true;
+  if(Q.kind==='nutz'){
+    const k = i!==null ? it.opts[i].k : null;
+    S.nutz.ans[Q.i] = k;
+    Q.last = {ok:true};
+  } else {
+    let ok = false;
+    if(i!==null) ok = (Q.kind==='erl') ? (it.opts[i].k===it.a) : (i===it.a);
+    let pts = 0;
+    if(ok){
+      Q.streak++; Q.ok++;
+      const el = (performance.now()-Q.t0)/1000;
+      const frac = Math.max(0, 1 - el/Q.tl);
+      pts = 600 + Math.round(400*frac) + (Q.streak>=2 ? Math.min(Q.streak-1,5)*50 : 0);
+      Q.pts += pts;
+    } else Q.streak = 0;
+    Q.last = {ok, pts, timeout: i===null};
+    burst(ok);
+  }
+  render();
+}
+function nextQ(){
+  if(!Q || !Q.rev) return;
+  if(Q.i+1 < Q.items.length){ Q.i++; Q.rev = false; Q.sel = null; render(); window.scrollTo(0,0); return; }
+  // Quiz fertig
+  if(Q.kind==='nutz'){
+    S.nutz.risk = Q.items.reduce((s,it,i)=> s + (it.risk && S.nutz.ans[i]===it.risk ? 1 : 0), 0);
+    go('sumNutz');
+  } else if(Q.kind==='erl'){
+    S.erl = {pts:Q.pts, ok:Q.ok, n:Q.items.length}; go('sumErl');
+  } else {
+    S.fin = {pts:Q.pts, ok:Q.ok, n:Q.items.length}; go('result');
+  }
+}
+
+/* ======================= SCREENS ======================= */
+function homeView(){
+  return header('') + `<div class="home sk">
+    <h1>🪪 Internet-Führerschein</h1>
+    <p class="muted" style="margin-top:0">ITG · Klasse 7.3 · Sicher unterwegs im Netz</p>
+    <div class="ill" style="max-width:360px;margin:10px auto">${ILL.pw}</div>
+    <label for="nm" class="muted">Dein Name (für die Urkunde)</label><br>
+    <input id="nm" class="name" maxlength="30" placeholder="Vorname" value="${esc(S.name)}" autocomplete="off">
+    <ol class="steps">
+      <li><b>Check-in &amp; Quiz:</b> Wie nutzt du das Netz? Und: Was ist erlaubt, was nicht?</li>
+      <li><b>Stationen:</b> Du erarbeitest dir das Wissen – mit Bildern, Aufgaben und Spielen.</li>
+      <li><b>Abschluss-Quiz:</b> Zeig, was du kannst, und hol dir deine Urkunde.</li>
+    </ol>
+    <button class="go big" data-a="start">Los geht's →</button>
+    <p class="muted small">Es wird nichts gespeichert oder gesendet. Gib hier nie echte Passwörter ein.</p>
+    <div class="teach">Lehrkraft: <a href="#" data-a="jump" data-to="nutz">Check-in</a><a href="#" data-a="jump" data-to="erl">Erlaubt-Quiz</a><a href="#" data-a="jump" data-to="map">Stationen</a><a href="#" data-a="jump" data-to="fin">Abschluss-Quiz</a><a href="stunde.html">Stundenverlauf &amp; Lösungen</a></div>
+  </div>`;
+}
+function sumNutzView(){
+  const r = S.nutz.risk, n = D.nutzung.filter(x=>x.risk).length;
+  const msg = r<=1 ? 'Du gehst schon recht vorsichtig mit dem Netz um. Bei den Stationen lernst du noch ein paar Profi-Tricks.'
+    : r<=4 ? 'Das ist ganz normal – den meisten geht es so. Genau dafür gibt es gleich Tipps und Spiele.'
+    : 'Viele Dinge, die wir gleich üben, betreffen dich. Das ist kein Problem – dafür sind wir hier. Niemand wird bewertet.';
+  return header('Teil 1 · Check-in') + `<div class="panel sk center"><h2>Danke für deine ehrlichen Antworten!</h2>
+    <p style="font-size:1.3rem">Bei <b>${r} von ${n}</b> Fragen war deine Antwort eher „riskant“.</p><p>${msg}</p>
+    <p class="muted small">Das siehst nur du. Es gibt keine Note dafür.</p>
+    <button class="go big" data-a="startErl">Weiter: Erlaubt oder nicht? →</button></div>`;
+}
+function sumErlView(){
+  return header('Teil 1 · Erlaubt oder nicht?') + `<div class="panel sk center"><h2>${S.erl.ok} von ${S.erl.n} richtig!</h2>
+    <p style="font-size:1.3rem">⭐ ${S.erl.pts} Punkte</p>
+    <p>Jetzt geht es ans Erarbeiten: Such dir Stationen aus und sammle Sterne.</p>
+    <button class="go big" data-a="jump" data-to="map">Weiter zu den Stationen →</button></div>`;
+}
+function doneCount(){ return Object.keys(S.done).length; }
+function mapView(){
+  const n = doneCount(), need = 4;
+  const cards = D.stationen.map(s=>{
+    const d = S.done[s.id];
+    return `<button class="st sk ${d?'done':''}" data-a="openSt" data-id="${s.id}">
+      <div class="ic">${s.icon}</div><b>${esc(s.titel)}</b><span class="tag ${s.pflicht?'':'opt'}">${s.pflicht?'Pflicht':'Zusatz'}</span>
+      <div class="muted small">${esc(s.teaser)}</div>
+      <div class="stars">${d?starStr(S.stars[s.id]):'☆☆☆'}</div></button>`;
+  }).join('');
+  return header('Teil 2 · Stationen') + `<div class="panel sk"><h2>Wissen erarbeiten</h2>
+    <p>Bearbeite mindestens <b>${need} Stationen</b> – zuerst die vier mit „Pflicht“. Wer fertig ist, macht die Zusatz-Stationen.</p>
+    <div class="progress"><i style="width:${Math.min(100,n/need*100)}%"></i></div><p class="muted small">${n} von ${need} geschafft</p></div>
+    <div class="grid">${cards}</div>
+    <div class="row"><button class="go big" data-a="startFin" ${n<need?'disabled':''}>Weiter zum Abschluss-Quiz →</button>${n<need?`<span class="muted small">Noch ${need-n} Station${need-n>1?'en':''} bis zum Quiz.</span>`:''}</div>`;
+}
+
+/* ======================= STATIONEN ======================= */
+const FLOW = {
+  daten:['cards','ampel'], chat:['cards','multi'], pw:['cards','duell','werkstatt'],
+  phish:['cards','echtfake'], hass:['cards','reaktion'], netz:['cards','reihe'], viren:['cards','match','multi']
+};
+function stData(){ return D.stationen.find(s=>s.id===ST.id); }
+function openStation(id){
+  ST = { id, ph:0, card:0, res:[], T:null };
+  enterPhase(); go('station');
+}
+function enterPhase(){
+  const ph = FLOW[ST.id][ST.ph];
+  const s = stData();
+  ST.T = null;
+  if(ph==='ampel'){
+    ST.T = { items: shuffle(s.ampel.items.map((x,i)=>({...x,i}))), placed:{}, sel:null, checked:false };
+  } else if(ph==='multi'){
+    const m = s.multi;
+    const list = m.items ? m.items.map(x=>({...x,k:x.t})) : m.checks.map(x=>({...x,k:x.t}));
+    ST.T = { list, sel:new Set(), checked:false, chat: !!m.items };
+  } else if(ph==='duell'){
+    ST.T = { i:0, ok:0, rev:false, sel:null, rounds: s.duell.map(r=>{ const sw = Math.random()<.5; return {l: sw?r.b:r.a, r: sw?r.a:r.b, best: (r.best==='a')===!sw ? 'l' : 'r', why:r.why}; }) };
+  } else if(ph==='werkstatt'){
+    ST.T = { best:0 };
+  } else if(ph==='echtfake'){
+    ST.T = { i:0, ok:0, rev:false, sel:null, list: shuffle(s.nachrichten) };
+  } else if(ph==='reaktion'){
+    ST.T = { i:0, ok:0, rev:false, sel:null, list: s.reaktion.map(r=>{ const o = shuffle(r.opts.map((t,i)=>({t,right:i===r.best}))); return {sit:r.sit, why:r.why, opts:o, best:o.findIndex(z=>z.right)}; }) };
+  } else if(ph==='reihe'){
+    ST.T = { pool: shuffle(s.reihe.map((x,i)=>({...x,i}))), picked:[], tries:0, checked:false, perfect:false };
+  } else if(ph==='match'){
+    ST.T = { i:0, ok:0, rev:false, sel:null, list: shuffle(s.match), terms: shuffle(s.match.map(m=>m.b)) };
+  }
+}
+function phaseTitle(){
+  const ph = FLOW[ST.id][ST.ph], s = stData();
+  return `${s.icon} ${s.titel}`;
+}
+function stationView(){
+  const s = stData(), ph = FLOW[ST.id][ST.ph];
+  let body = '';
+  if(ph==='cards') body = cardsView(s);
+  else body = taskView(ph, s);
+  return header(phaseTitle()) + body;
+}
+function cardsView(s){
+  const k = s.karten[ST.card], n = s.karten.length;
+  const dots = s.karten.map((_,i)=>`<i class="${i<=ST.card?'on':''}"></i>`).join('');
+  return `<div class="cardwrap"><div class="ill">${ILL[s.ill]}</div>
+    <div class="kcard sk"><div class="kh">${esc(k.h)}</div><p>${esc(k.t)}</p></div></div>
+    <div class="dots">${dots}</div>
+    <div class="row" style="justify-content:center">
+      <button data-a="cardBack" ${ST.card===0?'disabled':''}>← Zurück</button>
+      <button class="go big" data-a="cardNext">${ST.card+1<n?'Weiter →':'Zur Aufgabe →'}</button></div>`;
+}
+function taskView(ph, s){
+  const T = ST.T;
+  if(ph==='ampel') return ampelView(s,T);
+  if(ph==='multi') return multiView(s,T);
+  if(ph==='duell') return duellView(s,T);
+  if(ph==='werkstatt') return werkView(s,T);
+  if(ph==='echtfake') return echtView(s,T);
+  if(ph==='reaktion') return reaktView(s,T);
+  if(ph==='reihe') return reiheView(s,T);
+  if(ph==='match') return matchView(s,T);
+  return '';
+}
+function nextPhase(stars){
+  ST.res.push(stars);
+  if(ST.ph+1 < FLOW[ST.id].length){ ST.ph++; ST.card = 0; enterPhase(); render(); window.scrollTo(0,0); }
+  else {
+    const avg = Math.max(1, Math.round(ST.res.reduce((a,b)=>a+b,0)/ST.res.length));
+    S.done[ST.id] = true; S.stars[ST.id] = Math.max(S.stars[ST.id]||0, avg);
+    V.screen = 'stDone'; render(); window.scrollTo(0,0);
+  }
+}
+function stDoneView(){
+  const s = stData();
+  return header(phaseTitle()) + `<div class="panel sk done-box"><h2>Station geschafft! 🎉</h2>
+    <div class="stars" style="font-size:2.4rem">${starStr(S.stars[s.id])}</div>
+    <p>Das nimmst du mit:</p><div class="merkbox">📌 ${esc(s.merk)}</div>
+    <div class="row" style="justify-content:center"><button data-a="openSt" data-id="${s.id}">↻ Nochmal</button><button class="go big" data-a="jump" data-to="map">Zurück zur Karte →</button></div></div>`;
+}
+
+/* ---- Ampel ---- */
+function ampelView(s,T){
+  const a = s.ampel;
+  const chip = (it,cls='') => `<button class="chipb sk ${cls}" data-a="amChip" data-i="${it.i}">${esc(it.t)}</button>`;
+  const pool = T.items.filter(it=>T.placed[it.i]===undefined);
+  const zones = a.zonen.map(z=>{
+    const mine = T.items.filter(it=>T.placed[it.i]===z.id).map(it=>{
+      let cls = ''; if(T.checked) cls = it.z===z.id ? 'ok' : 'bad';
+      return chip(it,cls);
+    }).join('');
+    return `<div class="zone sk z-${z.id}" data-a="amZone" data-z="${z.id}"><h3>${esc(z.t)}</h3><div class="chips">${mine}</div></div>`;
+  }).join('');
+  let res = '';
+  if(T.checked){
+    const ok = T.items.filter(it=>T.placed[it.i]===it.z).length;
+    const wrong = T.items.filter(it=>T.placed[it.i]!==it.z).map(it=>`<div class="why"><b>${esc(it.t)}</b> gehört zu ${esc(a.zonen.find(z=>z.id===it.z).t)}. ${esc(it.why)}</div>`).join('');
+    res = `<div class="panel sk"><h3>${ok} von ${T.items.length} richtig</h3>${wrong||'<div class="why g">Alles richtig – super!</div>'}
+      <button class="go big" data-a="amDone">Weiter →</button></div>`;
+  }
+  return `<div class="task"><h2>Ampel-Spiel</h2><div class="aufg">Tippe eine Karte an und dann das Feld, in das sie gehört.</div>
+    <div class="chips">${pool.map(it=>chip(it, T.sel===it.i?'sel':'')).join('') || '<span class="muted">Alle Karten verteilt!</span>'}</div>
+    <div class="zones">${zones}</div>
+    ${T.checked?res:`<div class="row" style="margin-top:12px"><button class="go big" data-a="amCheck" ${pool.length?'disabled':''}>Prüfen</button><span class="muted small">Tipp auf eine verteilte Karte, um sie zurückzulegen.</span></div>`}</div>`;
+}
+
+/* ---- Mehrfachwahl (Chat, Schutz-Checkliste) ---- */
+function multiView(s,T){
+  const m = s.multi, flags = T.list.filter(x=>x.flag).length;
+  const hit = x => T.sel.has(x.k);
+  let items;
+  if(T.chat){
+    items = T.list.map((x,idx)=>{
+      let cls = x.du ? 'me' : '';
+      if(!T.checked && hit(x)) cls += ' sel';
+      if(T.checked){ if(x.flag && hit(x)) cls += ' ok'; else if(x.flag) cls += ' miss'; else if(hit(x)) cls += ' fp'; }
+      const why = T.checked && x.flag ? `<div class="bubwhy ${x.du?'me':''}">${hit(x)?'✅':'⚠️ übersehen:'} ${esc(x.why)}</div>` : '';
+      return `<button class="bub ${cls}" data-a="mTog" data-k="${idx}">${esc(x.t)}</button>${why}`;
+    }).join('');
+    items = `<div class="chat sk"><div class="head">${esc(m.kopf)}</div>${items}</div>`;
+  } else {
+    items = '<div class="check">' + T.list.map((x,idx)=>{
+      let cls = '';
+      if(!T.checked && hit(x)) cls = 'sel';
+      if(T.checked){ if(x.flag && hit(x)) cls = 'ok'; else if(x.flag) cls = 'bad'; else if(hit(x)) cls = 'bad'; }
+      const mark = T.checked ? (x.flag ? '✅ ' : '🚫 ') : (hit(x)?'☑ ':'☐ ');
+      const why = T.checked ? `<div class="why ${x.flag?'g':''}">${esc(x.why)}</div>` : '';
+      return `<button class="chipb sk ${cls}" data-a="mTog" data-k="${idx}">${mark}${esc(x.t)}</button>${why}`;
+    }).join('') + '</div>';
+  }
+  let foot;
+  if(!T.checked) foot = `<div class="row" style="justify-content:center;margin-top:10px"><button class="go big" data-a="mCheck">Prüfen</button></div>`;
+  else {
+    const hits = T.list.filter(x=>x.flag&&hit(x)).length, fp = T.list.filter(x=>!x.flag&&hit(x)).length;
+    const score = Math.max(0,hits-fp);
+    const four = T.chat ? `<div class="four"><div><div class="n">✋</div>STOPP<br><span class="small">Nicht weiter antworten</span></div><div><div class="n">🚫</div>BLOCKEN<br><span class="small">Kontakt sperren</span></div><div><div class="n">📣</div>MELDEN<br><span class="small">In der App melden</span></div><div><div class="n">🗣️</div>ERZÄHLEN<br><span class="small">Einer Vertrauensperson</span></div></div>` : '';
+    foot = `<div class="panel sk center"><h3>${hits} von ${flags} gefunden${fp?` · ${fp} zu viel markiert`:''}</h3>${four}
+      <button class="go big" data-a="mDone">Weiter →</button></div>`;
+  }
+  return `<div class="task"><h2>${T.chat?'Chat-Check':'Schutz-Check'}</h2><div class="aufg">${esc(m.auftrag)}</div>${items}${foot}</div>`;
+}
+
+/* ---- Passwort-Duell ---- */
+function duellView(s,T){
+  const r = T.rounds[T.i], n = T.rounds.length;
+  const card = (side,txt)=>{
+    let cls = '';
+    if(T.rev){ if(side===r.best) cls='right'; else if(side===T.sel) cls='wrong'; }
+    return `<button class="pwcard sk ${cls}" data-a="duPick" data-s="${side}" ${T.rev?'disabled':''}>${esc(txt)}</button>`;
+  };
+  const rev = T.rev ? `<div class="rev sk ${T.sel===r.best?'ok':'bad'}"><div class="banner">${T.sel===r.best?'✅ Richtig!':'❌ Leider nicht'}</div><p>${esc(r.why)}</p>
+    <button class="go big" data-a="duNext">${T.i+1<n?'Weiter →':'Fertig →'}</button></div>` : '';
+  return `<div class="task"><h2>Passwort-Duell · Runde ${T.i+1} von ${n}</h2><div class="aufg">Welches Passwort ist stärker? Tippe darauf.</div>
+    <div class="duel">${card('l',r.l)}${card('r',r.r)}</div>${rev}</div>`;
+}
+
+/* ---- Passwort-Werkstatt ---- */
+const COMMON = ['passwort','password','hallo','qwertz','qwerty','fussball','fußball','schatz','admin','iloveyou','minecraft','fortnite','roblox','mama','papa','sommer','winter','master','dragon','football','lena','mia','max','ali','nutella','test','abc','asdf','hund','katze'];
+function pwInfo(p){
+  const len = p.length;
+  const low = /[a-zäöüß]/.test(p), up = /[A-ZÄÖÜ]/.test(p), dig = /\d/.test(p), sp = /[^A-Za-z0-9äöüÄÖÜß]/.test(p);
+  const classes = [low,up,dig,sp].filter(Boolean).length;
+  const norm = p.toLowerCase().replace(/0/g,'o').replace(/1/g,'i').replace(/3/g,'e').replace(/4/g,'a').replace(/5/g,'s').replace(/7/g,'t').replace(/@/g,'a').replace(/\$/g,'s');
+  const common = COMMON.some(w=>norm.includes(w)) && len<16;
+  const year = /(19|20)\d{2}/.test(p), seq = /(123|abc|qwe|asd|wert)/i.test(p), rep = /(.)\1\1/.test(p);
+  let pts = 0;
+  if(len>=8) pts++; if(len>=12) pts++; if(len>=16) pts++; if(classes>=3) pts++;
+  if(year||seq||rep) pts--;
+  if(classes<=1) pts--;
+  if(common) pts = 0;
+  if(len<8) pts = 0;
+  pts = Math.max(0,Math.min(4,pts));
+  const pool = (low?26:0)+(up?26:0)+(dig?10:0)+(sp?33:0);
+  let crack = '–';
+  if(len>0 && pool>0){
+    if(common || year || seq) crack = 'Sekunden – steht auf Knack-Listen';
+    else {
+      const e = len*Math.log10(pool) - 10; // 10 Mrd. Versuche pro Sekunde
+      if(e<0) crack = 'weniger als 1 Sekunde';
+      else {
+        const sec = Math.pow(10, Math.min(e,30));
+        if(sec<60) crack = Math.max(1,Math.round(sec)) + ' Sekunden';
+        else if(sec<3600) crack = Math.round(sec/60) + ' Minuten';
+        else if(sec<86400) crack = Math.round(sec/3600) + ' Stunden';
+        else if(sec<86400*365) crack = Math.round(sec/86400) + ' Tage';
+        else if(sec<86400*365*1000) crack = Math.round(sec/86400/365) + ' Jahre';
+        else if(sec<86400*365*1e6) crack = 'über tausend Jahre';
+        else crack = 'über eine Million Jahre';
+      }
+    }
+  }
+  return { len, low, up, dig, sp, pts, crack, common,
+    checks:[ [len>=12,'mindestens 12 Zeichen'], [up&&low,'Groß- und Kleinbuchstaben'], [dig,'mindestens eine Zahl'], [sp,'Sonderzeichen oder Bindestrich'], [!(common||year||seq||rep),'kein Name, Jahr, Zahlenreihe oder Allerweltswort'] ] };
+}
+const LAB = ['Sehr schwach','Schwach','Geht so','Gut','Stark'];
+function initials(sentence){
+  return sentence.trim().split(/\s+/).map(t=>{
+    const trail = (t.match(/[!?.,:;]+$/)||[''])[0];
+    const core = t.slice(0, t.length-trail.length);
+    if(!core) return trail;
+    if(/^\d/.test(core)) return (core.match(/^\d+/)[0]) + trail;
+    if(/^[A-Za-zÄÖÜäöüß]/.test(core)) return core[0] + trail;
+    return core[0] + trail;
+  }).join('');
+}
+function werkView(s,T){
+  return `<div class="task"><h2>Passwort-Werkstatt</h2>
+    <div class="aufg">Baue ein Passwort, das „Stark“ ist. Das hier ist nur eine Übung – gib niemals dein echtes Passwort ein. Nichts wird gespeichert oder gesendet.</div>
+    <div class="panel sk"><label for="pwin"><b>Dein Übungs-Passwort:</b></label><br>
+      <input id="pwin" class="txt" autocomplete="off" spellcheck="false" placeholder="Tippe hier …" style="font-family:'Courier New',monospace;font-size:1.3rem">
+      <div class="meter" id="pwm"><i></i><i></i><i></i><i></i></div>
+      <div><b id="pwl">–</b> · Länge: <span id="pwn">0</span> · geknackt in etwa: <b id="pwk">–</b> <span class="muted small">(grobe Schätzung)</span></div>
+      <ul class="chk" id="pwc"></ul></div>
+    <div class="panel sk"><b>Merksatz-Helfer:</b> Schreib einen Satz mit einer Zahl und einem Satzzeichen. Die Anfangsbuchstaben werden dein Passwort.<br>
+      <input id="msin" class="txt" autocomplete="off" placeholder="z. B. Jeden Morgen esse ich 2 Brötchen mit Nutella und trinke Kakao!" style="margin-top:6px">
+      <div style="margin-top:6px">→ <b id="msout" style="font-family:'Courier New',monospace;font-size:1.2rem">–</b> <button data-a="msUse" class="ghost" id="msuse">ins Feld übernehmen</button></div></div>
+    <div class="row"><button class="go big" data-a="wDone" id="wdone" disabled>Fertig – mindestens „Gut“ erreichen</button></div></div>`;
+}
+function wBind(){
+  const inp = document.getElementById('pwin'); if(!inp) return;
+  const upd = ()=>{
+    const p = inp.value, i = pwInfo(p);
+    ST.T.best = Math.max(ST.T.best, p ? i.pts : 0);
+    document.querySelectorAll('#pwm i').forEach((el,k)=>{ el.className = (p && i.pts>=k+1) ? 'on'+(i.pts-1) : ''; });
+    document.getElementById('pwl').textContent = p ? LAB[i.pts] : '–';
+    document.getElementById('pwn').textContent = p.length;
+    document.getElementById('pwk').textContent = p ? i.crack : '–';
+    document.getElementById('pwc').innerHTML = p ? i.checks.map(c=>`<li>${c[0]?'✅':'⬜'} ${c[1]}</li>`).join('') : '';
+    const done = document.getElementById('wdone');
+    done.disabled = ST.T.best < 3;
+    done.textContent = ST.T.best<3 ? 'Fertig – mindestens „Gut“ erreichen' : 'Fertig →';
+  };
+  inp.addEventListener('input', upd);
+  const ms = document.getElementById('msin');
+  ms.addEventListener('input', ()=>{ document.getElementById('msout').textContent = ms.value.trim() ? initials(ms.value) : '–'; });
+  upd();
+}
+
+/* ---- Echt oder Fake ---- */
+function echtView(s,T){
+  const m = T.list[T.i], n = T.list.length;
+  const btn = (k,t,cls)=> `<button class="${cls} big" data-a="efPick" data-k="${k}" ${T.rev?'disabled':''}>${t}</button>`;
+  let rev = '';
+  if(T.rev){
+    const ok = T.sel===m.fake;
+    rev = `<div class="rev sk ${ok?'ok':'bad'}"><div class="banner">${ok?'✅ Richtig!':'❌ Leider nicht'} Das war ${m.fake?'ein <b>Fake</b>':'<b>echt</b>'}.</div><p>${esc(m.why)}</p>
+      <button class="go big" data-a="efNext">${T.i+1<n?'Weiter →':'Fertig →'}</button></div>`;
+  }
+  return `<div class="task"><h2>Echt oder Fake? · ${T.i+1} von ${n}</h2><div class="aufg">Lies die Nachricht. Würdest du ihr vertrauen?</div>
+    <div class="msg sk"><div class="meta"><span class="art">${esc(m.art)}</span>von: <b>${esc(m.von)}</b></div>
+      <div class="txt">${esc(m.text)}</div>${m.link?`<div class="link">🔗 ${esc(m.link)}</div>`:''}</div>
+    <div class="row" style="justify-content:center">${btn('real','✅ Echt','go')}${btn('fake','🎣 Fake','red')}</div>${rev}</div>`;
+}
+
+/* ---- Reaktion ---- */
+function reaktView(s,T){
+  const r = T.list[T.i], n = T.list.length;
+  const cols = ['cb','ca','cg'];
+  const tiles = r.opts.map((o,i)=>{
+    let cls = 'tile sk ' + cols[i];
+    if(T.rev){ if(i===r.best) cls += ' right'; else if(i===T.sel) cls += ' wrong'; else cls += ' dim'; }
+    return `<button class="${cls}" data-a="reaPick" data-i="${i}" ${T.rev?'disabled':''}><span>${esc(o.t)}</span></button>`;
+  }).join('');
+  const rev = T.rev ? `<div class="rev sk ${T.sel===r.best?'ok':'bad'}"><div class="banner">${T.sel===r.best?'✅ Gute Reaktion!':'❌ Besser wäre das Grüne gewesen'}</div><p>${esc(r.why)}</p>
+    <button class="go big" data-a="reaNext">${T.i+1<n?'Weiter →':'Fertig →'}</button></div>` : '';
+  return `<div class="task"><h2>Wie reagierst du? · ${T.i+1} von ${n}</h2>
+    <div class="qcard sk"><div class="qq" style="font-size:1.3rem">${esc(r.sit)}</div></div><div class="tiles n3" style="grid-template-columns:1fr">${tiles}</div>${rev}</div>`;
+}
+
+/* ---- Reihenfolge ---- */
+function reiheView(s,T){
+  const steps = s.reihe, n = steps.length;
+  const slots = [];
+  for(let k=0;k<n;k++){
+    const p = T.picked[k];
+    if(p){
+      let cls = ''; if(T.checked) cls = p.i===k ? 'ok' : 'bad';
+      slots.push(`<div class="slot sk ${cls}"><span class="no">${k+1}</span><span>${esc(p.t)}</span></div>`);
+    } else slots.push(`<div class="slot sk empty"><span class="no">${k+1}</span><span>…</span></div>`);
+  }
+  const pool = T.pool.filter(x=>!T.picked.includes(x));
+  let foot = '';
+  if(T.checked){
+    const allOk = T.picked.every((p,k)=>p.i===k);
+    if(allOk){
+      foot = `<div class="panel sk center"><h3>🎉 Genau so reist eine Webseite!</h3>
+        <div class="ill" style="max-width:420px;margin:8px auto">${ILL.netz}</div>
+        <p class="small muted">Die Pakete im Bild sind unterwegs – hin und zurück.</p>
+        <button class="go big" data-a="reDone">Weiter →</button></div>`;
+    } else {
+      foot = `<div class="panel sk center"><p>Nicht ganz – die grünen Schritte stimmen schon. Probier es noch einmal.</p><button class="gold big" data-a="reRetry">↻ Nochmal ordnen</button></div>`;
+    }
+  }
+  return `<div class="task"><h2>Der Weg einer Webseite</h2><div class="aufg">Tippe die Schritte in der richtigen Reihenfolge an – von der Eingabe bis zur fertigen Seite.</div>
+    ${slots.join('')}
+    ${T.checked?foot:`<div class="pool chips">${pool.map(x=>`<button class="chipb sk" data-a="rePick" data-i="${x.i}">${esc(x.t)}</button>`).join('')}</div>
+      <div class="row"><button data-a="reUndo" ${T.picked.length?'':'disabled'}>↶ Letzten entfernen</button></div>`}</div>`;
+}
+
+/* ---- Zuordnen (Schadprogramme) ---- */
+function matchView(s,T){
+  const m = T.list[T.i], n = T.list.length;
+  const cols = ['cb','ca','cg','cp'];
+  const tiles = T.terms.map((t,i)=>{
+    let cls = 'tile sk ' + cols[i%4];
+    if(T.rev){ if(t===m.b) cls += ' right'; else if(t===T.sel) cls += ' wrong'; else cls += ' dim'; }
+    return `<button class="${cls}" data-a="maPick" data-t="${esc(t)}" ${T.rev?'disabled':''}><span>${esc(t)}</span></button>`;
+  }).join('');
+  const rev = T.rev ? `<div class="rev sk ${T.sel===m.b?'ok':'bad'}"><div class="banner">${T.sel===m.b?'✅ Richtig!':'❌ Leider nicht – es ist '+esc(m.b)}</div>
+    <button class="go big" data-a="maNext">${T.i+1<n?'Weiter →':'Fertig →'}</button></div>` : '';
+  return `<div class="task"><h2>Wer bin ich? · ${T.i+1} von ${n}</h2>
+    <div class="qcard sk"><div class="qq" style="font-size:1.3rem">„${esc(m.d)}“</div></div><div class="tiles n4">${tiles}</div>${rev}</div>`;
+}
+
+/* ======================= ERGEBNIS ======================= */
+function resultView(){
+  const n = doneCount(), pass = S.fin.ok >= 8 && n >= 4;
+  const stars = D.stationen.filter(s=>S.done[s.id]).reduce((a,s)=>a+S.stars[s.id],0);
+  const merks = D.stationen.filter(s=>S.done[s.id]).map(s=>`<li>${s.icon} ${esc(s.merk)}</li>`).join('');
+  const date = new Date().toLocaleDateString('de-DE');
+  const total = S.erl.pts + S.fin.pts;
+  const top = `<div class="panel sk center noprint"><h2>${S.fin.ok} von ${S.fin.n} richtig im Abschluss-Quiz</h2>
+    <p style="font-size:1.3rem">⭐ ${total} Punkte · ${stars} Sterne aus ${n} Stationen</p>
+    <p>${pass?'🎉 <b>Bestanden!</b> Du bist ein Internet-Profi.':'Noch nicht ganz – für den Führerschein brauchst du mindestens 8 richtige Antworten und 4 Stationen. Versuch es nochmal!'}</p></div>`;
+  const cert = pass ? `<div class="cert"><div style="font-size:2.4rem">🪪</div><h1>Internet-Führerschein</h1><p>Klasse 7.3 · ITG</p><p>für</p>
+      <div class="nm" id="certnm">${esc(S.name||'')}${S.name?'':'&nbsp;'}</div>
+      <p>Du kennst die wichtigsten Regeln für ein sicheres Leben im Netz:<br>Daten schützen, starke Passwörter, Fakes erkennen und im Notfall Hilfe holen.</p>
+      <p>${date} · ${total} Punkte · ${stars} Sterne</p></div>` : '';
+  const merk = `<div class="merkblatt"><h2>📌 Mein Merkzettel</h2><ul>${merks||'<li>Bearbeite Stationen, dann erscheinen hier deine Merksätze.</li>'}</ul>
+      <h3>Meine 3 wichtigsten Regeln – in meinen eigenen Worten:</h3><div class="lines"><div></div><div></div><div></div></div></div>`;
+  return header('Ergebnis') + top
+    + (pass?`<div class="panel sk noprint center"><label for="nm2" class="muted">Name für die Urkunde:</label> <input id="nm2" class="name" maxlength="30" value="${esc(S.name)}"></div>`:'')
+    + `<div id="printarea">${cert}<div class="sk panel">${merk}</div></div>
+    <div class="row noprint" style="justify-content:center;margin-top:12px"><button class="go big" data-a="print">🖨️ Urkunde &amp; Merkzettel drucken</button>
+      <button data-a="jump" data-to="map">Stationen wiederholen</button><button data-a="startFin">Abschluss-Quiz nochmal</button><button class="red" data-a="restart">Ganz von vorn</button></div>`;
+}
+
+/* ======================= Render & Aktionen ======================= */
+const VIEWS = { home:homeView, quiz:quizView, sumNutz:sumNutzView, sumErl:sumErlView, map:mapView, station:stationView, stDone:stDoneView, result:resultView };
+function render(){
+  const f = VIEWS[V.screen]; app.innerHTML = f();
+  if(V.screen==='quiz') startTimer(); else stopTimer();
+  if(V.screen==='station' && FLOW[ST.id][ST.ph]==='werkstatt') wBind();
+  const nm = document.getElementById('nm'); if(nm) nm.addEventListener('input', ()=>{ S.name = nm.value; });
+  const nm2 = document.getElementById('nm2'); if(nm2) nm2.addEventListener('input', ()=>{ S.name = nm2.value; const c = document.getElementById('certnm'); if(c) c.textContent = S.name || ' '; });
+}
+const A = {
+  dark(){ document.body.classList.toggle('dark'); },
+  home(){ if(confirm('Zurück zum Start? Dein Fortschritt geht dabei nicht verloren, solange die Seite offen bleibt.')) go('home'); },
+  start(){ const nm = document.getElementById('nm'); if(nm) S.name = nm.value.trim(); startQuiz('nutz'); },
+  jump(d,b){ const t = d.to; if(t==='nutz') startQuiz('nutz'); else if(t==='erl') startQuiz('erl'); else if(t==='fin') startQuiz('fin'); else go(t); },
+  startErl(){ startQuiz('erl'); },
+  startFin(){ startQuiz('fin'); },
+  ans(d){ answer(+d.i); },
+  next(){ nextQ(); },
+  openSt(d){ openStation(d.id); },
+  cardBack(){ if(ST.card>0){ ST.card--; render(); } },
+  cardNext(){ const n = stData().karten.length; if(ST.card+1<n){ ST.card++; render(); } else { ST.ph++; enterPhase(); render(); window.scrollTo(0,0); } },
+  /* Ampel */
+  amChip(d){ const T = ST.T; if(T.checked) return; const i = +d.i;
+    if(T.placed[i]!==undefined){
+      if(T.sel!==null){ T.placed[T.sel] = T.placed[i]; T.sel = null; }   // ausgewählte Karte in dieses Feld legen
+      else delete T.placed[i];                                           // verteilte Karte zurücklegen
+    } else T.sel = (T.sel===i ? null : i);
+    render(); },
+  amZone(d,b,ev){ const T = ST.T; if(T.checked||T.sel===null) return; T.placed[T.sel] = d.z; T.sel = null; render(); },
+  amCheck(){ ST.T.checked = true; render(); },
+  amDone(){ const T = ST.T; const ok = T.items.filter(it=>T.placed[it.i]===it.z).length; nextPhase(ok>=11?3:ok>=9?2:1); },
+  /* Mehrfach */
+  mTog(d){ const T = ST.T; if(T.checked) return; const k = T.list[+d.k].k; if(T.sel.has(k)) T.sel.delete(k); else T.sel.add(k); render(); },
+  mCheck(){ ST.T.checked = true; render(); },
+  mDone(){ const T = ST.T; const flags = T.list.filter(x=>x.flag).length;
+    const hits = T.list.filter(x=>x.flag&&T.sel.has(x.k)).length, fp = T.list.filter(x=>!x.flag&&T.sel.has(x.k)).length;
+    const r = Math.max(0,hits-fp)/flags; nextPhase(r>=.9?3:r>=.65?2:1); },
+  /* Duell */
+  duPick(d){ const T = ST.T; if(T.rev) return; T.sel = d.s; T.rev = true; const ok = T.sel===T.rounds[T.i].best; if(ok) T.ok++; burst(ok); render(); },
+  duNext(){ const T = ST.T; if(T.i+1<T.rounds.length){ T.i++; T.rev=false; T.sel=null; render(); } else nextPhase(T.ok>=5?3:T.ok>=4?3:T.ok>=3?2:1); },
+  msUse(){ const v = document.getElementById('msout').textContent; if(v && v!=='–'){ const i = document.getElementById('pwin'); i.value = v; i.dispatchEvent(new Event('input')); } },
+  wDone(){ const b = ST.T.best; nextPhase(b>=4?3:2); },
+  /* Echt/Fake */
+  efPick(d){ const T = ST.T; if(T.rev) return; T.sel = (d.k==='fake'); T.rev = true; const ok = T.sel===T.list[T.i].fake; if(ok) T.ok++; burst(ok); render(); },
+  efNext(){ const T = ST.T; if(T.i+1<T.list.length){ T.i++; T.rev=false; T.sel=null; render(); } else nextPhase(T.ok>=6?3:T.ok>=5?2:1); },
+  /* Reaktion */
+  reaPick(d){ const T = ST.T; if(T.rev) return; T.sel = +d.i; T.rev = true; const ok = T.sel===T.list[T.i].best; if(ok) T.ok++; burst(ok); render(); },
+  reaNext(){ const T = ST.T; if(T.i+1<T.list.length){ T.i++; T.rev=false; T.sel=null; render(); } else nextPhase(T.ok>=5?3:T.ok>=4?2:1); },
+  /* Reihe */
+  rePick(d){ const T = ST.T; if(T.checked) return; const x = T.pool.find(p=>p.i===+d.i); if(!x||T.picked.includes(x)) return; T.picked.push(x);
+    if(T.picked.length===T.pool.length){ T.checked = true; T.tries++; T.perfect = T.picked.every((p,k)=>p.i===k); burst(T.perfect); } render(); },
+  reUndo(){ const T = ST.T; if(!T.checked){ T.picked.pop(); render(); } },
+  reRetry(){ const T = ST.T; T.picked = []; T.checked = false; render(); },
+  reDone(){ const T = ST.T; nextPhase(T.tries===1?3:T.tries===2?2:1); },
+  /* Match */
+  maPick(d){ const T = ST.T; if(T.rev) return; T.sel = d.t; T.rev = true; const ok = T.sel===T.list[T.i].b; if(ok) T.ok++; burst(ok); render(); },
+  maNext(){ const T = ST.T; if(T.i+1<T.list.length){ T.i++; T.rev=false; T.sel=null; render(); } else nextPhase(T.ok>=4?3:T.ok>=3?2:1); },
+  print(){ window.print(); },
+  restart(){ if(confirm('Wirklich ganz von vorn anfangen?')){ S.erl={pts:0,ok:0,n:0}; S.fin={pts:0,ok:0,n:0}; S.nutz={ans:[],risk:0}; S.done={}; S.stars={}; go('home'); } }
+};
+app.addEventListener('click', e=>{
+  const b = e.target.closest('[data-a]'); if(!b || b.disabled) return;
+  const f = A[b.dataset.a]; if(!f) return;
+  if(b.tagName==='A') e.preventDefault();
+  f(b.dataset, b, e);
+});
+document.addEventListener('keydown', e=>{
+  const tag = e.target.tagName; if(tag==='INPUT'||tag==='TEXTAREA') return;
+  if(V.screen!=='quiz' || !Q) return;
+  if(!Q.rev){
+    let idx = -1; const it = Q.items[Q.i];
+    if(/^[1-9]$/.test(e.key)) idx = +e.key-1;
+    else if(Q.kind!=='fin'){ const m = {j:'ja', n:'nein', k:'kommt'}[e.key.toLowerCase()]; if(m) idx = it.opts.findIndex(o=>o.k===m); }
+    if(idx>=0 && idx<it.opts.length) answer(idx);
+  } else if(e.key==='Enter' || e.key===' '){ e.preventDefault(); nextQ(); }
+});
+render();
+})();
+</script>
+</body>
+</html>
