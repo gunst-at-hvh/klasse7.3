@@ -122,6 +122,9 @@ label{display:block;font-size:.95rem;color:var(--muted);margin-top:6px}
 .lst{margin-top:8px;padding:6px 8px}.lst table{width:100%;border-collapse:collapse;font-size:1rem}.lst td{padding:2px 4px;border-bottom:1px solid rgba(128,128,128,.25)}
 .lst td.n{text-align:right;white-space:nowrap;font-weight:700}.lst tr.me td{background:rgba(255,224,102,.35)}
 .lst .g{color:var(--ok)}.lst .b{color:var(--bad)}
+.hostbar{position:fixed;left:0;right:0;bottom:0;display:flex;gap:8px;justify-content:center;align-items:center;padding:6px 10px calc(6px + env(safe-area-inset-bottom));background:#2b2140;z-index:21}
+.hostbar span{color:#fff}.hostbar button{flex:1;max-width:300px;padding:6px;white-space:nowrap;font-size:1.05rem}.hostbar #pHEnd{flex:0 0 auto;padding:6px 16px}
+body.hb .pbody{padding-bottom:70px}
 .netinfo{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);background:var(--card);border:2px solid var(--ink);padding:4px 12px;border-radius:999px;font-size:.9rem;z-index:50}
 /* Overlays */
 .toast{position:fixed;left:50%;top:16%;transform:translateX(-50%);z-index:50;font-weight:700;font-size:2rem;padding:6px 22px;background:var(--card);color:var(--ink);border:3px solid var(--ink);border-radius:255px 18px 225px 18px/18px 225px 18px 255px;box-shadow:4px 4px 0 var(--ink);animation:toastA 1.7s both;pointer-events:none;white-space:nowrap}
@@ -151,6 +154,7 @@ label{display:block;font-size:.95rem;color:var(--muted);margin-top:6px}
     <div class="choices">
       <button class="go" id="homeHost">🖥️ Spiel leiten (Beamer)</button>
       <button class="gold" id="homeJoin">📱 Mitspielen</button>
+      <button id="homeRoom">👥 Ohne Beamer spielen (Raum)</button>
     </div>
     <div style="margin-top:12px"><button class="chip" id="homeDark">☀️ hell / 🌙 dunkel</button></div>
   </div>
@@ -218,6 +222,21 @@ label{display:block;font-size:.95rem;color:var(--muted);margin-top:6px}
       </div>
     </div>
     <div class="center2 hidden" id="pWait"><div class="bigemoji" id="pWaitE"></div><div class="ti" style="font-size:2rem" id="pWaitT">Du bist dabei!</div><div id="pWaitS"></div><div class="plist" id="pWaitList" style="justify-content:center"></div></div>
+    <div class="hidden" id="pRoom">
+      <div class="resCard sk" style="margin-top:0"><div class="muted">Lade die anderen ein – Code:</div><div class="ti" style="font-size:2.6rem;letter-spacing:.12em" id="rCode">····</div><div id="rQr" style="width:min(170px,50vw);margin:auto;background:#fff;padding:4px;border-radius:6px"></div>
+        <button id="rShare" style="margin-top:6px">📤 Link teilen</button><div class="muted" id="rNet">Raum wird erstellt …</div></div>
+      <div class="lst sk" style="font-size:.95rem">⚠️ Dein Handy leitet das Spiel: Browser offen lassen, nicht sperren.</div>
+      <div class="lst sk"><b id="rCount">Dabei: 1</b><div class="plist" id="rList" style="justify-content:center"></div></div>
+      <div class="settings sk" style="margin-top:8px">
+        <label>Zeit pro Runde</label><div class="row" id="rTimeRow"></div>
+        <label>Runden</label><div class="row" id="rRoundsRow"></div>
+        <label>Zielzahlen</label><div class="row" id="rLevelRow"></div>
+        <label>Erlaubte Rechenarten</label><div class="row" id="rOpsRow"></div>
+        <label>Nach der Auflösung</label><div class="row" id="rAutoRow"></div>
+        <label>🤖 Bots (zum Testen / allein spielen)</label><div class="row" id="rBotRow"></div>
+      </div>
+      <button class="go sendbtn" id="rStart" disabled>Warte auf Mitspieler …</button>
+    </div>
     <div class="hidden" id="pPlay">
       <div class="pbar"><span class="muted" id="pRound"></span><span class="muted" id="pDone"></span><span class="timer" id="pTimer"></span></div>
       <div class="ptarget" id="pTarget"><svg viewBox="0 0 320 150" preserveAspectRatio="none"></svg><div class="tin"><div class="lab">Zielzahl</div><div class="num" id="pNum"></div></div></div>
@@ -230,6 +249,7 @@ label{display:block;font-size:.95rem;color:var(--muted);margin-top:6px}
     <div class="hidden" id="pResult"></div>
   </div>
 </section>
+<div class="hostbar hidden" id="pHostBar"><span>👑</span><button class="gold" id="pHNext">⏩ Weiter</button><button id="pHEnd">🏁</button></div>
 <div class="netinfo hidden" id="netInfo"></div>
 
 <script src="peerjs.min.js"></script>
@@ -357,7 +377,7 @@ function startTimer(el, ms, sound){ stopTimer(el); if (!ms){ el.textContent = '�
 /* =====================================================================
    BEAMER / HOST
    ===================================================================== */
-const H = {peer:null, code:'', players:new Map(), phase:'lobby', time:45, rounds:5, level:'up', ops:'all', auto:'0', bots:0,
+const H = {room:false, creatorPid:null, peer:null, code:'', players:new Map(), phase:'lobby', time:45, rounds:5, level:'up', ops:'all', auto:'0', bots:0,
   round:0, target:0, last:0, startAt:0, endsAt:0, timer:null, order:[], revealAt:0, autoT:null};
 const inGame = () => [...H.players.values()].filter(p => p.inGame);
 const hFrom = conn => [...H.players.values()].find(x => x.conn === conn);
@@ -372,6 +392,7 @@ function hOpenPeer(){
     const url = joinUrl(H.code); $('hUrl').textContent = url.replace(/^https?:\/\//, '');
     try { const qr = qrcode(0, 'M'); qr.addData(url); qr.make(); $('hQr').innerHTML = qr.createSvgTag({cellSize:6, margin:2, scalable:true}); } catch(e){ $('hQr').textContent = ''; }
     $('hNet').textContent = '✅ Bereit – Spieler können beitreten.'; netInfo('');
+    if (H.onReady){ const f = H.onReady; H.onReady = null; f(url); }
   });
   peer.on('connection', conn => { conn.on('data', msg => hOnMsg(conn, msg));
     conn.on('close', () => { const p = hFrom(conn); if (p){ p.online = false; hRender(); } }); });
@@ -388,11 +409,11 @@ function hOnMsg(conn, m){
     let p = H.players.get(m.pid);
     const name = String(m.name || 'Spieler').slice(0, 16), avatar = String(m.avatar || '😀').slice(0, 8);
     if (!p){ p = {pid:m.pid, name, avatar, color:freeCol(), total:0, prev:0, inGame:H.phase === 'lobby', expr:'', draft:'', sub:false, subAt:0, res:null};
-      H.players.set(m.pid, p); sBlip(); if (H.phase !== 'lobby') toast(`${avatar} ${name} ist dabei (ab nächster Runde)`); }
+      H.players.set(m.pid, p); if (!H.room) sBlip(); if (H.phase !== 'lobby') toast(`${avatar} ${name} ist dabei (ab nächster Runde)`); }
     else { p.name = name; p.avatar = avatar; }
     p.conn = conn; p.online = true;
     hSend(p, {t:'welcome', v:APP_VERSION, name:p.name, avatar:p.avatar, color:p.color});
-    if (H.phase === 'lobby') hSend(p, {t:'wait', lobby:true, text:'Schau auf den Beamer – gleich geht\'s los.'});
+    if (H.phase === 'lobby') hSend(p, {t:'wait', lobby:true, text: H.room ? 'Warte, bis ' + hCreatorName() + ' startet …' : 'Schau auf den Beamer – gleich geht\'s los.'});
     else hSend(p, hView(p));
     hRender(); hLobbyPush();
   } else if (m.t === 'draft'){ const p = hFrom(conn); if (p && H.phase === 'draw') p.draft = String(m.expr || '').slice(0, R.MAXLEN + 4); }
@@ -400,27 +421,28 @@ function hOnMsg(conn, m){
     const p = hFrom(conn); if (!p || !p.inGame || H.phase !== 'draw') return;
     const c = R.check(m.expr, {allowed:H.ops});
     if (!c.ok){ hSend(p, {t:'ack', ok:false, err:c.err}); return; }
-    p.expr = String(m.expr).slice(0, R.MAXLEN + 4); p.sub = true; p.subAt = Date.now(); sCoin();
+    p.expr = String(m.expr).slice(0, R.MAXLEN + 4); p.sub = true; p.subAt = Date.now(); if (!H.room) sCoin();
     hSend(p, {t:'ack', ok:true}); hPush(); hCheckAll();
   }
 }
+function hCreatorName(){ const c = H.players.get(H.creatorPid); return c ? c.avatar + ' ' + c.name : 'der Host'; }
 function hLobbyPush(){ if (H.phase !== 'lobby') return; const list = [...H.players.values()].map(x => ({name:x.name, avatar:x.avatar})); H.players.forEach(p => hSend(p, {t:'lobby', players:list})); }
 
 /* ---------- Einstellungen ---------- */
 function buildChips(){
-  const mk = (id, list, key, num, after) => { const row = $(id); row.innerHTML = '';
+  const mk = (id, list, key, num, after) => ['h', 'r'].forEach(pre => { const row = $(pre + id); if (!row) return; row.innerHTML = '';
     list.forEach(([v, l]) => { const b = document.createElement('button'); b.className = 'chip'; b.textContent = l; b.dataset.v = v;
-      b.onclick = () => { H[key] = num ? +v : v; syncChips(); after && after(); }; row.appendChild(b); }); };
-  mk('hTimeRow', [[20,'20 s'],[30,'30 s'],[45,'45 s'],[60,'60 s'],[90,'90 s'],[0,'∞']], 'time', true);
-  mk('hRoundsRow', [[3,'3'],[5,'5'],[8,'8'],[10,'10'],[15,'15']], 'rounds', true);
-  mk('hLevelRow', [['1','10 … 50'],['2','20 … 100'],['3','50 … 500'],['4','100 … 1000'],['up','📈 steigend']], 'level');
-  mk('hOpsRow', [['all','+ − · :'],['pmm','+ − ·'],['pm','nur + −']], 'ops');
-  mk('hAutoRow', [['0','👆 Weiter per Klick'],['1','⏱️ automatisch weiter']], 'auto');
-  mk('hBotRow', [[0,'keine'],[1,'1'],[3,'3'],[5,'5'],[10,'10'],[25,'25 🧪']], 'bots', true, hSyncBots);
+      b.onclick = () => { H[key] = num ? +v : v; syncChips(); after && after(); }; row.appendChild(b); }); });
+  mk('TimeRow', [[20,'20 s'],[30,'30 s'],[45,'45 s'],[60,'60 s'],[90,'90 s'],[0,'∞']], 'time', true);
+  mk('RoundsRow', [[3,'3'],[5,'5'],[8,'8'],[10,'10'],[15,'15']], 'rounds', true);
+  mk('LevelRow', [['1','10 … 50'],['2','20 … 100'],['3','50 … 500'],['4','100 … 1000'],['up','📈 steigend']], 'level');
+  mk('OpsRow', [['all','+ − · :'],['pmm','+ − ·'],['pm','nur + −']], 'ops');
+  mk('AutoRow', [['0','👆 Weiter per Klick'],['1','⏱️ automatisch weiter']], 'auto');
+  mk('BotRow', [[0,'keine'],[1,'1'],[3,'3'],[5,'5'],[10,'10'],[25,'25 🧪']], 'bots', true, hSyncBots);
   syncChips();
 }
 function syncChips(){ [['time','Time'],['rounds','Rounds'],['level','Level'],['ops','Ops'],['auto','Auto'],['bots','Bot']].forEach(([k, n]) => {
-  const row = $('h' + n + 'Row'); if (row) row.querySelectorAll('button').forEach(b => b.classList.toggle('on', String(H[k]) === b.dataset.v)); }); }
+  ['h', 'r'].forEach(pre => { const row = $(pre + n + 'Row'); if (row) row.querySelectorAll('button').forEach(b => b.classList.toggle('on', String(H[k]) === b.dataset.v)); }); }); }
 function exampleTable(){
   const ex = [['24 + 0',0],['25 − 1',0],['20 + 4',0],['30 − 6',0],['6 · 4',0],['48 : 2',0],['(7 + 5) · 2',0],['4 · 5 + 4',0],['24 + 5 − 5',0]];
   $('hEx').innerHTML = ex.map(([e]) => { const r = R.score(e, 24, {timed:false}); return `<tr><td>${esc(R.pretty(e))} = 24</td><td>${r.calc} P${r.trivial ? ' (Leerlauf)' : ''}</td></tr>`; }).join('')
@@ -454,7 +476,7 @@ function botExpr(t, skill, ops){
 /* ---------- Ablauf ---------- */
 function hStartGame(){
   [...H.players.values()].forEach(p => { p.inGame = p.online || p.bot !== undefined; p.total = 0; p.prev = 0; });
-  H.round = 0; H.last = 0; show('hLobby', false); show('hGame'); hNextRound();
+  H.round = 0; H.last = 0; if (!H.room){ show('hLobby', false); show('hGame'); } hNextRound();
 }
 function hNextRound(){
   clearTimeout(H.timer); clearTimeout(H.autoT);
@@ -488,16 +510,16 @@ function hAdvance(){ ac();
   if (H.phase === 'reveal'){ if (H.round >= H.rounds) return hEnd(); return hNextRound(); }
 }
 function hEnd(){ clearTimeout(H.timer); clearTimeout(H.autoT); H.phase = 'end'; hPush();
-  const list = hRanking(); setTimeout(() => { showPodium(list.map(p => ({avatar:p.avatar, name:p.name, score:p.total, place:p.place}))); addRestartBtn(); }, 600); }
+  const list = hRanking(); if (!H.room) setTimeout(() => { showPodium(list.map(p => ({avatar:p.avatar, name:p.name, score:p.total, place:p.place}))); addRestartBtn(); }, 600); }
 function hRestart(){
   if (H.phase !== 'end') return;
   clearTimeout(H.timer); clearTimeout(H.autoT); if (hStop) hStop();
   H.phase = 'lobby'; H.round = 0; H.order = []; H.endsAt = 0;
   H.players.forEach(p => { p.total = 0; p.prev = 0; p.expr = ''; p.draft = ''; p.sub = false; p.res = null; p.auto = false; p.place = null; p.inGame = true; });
   document.querySelectorAll('#podiumOv, .confetti').forEach(x => x.remove());
-  show('hGame', false); show('hLobby'); show('hRestart', false); hKey = '';
-  H.players.forEach(p => hSend(p, {t:'wait', lobby:true, restart:true, text:'Neues Spiel! Schau auf den Beamer – gleich geht\'s los.'}));
-  hRender(); hLobbyPush(); sBlip();
+  if (!H.room){ show('hGame', false); show('hLobby'); show('hRestart', false); } hKey = '';
+  H.players.forEach(p => hSend(p, {t:'wait', lobby:true, restart:true, text: H.room ? 'Neues Spiel! Warte, bis ' + hCreatorName() + ' startet …' : 'Neues Spiel! Schau auf den Beamer – gleich geht\'s los.'}));
+  hRender(); hLobbyPush(); if (!H.room) sBlip();
 }
 function addRestartBtn(){ const ov = $('podiumOv'); if (!ov || ov.querySelector('.restart')) return;
   const b = document.createElement('button'); b.className = 'go restart'; b.textContent = '🔄 Neues Spiel (alle bleiben im Raum)';
@@ -532,6 +554,13 @@ function showPodium(list){
   setTimeout(() => { if (ov.isConnected){ c1.classList.add('on'); sFanfare(); confetti(180); } }, 4900);
 }
 
+function rHostUpdate(ps){
+  if (H.phase !== 'lobby') return;
+  const n = ps.filter(p => p.online || p.bot !== undefined).length;
+  $('rCount').textContent = `Dabei: ${n}`;
+  $('rList').innerHTML = ps.map(x => `<div class="pchip${x.online || x.bot !== undefined ? '' : ' off'}"><span class="e">${esc(x.avatar)}</span>${esc(x.name)}</div>`).join('');
+  $('rStart').disabled = n < 1; $('rStart').textContent = n < 2 && !ps.some(p => p.bot !== undefined) ? "▶ Los geht's (allein)" : "▶ Los geht's"; hLobbyPush();
+}
 /* ---------- Beamer-Ansicht ---------- */
 let hKey = '', hStop = null, HREV = {done:false};
 function startHost(){
@@ -560,6 +589,7 @@ function cardHtml(p){
 }
 function hRender(){
   const ps = [...H.players.values()];
+  if (H.room){ rHostUpdate(ps); return; }
   $('hCount').textContent = `${ps.length} Spieler`;
   $('hLobbyList').innerHTML = ps.map(p => `<div class="pchip${p.online || p.bot !== undefined ? '' : ' off'}" style="border-color:${p.color}"><span class="e">${esc(p.avatar)}</span>${esc(p.name)}</div>`).join('');
   const n = ps.filter(p => p.online || p.bot !== undefined).length; $('hStart').disabled = n < 1; $('hStartNote').textContent = n < 1 ? 'Warte auf Spieler …' : '';
@@ -622,7 +652,7 @@ function startPlayer(code){
   if (code && saved.name) $('pName').focus();
   buildPad(); bindKeys();
 }
-function pScreen(id){ ['pJoin','pWait','pPlay','pResult'].forEach(x => show(x, x === id)); show('pTop', id !== 'pJoin'); if (id === 'pPlay') drawTargets(); }
+function pScreen(id){ ['pJoin','pWait','pPlay','pResult','pRoom'].forEach(x => show(x, x === id)); show('pTop', id !== 'pJoin'); if (id === 'pPlay') drawTargets(); }
 function pJoin(){
   const code = $('pCode').value.trim().toUpperCase(), name = $('pName').value.trim();
   if (code.length < 4){ $('pJoinMsg').textContent = 'Bitte den Code vom Beamer eingeben.'; return; }
@@ -681,7 +711,7 @@ function pOnMsg(m){
     if (!done){ netInfo('Neue Version – lade neu …'); location.replace(freshUrl()); return; } }
   if (m.t === 'welcome'){ C.name = m.name; C.avatar = m.avatar; pTop(); }
   else if (m.t === 'wait'){ if (m.restart){ document.querySelectorAll('.confetti').forEach(x => x.remove()); C.score = 0; C.key = ''; }
-    pTop(); $('pWaitE').textContent = C.avatar; $('pWaitS').textContent = m.text; pScreen('pWait'); }
+    pTop(); show('pHostBar', false); document.body.classList.remove('hb'); if (C.isCreator && m.lobby){ pScreen('pRoom'); return; } $('pWaitE').textContent = C.avatar; $('pWaitS').textContent = m.text; pScreen('pWait'); }
   else if (m.t === 'lobby'){ $('pWaitList').innerHTML = m.players.map(x => `<div class="pchip"><span class="e">${esc(x.avatar)}</span>${esc(x.name)}</div>`).join(''); }
   else if (m.t === 'state') pState(m);
   else if (m.t === 'ack'){ if (m.ok){ C.sub = true; C.sent = C.expr; setStat('✓ abgegeben – du darfst noch ändern und neu abgeben', 'ok'); sCoin(); updExpr(); }
@@ -746,8 +776,12 @@ function pSubmit(){
 }
 
 /* ---------- Anzeige je Phase ---------- */
+function hostBar(m){
+  const on = !!C.isCreator && m.phase !== 'end'; show('pHostBar', on); document.body.classList.toggle('hb', on);
+  $('pHNext').textContent = m.phase === 'draw' ? '⏹ Zeit beenden' : m.round >= m.rounds ? '🏆 Ergebnis' : 'Nächste Runde ▶';
+}
 function pState(m){
-  const me = m.me || {}; C.score = me.total || 0; pTop();
+  const me = m.me || {}; C.score = me.total || 0; pTop(); hostBar(m);
   if (!me.inGame){ $('pWaitE').textContent = C.avatar; $('pWaitS').textContent = 'Du steigst in der nächsten Runde ein.'; pScreen('pWait'); return; }
   if (m.phase === 'draw'){
     const key = 'draw' + m.round;
@@ -781,14 +815,40 @@ function fillResult(m){
   }
   const order = m.order.map(id => by[id]).filter(Boolean);
   html += `<div class="lst sk"><div class="ti">📋 Alle Rechnungen</div><table>${order.map(p => `<tr class="${p.pid === me.pid ? 'me' : ''}"><td>${esc(p.avatar)} <span class="muted" style="font-size:.8rem">${esc(p.name)}</span></td><td>${p.res ? esc(p.res.pretty) + ' = ' + fmt(p.res.value) : '–'}</td><td class="n ${p.res && p.res.pts < 0 ? 'b' : 'g'}">${p.res ? sgn(p.res.pts) : ''}</td></tr>`).join('')}</table></div>`;
+  if (C.isCreator && m.phase === 'end') html += `<button class="go sendbtn" id="rAgain">🔄 Neues Spiel (alle bleiben im Raum)</button>`;
   html += `<div class="lst sk"><div class="ti">🏆 Gesamtstand</div>${rankHtml(m.players.map(p => Object.assign({}, p, {res: null})), true, 8).replace('<table class="rk">', '<table class="rk">')}</div>`;
-  const el = $('pResult'); if (el.dataset.h !== html){ el.innerHTML = html; el.dataset.h = html; }
+  const el = $('pResult'); if (el.dataset.h !== html){ el.innerHTML = html; el.dataset.h = html; const ag = $('rAgain'); if (ag) ag.onclick = hRestart; }
 }
 
+/* ---------- Raum ohne Beamer: dieses Gerät leitet UND spielt ---------- */
+let wakeLock = null;
+async function keepAwake(){ try { if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); } catch(e){} }
+document.addEventListener('visibilitychange', () => { if (H.room && document.visibilityState === 'visible') keepAwake(); });
+function startRoom(){
+  startPlayer(''); C.isCreator = true; show('pCode', false);
+  document.querySelector('#pJoin .joinform .ti').textContent = '👥 Raum erstellen'; $('pJoinBtn').textContent = 'Raum erstellen ▶';
+  $('pJoinBtn').onclick = () => {
+    const name = $('pName').value.trim(); if (!name){ $('pJoinMsg').textContent = 'Bitte einen Spielernamen eingeben.'; return; }
+    C.name = name; ac(); try { localStorage.setItem('zielzahl-me', JSON.stringify({name, avatar:C.avatar})); } catch(e){}
+    $('pJoinBtn').disabled = true; $('pJoinMsg').textContent = 'Raum wird erstellt …';
+    H.room = true; H.creatorPid = C.pid; buildChips();
+    H.onReady = url => { $('rCode').textContent = H.code; $('rNet').textContent = '✅ Bereit – lade die anderen ein!';
+      try { const qr = qrcode(0, 'M'); qr.addData(url); qr.make(); $('rQr').innerHTML = qr.createSvgTag({cellSize:5, margin:2, scalable:true}); } catch(e){}
+      $('rShare').onclick = async () => { try { if (navigator.share){ await navigator.share({title:'Zielzahl-Live', text:'Spiel mit! Code: ' + H.code, url}); return; } } catch(e){ return; }
+        try { await navigator.clipboard.writeText(url); toast('Link kopiert ✓'); } catch(e){ prompt('Link kopieren:', url); } };
+      const hostSide = {open:true, send: m => setTimeout(() => pOnMsg(m), 0)};   // Kurzschluss: Ersteller ist Host und Spieler zugleich
+      C.conn = {open:true, send: m => setTimeout(() => hOnMsg(hostSide, m), 0)};
+      C.conn.send({t:'hello', pid:C.pid, name:C.name, avatar:C.avatar, v:APP_VERSION}); keepAwake(); };
+    hOpenPeer();
+  };
+  $('rStart').onclick = () => { ac(); if (H.phase === 'lobby') hStartGame(); };
+  $('pHNext').onclick = hAdvance;
+  $('pHEnd').onclick = () => { if (H.phase !== 'end' && confirm('Spiel jetzt beenden?')) hEnd(); };
+}
 /* ---------- Start ---------- */
 if (typeof Peer === 'undefined'){ document.body.innerHTML = '<div style="padding:30px">Die Verbindungs-Bibliothek konnte nicht geladen werden.</div>'; return; }
 ['gesturestart', 'gesturechange'].forEach(t => document.addEventListener(t, e => e.preventDefault(), {passive:false}));
-$('homeHost').onclick = startHost; $('homeJoin').onclick = () => startPlayer('');
+$('homeHost').onclick = startHost; $('homeJoin').onclick = () => startPlayer(''); $('homeRoom').onclick = startRoom;
 $('homeDark').onclick = toggleDark; $('pDark').onclick = toggleDark; applyDark();
 { const v = document.createElement('div'); v.className = 'muted'; v.style.cssText = 'margin-top:12px;font-size:.8rem'; v.textContent = 'Version ' + APP_VERSION + ' · '; const rl = document.createElement('a'); rl.href = '#'; rl.textContent = '🔄 neu laden'; rl.style.color = 'inherit';
   rl.onclick = e => { e.preventDefault(); const u = new URL(location.href); u.searchParams.set('r', Date.now().toString(36)); location.replace(u.toString()); };
@@ -797,6 +857,7 @@ window.addEventListener('resize', drawTargets);
 if (Q.get('debug')) window.__dbg = {C, H, R};
 if (Q.get('join') !== null) startPlayer(Q.get('join'));
 else if (Q.get('host') !== null) startHost();
+else if (Q.get('room') !== null) startRoom();
 })();
 </script>
 </body>

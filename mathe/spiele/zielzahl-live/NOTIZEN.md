@@ -2,7 +2,7 @@
 
 Kopfrechnen rückwärts: Beamer zeigt eine **Zielzahl**, alle tippen gleichzeitig eine **Rechnung** (+ − · : und Klammern, z. B. `(7+5)·2`),
 Ergebnis steht vorher nicht da. Nach der Runde werden **alle Rechnungen** gezeigt (Beamer + Handy).
-Technik wie Geraden-Live (PeerJS, Code/QR). Ohne „Raum“-Modus (nur Beamer + Mitspielen). Rechen-Kern: `rechnen.js` (auch in Node testbar).
+Technik wie Geraden-Live (PeerJS, Code/QR). Zwei Wege: **Beamer** (+ Handys/PCs) oder **Raum ohne Beamer** (ein Handy leitet und spielt mit, Host-Leiste unten: Zeit beenden / nächste Runde / Ende). Bots gibt es in beiden – auch zum Alleinspielen. Rechen-Kern: `rechnen.js` (auch in Node testbar).
 
 ## Wertung (Stand 10.11.2026)
 
@@ -30,5 +30,4 @@ Zielzahlen sind nie glatte Zehner (sonst 20 + 30).
 
 ## Ideen / offen
 - „Einzelstück“-Bonus, wenn niemand sonst dieselbe Rechnung hat.
-- Raum-Modus (ohne Beamer) wie bei Geraden-Live.
 - Schwellen (4 P je Aufwand, Gewichte) nach dem ersten Einsatz mit den Kindern nachjustieren.
