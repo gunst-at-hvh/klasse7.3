@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Aufzug – Minuszahlen verstehen</title>
+<style>
+@font-face{font-family:"Shantell Sans";src:url(../../fonts/shantell-sans-latin-400-normal.woff2) format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Shantell Sans";src:url(../../fonts/shantell-sans-latin-700-normal.woff2) format("woff2");font-weight:700;font-display:swap}
+:root{--bg:#fbfaf5;--grid:#dbe7f3;--card:#fff;--ink:#1e1e1e;--muted:#6b6b6b;--gold:#ffe066;--btn:#fff;--up:#2b8a3e;--down:#c92a2a;--hatch:#b9b5a8}
+body.dark{--bg:#10131a;--grid:#1b2433;--card:#1a1f2b;--ink:#e9ecef;--muted:#9aa4b2;--gold:#8a6d00;--btn:#232a38;--up:#69db7c;--down:#ff8787;--hatch:#4a5160}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;overflow:hidden}
+body{color:var(--ink);font-family:"Shantell Sans","Comic Sans MS",cursive;background-color:var(--bg);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:26px 26px}
+.sk{border:2.5px solid var(--ink);border-radius:14px 6px 16px 6px/6px 16px 6px 14px;background:var(--card)}
+button,a.chip{cursor:pointer;font:inherit;color:var(--ink);background:var(--btn);border:2.5px solid var(--ink);border-radius:14px 6px 16px 6px/6px 16px 6px 14px;box-shadow:2px 2px 0 var(--ink);padding:6px 14px;text-decoration:none;line-height:1.2;user-select:none;-webkit-user-select:none}
+button:active{transform:translate(2px,2px);box-shadow:none}
+.chip{font-size:.95rem;padding:3px 10px;box-shadow:1px 1px 0 var(--ink)}
+.chip.on{background:var(--gold)}
+#app{height:100dvh;display:flex;flex-direction:column;gap:6px;padding:6px;padding-bottom:max(6px,env(safe-area-inset-bottom))}
+#stage{flex:1;min-height:0;display:flex}
+#shaft{display:block;width:100%;height:100%;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}
+#shaft text{font-family:"Shantell Sans","Comic Sans MS",cursive}
+#cab{transition:transform .17s ease-out}
+#hl{transition:transform .17s ease-out}
+#panel{padding:8px 10px;display:flex;flex-direction:column;gap:7px}
+.top{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.top .sp{flex:1}
+.boxes{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.box{border:2px solid var(--ink);border-radius:10px 4px 12px 4px/4px 12px 4px 10px;padding:3px 8px 4px;text-align:center;min-width:0}
+.lbl{font-size:.85rem;color:var(--muted)}
+.val{font-size:clamp(2.2rem,10vw,3.4rem);font-weight:700;line-height:1.1;white-space:nowrap}
+.calc .val{font-size:clamp(1.9rem,8.5vw,3rem)}
+.cap{font-size:.85rem;color:var(--muted);min-height:1.2em}
+.btns{display:grid;grid-template-columns:1fr 1fr auto;gap:8px}
+.btns button{font-size:1.35rem;padding:10px 6px}
+#bUp{color:var(--up)}#bDown{color:var(--down)}
+.up{color:var(--up)}.down{color:var(--down)}
+@media (min-aspect-ratio:1/1) and (min-width:700px){
+  #app{flex-direction:row;gap:12px;padding:10px}
+  #panel{width:min(44vw,520px);justify-content:center;gap:12px;padding:14px 16px}
+  .val{font-size:clamp(3rem,6vw,5rem)}
+  .calc .val{font-size:clamp(2.4rem,5vw,4rem)}
+  .lbl,.cap{font-size:1.1rem}
+  .btns button{font-size:1.8rem;padding:14px 8px}
+  .chip{font-size:1.1rem}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="stage"><svg id="shaft" role="img" aria-label="Aufzug: nach oben oder unten ziehen"></svg></div>
+  <div id="panel" class="sk">
+    <div class="top">
+      <a class="chip" href="../../">‹ Mathe</a>
+      <span class="sp"></span>
+      <span id="range" style="display:flex;gap:6px"></span>
+      <button class="chip" id="dark" title="Dunkelmodus">🌙</button>
+    </div>
+    <div class="boxes">
+      <div class="box"><div class="lbl">Etage</div><div class="val" id="vFloor">0</div><div class="cap" id="cFloor"></div></div>
+      <div class="box"><div class="lbl">Bewegung</div><div class="val" id="vMove">0</div><div class="cap" id="cMove"></div></div>
+    </div>
+    <div class="box calc"><div class="lbl">Rechnung</div><div class="val" id="vCalc">0</div></div>
+    <div class="btns">
+      <button id="bUp">▲ hoch</button>
+      <button id="bDown">▼ runter</button>
+      <button id="bReset" title="Zurück auf 0">⟲ 0</button>
+    </div>
+  </div>
+</div>
+
+<script src="rough.js"></script>
+<script>
+const NS = 'http://www.w3.org/2000/svg';
+const svg = document.getElementById('shaft');
+const $ = id => document.getElementById(id);
+const W = 360, CX = 176, SHAFT_X = 100, SHAFT_W = 152, CW = 124;
+let N = 5, pos = 0, start = 0, dragging = false, dragY0 = 0, dragF0 = 0, lastBtn = 0, hintOn = true;
+let fh, ch, H; const TOPPAD = 14;
+let labels = {}, cab, cabDisp, hl, ghost, arrow, hint;
+
+const yOf = f => TOPPAD + fh + (N - f) * fh;                       // Höhe der Linie von Etage f
+const fmt = n => n < 0 ? '−' + (-n) : String(n);          // Minus als echtes Minuszeichen
+const clamp = f => Math.max(-N, Math.min(N, f));
+const css = v => getComputedStyle(document.body).getPropertyValue(v).trim();
+
+function el(name, attrs, parent) {
+  const e = document.createElementNS(NS, name);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  (parent || svg).appendChild(e);
+  return e;
+}
+
+function build() {
+  fh = N <= 3 ? 64 : N <= 5 ? 56 : 46;
+  ch = Math.round(fh * 0.84);
+  H = yOf(-N) + 24;
+  svg.innerHTML = '';
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  const ink = css('--ink'), muted = css('--muted'), card = css('--card'), hatch = css('--hatch'), gold = css('--gold');
+  const rc = rough.svg(svg);
+  const add = (node, parent) => (parent || svg).appendChild(node);
+
+  // Untergrund (Keller): schraffiert, auch schwarzweiß erkennbar
+  add(rc.rectangle(6, yOf(0), W - 12, H - yOf(0) - 4, { fill: hatch, fillStyle: 'hatch', hachureGap: 9, hachureAngle: -40, fillWeight: 1.3, stroke: 'none', roughness: 1, seed: 4 }));
+  // Schacht
+  add(rc.rectangle(SHAFT_X, 8, SHAFT_W, yOf(-N) + 12 - 8, { stroke: ink, strokeWidth: 2.5, fill: card, fillStyle: 'solid', roughness: 1.2, seed: 7 }));
+  // Etagenlinien
+  for (let f = -N; f <= N; f++) {
+    add(rc.line(6, yOf(f), W - 6, yOf(f), { stroke: f === 0 ? ink : muted, strokeWidth: f === 0 ? 4 : 1.2, roughness: .8, seed: f + 30 }));
+  }
+  el('text', { x: W - 8, y: yOf(0) - 7, 'text-anchor': 'end', 'font-size': 16, fill: muted }).textContent = 'EG';
+
+  // Markierung der aktuellen Etage + Zahlen links
+  const lh = Math.min(38, fh * .72);
+  hl = el('rect', { id: 'hl', x: 8, y: -lh / 2, width: 84, height: lh, rx: 10, fill: gold, stroke: ink, 'stroke-width': 2 });
+  labels = {};
+  const fs = Math.min(28, fh * .52);
+  for (let f = -N; f <= N; f++) {
+    const t = el('text', { x: 86, y: yOf(f), dy: '.35em', 'text-anchor': 'end', 'font-size': fs, fill: ink });
+    t.textContent = f > 0 ? '+' + f : fmt(f);
+    labels[f] = t;
+    // unsichtbare Fläche: Zahl antippen = Aufzug fährt dorthin
+    el('rect', { x: 0, y: yOf(f) - fh / 2, width: 98, height: fh, fill: 'transparent', 'data-f': f, style: 'cursor:pointer' });
+  }
+
+  // Geister-Aufzug (Startetage) + Pfeil
+  ghost = el('rect', { x: CX - CW / 2, y: 0, width: CW, height: ch, rx: 5, fill: 'none', stroke: muted, 'stroke-width': 2.5, 'stroke-dasharray': '7 6', visibility: 'hidden' });
+  arrow = el('g', { visibility: 'hidden' });
+  hint = el('g', {});
+  el('text', { x: 322, y: yOf(Math.min(N, 1)) - 4, 'text-anchor': 'middle', 'font-size': 30, fill: muted }, hint).textContent = '↕';
+  el('text', { x: 322, y: yOf(Math.min(N, 1)) + 16, 'text-anchor': 'middle', 'font-size': 15, fill: muted }, hint).textContent = 'ziehen';
+
+  // Aufzug (Ursprung = Boden der Kabine auf der Etagenlinie)
+  cab = el('g', { id: 'cab' });
+  el('line', { x1: CX, y1: -3000, x2: CX, y2: -ch, stroke: ink, 'stroke-width': 2 }, cab);
+  add(rc.rectangle(CX - CW / 2, -ch, CW, ch, { fill: '#ffec99', fillStyle: 'solid', stroke: ink, strokeWidth: 2.5, roughness: 1.1, seed: 11 }), cab);
+  const wy = -ch + 17, wh = ch - 22;
+  add(rc.rectangle(CX - CW / 2 + 10, wy, CW - 20, wh, { fill: '#ffffff', fillStyle: 'solid', stroke: ink, strokeWidth: 1.5, roughness: .8, seed: 12 }), cab);
+  // kleine Figur im Aufzug
+  const hr = Math.max(4, wh * .17), hcy = wy + hr + 3;
+  add(rc.circle(CX, hcy, hr * 2, { stroke: '#1e1e1e', strokeWidth: 1.5, roughness: .5, seed: 13 }), cab);
+  add(rc.line(CX, hcy + hr, CX, wy + wh - 3, { stroke: '#1e1e1e', strokeWidth: 1.5, roughness: .5, seed: 14 }), cab);
+  add(rc.line(CX - hr * 1.4, hcy + hr * 1.9, CX + hr * 1.4, hcy + hr * 1.9, { stroke: '#1e1e1e', strokeWidth: 1.5, roughness: .5, seed: 15 }), cab);
+  // Etagenanzeige oben an der Kabine
+  cabDisp = el('text', { x: CX, y: -ch + 13, 'text-anchor': 'middle', 'font-size': 14, 'font-weight': 700, fill: '#1e1e1e' }, cab);
+  hint.style.display = hintOn ? '' : 'none';
+}
+
+function drawArrow() {
+  arrow.innerHTML = '';
+  const steps = pos - start;
+  if (steps === 0) { arrow.setAttribute('visibility', 'hidden'); ghost.setAttribute('visibility', 'hidden'); return; }
+  const col = steps > 0 ? css('--up') : css('--down');
+  const y1 = yOf(start) - ch / 2, y2 = yOf(pos) - ch / 2, dir = steps > 0 ? -1 : 1, ax = 284;
+  ghost.setAttribute('y', yOf(start) - ch);
+  ghost.setAttribute('visibility', 'visible');
+  const mk = (n, a) => el(n, a, arrow);
+  mk('line', { x1: SHAFT_X + SHAFT_W + 4, y1: y1, x2: ax + 12, y2: y1, stroke: col, 'stroke-width': 2, 'stroke-dasharray': '3 5' });
+  mk('line', { x1: SHAFT_X + SHAFT_W + 4, y1: y2, x2: ax + 12, y2: y2, stroke: col, 'stroke-width': 2, 'stroke-dasharray': '3 5' });
+  mk('line', { x1: ax, y1: y1, x2: ax, y2: y2 - dir * 4, stroke: col, 'stroke-width': 5, 'stroke-linecap': 'round' });
+  mk('polygon', { points: `${ax},${y2} ${ax - 11},${y2 - dir * 18} ${ax + 11},${y2 - dir * 18}`, fill: col });
+  const t = mk('text', { x: 325, y: (y1 + y2) / 2, dy: '.35em', 'text-anchor': 'middle', 'font-size': 34, 'font-weight': 700, fill: col });
+  t.textContent = Math.abs(steps) + (steps > 0 ? '↑' : '↓');
+  arrow.setAttribute('visibility', 'visible');
+}
+
+function update() {
+  const steps = pos - start;
+  cab.style.transform = `translateY(${yOf(pos)}px)`;
+  hl.style.transform = `translateY(${yOf(pos)}px)`;
+  cabDisp.textContent = pos > 0 ? '+' + pos : fmt(pos);
+  for (const f in labels) labels[f].setAttribute('font-weight', +f === pos ? 700 : 400);
+  drawArrow();
+
+  $('vFloor').textContent = pos > 0 ? '+' + pos : fmt(pos);
+  $('cFloor').textContent = pos === 0 ? 'Erdgeschoss' : pos > 0 ? pos + ' über 0' : (-pos) + ' unter 0';
+  const m = $('vMove');
+  m.className = 'val ' + (steps > 0 ? 'up' : steps < 0 ? 'down' : '');
+  m.textContent = steps === 0 ? '0' : Math.abs(steps) + (steps > 0 ? ' ↑' : ' ↓');
+  $('cMove').textContent = steps > 0 ? 'nach oben = plus' : steps < 0 ? 'nach unten = minus' : 'Aufzug ziehen';
+  $('vCalc').textContent = steps === 0 ? fmt(start) : `${fmt(start)} ${steps > 0 ? '+' : '−'} ${Math.abs(steps)} = ${fmt(pos)}`;
+}
+
+function setPos(p) {
+  p = clamp(p);
+  if (p === pos) return false;
+  pos = p;
+  if (navigator.vibrate) try { navigator.vibrate(8); } catch (e) {}
+  return true;
+}
+function dropHint() { if (hintOn) { hintOn = false; hint.style.display = 'none'; } }
+
+// Ziehen mit Einrasten: Start = Etage beim Loslassen davor, Bewegung zählt mit, bis man loslässt
+const svgY = e => { const p = svg.createSVGPoint(); p.x = e.clientX; p.y = e.clientY; return p.matrixTransform(svg.getScreenCTM().inverse()).y; };
+svg.addEventListener('pointerdown', e => {
+  dropHint();
+  const f = e.target.getAttribute && e.target.getAttribute('data-f');
+  if (f !== null && f !== undefined) { start = pos; lastBtn = 0; setPos(+f); update(); return; }
+  dragging = true; svg.setPointerCapture(e.pointerId);
+  dragY0 = svgY(e); dragF0 = pos; start = pos; lastBtn = 0; update();
+});
+svg.addEventListener('pointermove', e => {
+  if (!dragging) return;
+  const target = Math.round(dragF0 - (svgY(e) - dragY0) / fh);
+  if (setPos(target)) update();
+});
+const endDrag = () => { dragging = false; };
+svg.addEventListener('pointerup', endDrag);
+svg.addEventListener('pointercancel', endDrag);
+
+// Knöpfe: schnelle Folge von Tipps zählt als eine Bewegung
+function step(d) {
+  dropHint();
+  const now = Date.now();
+  if (now - lastBtn > 2500) start = pos;
+  lastBtn = now;
+  setPos(pos + d); update();
+}
+$('bUp').onclick = () => step(1);
+$('bDown').onclick = () => step(-1);
+$('bReset').onclick = () => { pos = start = 0; lastBtn = 0; update(); };
+$('dark').onclick = () => { document.body.classList.toggle('dark'); build(); update(); };
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowUp') { step(1); e.preventDefault(); }
+  else if (e.key === 'ArrowDown') { step(-1); e.preventDefault(); }
+  else if (e.key === '0' || e.key === 'Home') $('bReset').onclick();
+});
+
+// Bereich wählen
+function drawChips() {
+  const box = $('range'); box.innerHTML = '';
+  [3, 5, 8].forEach(n => {
+    const b = document.createElement('button');
+    b.className = 'chip' + (n === N ? ' on' : ''); b.textContent = '±' + n;
+    b.onclick = () => { N = n; pos = clamp(pos); start = clamp(start); build(); update(); drawChips(); };
+    box.appendChild(b);
+  });
+}
+if (matchMedia('(prefers-color-scheme: dark)').matches) document.body.classList.add('dark');
+drawChips(); build(); update();
+</script>
+</body>
+</html>
