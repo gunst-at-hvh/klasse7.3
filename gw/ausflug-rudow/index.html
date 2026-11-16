@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Entdeckungstour Rudower Altstadt</title>
+<style>
+:root{--ink:#111;--mute:#555}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:#fff;overscroll-behavior:none}
+#app{position:fixed;inset:0;display:flex;flex-direction:column}
+#top{display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:2px solid var(--ink);background:#fff}
+#top h1{font-size:1rem;margin:0;flex:1;line-height:1.2}
+#prog{font-weight:700;white-space:nowrap}
+button{font:inherit;border:2px solid var(--ink);background:#fff;color:var(--ink);border-radius:10px;padding:8px 12px;cursor:pointer;touch-action:manipulation}
+button:active,button.on{background:var(--ink);color:#fff}
+button.big{font-size:1.1rem;padding:12px 18px;font-weight:700}
+#task{padding:10px 12px;border-bottom:2px solid var(--ink);background:#f2f2f2;font-size:1.05rem;line-height:1.3}
+#task b{font-size:1.15rem}
+#mapwrap{position:relative;flex:1;min-height:0;overflow:hidden}
+canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;display:block}
+#ctrl{position:absolute;right:10px;bottom:calc(14px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:8px}
+#ctrl button{width:48px;height:48px;padding:0;font-size:1.4rem;font-weight:700;box-shadow:0 1px 4px rgba(0,0,0,.3)}
+#toast{position:absolute;left:10px;right:70px;bottom:calc(14px + env(safe-area-inset-bottom));background:#111;color:#fff;border-radius:10px;padding:10px 12px;font-size:1rem;display:none}
+#loading{position:absolute;inset:0;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:20px;z-index:5}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;z-index:10;align-items:flex-end;justify-content:center}
+.overlay.show{display:flex}
+.sheet{background:#fff;width:100%;max-width:640px;max-height:90dvh;overflow:auto;border:3px solid var(--ink);border-bottom:0;border-radius:18px 18px 0 0;padding:16px 16px calc(18px + env(safe-area-inset-bottom))}
+.sheet h2{margin:0 0 4px;font-size:1.35rem}
+.found{display:inline-block;border:2px solid var(--ink);border-radius:20px;padding:2px 10px;font-weight:700;margin-bottom:8px}
+.q{margin:14px 0 0}
+.q label{display:block;font-weight:600;margin-bottom:4px}
+textarea,input[type=text]{width:100%;font:inherit;font-size:1.1rem;border:2px solid var(--ink);border-radius:8px;padding:8px}
+textarea{min-height:5.5em;resize:vertical}
+.photo{margin-top:16px;border:2px dashed var(--ink);border-radius:10px;padding:10px}
+.photo img{display:block;max-width:100%;max-height:220px;margin-top:8px;border:2px solid var(--ink)}
+.row{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+input[type=file]{display:none}
+#result{position:fixed;inset:0;background:#fff;display:none;overflow:auto;z-index:20;padding:16px}
+#result.show{display:block}
+#result .inner{max-width:760px;margin:0 auto}
+#result .blk{border:2px solid var(--ink);border-radius:8px;padding:10px 12px;margin:12px 0;page-break-inside:avoid}
+#result .blk h3{margin:0 0 6px}
+#result .ans{border-bottom:1px solid #000;min-height:1.6em;margin:2px 0 8px;white-space:pre-wrap}
+#result img{max-width:60%;max-height:200px;border:1px solid #000}
+#teacher{position:absolute;left:10px;top:10px;background:#fff;border:2px solid var(--ink);border-radius:10px;padding:8px 10px;font-size:.9rem;max-width:min(360px,calc(100% - 20px));display:none;z-index:4}
+#teacher.show{display:block}
+#teacher .o{display:flex;gap:6px;align-items:center;margin:4px 0}
+#teacher .o span{flex:1}
+#teacher button{padding:4px 8px;font-size:.85rem}
+@media print{
+  #app,.overlay{display:none!important}
+  #result{position:static;display:block!important;padding:0}
+  #result .noprint{display:none!important}
+  #result img{max-width:50%}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="top">
+    <h1>Entdeckungstour<br>Rudower Altstadt</h1>
+    <div id="prog"></div>
+    <button id="btnMenu" aria-label="Menü">☰</button>
+  </div>
+  <div id="task"></div>
+  <div id="mapwrap">
+    <canvas id="cv"></canvas>
+    <div id="teacher"></div>
+    <div id="ctrl">
+      <button id="btnGps" aria-label="Mein Standort">◎</button>
+      <button id="btnHome" aria-label="Ganze Karte">⌂</button>
+      <button id="btnIn" aria-label="Hineinzoomen">+</button>
+      <button id="btnOut" aria-label="Herauszoomen">−</button>
+    </div>
+    <div id="toast"></div>
+    <div id="loading"><div id="loadmsg">Karte wird geladen …</div><button id="btnRetry" class="big" style="display:none">Nochmal versuchen</button></div>
+  </div>
+</div>
+
+<div id="ovSheet" class="overlay"><div class="sheet" id="sheet"></div></div>
+<div id="ovMenu" class="overlay"><div class="sheet" id="menu"></div></div>
+<div id="result"><div class="inner" id="resultInner"></div></div>
+
+<script>
+/* =====================================================================
+   EINSTELLUNGEN – hier kann man Orte, Fragen und Aufgaben ändern
+   ===================================================================== */
+const CONFIG = {
+  // Ausschnitt, der von OpenStreetMap geladen wird: Süd, West, Nord, Ost
+  bbox: [52.405, 13.475, 52.425, 13.510],
+  // Startpunkt: wird in OSM über den Namen gesucht
+  start: { kurz: 'U Rudow', match: /rudow/i },
+  // Orte in der Reihenfolge der Schnitzeljagd.
+  // match = Suchmuster für den Namen in OSM. Findet es nichts, kann die Lehrkraft
+  // den Ort von Hand zuordnen (Adresse ?lehrer=1 an die Seite hängen).
+  orte: [
+    { id: 'kirche', titel: 'die alte Dorfkirche', kurz: 'Dorfkirche', match: /dorfkirche/i, tippe: 'Tippe auf das Gebäude.',
+      fragen: ['Wann wurde die Kirche zum ersten Mal gebaut? (Suche eine Infotafel oder frage jemanden.)', 'Woraus sind die Wände gebaut?'],
+      foto: 'Mach ein Foto von der Kirche.' },
+    { id: 'krug', titel: 'das Wirtshaus „Zum alten Krug“', kurz: 'Alter Krug', match: /krug/i, tippe: 'Tippe auf das Gebäude.',
+      fragen: ['Was gibt es in diesem Haus?', 'Wie alt schätzt du das Haus?'],
+      foto: 'Mach ein Foto vom Wirtshaus.' },
+    { id: 'teich', titel: 'den Schmiedeteich', kurz: 'Schmiedeteich', match: /schmiedeteich/i, tippe: 'Tippe auf den Teich.',
+      fragen: ['Wofür könnte man den Teich früher gebraucht haben?', 'Welche Tiere oder Pflanzen siehst du?'],
+      foto: 'Mach ein Foto vom Teich.' },
+    { id: 'schule', titel: 'die alte Dorfschule', kurz: 'Dorfschule', match: /dorfschule/i, tippe: 'Tippe auf das Gebäude.',
+      fragen: ['Beschreibe das Haus: Was fällt dir auf?', 'Was ist hier anders als an unserer Schule?'],
+      foto: 'Mach ein Foto von der alten Dorfschule.' },
+    { id: 'verein', titel: 'den Heimatverein', kurz: 'Heimatverein', match: /heimatverein/i, tippe: 'Tippe auf das Gebäude.',
+      fragen: ['Was macht ein Heimatverein? Schreibe deine Vermutung auf.', 'Was würdest du dort gern fragen?'],
+      foto: 'Mach ein Foto vom Heimatverein.' }
+  ],
+  hinweisNach: 3,          // nach so vielen falschen Tipps erscheint ein Suchkreis
+  hinweisRadius: 150,      // Radius des Suchkreises in Metern
+  overpass: ['https://overpass-api.de/api/interpreter', 'https://overpass.kumi.systems/api/interpreter', 'https://overpass.private.coffee/api/interpreter']
+};
+
+/* ===================== Hilfsfunktionen ===================== */
+const $ = s => document.querySelector(s);
+function h(tag, attrs, ...kids){
+  const e = document.createElement(tag);
+  for (const k in (attrs||{})){
+    if (k === 'class') e.className = attrs[k];
+    else if (k.startsWith('on')) e.addEventListener(k.slice(2), attrs[k]);
+    else if (k === 'value') e.value = attrs[k];
+    else e.setAttribute(k, attrs[k]);
+  }
+  for (const c of kids.flat()) if (c != null) e.append(c.nodeType ? c : document.createTextNode(c));
+  return e;
+}
+function ap(el,...kids){ el.append(...kids.flat(2).filter(c=>c!=null).map(c=>c.nodeType?c:document.createTextNode(c))); return el; }
+const TEACHER = new URLSearchParams(location.search).has('lehrer');
+const LS_STATE = 'rudow-spiel-v1', LS_DATA = 'rudow-daten-v1';
+let state = { name: '', orte: {}, zuordnung: {} };
+try { Object.assign(state, JSON.parse(localStorage.getItem(LS_STATE) || '{}')); } catch(e){}
+function save(){ try { localStorage.setItem(LS_STATE, JSON.stringify(state)); } catch(e){ toast('Speicher voll – ein Foto konnte nicht gespeichert werden.'); } }
+let toastTimer;
+function toast(msg, ms=3500){ const t=$('#toast'); t.textContent=msg; t.style.display='block'; clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.style.display='none',ms); }
+
+/* ===================== Geometrie ===================== */
+const LAT0 = (CONFIG.bbox[0]+CONFIG.bbox[2])/2, LON0 = (CONFIG.bbox[1]+CONFIG.bbox[3])/2;
+const KY = 110540, KX = 111320*Math.cos(LAT0*Math.PI/180);
+const toM = (la,lo) => [(lo-LON0)*KX, -(la-LAT0)*KY];
+const fromM = (x,y) => [LAT0 - y/KY, LON0 + x/KX];
+function pip(x,y,ring){ let c=false; for(let i=0,j=ring.length-1;i<ring.length;j=i++){ const a=ring[i], b=ring[j]; if((a[1]>y)!==(b[1]>y) && x<(b[0]-a[0])*(y-a[1])/(b[1]-a[1])+a[0]) c=!c; } return c; }
+function dseg(x,y,a,b){ const dx=b[0]-a[0], dy=b[1]-a[1], l=dx*dx+dy*dy; let t=l?((x-a[0])*dx+(y-a[1])*dy)/l:0; t=Math.max(0,Math.min(1,t)); return Math.hypot(x-(a[0]+t*dx), y-(a[1]+t*dy)); }
+function distFeat(f,x,y){
+  if (f.circle) return Math.max(0, Math.hypot(x-f.circle[0], y-f.circle[1]) - f.circle[2]);
+  if (x<f.bb[0]-200||x>f.bb[2]+200||y<f.bb[1]-200||y>f.bb[3]+200) return Infinity;
+  let best=Infinity;
+  for (let r=0;r<f.rings.length;r++){
+    const ring=f.rings[r];
+    if (f.closed[r] && pip(x,y,ring)) return 0;
+    for (let i=1;i<ring.length;i++) best=Math.min(best,dseg(x,y,ring[i-1],ring[i]));
+  }
+  return best;
+}
+function centroid(f){
+  if (f.circle) return [f.circle[0], f.circle[1]];
+  const r=f.rings[0]; let sx=0, sy=0; for(const p of r){sx+=p[0];sy+=p[1];} return [sx/r.length, sy/r.length];
+}
+
+/* ===================== Daten laden ===================== */
+function classify(t){
+  if (t.railway==='station' || t.public_transport==='station') return 's';
+  if (t.building) return 'b';
+  if (t.highway) return 'h';
+  if (t.natural==='water' || t.waterway) return 'w';
+  if (t.railway) return 'r';
+  if (t.leisure || t.landuse || t.natural) return 'g';
+  return null;
+}
+function parseOverpass(json){
+  const out = new Map();
+  for (const el of json.elements || []){
+    const t = el.tags || {};
+    let k = classify(t);
+    if (k==='s' && !CONFIG.start.match.test(t.name||'')) continue;
+    if (!k && t.name) k = 'p';
+    if (!k) continue;
+    let rings = [];
+    if (el.type==='node') rings = [[[el.lat, el.lon]]];
+    else if (el.type==='way' && el.geometry) rings = [el.geometry.map(p=>[p.lat,p.lon])];
+    else if (el.type==='relation') for (const m of el.members||[]) if (m.type==='way' && m.geometry && (m.role==='outer'||m.role==='')) rings.push(m.geometry.map(p=>[p.lat,p.lon]));
+    if (!rings.length) continue;
+    out.set(el.type[0]+el.id, { k, i: el.type[0]+el.id, n: t.name||'', h: t.highway||'',
+      r: rings.map(r=>r.map(p=>[+p[0].toFixed(5), +p[1].toFixed(5)])) });
+  }
+  return [...out.values()];
+}
+function overpassQuery(){
+  const b = CONFIG.bbox.join(',');
+  const names = CONFIG.orte.map(o=>o.match.source).join('|');
+  return `[out:json][timeout:60];(
+ way["building"](${b});
+ way["highway"](${b});
+ way["natural"="water"](${b}); relation["natural"="water"](${b}); way["waterway"](${b});
+ way["leisure"~"park|garden|playground|pitch|common"](${b});
+ way["landuse"~"grass|forest|meadow|recreation_ground|village_green|cemetery"](${b});
+ way["natural"~"wood|scrub|grassland"](${b});
+ way["railway"~"subway|rail|light_rail"](${b});
+ nwr["railway"="station"](${b}); nwr["public_transport"="station"](${b});
+ nwr["name"~"${names}",i](${b});
+);out geom;`;
+}
+async function fetchOverpass(){
+  let lastErr;
+  for (const url of CONFIG.overpass){
+    try {
+      $('#loadmsg').textContent = 'Karte wird von OpenStreetMap geladen …';
+      const r = await fetch(url, { method:'POST', body:'data='+encodeURIComponent(overpassQuery()), headers:{'Content-Type':'application/x-www-form-urlencoded'} });
+      if (!r.ok) throw new Error('HTTP '+r.status);
+      const raw = parseOverpass(await r.json());
+      if (!raw.length) throw new Error('leer');
+      return raw;
+    } catch(e){ lastErr = e; }
+  }
+  throw lastErr;
+}
+
+/* ===================== Karte ===================== */
+const cv = $('#cv'), ctx = cv.getContext('2d');
+let W=0, H=0, dpr=1, dirty=true;
+let feats=[], featByKey=new Map(), station=null;
+const view = { cx:0, cy:0, s:0.6 };
+let gps=null, watchId=null, flash=null, hintRing=null, wrongCount=0, teacherAssign=null;
+let patWater, patFound, patGreen;
+
+function prepare(raw){
+  feats = raw.map(f=>{
+    const rings = f.r.map(r=>r.map(p=>toM(p[0],p[1])));
+    const closed = f.r.map(r=>r.length>3 && r[0][0]===r[r.length-1][0] && r[0][1]===r[r.length-1][1]);
+    let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
+    for (const r of rings) for (const p of r){ if(p[0]<x0)x0=p[0]; if(p[0]>x1)x1=p[0]; if(p[1]<y0)y0=p[1]; if(p[1]>y1)y1=p[1]; }
+    return { k:f.k, i:f.i, n:f.n, h:f.h, rings, closed, bb:[x0,y0,x1,y1], raw:f };
+  });
+  featByKey = new Map(feats.map(f=>[f.i,f]));
+}
+function resolvePlaces(){
+  // Startpunkt
+  station = feats.filter(f=>f.k==='s').sort((a,b)=>(b.closed[0]?1:0)-(a.closed[0]?1:0))[0] || null;
+  for (const o of CONFIG.orte){
+    o.geo = null; o.quelle = '';
+    const ov = state.zuordnung[o.id];
+    if (ov && ov.key && featByKey.get(ov.key)) { o.geo = featByKey.get(ov.key); o.quelle='von Hand'; }
+    else if (ov && ov.pt) { o.geo = { circle:[ov.pt[0],ov.pt[1],30], k:'c' }; o.quelle='von Hand'; }
+    if (!o.geo){
+      const cands = feats.filter(f=>f.n && f.k!=='h' && f.k!=='s' && o.match.test(f.n));
+      cands.sort((a,b)=> (b.closed[0]?1:0)-(a.closed[0]?1:0) || (a.k==='b'?0:1)-(b.k==='b'?0:1));
+      const f = cands[0];
+      if (f){
+        if (f.rings[0].length===1){
+          const p=f.rings[0][0];
+          let near=null, nd=25;
+          for (const b of feats){ if(b.k!=='b') continue; const d=distFeat(b,p[0],p[1]); if(d<nd){nd=d;near=b;} }
+          o.geo = near || { circle:[p[0],p[1],30], k:'c' };
+        } else o.geo = f;
+        o.quelle = 'OSM-Name';
+      }
+    }
+  }
+}
+function cropToArea(raw){
+  // nur Umgebung der Orte behalten (spart Speicher)
+  const pts=[];
+  for (const f of raw){ if (f.k==='s' || (f.n && CONFIG.orte.some(o=>o.match.test(f.n)))) pts.push(f.r[0][0]); }
+  if (pts.length<2) return raw;
+  const la=pts.map(p=>p[0]), lo=pts.map(p=>p[1]);
+  const b=[Math.min(...la)-0.0055, Math.min(...lo)-0.009, Math.max(...la)+0.0055, Math.max(...lo)+0.009];
+  return raw.filter(f=>f.r.some(r=>r.some(p=>p[0]>=b[0]&&p[0]<=b[2]&&p[1]>=b[1]&&p[1]<=b[3])));
+}
+function keyPoints(){
+  const pts=[]; if (station) pts.push(centroid(station));
+  for (const o of CONFIG.orte) if (o.geo) pts.push(centroid(o.geo));
+  return pts;
+}
+function fitAll(){
+  let pts = keyPoints();
+  if (!pts.length){ const a=toM(CONFIG.bbox[0],CONFIG.bbox[1]), b=toM(CONFIG.bbox[2],CONFIG.bbox[3]); pts=[a,b]; }
+  const xs=pts.map(p=>p[0]), ys=pts.map(p=>p[1]);
+  const x0=Math.min(...xs)-120, x1=Math.max(...xs)+120, y0=Math.min(...ys)-120, y1=Math.max(...ys)+120;
+  view.cx=(x0+x1)/2; view.cy=(y0+y1)/2;
+  view.s = Math.max(0.12, Math.min(8, Math.min(W/(x1-x0), H/(y1-y0))));
+  dirty=true;
+}
+function resize(){
+  const r=cv.getBoundingClientRect(); dpr=window.devicePixelRatio||1;
+  W=r.width; H=r.height; cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr); makePatterns(); dirty=true;
+}
+function makePatterns(){
+  const mk=(fn)=>{ const c=document.createElement('canvas'); c.width=c.height=Math.round(8*dpr); const g=c.getContext('2d'); g.scale(dpr,dpr); g.fillStyle='#fff'; g.fillRect(0,0,8,8); fn(g); return ctx.createPattern(c,'repeat'); };
+  patWater = mk(g=>{ g.strokeStyle='#444'; g.lineWidth=1; g.beginPath(); g.moveTo(0,4); g.lineTo(8,4); g.stroke(); });
+  patFound = mk(g=>{ g.strokeStyle='#111'; g.lineWidth=1.6; g.beginPath(); g.moveTo(-1,9); g.lineTo(9,-1); g.moveTo(-1,5); g.lineTo(5,-1); g.moveTo(3,9); g.lineTo(9,3); g.stroke(); });
+  patGreen = mk(g=>{ g.fillStyle='#999'; g.fillRect(2,2,1.5,1.5); g.fillRect(6,6,1.5,1.5); });
+}
+const W2S = (x,y)=>[(x-view.cx)*view.s+W/2, (y-view.cy)*view.s+H/2];
+const S2W = (x,y)=>[(x-W/2)/view.s+view.cx, (y-H/2)/view.s+view.cy];
+function setPat(p){ try{ p.setTransform(new DOMMatrix().scale(1/(view.s*dpr))); }catch(e){} return p; }
+function pathFeat(f, r){ const ring=f.rings[r]; ctx.moveTo(ring[0][0],ring[0][1]); for(let i=1;i<ring.length;i++) ctx.lineTo(ring[i][0],ring[i][1]); if(f.closed[r]) ctx.closePath(); }
+const ROADW = { motorway:16,trunk:16,primary:14,secondary:11,tertiary:9,residential:7,unclassified:7,living_street:6,service:4,pedestrian:5,footway:1.6,path:1.6,cycleway:2,track:2.5,steps:1.6 };
+
+function draw(){
+  dirty=false;
+  ctx.setTransform(dpr,0,0,dpr,0,0); ctx.fillStyle='#fff'; ctx.fillRect(0,0,W,H);
+  if (!feats.length) return;
+  const s=view.s, px=1/s;
+  const v0=S2W(0,0), v1=S2W(W,H);
+  ctx.setTransform(dpr*s,0,0,dpr*s, dpr*(W/2-view.cx*s), dpr*(H/2-view.cy*s));
+  ctx.lineJoin='round'; ctx.lineCap='round';
+  const vis = f => !(f.bb[2]<v0[0]||f.bb[0]>v1[0]||f.bb[3]<v0[1]||f.bb[1]>v1[1]);
+  const V = feats.filter(vis);
+  // Grün
+  ctx.fillStyle=setPat(patGreen);
+  for (const f of V) if (f.k==='g') for (let r=0;r<f.rings.length;r++) if(f.closed[r]){ ctx.beginPath(); pathFeat(f,r); ctx.fill(); }
+  // Wasser
+  for (const f of V) if (f.k==='w'){
+    for (let r=0;r<f.rings.length;r++){
+      ctx.beginPath(); pathFeat(f,r);
+      if (f.closed[r]){ ctx.fillStyle=setPat(patWater); ctx.fill(); ctx.strokeStyle='#222'; ctx.lineWidth=1.5*px; ctx.setLineDash([]); ctx.stroke(); }
+      else { ctx.strokeStyle='#555'; ctx.lineWidth=Math.max(3,2.5*px); ctx.setLineDash([6*px,3*px]); ctx.stroke(); ctx.setLineDash([]); }
+    }
+  }
+  // U-Bahn-Linie
+  ctx.strokeStyle='#222'; ctx.setLineDash([10*px,6*px]); ctx.lineWidth=2.5*px;
+  for (const f of V) if (f.k==='r'){ ctx.beginPath(); for(let r=0;r<f.rings.length;r++) pathFeat(f,r); ctx.stroke(); }
+  ctx.setLineDash([]);
+  // Straßen
+  ctx.strokeStyle='#bdbdbd';
+  for (const f of V) if (f.k==='h'){ const w=ROADW[f.h]||4; ctx.lineWidth=Math.max(1*px, w); ctx.beginPath(); for(let r=0;r<f.rings.length;r++) pathFeat(f,r); ctx.stroke(); }
+  // Gebäude
+  ctx.fillStyle='#fff'; ctx.strokeStyle='#111'; ctx.lineWidth=Math.max(1.1*px,0.5);
+  for (const f of V) if ((f.k==='b'||f.k==='s'||f.k==='p') ) for (let r=0;r<f.rings.length;r++) if(f.closed[r]){ ctx.beginPath(); pathFeat(f,r); ctx.fill(); ctx.stroke(); }
+  // gefundene Orte
+  for (const o of CONFIG.orte){
+    if (!o.geo || !(state.orte[o.id]&&state.orte[o.id].found)) continue;
+    ctx.fillStyle=setPat(patFound); ctx.strokeStyle='#111'; ctx.lineWidth=Math.max(2.5*px,1);
+    ctx.beginPath();
+    if (o.geo.circle){ ctx.arc(o.geo.circle[0],o.geo.circle[1],o.geo.circle[2],0,7); }
+    else for (let r=0;r<o.geo.rings.length;r++) if(o.geo.closed[r]) pathFeat(o.geo,r);
+    ctx.fill(); ctx.stroke();
+  }
+  // Blinken bei falschem Tipp
+  if (flash && flash.until>performance.now()){
+    ctx.strokeStyle='#111'; ctx.lineWidth=4*px; ctx.setLineDash([5*px,4*px]);
+    ctx.beginPath(); for(let r=0;r<flash.f.rings.length;r++) if(flash.f.closed[r]) pathFeat(flash.f,r); ctx.stroke(); ctx.setLineDash([]);
+    dirty=true;
+  }
+  // Lehrkraft: zugeordnete Orte markieren
+  if (TEACHER){
+    ctx.strokeStyle='#111'; ctx.lineWidth=3*px; ctx.setLineDash([3*px,3*px]);
+    for (const o of CONFIG.orte) if (o.geo){ ctx.beginPath(); if(o.geo.circle) ctx.arc(o.geo.circle[0],o.geo.circle[1],o.geo.circle[2],0,7); else for(let r=0;r<o.geo.rings.length;r++) if(o.geo.closed[r]) pathFeat(o.geo,r); ctx.stroke(); }
+    ctx.setLineDash([]);
+  }
+  // ---- Bildschirm-Ebene
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  if (hintRing){
+    const [sx,sy]=W2S(hintRing.x,hintRing.y);
+    ctx.strokeStyle='#111'; ctx.lineWidth=3; ctx.setLineDash([10,7]);
+    ctx.beginPath(); ctx.arc(sx,sy,CONFIG.hinweisRadius*view.s,0,7); ctx.stroke(); ctx.setLineDash([]);
+  }
+  const label=(txt,sx,sy)=>{ ctx.font='bold 13px system-ui,sans-serif'; ctx.textAlign='center'; ctx.lineWidth=4; ctx.strokeStyle='#fff'; ctx.strokeText(txt,sx,sy); ctx.fillStyle='#111'; ctx.fillText(txt,sx,sy); };
+  if (station){
+    const [sx,sy]=W2S(...centroid(station));
+    ctx.fillStyle='#111'; ctx.fillRect(sx-13,sy-13,26,26); ctx.fillStyle='#fff'; ctx.font='bold 17px system-ui,sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText('U',sx,sy+1);
+    ctx.textBaseline='alphabetic'; label(CONFIG.start.kurz+' · START', sx, sy+30);
+  }
+  CONFIG.orte.forEach((o,i)=>{
+    if (!o.geo || !(state.orte[o.id]&&state.orte[o.id].found)) return;
+    const [sx,sy]=W2S(...centroid(o.geo));
+    ctx.fillStyle='#111'; ctx.beginPath(); ctx.arc(sx,sy,13,0,7); ctx.fill();
+    ctx.fillStyle='#fff'; ctx.font='bold 15px system-ui,sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(String(i+1),sx,sy+1); ctx.textBaseline='alphabetic';
+    label(o.kurz, sx, sy+30);
+  });
+  if (gps){
+    const [x,y]=toM(gps.lat,gps.lon), [sx,sy]=W2S(x,y);
+    const ar=Math.max(10,(gps.acc||20)*view.s);
+    ctx.strokeStyle='#111'; ctx.lineWidth=1.5; ctx.setLineDash([4,4]); ctx.beginPath(); ctx.arc(sx,sy,ar,0,7); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(sx,sy,9,0,7); ctx.fill();
+    ctx.fillStyle='#111'; ctx.beginPath(); ctx.arc(sx,sy,6,0,7); ctx.fill();
+  }
+}
+(function loop(){ if (dirty) draw(); requestAnimationFrame(loop); })();
+
+/* ---- Bedienung: Ziehen, Zoomen, Tippen ---- */
+const ptrs = new Map(); let tapStart=null, pinch=null;
+cv.addEventListener('pointerdown', e=>{ cv.setPointerCapture(e.pointerId); ptrs.set(e.pointerId,{x:e.offsetX,y:e.offsetY}); if(ptrs.size===1) tapStart={x:e.offsetX,y:e.offsetY,t:performance.now(),moved:false}; else { tapStart=null; pinch=null; } });
+cv.addEventListener('pointermove', e=>{
+  if (!ptrs.has(e.pointerId)) return;
+  const p=ptrs.get(e.pointerId), nx=e.offsetX, ny=e.offsetY;
+  if (ptrs.size===1){
+    if (tapStart && Math.hypot(nx-tapStart.x,ny-tapStart.y)>7) tapStart.moved=true;
+    if (!tapStart || tapStart.moved){ view.cx-=(nx-p.x)/view.s; view.cy-=(ny-p.y)/view.s; dirty=true; }
+    p.x=nx; p.y=ny;
+  } else if (ptrs.size===2){
+    p.x=nx; p.y=ny;
+    const [a,b]=[...ptrs.values()]; const d=Math.hypot(a.x-b.x,a.y-b.y), mx=(a.x+b.x)/2, my=(a.y+b.y)/2;
+    if (pinch){ zoomAt(mx,my,view.s*d/pinch.d); view.cx-=(mx-pinch.mx)/view.s; view.cy-=(my-pinch.my)/view.s; }
+    pinch={d,mx,my};
+  }
+});
+function endPtr(e){
+  if (!ptrs.has(e.pointerId)) return;
+  const wasOne = ptrs.size===1; ptrs.delete(e.pointerId); pinch=null;
+  if (wasOne && tapStart && !tapStart.moved && performance.now()-tapStart.t<600 && e.type==='pointerup') onTap(tapStart.x,tapStart.y);
+  tapStart=null;
+}
+cv.addEventListener('pointerup',endPtr); cv.addEventListener('pointercancel',endPtr);
+function zoomAt(sx,sy,ns){ ns=Math.max(0.1,Math.min(14,ns)); const [wx,wy]=S2W(sx,sy); view.s=ns; view.cx=wx-(sx-W/2)/ns; view.cy=wy-(sy-H/2)/ns; dirty=true; }
+cv.addEventListener('wheel', e=>{ e.preventDefault(); zoomAt(e.offsetX,e.offsetY,view.s*(e.deltaY<0?1.2:1/1.2)); }, {passive:false});
+$('#btnIn').onclick=()=>zoomAt(W/2,H/2,view.s*1.5);
+$('#btnOut').onclick=()=>zoomAt(W/2,H/2,view.s/1.5);
+$('#btnHome').onclick=fitAll;
+
+/* ===================== Spiel ===================== */
+const found = o => !!(state.orte[o.id] && state.orte[o.id].found);
+const nextTarget = () => CONFIG.orte.find(o=>o.geo && !found(o)) || null;
+function updateHeader(){
+  const n=CONFIG.orte.filter(found).length;
+  $('#prog').textContent = '●'.repeat(n)+'○'.repeat(CONFIG.orte.length-n);
+  const t=nextTarget(), box=$('#task'); box.replaceChildren();
+  if (TEACHER && teacherAssign){ const o=CONFIG.orte.find(x=>x.id===teacherAssign); box.append('Lehrkraft: Tippe auf das Gebäude für „'+o.kurz+'“.'); return; }
+  if (!CONFIG.orte.some(o=>o.geo)) { box.append('Die Orte sind noch nicht auf der Karte zugeordnet (Lehrkraft: Adresse mit ?lehrer=1 öffnen).'); return; }
+  if (!t){ box.append(h('b',{},'Geschafft! '),'Du hast alle Orte gefunden. ',h('button',{onclick:openResult,style:'margin-left:6px'},'Mein Blatt')); return; }
+  const i=CONFIG.orte.indexOf(t)+1;
+  box.append(h('b',{},'Aufgabe '+i+' von '+CONFIG.orte.length+': '),'Finde ',t.titel,'. ',t.tippe,' Start: ',CONFIG.start.kurz,'.');
+}
+function onTap(sx,sy){
+  const [wx,wy]=S2W(sx,sy), tol=16/view.s;
+  if (TEACHER && teacherAssign) return teacherTap(wx,wy);
+  let best=null, bd=Infinity;
+  for (const o of CONFIG.orte){ if(!o.geo) continue; const d=distFeat(o.geo,wx,wy); if(d<=tol && d<bd){bd=d;best=o;} }
+  if (best){
+    wrongCount=0; hintRing=null;
+    if (!found(best)){ state.orte[best.id]=Object.assign(state.orte[best.id]||{}, {found:true, antworten:(state.orte[best.id]||{}).antworten||[]}); save(); updateHeader(); dirty=true; openSheet(best,true); }
+    else openSheet(best,false);
+    return;
+  }
+  // falscher Tipp
+  let hit=null, hd=Infinity;
+  for (const f of feats){ if(f.k==='h'||f.k==='g'||f.k==='r') continue; const d=distFeat(f,wx,wy); if(d<=tol && d<hd){hd=d;hit=f;} }
+  if (hit && hit.closed[0]){ flash={f:hit,until:performance.now()+700}; dirty=true; }
+  const t=nextTarget();
+  if (!t){ toast('Das ist nicht einer der Orte.'); return; }
+  wrongCount++;
+  if (wrongCount>=CONFIG.hinweisNach){
+    const c=centroid(t.geo), a=(t.id.charCodeAt(0)*37)%360*Math.PI/180;
+    hintRing={x:c[0]+Math.cos(a)*45, y:c[1]+Math.sin(a)*45}; dirty=true;
+    toast('Das ist es nicht. Such in dem gestrichelten Kreis weiter!');
+  } else toast(hit ? 'Das ist es nicht. Versuch es weiter!' : 'Hier ist nichts. Tippe genau auf das Gebäude.');
+}
+
+/* ---- Fenster zu einem Ort ---- */
+function resizeImage(file, max=720){
+  return new Promise((res,rej)=>{
+    const done=(src,w,hh)=>{ const sc=Math.min(1,max/Math.max(w,hh)); const c=document.createElement('canvas'); c.width=Math.round(w*sc); c.height=Math.round(hh*sc); c.getContext('2d').drawImage(src,0,0,c.width,c.height); res(c.toDataURL('image/jpeg',0.72)); };
+    if (window.createImageBitmap) createImageBitmap(file,{imageOrientation:'from-image'}).then(b=>done(b,b.width,b.height)).catch(()=>fallback());
+    else fallback();
+    function fallback(){ const u=URL.createObjectURL(file), im=new Image(); im.onload=()=>{done(im,im.naturalWidth,im.naturalHeight);URL.revokeObjectURL(u);}; im.onerror=rej; im.src=u; }
+  });
+}
+function openSheet(o, first){
+  const st = state.orte[o.id] = state.orte[o.id] || {found:true, antworten:[]};
+  const box=$('#sheet'); box.replaceChildren();
+  const imgWrap=h('div',{});
+  const showImg=()=>{ imgWrap.replaceChildren(); if(st.foto) imgWrap.append(h('img',{src:st.foto,alt:'Dein Foto'})); };
+  const fileIn=h('input',{type:'file',accept:'image/*',capture:'environment',id:'fi'});
+  fileIn.addEventListener('change', async ()=>{ const f=fileIn.files[0]; if(!f) return; try{ st.foto=await resizeImage(f); save(); showImg(); }catch(e){ toast('Das Foto konnte nicht geladen werden.'); } });
+  ap(box,
+    h('span',{class:'found'}, first ? '✓ Gefunden!' : '✓ Schon gefunden'),
+    h('h2',{}, o.titel.charAt(0).toUpperCase()+o.titel.slice(1)),
+    o.fragen.map((q,i)=>h('div',{class:'q'}, h('label',{for:'q'+i},q),
+      h('textarea',{id:'q'+i, value:(st.antworten||[])[i]||'', oninput:e=>{ st.antworten=st.antworten||[]; st.antworten[i]=e.target.value; save(); }}))),
+    h('div',{class:'photo'}, h('b',{},'Foto: '), o.foto, h('div',{class:'row',style:'margin-top:8px'}, h('button',{class:'big',onclick:()=>fileIn.click()},'📷 Foto machen / hochladen')), fileIn, imgWrap),
+    h('div',{class:'row'}, h('button',{class:'big',onclick:closeSheet},'Fertig'))
+  );
+  box.querySelectorAll('textarea').forEach((t,i)=>t.value=(st.antworten||[])[i]||'');
+  showImg(); $('#ovSheet').classList.add('show');
+}
+function closeSheet(){
+  $('#ovSheet').classList.remove('show'); updateHeader(); dirty=true;
+  const t=nextTarget();
+  if (!t && CONFIG.orte.every(o=>!o.geo||found(o)) && CONFIG.orte.some(o=>o.geo)) openResult();
+  else if (t) toast('Weiter geht’s: '+t.titel+' finden.');
+}
+$('#ovSheet').addEventListener('pointerdown',e=>{ if(e.target.id==='ovSheet') closeSheet(); });
+
+/* ---- Ergebnisblatt (druckbar, schwarzweiß) ---- */
+function openResult(){
+  $('#ovSheet').classList.remove('show'); $('#ovMenu').classList.remove('show');
+  const r=$('#resultInner'); r.replaceChildren();
+  ap(r,
+    h('div',{class:'noprint row',style:'margin:0 0 10px'}, h('button',{onclick:()=>$('#result').classList.remove('show')},'← Zurück zur Karte'), h('button',{onclick:()=>window.print()},'🖨 Drucken / PDF')),
+    h('h1',{style:'margin:0 0 6px'},'Entdeckungstour Rudower Altstadt'),
+    h('div',{}, h('b',{},'Name: '), h('input',{type:'text',value:state.name||'',style:'width:70%;border-width:0 0 2px 0;border-radius:0',oninput:e=>{state.name=e.target.value;save();}})),
+    CONFIG.orte.map((o,i)=>{
+      const st=state.orte[o.id]||{};
+      return h('div',{class:'blk'}, h('h3',{}, (i+1)+'. '+o.titel.charAt(0).toUpperCase()+o.titel.slice(1)+(st.found?'  ✓':'  (noch nicht gefunden)')),
+        o.fragen.map((q,k)=>h('div',{}, h('div',{style:'font-size:.9rem'},q), h('div',{class:'ans'}, (st.antworten||[])[k]||''))),
+        st.foto ? h('img',{src:st.foto,alt:''}) : h('div',{style:'font-size:.9rem;color:#555'},'(kein Foto)'));
+    })
+  );
+  $('#result').classList.add('show');
+}
+
+/* ---- Menü ---- */
+$('#btnMenu').onclick=()=>{
+  const m=$('#menu'); m.replaceChildren(
+    h('h2',{},'Menü'),
+    h('div',{class:'row'}, h('button',{class:'big',onclick:openResult},'📄 Mein Blatt (Antworten & Fotos)')),
+    h('div',{class:'row'}, h('button',{onclick:()=>{ $('#ovMenu').classList.remove('show'); toggleGps(); }},'◎ Standort ein/aus'), h('button',{onclick:()=>{ $('#ovMenu').classList.remove('show'); fitAll(); }},'⌂ Ganze Karte')),
+    h('div',{class:'row'}, h('button',{onclick:()=>{ if(confirm('Wirklich alles löschen und neu beginnen?')){ state.orte={}; state.name=''; save(); hintRing=null; wrongCount=0; updateHeader(); dirty=true; $('#ovMenu').classList.remove('show'); } }},'Neu beginnen')),
+    h('p',{style:'font-size:.85rem;color:#555'},'Kartendaten © OpenStreetMap-Mitwirkende (ODbL). Deine Antworten und Fotos bleiben nur auf diesem Gerät.'),
+    h('div',{class:'row'}, h('button',{onclick:()=>$('#ovMenu').classList.remove('show')},'Schließen'))
+  );
+  $('#ovMenu').classList.add('show');
+};
+$('#ovMenu').addEventListener('pointerdown',e=>{ if(e.target.id==='ovMenu') $('#ovMenu').classList.remove('show'); });
+
+/* ---- Standort ---- */
+function toggleGps(){
+  if (watchId!=null){ navigator.geolocation.clearWatch(watchId); watchId=null; gps=null; $('#btnGps').classList.remove('on'); dirty=true; toast('Standort ist aus.'); return; }
+  if (!navigator.geolocation){ toast('Dieses Gerät kann den Standort nicht bestimmen. Du kannst trotzdem spielen.'); return; }
+  let first=true; $('#btnGps').classList.add('on'); toast('Standort wird gesucht …');
+  watchId = navigator.geolocation.watchPosition(pos=>{
+    gps={lat:pos.coords.latitude,lon:pos.coords.longitude,acc:pos.coords.accuracy}; dirty=true;
+    if (first){ first=false; const b=CONFIG.bbox, inside=gps.lat>=b[0]&&gps.lat<=b[2]&&gps.lon>=b[1]&&gps.lon<=b[3];
+      if (inside){ const [x,y]=toM(gps.lat,gps.lon); view.cx=x; view.cy=y; view.s=Math.max(view.s,1.2); toast('Du bist der Punkt mit dem Ring.'); }
+      else toast('Du bist gerade nicht in der Rudower Altstadt.'); }
+  }, err=>{
+    watchId=null; gps=null; $('#btnGps').classList.remove('on');
+    toast(err.code===1 ? 'Der Standort ist gesperrt. Das ist nicht schlimm – du kannst die Orte auch ohne Standort finden. (Lehrkraft: Standortfreigabe im Browser erlauben.)' : 'Standort gerade nicht verfügbar. Geh nach draußen oder versuche es später nochmal.', 6000);
+  }, {enableHighAccuracy:true, maximumAge:5000, timeout:25000});
+}
+$('#btnGps').onclick=toggleGps;
+
+/* ---- Lehrkraft-Ansicht (?lehrer=1) ---- */
+function teacherTap(wx,wy){
+  const tol=10/view.s; let hit=null, hd=Infinity;
+  for (const f of feats){ if(f.k==='h'||f.k==='g'||f.k==='r') continue; const d=distFeat(f,wx,wy); if(d<=tol&&d<hd){hd=d;hit=f;} }
+  const id=teacherAssign;
+  state.zuordnung[id] = hit ? {key:hit.i} : {pt:[wx,wy]};
+  save(); teacherAssign=null; resolvePlaces(); updateHeader(); renderTeacher(); dirty=true;
+  toast(hit ? 'Zugeordnet: Gebäude/Fläche.' : 'Zugeordnet: Punkt (Kreis).');
+}
+function renderTeacher(){
+  const t=$('#teacher'); if(!TEACHER) return; t.classList.add('show'); t.replaceChildren(); ap(t,
+    h('b',{},'Lehrkraft-Ansicht'),
+    CONFIG.orte.map(o=>h('div',{class:'o'}, h('span',{}, (o.geo?'✓ ':'✗ ')+o.kurz+(o.quelle?' ('+o.quelle+')':'')), h('button',{onclick:()=>{teacherAssign=o.id; updateHeader(); toast('Jetzt auf der Karte auf das richtige Gebäude tippen.');}},'zuordnen'))),
+    h('div',{class:'o'}, h('button',{onclick:saveDataFile},'Daten als Datei speichern'), h('button',{onclick:()=>reload(true)},'Neu laden'))
+  );
+}
+function saveDataFile(){
+  const data={v:1, bbox:CONFIG.bbox, features:feats.map(f=>f.raw), zuordnung:state.zuordnung};
+  const a=h('a',{href:URL.createObjectURL(new Blob([JSON.stringify(data)],{type:'application/json'})), download:'rudow-daten.json'}); document.body.append(a); a.click(); a.remove();
+  toast('rudow-daten.json gespeichert. Diese Datei neben index.html ins GitHub-Repo legen.', 7000);
+}
+
+/* ===================== Start ===================== */
+async function loadData(forceNet){
+  if (!forceNet){
+    try { const r=await fetch('rudow-daten.json',{cache:'no-cache'}); if(r.ok){ const d=await r.json(); if(d.features&&d.features.length){ if(d.zuordnung) state.zuordnung=Object.assign({},d.zuordnung,state.zuordnung); return d.features; } } } catch(e){}
+    try { const c=JSON.parse(localStorage.getItem(LS_DATA)||'null'); if(c&&c.length) return c; } catch(e){}
+  }
+  const raw=cropToArea(await fetchOverpass());
+  try { localStorage.setItem(LS_DATA, JSON.stringify(raw)); } catch(e){}
+  return raw;
+}
+async function reload(forceNet){
+  $('#loading').style.display='flex'; $('#btnRetry').style.display='none'; $('#loadmsg').textContent='Karte wird geladen …';
+  try {
+    const raw=await loadData(forceNet);
+    prepare(raw); resolvePlaces(); renderTeacher(); updateHeader(); fitAll();
+    $('#loading').style.display='none';
+    if (!station && !CONFIG.orte.some(o=>o.geo) && !TEACHER) toast('Karte geladen, aber die Orte wurden noch nicht gefunden. Lehrkraft: ?lehrer=1 anhängen.', 8000);
+  } catch(e){
+    $('#loadmsg').textContent='Die Karte konnte nicht geladen werden. Ist das Gerät online? (Lehrkraft: Datei rudow-daten.json ins Repo legen, dann geht es auch ohne Internet-Abruf.)';
+    $('#btnRetry').style.display='inline-block';
+  }
+}
+$('#btnRetry').onclick=()=>reload(true);
+window.addEventListener('resize',resize);
+resize(); updateHeader(); reload(false);
+</script>
+</body>
+</html>
