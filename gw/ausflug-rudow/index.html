@@ -14,7 +14,7 @@ html,body{margin:0;height:100%;font-family:system-ui,-apple-system,"Segoe UI",Ro
 #prog{display:flex;gap:3px}
 .chip{position:relative;width:30px;height:30px;padding:0;border-radius:50%;font-weight:700;font-size:.9rem;line-height:1}
 .chip.done{background:#1a8a43;border-color:#1a8a43;color:#fff}
-.chip.done::after{content:"✓";position:absolute;right:-3px;bottom:-5px;font-size:.7rem;background:#fff;color:#1a8a43;border-radius:50%;width:13px;height:13px;line-height:13px;border:1px solid #1a8a43}
+.chip.full::after{content:"✓";position:absolute;right:-3px;bottom:-5px;font-size:.7rem;background:#fff;color:#1a8a43;border-radius:50%;width:13px;height:13px;line-height:13px;border:1px solid #1a8a43}
 .chip.sel{background:#111;border-color:#111;color:#fff}
 button{font:inherit;border:2px solid var(--ink);background:#fff;color:var(--ink);border-radius:10px;padding:8px 12px;cursor:pointer;touch-action:manipulation}
 button:active,button.on{background:var(--ink);color:#fff}
@@ -443,13 +443,14 @@ $('#btnHome').onclick=fitAll;
 $('#btnStil').onclick=()=>{ state.stil = state.stil==='farbe' ? 'sw' : 'farbe'; save(); dirty=true; toast(state.stil==='farbe' ? 'Farbkarte' : 'Schwarzweiß-Karte', 1500); };
 
 /* ===================== Spiel ===================== */
+const complete = o => { const st=state.orte[o.id]||{}; return !!(st.found && st.foto && o.fragen.every((q,i)=>((st.antworten||[])[i]||'').trim())); };
 const found = o => !!(state.orte[o.id] && state.orte[o.id].found);
 const nextTarget = () => CONFIG.orte.find(o=>o.id===state.aktiv && o.geo && !found(o)) || CONFIG.orte.find(o=>o.geo && !found(o)) || null;
 function updateHeader(){
   const n=CONFIG.orte.filter(found).length;
   const t=nextTarget(), box=$('#task'); box.replaceChildren();
   const pr=$('#prog'); pr.replaceChildren();
-  CONFIG.orte.forEach((o,i)=>pr.append(h('button',{class:'chip'+(found(o)?' done':'')+(t&&t.id===o.id?' sel':''),'aria-label':'Aufgabe '+(i+1)+': '+o.kurz,
+  CONFIG.orte.forEach((o,i)=>pr.append(h('button',{class:'chip'+(found(o)?' done':'')+(complete(o)?' full':'')+(t&&t.id===o.id?' sel':''),'aria-label':'Aufgabe '+(i+1)+': '+o.kurz+(complete(o)?' (fertig)':''),
     onclick:()=>{ if (!o.geo) return; if (found(o)) openSheet(o,false); else { state.aktiv=o.id; wrongCount=0; hintRing=null; save(); updateHeader(); dirty=true; } }}, String(i+1))));
   if (TEACHER && teacherAssign){ const o=CONFIG.orte.find(x=>x.id===teacherAssign); box.append('Lehrkraft: Tippe auf das Gebäude für „'+o.kurz+'“.'); return; }
   if (!feats.length) { box.append('Die Karte wird geladen …'); return; }
