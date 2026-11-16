@@ -68,6 +68,7 @@ input[type=file]{display:none}
     <canvas id="cv"></canvas>
     <div id="teacher"></div>
     <div id="ctrl">
+      <button id="btnStil" aria-label="Kartenstil wechseln">🎨</button>
       <button id="btnGps" aria-label="Mein Standort">◎</button>
       <button id="btnHome" aria-label="Ganze Karte">⌂</button>
       <button id="btnIn" aria-label="Hineinzoomen">+</button>
@@ -101,13 +102,13 @@ const CONFIG = {
     { id: 'krug', titel: 'das Wirtshaus „Zum alten Krug“', kurz: 'Alter Krug', match: /krug/i, tippe: 'Tippe auf das Gebäude.',
       fragen: ['Was gibt es in diesem Haus?', 'Wie alt schätzt du das Haus?'],
       foto: 'Mach ein Foto vom Wirtshaus.' },
-    { id: 'teich', titel: 'den Schmiedeteich', kurz: 'Schmiedeteich', match: /schmied/i, tippe: 'Tippe auf den Teich.',
+    { id: 'teich', titel: 'den Dorfteich (Schmiedeteich)', kurz: 'Dorfteich', match: /dorfteich|schmiedeteich/i, tippe: 'Tippe auf den Teich.',
       fragen: ['Wofür könnte man den Teich früher gebraucht haben?', 'Welche Tiere oder Pflanzen siehst du?'],
       foto: 'Mach ein Foto vom Teich.' },
     { id: 'schule', titel: 'die alte Dorfschule', kurz: 'Dorfschule', match: /dorfschule/i, tippe: 'Tippe auf das Gebäude.',
       fragen: ['Beschreibe das Haus: Was fällt dir auf?', 'Was ist hier anders als an unserer Schule?'],
       foto: 'Mach ein Foto von der alten Dorfschule.' },
-    { id: 'verein', titel: 'den Heimatverein', kurz: 'Heimatverein', match: /heimat/i, tippe: 'Tippe auf das Gebäude.',
+    { id: 'verein', titel: 'das Heimatmuseum (Heimatverein)', kurz: 'Heimatmuseum', match: /heimat/i, tippe: 'Tippe auf das Gebäude.',
       fragen: ['Was macht ein Heimatverein? Schreibe deine Vermutung auf.', 'Was würdest du dort gern fragen?'],
       foto: 'Mach ein Foto vom Heimatverein.' }
   ],
@@ -221,7 +222,7 @@ async function fetchOverpass(){
   let area = full;
   $('#loadmsg').textContent = 'Schritt 1 von 2: Orte suchen …';
   try {
-    const j1 = await ovFetch(nameQuery(full), 30000);
+    const j1 = await ovFetch(nameQuery(full), 20000);
     const pts = (j1.elements||[]).map(e=>[e.lat ?? (e.center&&e.center.lat), e.lon ?? (e.center&&e.center.lon)]).filter(p=>p[0]!=null);
     if (pts.length){
       const la=pts.map(p=>p[0]), lo=pts.map(p=>p[1]);
@@ -229,7 +230,7 @@ async function fetchOverpass(){
     }
   } catch(e){ /* dann eben der ganze Ausschnitt */ }
   $('#loadmsg').textContent = 'Schritt 2 von 2: Karte laden … (kann bis zu einer Minute dauern)';
-  const raw = parseOverpass(await ovFetch(bboxQuery(area), 60000));
+  const raw = parseOverpass(await ovFetch(bboxQuery(area), 45000));
   if (!raw.length) throw new Error('leer');
   return raw;
 }
@@ -240,7 +241,7 @@ let W=0, H=0, dpr=1, dirty=true;
 let feats=[], featByKey=new Map(), station=null;
 const view = { cx:0, cy:0, s:0.6 };
 let gps=null, watchId=null, flash=null, hintRing=null, wrongCount=0, teacherAssign=null;
-let patWater, patFound, patGreen;
+let patWater, patFound, patGreen, patPaper;
 
 function prepare(raw){
   feats = raw.map(f=>{
@@ -307,17 +308,23 @@ function makePatterns(){
   const mk=(fn)=>{ const c=document.createElement('canvas'); c.width=c.height=Math.round(8*dpr); const g=c.getContext('2d'); g.scale(dpr,dpr); g.fillStyle='#fff'; g.fillRect(0,0,8,8); fn(g); return ctx.createPattern(c,'repeat'); };
   patWater = mk(g=>{ g.strokeStyle='#444'; g.lineWidth=1; g.beginPath(); g.moveTo(0,4); g.lineTo(8,4); g.stroke(); });
   patFound = mk(g=>{ g.strokeStyle='#111'; g.lineWidth=1.6; g.beginPath(); g.moveTo(-1,9); g.lineTo(9,-1); g.moveTo(-1,5); g.lineTo(5,-1); g.moveTo(3,9); g.lineTo(9,3); g.stroke(); });
+  const pc=document.createElement('canvas'); pc.width=pc.height=Math.round(160*dpr); const pg=pc.getContext('2d'); pg.scale(dpr,dpr); pg.fillStyle='#fff'; pg.fillRect(0,0,160,160);
+  for(let i=0;i<2200;i++){ const g=233+Math.random()*22|0; pg.fillStyle=`rgb(${g},${g-5},${g-12})`; pg.fillRect(Math.random()*160,Math.random()*160,1,1); }
+  patPaper=ctx.createPattern(pc,'repeat'); try{ patPaper.setTransform(new DOMMatrix().scale(1/dpr)); }catch(e){}
   patGreen = mk(g=>{ g.fillStyle='#999'; g.fillRect(2,2,1.5,1.5); g.fillRect(6,6,1.5,1.5); });
 }
 const W2S = (x,y)=>[(x-view.cx)*view.s+W/2, (y-view.cy)*view.s+H/2];
 const S2W = (x,y)=>[(x-W/2)/view.s+view.cx, (y-H/2)/view.s+view.cy];
 function setPat(p){ try{ p.setTransform(new DOMMatrix().scale(1/(view.s*dpr))); }catch(e){} return p; }
 function pathFeat(f, r){ const ring=f.rings[r]; ctx.moveTo(ring[0][0],ring[0][1]); for(let i=1;i<ring.length;i++) ctx.lineTo(ring[i][0],ring[i][1]); if(f.closed[r]) ctx.closePath(); }
+const SW = { bg:'#fff', gFill:null, wFill:null, wStroke:'#222', shadow:0, road:'#bdbdbd', roadMajor:'#bdbdbd', casing:null, bFill:'#fff', bStroke:'#111', rail:'#222', foundFill:null, badge:'#111', paper:false };
+const FARBE = { bg:'#f3e6d2', gFill:'#b3d99b', wFill:'#84cde0', wStroke:'#4aa3bd', shadow:6, road:'#ffffff', roadMajor:'#f6b73c', casing:'#d9c3a5', bFill:'#e4b898', bStroke:'#9a6650', rail:'#7a5aa6', foundFill:'#f08a3c', badge:'#b3402a', paper:true };
 const ROADW = { motorway:16,trunk:16,primary:14,secondary:11,tertiary:9,residential:7,unclassified:7,living_street:6,service:4,pedestrian:5,footway:1.6,path:1.6,cycleway:2,track:2.5,steps:1.6 };
 
 function draw(){
   dirty=false;
-  ctx.setTransform(dpr,0,0,dpr,0,0); ctx.fillStyle='#fff'; ctx.fillRect(0,0,W,H);
+  const C = state.stil==='farbe' ? FARBE : SW;
+  ctx.setTransform(dpr,0,0,dpr,0,0); ctx.fillStyle=C.bg; ctx.fillRect(0,0,W,H);
   if (!feats.length) return;
   const s=view.s, px=1/s;
   const v0=S2W(0,0), v1=S2W(W,H);
@@ -326,30 +333,32 @@ function draw(){
   const vis = f => !(f.bb[2]<v0[0]||f.bb[0]>v1[0]||f.bb[3]<v0[1]||f.bb[1]>v1[1]);
   const V = feats.filter(vis);
   // Grün
-  ctx.fillStyle=setPat(patGreen);
+  ctx.fillStyle=C.gFill||setPat(patGreen);
+  if (C.shadow){ ctx.shadowColor=C.gFill; ctx.shadowBlur=C.shadow*dpr; }
   for (const f of V) if (f.k==='g') for (let r=0;r<f.rings.length;r++) if(f.closed[r]){ ctx.beginPath(); pathFeat(f,r); ctx.fill(); }
+  ctx.shadowBlur=0;
   // Wasser
   for (const f of V) if (f.k==='w'){
     for (let r=0;r<f.rings.length;r++){
       ctx.beginPath(); pathFeat(f,r);
-      if (f.closed[r]){ ctx.fillStyle=setPat(patWater); ctx.fill(); ctx.strokeStyle='#222'; ctx.lineWidth=1.5*px; ctx.setLineDash([]); ctx.stroke(); }
-      else { ctx.strokeStyle='#555'; ctx.lineWidth=Math.max(3,2.5*px); ctx.setLineDash([6*px,3*px]); ctx.stroke(); ctx.setLineDash([]); }
+      if (f.closed[r]){ ctx.fillStyle=C.wFill||setPat(patWater); if(C.shadow){ctx.shadowColor=C.wFill; ctx.shadowBlur=C.shadow*dpr;} ctx.fill(); ctx.shadowBlur=0; ctx.strokeStyle=C.wStroke; ctx.lineWidth=1.5*px; ctx.setLineDash([]); ctx.stroke(); }
+      else { ctx.strokeStyle=C.wStroke; ctx.lineWidth=Math.max(3,2.5*px); ctx.setLineDash([6*px,3*px]); ctx.stroke(); ctx.setLineDash([]); }
     }
   }
   // U-Bahn-Linie
-  ctx.strokeStyle='#222'; ctx.setLineDash([10*px,6*px]); ctx.lineWidth=2.5*px;
+  ctx.strokeStyle=C.rail; ctx.setLineDash([10*px,6*px]); ctx.lineWidth=2.5*px;
   for (const f of V) if (f.k==='r'){ ctx.beginPath(); for(let r=0;r<f.rings.length;r++) pathFeat(f,r); ctx.stroke(); }
   ctx.setLineDash([]);
   // Straßen
-  ctx.strokeStyle='#bdbdbd';
-  for (const f of V) if (f.k==='h'){ const w=ROADW[f.h]||4; ctx.lineWidth=Math.max(1*px, w); ctx.beginPath(); for(let r=0;r<f.rings.length;r++) pathFeat(f,r); ctx.stroke(); }
+  if (C.casing){ ctx.strokeStyle=C.casing; for (const f of V) if (f.k==='h'){ const w=ROADW[f.h]||4; ctx.lineWidth=Math.max(1*px, w)+2.2*px; ctx.beginPath(); for(let r=0;r<f.rings.length;r++) pathFeat(f,r); ctx.stroke(); } }
+  for (const f of V) if (f.k==='h'){ const w=ROADW[f.h]||4; ctx.strokeStyle = w>=9 ? C.roadMajor : C.road; ctx.lineWidth=Math.max(1*px, w); ctx.beginPath(); for(let r=0;r<f.rings.length;r++) pathFeat(f,r); ctx.stroke(); }
   // Gebäude
-  ctx.fillStyle='#fff'; ctx.strokeStyle='#111'; ctx.lineWidth=Math.max(1.1*px,0.5);
+  ctx.fillStyle=C.bFill; ctx.strokeStyle=C.bStroke; ctx.lineWidth=Math.max(1.1*px,0.5);
   for (const f of V) if ((f.k==='b'||f.k==='s'||f.k==='p') ) for (let r=0;r<f.rings.length;r++) if(f.closed[r]){ ctx.beginPath(); pathFeat(f,r); ctx.fill(); ctx.stroke(); }
   // gefundene Orte
   for (const o of CONFIG.orte){
     if (!o.geo || !(state.orte[o.id]&&state.orte[o.id].found)) continue;
-    ctx.fillStyle=setPat(patFound); ctx.strokeStyle='#111'; ctx.lineWidth=Math.max(2.5*px,1);
+    ctx.fillStyle=C.foundFill||setPat(patFound); ctx.strokeStyle='#111'; ctx.lineWidth=Math.max(2.5*px,1);
     ctx.beginPath();
     if (o.geo.circle){ ctx.arc(o.geo.circle[0],o.geo.circle[1],o.geo.circle[2],0,7); }
     else for (let r=0;r<o.geo.rings.length;r++) if(o.geo.closed[r]) pathFeat(o.geo,r);
@@ -369,6 +378,7 @@ function draw(){
   }
   // ---- Bildschirm-Ebene
   ctx.setTransform(dpr,0,0,dpr,0,0);
+  if (C.paper && patPaper){ ctx.globalCompositeOperation='multiply'; ctx.fillStyle=patPaper; ctx.fillRect(0,0,W,H); ctx.globalCompositeOperation='source-over'; }
   if (hintRing){
     const [sx,sy]=W2S(hintRing.x,hintRing.y);
     ctx.strokeStyle='#111'; ctx.lineWidth=3; ctx.setLineDash([10,7]);
@@ -383,7 +393,7 @@ function draw(){
   CONFIG.orte.forEach((o,i)=>{
     if (!o.geo || !(state.orte[o.id]&&state.orte[o.id].found)) return;
     const [sx,sy]=W2S(...centroid(o.geo));
-    ctx.fillStyle='#111'; ctx.beginPath(); ctx.arc(sx,sy,13,0,7); ctx.fill();
+    ctx.fillStyle=C.badge; ctx.beginPath(); ctx.arc(sx,sy,13,0,7); ctx.fill();
     ctx.fillStyle='#fff'; ctx.font='bold 15px system-ui,sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(String(i+1),sx,sy+1); ctx.textBaseline='alphabetic';
     label(o.kurz, sx, sy+30);
   });
@@ -426,6 +436,7 @@ cv.addEventListener('wheel', e=>{ e.preventDefault(); zoomAt(e.offsetX,e.offsetY
 $('#btnIn').onclick=()=>zoomAt(W/2,H/2,view.s*1.5);
 $('#btnOut').onclick=()=>zoomAt(W/2,H/2,view.s/1.5);
 $('#btnHome').onclick=fitAll;
+$('#btnStil').onclick=()=>{ state.stil = state.stil==='farbe' ? 'sw' : 'farbe'; save(); dirty=true; toast(state.stil==='farbe' ? 'Farbkarte' : 'Schwarzweiß-Karte', 1500); };
 
 /* ===================== Spiel ===================== */
 const found = o => !!(state.orte[o.id] && state.orte[o.id].found);
@@ -524,6 +535,7 @@ $('#btnMenu').onclick=()=>{
   const m=$('#menu'); m.replaceChildren(
     h('h2',{},'Menü'),
     h('div',{class:'row'}, h('button',{class:'big',onclick:openResult},'📄 Mein Blatt (Antworten & Fotos)')),
+    h('div',{class:'row'}, h('button',{onclick:()=>{ state.stil=state.stil==='farbe'?'sw':'farbe'; save(); dirty=true; $('#ovMenu').classList.remove('show'); }},'🎨 Karte: Farbe / Schwarzweiß')),
     h('div',{class:'row'}, h('button',{onclick:()=>{ $('#ovMenu').classList.remove('show'); toggleGps(); }},'◎ Standort ein/aus'), h('button',{onclick:()=>{ $('#ovMenu').classList.remove('show'); fitAll(); }},'⌂ Ganze Karte')),
     h('div',{class:'row'}, h('button',{onclick:()=>{ if(confirm('Wirklich alles löschen und neu beginnen?')){ state.orte={}; state.name=''; save(); hintRing=null; wrongCount=0; updateHeader(); dirty=true; $('#ovMenu').classList.remove('show'); } }},'Neu beginnen')),
     h('p',{style:'font-size:.85rem;color:#555'},'Kartendaten © OpenStreetMap-Mitwirkende (ODbL). Deine Antworten und Fotos bleiben nur auf diesem Gerät.'),
@@ -563,8 +575,28 @@ function renderTeacher(){
   const t=$('#teacher'); if(!TEACHER) return; t.classList.add('show'); t.replaceChildren(); ap(t,
     h('b',{},'Lehrkraft-Ansicht'),
     CONFIG.orte.map(o=>h('div',{class:'o'}, h('span',{}, (o.geo?'✓ ':'✗ ')+o.kurz+(o.quelle?' ('+o.quelle+')':'')), h('button',{onclick:()=>{teacherAssign=o.id; updateHeader(); toast('Jetzt auf der Karte auf das richtige Gebäude tippen.');}},'zuordnen'))),
-    h('div',{class:'o'}, h('button',{onclick:saveDataFile},'Daten als Datei speichern'), h('button',{onclick:()=>reload(true)},'Neu laden'))
+    h('div',{class:'o'}, h('button',{onclick:saveDataFile},'Daten als Datei speichern'), h('button',{onclick:()=>reload(true)},'Neu laden')),
+    importBox()
   );
+}
+function copyQuery(){
+  const q=bboxQuery(CONFIG.bbox.join(','));
+  (navigator.clipboard ? navigator.clipboard.writeText(q) : Promise.reject()).then(()=>toast('Abfrage kopiert. Auf overpass-turbo.eu einfügen, „Ausführen“, dann Export → „Rohdaten (JSON)“ herunterladen.',9000)).catch(()=>prompt('Diese Abfrage kopieren:',q));
+}
+async function importFile(file){
+  try {
+    const d=JSON.parse(await file.text()); let raw;
+    if (d.features && !d.elements){ raw=d.features; if(d.zuordnung) state.zuordnung=Object.assign({},d.zuordnung,state.zuordnung); }
+    else raw=cropToArea(parseOverpass(d));
+    if (!raw.length) throw new Error('leer');
+    try { localStorage.setItem(LS_DATA, JSON.stringify(raw)); } catch(e){}
+    prepare(raw); resolvePlaces(); renderTeacher(); updateHeader(); fitAll(); $('#loading').style.display='none'; dirty=true;
+    toast('Datei eingelesen: '+raw.length+' Objekte.',4000);
+  } catch(e){ toast('Die Datei konnte nicht gelesen werden.',5000); }
+}
+function importBox(){
+  const fi=h('input',{type:'file',accept:'.json,application/json',style:'display:none',onchange:()=>{ if(fi.files[0]) importFile(fi.files[0]); }});
+  return h('div',{class:'o'}, h('button',{onclick:copyQuery},'Abfrage kopieren'), h('button',{onclick:()=>fi.click()},'Datei einlesen'), fi);
 }
 function saveDataFile(){
   const data={v:1, bbox:CONFIG.bbox, features:feats.map(f=>f.raw), zuordnung:state.zuordnung};
@@ -584,6 +616,7 @@ async function loadData(forceNet){
 }
 async function reload(forceNet){
   $('#loading').style.display='flex'; $('#btnRetry').style.display='none'; $('#loadmsg').textContent='Karte wird geladen …';
+  if (TEACHER && !$('#loadT')){ const w=h('div',{id:'loadT',style:'margin-top:10px;font-size:.9rem'},'Dauert es zu lange? ',importBox()); $('#loading').append(w); }
   try {
     const raw=await loadData(forceNet);
     prepare(raw); resolvePlaces(); renderTeacher(); updateHeader(); fitAll();
