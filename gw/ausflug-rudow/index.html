@@ -119,6 +119,7 @@ const CONFIG = {
   ],
   hinweisNach: 3,          // nach so vielen falschen Tipps erscheint ein Suchkreis
   hinweisRadius: 150,      // Radius des Suchkreises in Metern
+  bereich: { lat:52.41777, lon:13.49630, r:200 },   // Bewegungsradius (roter Kreis auf der Karte), r in Metern
   overpass: ['https://overpass-api.de/api/interpreter', 'https://overpass.kumi.systems/api/interpreter', 'https://overpass.private.coffee/api/interpreter']
 };
 
@@ -384,6 +385,11 @@ function draw(){
   // ---- Bildschirm-Ebene
   ctx.setTransform(dpr,0,0,dpr,0,0);
   if (C.paper && patPaper){ ctx.globalCompositeOperation='multiply'; ctx.fillStyle=patPaper; ctx.fillRect(0,0,W,H); ctx.globalCompositeOperation='source-over'; }
+  if (CONFIG.bereich){
+    const [bx,by]=W2S(...toM(CONFIG.bereich.lat,CONFIG.bereich.lon));
+    ctx.strokeStyle='#b00000'; ctx.lineWidth=1.6; ctx.setLineDash([9,6]);
+    ctx.beginPath(); ctx.arc(bx,by,CONFIG.bereich.r*view.s,0,7); ctx.stroke(); ctx.setLineDash([]);
+  }
   if (hintRing){
     const [sx,sy]=W2S(hintRing.x,hintRing.y);
     ctx.strokeStyle='#111'; ctx.lineWidth=3; ctx.setLineDash([10,7]);
