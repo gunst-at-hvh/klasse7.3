@@ -31,6 +31,7 @@ Rollen-Adventure für den Geschichtsunterricht, Klasse 7/8, ISS · Stand 16.11.2
 | E13 | Rahmenlehrplan beachten, ein bis zwei Stufen tiefer ansetzen | Zuordnung und Differenzierung (Abschnitt 8) |
 | E14 | Im Modell bleiben, kein bestimmter Ort. Ein Schauplatz aus der Nähe kann später dazukommen. | Modell-Dorf ohne Namen (Abschnitt 12) |
 | E15 | Immer der Vergleich mit heute. Das ist das Wichtigste. | Heute-Fenster nach jeder Entscheidung (Abschnitt 2a) |
+| E16 | Man muss immer Nein sagen können und dann die harten Folgen spüren. Wer dabei bleibt, verliert nach drei Runden. Trotzdem soll man durchkommen können. | Nein-Regel mit drei Stufen und Balance-Tabelle (Abschnitt 5a) |
 
 ---
 
@@ -181,6 +182,36 @@ Beispiele für Rätselketten:
 
 ---
 
+## 5a. Nein sagen ist immer möglich
+
+REGEL: Bei **jeder** Forderung gibt es die Antwort „Ich tue es nicht“. Sie steht immer da, ohne Vorbedingung, für jede Rolle. Die Bauerntochter kann den Zins verweigern, der Schulze das Eintreiben, der Ritter die Steuer an den Landesherrn, der Pfarrer die Predigt, die der Ritter hören will.
+
+REGEL: Nein sagen hat harte, sichtbare Folgen, die in drei Stufen wachsen. Die dritte Stufe beendet das Spiel für diese Figur.
+
+| Mal | Folge (Beispiel Bauernhof) | Was das Kind spürt |
+|---|---|---|
+| 1 | Mahnung und Strafe: Im nächsten Jahr wird mehr gefordert. Wer getrotzt hat, bekommt keine Fürsprache mehr. | Es geht, aber es kostet. |
+| 2 | Pfändung: Der Ochse wird geholt, die nächste Ernte fällt kleiner aus. | Jetzt wird es eng. |
+| 3 | Das Gericht des Herrn nimmt den Hof. | Verloren. |
+
+**Balance, die das Spiel einhalten muss** (in der Demo so umgesetzt und im Testbrowser nachgerechnet):
+
+| Spielweise über drei Jahre | Ausgang |
+|---|---|
+| Immer alles abgeben | geschafft, aber mit einem Hungerjahr |
+| Mit anderen eine Lösung suchen (Fürsprache, Nachlass) | geschafft, ohne Hunger |
+| Einmal Nein sagen, im schlechten Jahr | geschafft, mit Mahnung und Strafe |
+| Tricksen (weniger angeben) | einmal geht es gut, beim zweiten Mal fliegt es auf |
+| Immer Nein sagen | im dritten Jahr verloren |
+
+> Warum: Die Lehrkraft will, dass die Kinder die Freiheit zum Nein wirklich haben und die Folgen selbst spüren, statt dass das Spiel die Wahl verbietet. Nur so wird erfahrbar, warum sich die Menschen fast immer gefügt haben: nicht, weil sie nicht konnten, sondern weil der Preis zu hoch war. Die Balance sorgt dafür, dass ein einzelnes Nein in der Not überlebbar ist, dauerndes Nein aber nicht. Ändern: Die drei Stufen und die Tabelle sind die Stellschrauben. Wer sie ändert, rechnet die fünf Spielweisen neu durch.
+
+REGEL: Verlieren kann man nur durch eigene, wiederholte Entscheidungen. Nie durch Zufall, Zeitdruck oder ein übersehenes Ding. Nach dem Verlust folgen ein kurzer Ausgang („Was wurde aus der Familie?“), das Heute-Fenster und ein Neustart am letzten Knotenpunkt.
+
+REGEL: Zu jedem Nein gehört das Heute-Fenster „sich wehren“: damals droht der Herr und ist selbst Richter, heute kann man widersprechen und vor ein unabhängiges Gericht gehen.
+
+---
+
 ## 6. Auflehnung: Wann kippt es?
 
 ### 6.1 Der Kerngedanke
@@ -191,7 +222,7 @@ Not allein löst keinen Aufstand aus. Nach dem Stand, an den sich dieses Konzept
 
 ### 6.2 Die Stufenleiter des Widerstands
 
-Das Spiel bietet den Bauernrollen diese Stufen an. Jede höhere Stufe wird erst angeboten, wenn die darunter versucht wurde.
+Das Spiel bietet den Bauernrollen diese Stufen an. Das Nein der einzelnen Figur ist nach Abschnitt 5a jederzeit möglich. An Bedingungen gebunden ist nur das gemeinsame Handeln des Dorfes: Stufe 4 braucht die Einigkeit der Gruppe, Stufe 6 die fünf Riegel.
 
 | Stufe | Handlung | Kosten und Gefahr |
 |---|---|---|
@@ -329,7 +360,7 @@ Was von den Klassikern des Genres übernommen wird, sind Prinzipien, keine Inhal
 - Räume zum Erkunden, Dinge zum Ansehen, Mitnehmen und Benutzen
 - Gespräche mit Auswahl, trockener Humor, wiederkehrende Nebenfiguren
 - Gegenstände, die an unerwarteter Stelle nützlich werden
-- **keine Sackgassen und kein Scheitern:** Man kann nicht verlieren und nichts unlösbar verbauen
+- **keine Sackgassen:** Kein Rätsel kann unlösbar verbaut werden. Verlieren kann man nur durch eigenes, wiederholtes Nein (Abschnitt 5a)
 
 REGEL: Keine Figuren, Namen, Bilder, Rätsel oder Sätze aus bestehenden Spielen übernehmen.
 

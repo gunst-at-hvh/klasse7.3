@@ -10,6 +10,7 @@
   Eine KI, die das Spiel baut, richtet sich nach BAUPLAN-KI.md und übernimmt von hier nur die Idee:
   feste Abgabe bei schlechter Ernte, Lösung nur über andere Figuren, keine "richtige" Wahl,
   Heute-Fenster nach der Entscheidung, dieselbe Szene aus einer zweiten Rolle.
+  Nein sagen ist immer möglich: Wer dreimal nichts gibt, verliert den Hof (KONZEPT.md, Abschnitt 5a).
   Figuren sind Platzhalter, Zahlen sind erfunden.
 -->
 <style>
@@ -33,22 +34,23 @@ button:hover{background:var(--surface-1)}
 .ans{display:block;width:100%;text-align:left;margin-top:8px}
 .box{background:var(--surface-1);border-radius:var(--radius);padding:10px 14px}
 .lbl{font-size:13px;color:var(--text-secondary)}
-.num{font-size:24px;font-weight:600}
+.num{font-size:22px;font-weight:600}
 </style>
 </head>
 <body>
 <main>
-<div class="demo"><b>DEMO.</b> Eine einzelne Szene zum Ausprobieren der Spielidee. Kein fertiges Spiel. Figuren sind Platzhalter, Zahlen sind erfunden.</div>
+<div class="demo"><b>DEMO.</b> Eine einzelne Szene (Abgabetag, drei Jahre) zum Ausprobieren der Spielidee. Kein fertiges Spiel. Figuren sind Platzhalter, Zahlen sind erfunden.</div>
 <h1 class="sr-only">Demo: Abgabetag im Dorf, aus Sicht einer Bauerntochter und eines Knappen, mit Vergleich zu heute.</h1>
 
 <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px">
   <div class="box" style="flex:2;min-width:220px">
     <div class="lbl">Deine Rolle</div>
     <div style="font-weight:600" id="rolle">Mette, Tochter eines Bauern</div>
-    <div class="lbl" style="font-size:14px" id="ziel">Ziel: Die Familie soll über den Winter kommen.</div>
+    <div class="lbl" style="font-size:14px" id="ziel">Ziel: Drei Jahre durchhalten. Ihr braucht 8 Säcke im Jahr.</div>
   </div>
-  <div class="box" style="flex:1;min-width:120px"><div class="lbl" id="m1l">Säcke auf dem Wagen</div><div class="num" id="m1">10</div></div>
-  <div class="box" style="flex:1;min-width:120px"><div class="lbl" id="m2l">Ihr braucht</div><div class="num" id="m2">8</div></div>
+  <div class="box" style="flex:1;min-width:92px"><div class="lbl" id="m1l">Säcke Korn</div><div class="num" id="m1">10</div></div>
+  <div class="box" style="flex:1;min-width:92px"><div class="lbl" id="m2l">Kraft der Familie</div><div class="num" id="m2">3 von 3</div></div>
+  <div class="box" style="flex:1;min-width:92px" id="b3"><div class="lbl">Mahnungen</div><div class="num" id="m3">0 von 3</div></div>
 </div>
 
 <div style="background:var(--surface-1);border-radius:12px;padding:8px">
@@ -75,45 +77,76 @@ button:hover{background:var(--surface-1)}
 <script>
 (function(){
 var $=function(i){return document.getElementById(i)};
-var s,role='mette';
-function reset(r){role=r;s={n:r==='mette'?10:27,zehnt:false,fuer:false,tipp:false,aus:false};
- $('rolle').textContent=r==='mette'?'Mette, Tochter eines Bauern':'Henning, Knappe des Herrn';
- $('ziel').textContent=r==='mette'?'Ziel: Die Familie soll über den Winter kommen.':'Ziel: Der Herr muss seine Steuer zahlen können.';
- $('m1l').textContent=r==='mette'?'Säcke auf dem Wagen':'Schon eingesammelt';
- $('m2l').textContent=r==='mette'?'Ihr braucht':'Der Herr braucht';$('m2').textContent=r==='mette'?'8':'30';
- $('lblKind').textContent=r==='mette'?'Du':'Mette';$('lblKnappe').textContent=r==='mette'?'Knappe':'Du';
- $('heute').innerHTML='';
- Array.prototype.forEach.call(document.querySelectorAll('.hs'),function(x){x.classList.remove('on');});
- say('Abgabetag',r==='mette'?'Die Ernte war schlecht. Auf eurem Wagen liegen 10 Säcke Korn. Tippe eine Figur oder den Wagen an.':'Du hilfst dem Verwalter beim Einsammeln. Es fehlen noch 3 Säcke. Tippe eine Figur oder den Wagen an.');upd();}
-function upd(){$('m1').textContent=Math.round(s.n);}
-function say(w,t,a){$('wer').textContent=w;$('txt').textContent=t;var box=$('ans');box.innerHTML='';(a||[]).forEach(function(x){var b=document.createElement('button');b.className='ans';b.textContent=x[0];b.addEventListener('click',x[1]);box.appendChild(b);});}
-function ende(res,dam,heu,fr){s.aus=true;upd();say('Ergebnis',res);
- var other=role==='mette'?'Dieselbe Szene als Knappe sehen':'Dieselbe Szene als Mette sehen';
- $('heute').innerHTML='<div style="border:1px solid var(--border);border-radius:12px;padding:14px 18px;margin-top:12px;background:var(--surface-2)"><div style="font-weight:600;margin-bottom:10px">Und heute?</div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px"><div class="box"><div class="lbl">Damals</div><div>'+dam+'</div></div><div class="box" style="background:var(--bg-accent);border:1px solid var(--text-accent)"><div class="lbl" style="color:var(--text-accent)">Heute</div><div style="color:var(--text-accent)">'+heu+'</div></div></div><div style="margin:12px 0 4px">'+fr+'</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button id="bSw">'+other+'</button><button id="bAg">Nochmal spielen</button></div></div>';
- $('bSw').addEventListener('click',function(){reset(role==='mette'?'henning':'mette');});
- $('bAg').addEventListener('click',function(){reset(role);});}
+var s,role='mette',ERNTE=[10,12,14],WORT=['schlecht','mittel','gut'];
 var DM='Der Herr und die Kirche nehmen einen festen Teil. Ob die Ernte gut war, zählt nicht. Niemand fragt dich.';
 var HM='Erwachsene zahlen Steuern. Ein gewähltes Parlament beschließt sie. Wer wenig verdient, zahlt weniger Lohnsteuer.';
 var FM='Was ist gleich? Was ist anders?';
-function zehntAb(){if(!s.zehnt){s.zehnt=true;s.n-=1;}}
+var DN='Wer nicht zahlt, dem droht der Herr. Er ist zugleich der Richter.';
+var HN='Wer eine Forderung falsch findet, kann widersprechen und vor ein unabhängiges Gericht gehen.';
+var FN='Was kannst du heute tun, wenn du etwas ungerecht findest?';
+function clr(){Array.prototype.forEach.call(document.querySelectorAll('.hs'),function(x){x.classList.remove('on');});}
+function say(w,t,a){$('wer').textContent=w;$('txt').textContent=t;var box=$('ans');box.innerHTML='';(a||[]).forEach(function(x){var b=document.createElement('button');b.className='ans';b.textContent=x[0];b.addEventListener('click',x[1]);box.appendChild(b);});}
+function upd(){$('m1').textContent=s.n;if(role==='mette'){$('m2').textContent=s.kraft+' von 3';$('m3').textContent=s.v+' von 3';}else{$('m2').textContent='30';}}
+function reset(r){role=r;var m=r==='mette';$('heute').innerHTML='';clr();
+ $('rolle').textContent=m?'Mette, Tochter eines Bauern':'Henning, Knappe des Herrn';
+ $('ziel').textContent=m?'Ziel: Drei Jahre durchhalten. Ihr braucht 8 Säcke im Jahr.':'Ziel: Der Herr muss seine Steuer zahlen können.';
+ $('m1l').textContent=m?'Säcke Korn':'Schon eingesammelt';$('m2l').textContent=m?'Kraft der Familie':'Der Herr braucht';
+ $('b3').style.display=m?'':'none';
+ $('lblKind').textContent=m?'Du':'Mette';$('lblKnappe').textContent=m?'Knappe':'Du';
+ if(m){s={jahr:1,vorrat:0,kraft:3,v:0,mis:0,schuld:0,strafe:0,ochse:true,aus:false};jahrStart();}
+ else{s={n:27,aus:false};say('Abgabetag','Du hilfst dem Verwalter beim Einsammeln. Es fehlen noch 3 Säcke. Tippe eine Figur oder den Wagen an.');upd();}}
+function jahrStart(){$('heute').innerHTML='';clr();s.aus=false;s.zehnt=false;s.fuer=false;s.tipp=false;
+ var e=ERNTE[s.jahr-1]-(s.ochse?0:4);s.f=3+s.schuld+s.strafe;s.n=s.vorrat+e;
+ var t='Jahr '+s.jahr+' von 3. Die Ernte war '+WORT[s.jahr-1]+': '+e+' Säcke.';
+ if(!s.ochse)t+=' Ohne Ochsen konntet ihr weniger pflügen.';
+ if(s.vorrat>0)t+=' Vom letzten Jahr sind noch '+s.vorrat+' da.';
+ t+=' Der Herr fordert '+s.f+' Säcke Zins. Tippe eine Figur oder den Wagen an.';
+ say('Abgabetag',t);upd();}
+function zehntAb(){if(!s.zehnt){s.zehnt=true;s.n=Math.max(0,s.n-1);}}
+function zahle(k){s.n-=Math.min(k,s.n);}
+function mahnung(){s.v+=1;if(s.v===1)return ' Das ist die erste Mahnung.';if(s.v===2){s.ochse=false;return ' Das ist die zweite Mahnung. Der Verwalter pfändet euren Ochsen.';}return ' Das ist die dritte Mahnung.';}
+function schluss(art,text){zehntAb();var rest=s.n,t=text+' Nach dem Zehnt bleiben euch '+rest+' Säcke.';
+ if(rest>=8){s.vorrat=rest-8;t+=' Das reicht für Saat und Essen.';}
+ else if(rest===7){s.vorrat=0;t+=' Es wird knapp, aber es geht.';}
+ else{s.vorrat=0;s.kraft-=1;t+=' Das ist zu wenig. Im Frühjahr hungert ihr.';}
+ var aus=null;
+ if(s.v>=3)aus='Das Gericht des Herrn nimmt euch den Hof. Der Richter ist der Herr selbst.';
+ else if(s.kraft<=0)aus='Die Familie ist zu schwach für die Arbeit. Ihr müsst den Hof aufgeben.';
+ var fertig=!!aus||s.jahr>=3;
+ if(aus)t+=' '+aus;else if(fertig)t+=' Ihr habt drei Jahre durchgehalten.';
+ upd();var h=art==='nein'?[DN,HN,FN]:[DM,HM,FM];
+ ende(aus?'Verloren':(fertig?'Geschafft':'Ergebnis im Jahr '+s.jahr),t,h[0],h[1],h[2],fertig);}
+function ende(w,res,dam,heu,fr,fertig){s.aus=true;say(w,res);
+ var other=role==='mette'?'Dieselbe Szene als Knappe sehen':'Dieselbe Szene als Mette sehen';
+ var kn=fertig?'<button id="bSw">'+other+'</button><button id="bAg">Nochmal spielen</button>':'<button id="bNx">Weiter ins nächste Jahr</button>';
+ $('heute').innerHTML='<div style="border:1px solid var(--border);border-radius:12px;padding:14px 18px;margin-top:12px;background:var(--surface-2)"><div style="font-weight:600;margin-bottom:10px">Und heute?</div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px"><div class="box"><div class="lbl">Damals</div><div>'+dam+'</div></div><div class="box" style="background:var(--bg-accent);border:1px solid var(--text-accent)"><div class="lbl" style="color:var(--text-accent)">Heute</div><div style="color:var(--text-accent)">'+heu+'</div></div></div><div style="margin:12px 0 4px">'+fr+'</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">'+kn+'</div></div>';
+ if(fertig){$('bSw').addEventListener('click',function(){reset(role==='mette'?'henning':'mette');});$('bAg').addEventListener('click',function(){reset(role);});}
+ else{$('bNx').addEventListener('click',function(){s.jahr+=1;jahrStart();});}}
 var H={mette:{
- wagen:function(){say('Du','Zehn Säcke. In einem guten Jahr sind es vierzehn. Ihr braucht drei für die Saat und fünf zum Essen.');},
- nachbar:function(){s.tipp=true;say('Nachbar','Ich habe zwei Säcke zu Hause unterm Heu gelassen. Der Verwalter zählt nur, was auf dem Wagen liegt. Aber wehe, er merkt es.');},
+ wagen:function(){say('Du','Auf dem Wagen liegen '+s.n+' Säcke. Ihr braucht 8 im Jahr: drei für die Saat, fünf zum Essen.');},
+ nachbar:function(){s.tipp=true;say('Nachbar','Ich habe Korn zu Hause unterm Heu gelassen. Der Verwalter zählt nur, was auf dem Wagen liegt. Aber wehe, er merkt es.'+(s.mis>=1?' Bei dir schaut er jetzt genauer hin.':''));},
  pfarrer:function(){var a=[];if(!s.zehnt)a.push(['Hier ist der Zehnt.',function(){zehntAb();upd();say('Pfarrer','Gott vergelt es euch. Ein Sack für die Kirche.');}]);
-  if(!s.fuer)a.push(['Sprecht Ihr beim Verwalter für uns?',function(){s.fuer=true;say('Pfarrer','Ich lege ein Wort für euch ein. Versprechen kann ich nichts.');}]);
+  if(!s.fuer)a.push(['Sprecht Ihr beim Verwalter für uns?',function(){if(s.v>0){say('Pfarrer','Du hast dem Herrn getrotzt. Da kann ich nicht für euch sprechen.');}else{s.fuer=true;say('Pfarrer','Ich lege ein Wort für euch ein. Versprechen kann ich nichts.');}}]);
   say('Pfarrer',s.zehnt?'Der Zehnt ist bezahlt.':'Der zehnte Teil der Ernte gehört der Kirche. Bei euch ist das ein Sack.',a);},
- verwalter:function(){var a=[['Hier sind drei Säcke.',function(){zehntAb();s.n-=3;ende('Euch bleiben 6 Säcke. Ihr braucht 8. Im Frühjahr wird gehungert, oder ihr esst das Saatgut.',DM,HM,FM);}]];
-  a.push(['Bitte erlasst uns einen Sack.',function(){if(s.fuer){zehntAb();s.n-=2;ende('Der Pfarrer hat für euch gesprochen. Ihr gebt zwei Säcke, den dritten nach der nächsten Ernte. Euch bleiben 7. Nächstes Jahr schuldet ihr vier.',DM,HM,FM);}else{say('Verwalter','Der Herr braucht das Korn selbst. Drei Säcke. Oder hast du jemanden, der für euch spricht?',a.filter(function(x,i){return i!==1;}));}}]);
-  if(s.tipp)a.push(['Wir haben nur acht geerntet. Zwei, mehr geht nicht.',function(){zehntAb();s.n-=2;ende('Der Verwalter nimmt zwei Säcke. Euch bleiben 7. Aber er glaubt dir nicht ganz und will im Winter eure Scheune ansehen.',DM,HM,FM);}]);
-  say('Verwalter','Euer Hof schuldet dem Herrn drei Säcke Zins. Wie jedes Jahr.',a);}
+ verwalter:function(){var f=s.f,a=[];
+  a.push(['Hier sind '+f+' Säcke.',function(){zahle(f);s.schuld=0;s.strafe=0;schluss('zahl','Du gibst dem Verwalter '+f+' Säcke.');}]);
+  a.push(['Bitte erlasst uns einen Sack.',function(){if(s.fuer){zahle(f-1);s.schuld=1;s.strafe=0;schluss('nachlass','Der Pfarrer hat für euch gesprochen. Ihr gebt '+(f-1)+' Säcke. Einen schuldet ihr im nächsten Jahr.');}else{say('Verwalter','Der Herr braucht das Korn selbst. Oder hast du jemanden, der für euch spricht?',a.filter(function(x,i){return i!==1;}));}}]);
+  if(s.tipp)a.push(['Wir haben weniger geerntet. Einen Sack weniger.',function(){s.mis+=1;s.schuld=0;s.strafe=0;
+   if(s.mis>=2){zahle(f+1);schluss('nein','Der Verwalter glaubt dir nicht mehr. Er lässt die Scheune durchsuchen und nimmt '+(f+1)+' Säcke.'+mahnung());}
+   else{zahle(f-1);schluss('versteck','Der Verwalter nimmt '+(f-1)+' Säcke. Er glaubt dir nicht ganz und merkt sich euren Hof.');}}]);
+  a.push(['Ich gebe nichts.',function(){s.schuld=0;s.strafe=1;schluss('nein','Du gibst dem Verwalter nichts. Er droht: Nächstes Jahr kommt ein Sack Strafe dazu.'+mahnung());}]);
+  say('Verwalter','Euer Hof schuldet dem Herrn '+f+' Säcke Zins.'+(s.strafe?' Ein Sack davon ist Strafe.':'')+(s.schuld?' Ein Sack davon ist die Schuld vom letzten Jahr.':''),a);}
 },henning:{
  verwalter:function(){say('Verwalter','Der Landesherr fordert seine Steuer. Kann der Herr nicht zahlen, verliert er sein Ansehen und vielleicht sein Lehen. Uns fehlen drei Säcke.');},
  pfarrer:function(){say('Pfarrer','Bedenke: Wer im Frühjahr hungert, kann nicht pflügen. Dann bekommt der Herr nächstes Jahr noch weniger.');},
  nachbar:function(){say('Du','Der Mann schaut weg, als du ihn ansiehst. Hat er etwas zu verbergen?');},
  wagen:function(){var D='Auch der Herr schuldet jemandem etwas. Der Druck wandert von oben nach unten weiter.',Hh='Auch heute geben viele Druck weiter: Firmen, Chefinnen, Kunden. Aber Gesetze und Gerichte setzen Grenzen.',F='Wo erlebst du, dass Druck weitergegeben wird?';
-  say('Mette','Die Ernte war schlecht, Herr. Wir haben nur zehn Säcke.',[['Drei Säcke. Wie jedes Jahr.',function(){s.n+=3;ende('Der Herr kann seine Steuer zahlen. Im Dorf wird gemurrt, und eine Familie hungert im Frühjahr.',D,Hh,F);}],['Zwei jetzt, einen nach der nächsten Ernte.',function(){s.n+=2;ende('Dem Herrn fehlt ein Sack. Er muss sich in der Stadt Geld leihen. Das Dorf bleibt ruhig.',D,Hh,F);}]]);}
+  say('Mette','Die Ernte war schlecht, Herr. Wir haben nur zehn Säcke.',[
+   ['Drei Säcke. Wie jedes Jahr.',function(){s.n+=3;upd();ende('Ergebnis','Der Herr kann seine Steuer zahlen. Im Dorf wird gemurrt, und eine Familie hungert im Frühjahr.',D,Hh,F,true);}],
+   ['Zwei jetzt, einen nach der nächsten Ernte.',function(){s.n+=2;upd();ende('Ergebnis','Dem Herrn fehlt ein Sack. Er muss sich in der Stadt Geld leihen. Das Dorf bleibt ruhig.',D,Hh,F,true);}],
+   ['Der Herr verzichtet dieses Jahr.',function(){upd();ende('Ergebnis','Dem Herrn fehlen drei Säcke. Er kann die Steuer nicht zahlen. Jetzt droht ihm der Landesherr.',D,Hh,F,true);}]]);}
 }};
-Array.prototype.forEach.call(document.querySelectorAll('.hs'),function(g){function go(){if(s.aus)return;Array.prototype.forEach.call(document.querySelectorAll('.hs'),function(x){x.classList.remove('on');});g.classList.add('on');H[role][g.getAttribute('data-id')]();}
+Array.prototype.forEach.call(document.querySelectorAll('.hs'),function(g){function go(){if(s.aus)return;clr();g.classList.add('on');H[role][g.getAttribute('data-id')]();}
  g.addEventListener('click',go);g.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();go();}});});
 reset('mette');
 })();

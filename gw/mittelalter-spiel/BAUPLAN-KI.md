@@ -25,7 +25,9 @@ REGEL 1.3 (MUSS): Das Spiel läuft auch, wenn man `index.html` per Doppelklick �
 
 REGEL 1.4 (MUSS): Das Spiel ist ohne jede Bilddatei vollständig spielbar. Fehlt ein Bild, zeichnet der Motor einen beschrifteten Platzhalter.
 
-REGEL 1.5 (MUSS): Keine Sackgassen. Zu jedem Zeitpunkt gibt es einen Weg zum Ende des Akts. Man kann nicht verlieren.
+REGEL 1.5 (MUSS): Keine Sackgassen durch Rätsel. Zu jedem Zeitpunkt gibt es einen Weg zum Ende des Akts. Verlieren kann man nur durch eigenes, wiederholtes Nein (REGEL 1.13), nie durch Zufall, Zeitdruck oder ein übersehenes Ding.
+
+REGEL 1.13 (MUSS): Jede Forderung an die Spielfigur hat eine Antwort „Ich tue es nicht“, ohne Vorbedingung. Jedes Nein erhöht die Zahl `mahnung` um 1 und löst die Folge der Stufe aus (`KONZEPT.md`, Abschnitt 5a). Bei `mahnung==3` endet das Spiel für diese Figur mit Ausgang, Heute-Fenster und Neustart am letzten Knotenpunkt.
 
 REGEL 1.6 (MUSS): Kein Zeitdruck durch Reaktionsgeschwindigkeit, keine Information nur über Farbe, Schrift mindestens 18 px, Tippflächen mindestens 44 px.
 
@@ -69,7 +71,7 @@ gw/mittelalter-spiel/
 
 REGEL 2.1 (MUSS): Jede Inhaltsdatei hängt sich an das globale Objekt `PAKET` an und ändert nichts anderes.
 
-REGEL 2.2 (MUSS): `demo/` ist eine fest verdrahtete Vorführung der Idee (Abgabetag aus zwei Rollen mit Heute-Fenster). Sie ist kein Teil des Motors. Nicht darauf aufbauen und keinen Code daraus übernehmen, nur die Idee.
+REGEL 2.2 (MUSS): `demo/` ist eine fest verdrahtete Vorführung der Idee (Abgabetag über drei Jahre aus zwei Rollen, mit Nein-Antwort, drei Stufen und Heute-Fenster). Sie ist kein Teil des Motors. Nicht darauf aufbauen und keinen Code daraus übernehmen, nur die Idee.
 
 ---
 
@@ -344,6 +346,8 @@ REGEL 11.2 (MUSS): Für jeden Akt ein automatischer Durchlauf, der jeden Weg min
 
 REGEL 11.3 (MUSS): Im Bericht trennen: im Testbrowser geprüft, auf echtem Gerät geprüft, mit Kindern erprobt. Nichts davon gleichsetzen.
 
+REGEL 11.5 (MUSS): Balance-Probe. Ein automatischer Durchlauf spielt die fünf Spielweisen aus `KONZEPT.md`, Abschnitt 5a, und prüft, dass jede beim dort genannten Ausgang landet. Nach jeder Änderung an Zahlen oder Folgen neu laufen lassen.
+
 REGEL 11.4 (MUSS): Texte zählen lassen. Ein Skript meldet jeden Text, der die Grenzen aus REGEL 4.1 überschreitet.
 
 ---
@@ -357,6 +361,8 @@ REGEL 11.4 (MUSS): Texte zählen lassen. Ein Skript meldet jeden Text, der die G
 | Eine Entscheidung ist „richtig“ oder „falsch“ | jede Wahl hat einen Preis und einen Nutzen |
 | Lange Erklärtexte | eine Figur sagt es in einem Satz, der Rest steht im Lexikon |
 | Aufruhr als Heldengeschichte | selten, teuer, mit Folgen (Konzept 6.4) |
+| Forderung ohne Nein-Antwort | „Ich tue es nicht“ immer anbieten, Folgen nach Konzept 5a |
+| Nein ohne spürbare Folge, oder Nein führt sofort zum Ende | drei Stufen, erst die dritte beendet das Spiel |
 | Ritter als Bösewicht | er hat eigenen Druck und eigene Angst |
 | Mehr Umfang als bestellt | genau ein Arbeitspaket, dann stoppen |
 | Sachangaben ohne Beleg | Feld `beleg` setzen, Unklares in `OFFEN.md` |
