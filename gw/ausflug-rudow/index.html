@@ -101,13 +101,13 @@ const CONFIG = {
     { id: 'krug', titel: 'das Wirtshaus „Zum alten Krug“', kurz: 'Alter Krug', match: /krug/i, tippe: 'Tippe auf das Gebäude.',
       fragen: ['Was gibt es in diesem Haus?', 'Wie alt schätzt du das Haus?'],
       foto: 'Mach ein Foto vom Wirtshaus.' },
-    { id: 'teich', titel: 'den Schmiedeteich', kurz: 'Schmiedeteich', match: /schmiedeteich/i, tippe: 'Tippe auf den Teich.',
+    { id: 'teich', titel: 'den Schmiedeteich', kurz: 'Schmiedeteich', match: /schmied/i, tippe: 'Tippe auf den Teich.',
       fragen: ['Wofür könnte man den Teich früher gebraucht haben?', 'Welche Tiere oder Pflanzen siehst du?'],
       foto: 'Mach ein Foto vom Teich.' },
     { id: 'schule', titel: 'die alte Dorfschule', kurz: 'Dorfschule', match: /dorfschule/i, tippe: 'Tippe auf das Gebäude.',
       fragen: ['Beschreibe das Haus: Was fällt dir auf?', 'Was ist hier anders als an unserer Schule?'],
       foto: 'Mach ein Foto von der alten Dorfschule.' },
-    { id: 'verein', titel: 'den Heimatverein', kurz: 'Heimatverein', match: /heimatverein/i, tippe: 'Tippe auf das Gebäude.',
+    { id: 'verein', titel: 'den Heimatverein', kurz: 'Heimatverein', match: /heimat/i, tippe: 'Tippe auf das Gebäude.',
       fragen: ['Was macht ein Heimatverein? Schreibe deine Vermutung auf.', 'Was würdest du dort gern fragen?'],
       foto: 'Mach ein Foto vom Heimatverein.' }
   ],
@@ -189,10 +189,8 @@ function parseOverpass(json){
   }
   return [...out.values()];
 }
-function overpassQuery(){
-  const b = CONFIG.bbox.join(',');
-  const names = CONFIG.orte.map(o=>o.match.source).join('|');
-  return `[out:json][timeout:60];(
+function bboxQuery(b){
+  return `[out:json][timeout:40];(
  way["building"](${b});
  way["highway"](${b});
  way["natural"="water"](${b}); relation["natural"="water"](${b}); way["waterway"](${b});
@@ -201,22 +199,39 @@ function overpassQuery(){
  way["natural"~"wood|scrub|grassland"](${b});
  way["railway"~"subway|rail|light_rail"](${b});
  nwr["railway"="station"](${b}); nwr["public_transport"="station"](${b});
- nwr["name"~"${names}",i](${b});
+ nwr["name"~"${CONFIG.orte.map(o=>o.match.source).join('|')}",i](${b});
 );out geom;`;
 }
-async function fetchOverpass(){
-  let lastErr;
-  for (const url of CONFIG.overpass){
-    try {
-      $('#loadmsg').textContent = 'Karte wird von OpenStreetMap geladen …';
-      const r = await fetch(url, { method:'POST', body:'data='+encodeURIComponent(overpassQuery()), headers:{'Content-Type':'application/x-www-form-urlencoded'} });
+function nameQuery(b){
+  return `[out:json][timeout:25];(nwr["name"~"${CONFIG.orte.map(o=>o.match.source).join('|')}",i](${b});nwr["railway"="station"]["name"~"Rudow",i](${b}););out center tags;`;
+}
+// fragt alle Server gleichzeitig, nimmt die erste Antwort
+function ovFetch(q, ms){
+  const ctrls = CONFIG.overpass.map(()=>new AbortController());
+  return Promise.any(CONFIG.overpass.map((url,i)=>{
+    const t = setTimeout(()=>ctrls[i].abort(), ms);
+    return fetch(url+'?data='+encodeURIComponent(q), {signal:ctrls[i].signal}).then(async r=>{
       if (!r.ok) throw new Error('HTTP '+r.status);
-      const raw = parseOverpass(await r.json());
-      if (!raw.length) throw new Error('leer');
-      return raw;
-    } catch(e){ lastErr = e; }
-  }
-  throw lastErr;
+      const j = await r.json(); ctrls.forEach((c,k)=>{ if(k!==i) c.abort(); }); return j;
+    }).finally(()=>clearTimeout(t));
+  }));
+}
+async function fetchOverpass(){
+  const full = CONFIG.bbox.join(',');
+  let area = full;
+  $('#loadmsg').textContent = 'Schritt 1 von 2: Orte suchen …';
+  try {
+    const j1 = await ovFetch(nameQuery(full), 30000);
+    const pts = (j1.elements||[]).map(e=>[e.lat ?? (e.center&&e.center.lat), e.lon ?? (e.center&&e.center.lon)]).filter(p=>p[0]!=null);
+    if (pts.length){
+      const la=pts.map(p=>p[0]), lo=pts.map(p=>p[1]);
+      area = [Math.min(...la)-0.006, Math.min(...lo)-0.010, Math.max(...la)+0.006, Math.max(...lo)+0.010].map(v=>+v.toFixed(5)).join(',');
+    }
+  } catch(e){ /* dann eben der ganze Ausschnitt */ }
+  $('#loadmsg').textContent = 'Schritt 2 von 2: Karte laden … (kann bis zu einer Minute dauern)';
+  const raw = parseOverpass(await ovFetch(bboxQuery(area), 60000));
+  if (!raw.length) throw new Error('leer');
+  return raw;
 }
 
 /* ===================== Karte ===================== */
@@ -420,6 +435,7 @@ function updateHeader(){
   $('#prog').textContent = '●'.repeat(n)+'○'.repeat(CONFIG.orte.length-n);
   const t=nextTarget(), box=$('#task'); box.replaceChildren();
   if (TEACHER && teacherAssign){ const o=CONFIG.orte.find(x=>x.id===teacherAssign); box.append('Lehrkraft: Tippe auf das Gebäude für „'+o.kurz+'“.'); return; }
+  if (!feats.length) { box.append('Die Karte wird geladen …'); return; }
   if (!CONFIG.orte.some(o=>o.geo)) { box.append('Die Orte sind noch nicht auf der Karte zugeordnet (Lehrkraft: Adresse mit ?lehrer=1 öffnen).'); return; }
   if (!t){ box.append(h('b',{},'Geschafft! '),'Du hast alle Orte gefunden. ',h('button',{onclick:openResult,style:'margin-left:6px'},'Mein Blatt')); return; }
   const i=CONFIG.orte.indexOf(t)+1;
