@@ -61,12 +61,15 @@ gw/mittelalter-spiel/
     henning-akt1.js
     heute.js                alle Heute-Fenster
     bilder/               optional, siehe Abschnitt 6
+  demo/index.html         DEMO einer Szene, nur zur Vorführung (siehe REGEL 2.2)
   KONZEPT.md
   BAUPLAN-KI.md
   OFFEN.md                offene Sachfragen an die Lehrkraft
 ```
 
 REGEL 2.1 (MUSS): Jede Inhaltsdatei hängt sich an das globale Objekt `PAKET` an und ändert nichts anderes.
+
+REGEL 2.2 (MUSS): `demo/` ist eine fest verdrahtete Vorführung der Idee (Abgabetag aus zwei Rollen mit Heute-Fenster). Sie ist kein Teil des Motors. Nicht darauf aufbauen und keinen Code daraus übernehmen, nur die Idee.
 
 ---
 
