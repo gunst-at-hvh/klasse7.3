@@ -580,8 +580,8 @@ function renderTeacher(){
   );
 }
 function copyQuery(){
-  const q=bboxQuery(CONFIG.bbox.join(','));
-  (navigator.clipboard ? navigator.clipboard.writeText(q) : Promise.reject()).then(()=>toast('Abfrage kopiert. Auf overpass-turbo.eu einfügen, „Ausführen“, dann Export → „Rohdaten (JSON)“ herunterladen.',9000)).catch(()=>prompt('Diese Abfrage kopieren:',q));
+  const q=bboxQuery('{{bbox}}'); // Overpass Turbo setzt hier den sichtbaren Kartenausschnitt ein
+  (navigator.clipboard ? navigator.clipboard.writeText(q) : Promise.reject()).then(()=>toast('Abfrage kopiert. Auf overpass-turbo.eu: Karte auf die Altstadt zoomen, Abfrage einfügen, „Ausführen“, dann Export → „Rohdaten (JSON)“.',9000)).catch(()=>prompt('Diese Abfrage kopieren:',q));
 }
 async function importFile(file){
   try {
