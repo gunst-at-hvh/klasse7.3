@@ -244,7 +244,7 @@ const cv = $('#cv'), ctx = cv.getContext('2d');
 let W=0, H=0, dpr=1, dirty=true;
 let feats=[], featByKey=new Map(), station=null;
 const view = { cx:0, cy:0, s:0.6 };
-let gps=null, watchId=null, flash=null, hintRing=null, wrongCount=0, teacherAssign=null;
+let gps=null, heading=null, watchId=null, flash=null, hintRing=null, wrongCount=0, teacherAssign=null;
 let patWater, patFound, patGreen, patPaper;
 
 function prepare(raw){
@@ -405,6 +405,11 @@ function draw(){
     const [x,y]=toM(gps.lat,gps.lon), [sx,sy]=W2S(x,y);
     const ar=Math.max(10,(gps.acc||20)*view.s);
     ctx.strokeStyle='#111'; ctx.lineWidth=1.5; ctx.setLineDash([4,4]); ctx.beginPath(); ctx.arc(sx,sy,ar,0,7); ctx.stroke(); ctx.setLineDash([]);
+    if (heading!=null){
+      const a=heading*Math.PI/180-Math.PI/2;
+      ctx.beginPath(); ctx.moveTo(sx,sy); ctx.arc(sx,sy,34,a-0.5,a+0.5); ctx.closePath();
+      ctx.fillStyle='rgba(17,17,17,.28)'; ctx.fill(); ctx.strokeStyle='#111'; ctx.lineWidth=2; ctx.stroke();
+    }
     ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(sx,sy,9,0,7); ctx.fill();
     ctx.fillStyle='#111'; ctx.beginPath(); ctx.arc(sx,sy,6,0,7); ctx.fill();
   }
@@ -553,18 +558,36 @@ $('#btnMenu').onclick=()=>{
 };
 $('#ovMenu').addEventListener('pointerdown',e=>{ if(e.target.id==='ovMenu') $('#ovMenu').classList.remove('show'); });
 
+/* ---- Kompass (optional: nur wenn das Handy ihn liefert) ---- */
+function onOri(e){
+  let hd=null;
+  if (e.webkitCompassHeading!=null) hd=e.webkitCompassHeading;          // iPhone
+  else if ((e.type==='deviceorientationabsolute' || e.absolute) && e.alpha!=null) hd=360-e.alpha; // Android
+  if (hd==null || isNaN(hd)) return;
+  hd=(hd+360)%360;
+  if (heading==null) heading=hd; else { const d=((hd-heading+540)%360)-180; heading=(heading+d*0.25+360)%360; }
+  if (gps) dirty=true;
+}
+function startCompass(){   // muss direkt beim Antippen aufgerufen werden (iPhone fragt nach)
+  const D=window.DeviceOrientationEvent; if(!D) return;
+  const attach=()=>{ window.addEventListener('deviceorientationabsolute',onOri,true); window.addEventListener('deviceorientation',onOri,true); };
+  attach();   // ohne Freigabe kommen auf dem iPhone einfach keine Werte
+  if (typeof D.requestPermission==='function') D.requestPermission().catch(()=>{});
+}
+function stopCompass(){ window.removeEventListener('deviceorientationabsolute',onOri,true); window.removeEventListener('deviceorientation',onOri,true); heading=null; }
+
 /* ---- Standort ---- */
 function toggleGps(){
-  if (watchId!=null){ navigator.geolocation.clearWatch(watchId); watchId=null; gps=null; $('#btnGps').classList.remove('on'); dirty=true; toast('Standort ist aus.'); return; }
+  if (watchId!=null){ navigator.geolocation.clearWatch(watchId); watchId=null; gps=null; stopCompass(); $('#btnGps').classList.remove('on'); dirty=true; toast('Standort ist aus.'); return; }
   if (!navigator.geolocation){ toast('Dieses Gerät kann den Standort nicht bestimmen. Du kannst trotzdem spielen.'); return; }
-  let first=true; $('#btnGps').classList.add('on'); toast('Standort wird gesucht …');
+  let first=true; $('#btnGps').classList.add('on'); toast('Standort wird gesucht …'); startCompass();
   watchId = navigator.geolocation.watchPosition(pos=>{
     gps={lat:pos.coords.latitude,lon:pos.coords.longitude,acc:pos.coords.accuracy}; dirty=true;
     if (first){ first=false; const b=CONFIG.bbox, inside=gps.lat>=b[0]&&gps.lat<=b[2]&&gps.lon>=b[1]&&gps.lon<=b[3];
       if (inside){ const [x,y]=toM(gps.lat,gps.lon); view.cx=x; view.cy=y; view.s=Math.max(view.s,1.2); toast('Du bist der Punkt mit dem Ring.'); }
       else toast('Du bist gerade nicht in der Rudower Altstadt.'); }
   }, err=>{
-    watchId=null; gps=null; $('#btnGps').classList.remove('on');
+    watchId=null; gps=null; stopCompass(); $('#btnGps').classList.remove('on');
     toast(err.code===1 ? 'Der Standort ist gesperrt. Das ist nicht schlimm – du kannst die Orte auch ohne Standort finden. (Lehrkraft: Standortfreigabe im Browser erlauben.)' : 'Standort gerade nicht verfügbar. Geh nach draußen oder versuche es später nochmal.', 6000);
   }, {enableHighAccuracy:true, maximumAge:5000, timeout:25000});
 }
