@@ -100,19 +100,19 @@ const CONFIG = {
   // match = Suchmuster für den Namen in OSM. Findet es nichts, kann die Lehrkraft
   // den Ort von Hand zuordnen (Adresse ?lehrer=1 an die Seite hängen).
   orte: [
-    { id: 'kirche', titel: 'die alte Dorfkirche', kurz: 'Dorfkirche', match: /dorfkirche/i, tippe: 'Tippe auf das Gebäude.',
+    { id: 'kirche', titel: 'die alte Dorfkirche', schlag: 'Dorfkirche', kurz: 'Dorfkirche', match: /dorfkirche/i, tippe: 'Tippe auf das Gebäude.',
       fragen: ['Wann wurde die Kirche zum ersten Mal gebaut? (Suche eine Infotafel oder frage jemanden.)', 'Woraus sind die alten Wände der Kirche gebaut?'],
       foto: 'Mach ein Foto von der Kirche.' },
-    { id: 'krug', titel: 'das Wirtshaus „Zum alten Krug“', kurz: 'Alter Krug', match: /krug/i, tippe: 'Tippe auf das Gebäude.',
+    { id: 'krug', titel: 'das Wirtshaus „Zum alten Krug“', schlag: 'Zum alten Krug', kurz: 'Alter Krug', match: /krug/i, tippe: 'Tippe auf das Gebäude.',
       fragen: ['Seit wann gibt es das Wirtshaus?', 'Wie alt schätzt du das Haus?'],
       foto: 'Mach ein Foto vom Wirtshaus.' },
-    { id: 'teich', titel: 'den Dorfteich (Schmiedeteich)', kurz: 'Dorfteich', match: /dorfteich|schmiedeteich/i, tippe: 'Tippe auf den Teich.',
+    { id: 'teich', titel: 'den Dorfteich (Schmiedeteich)', schlag: 'Dorfteich', kurz: 'Dorfteich', match: /dorfteich|schmiedeteich/i, tippe: 'Tippe auf den Teich.',
       fragen: ['Wofür könnte man den Teich früher gebraucht haben?'],
       foto: 'Mach ein Foto vom Teich, mit der Kirche im Hintergrund.' },
-    { id: 'schule', titel: 'die alte Dorfschule', kurz: 'Dorfschule', match: /dorfschule/i, tippe: 'Tippe auf das Gebäude.',
+    { id: 'schule', titel: 'die alte Dorfschule', schlag: 'Dorfschule', kurz: 'Dorfschule', match: /dorfschule/i, tippe: 'Tippe auf das Gebäude.',
       fragen: ['Beschreibe das Haus: Was fällt dir auf?', 'Was ist hier anders als an unserer Schule?'],
       foto: 'Mach ein Foto von der alten Dorfschule.' },
-    { id: 'verein', titel: 'das Heimatmuseum (Heimatverein)', kurz: 'Heimatmuseum', match: /heimat/i, tippe: 'Tippe auf das Gebäude.',
+    { id: 'verein', titel: 'das Heimatmuseum (Heimatverein)', schlag: 'Heimatmuseum', kurz: 'Heimatmuseum', match: /heimat/i, tippe: 'Tippe auf das Gebäude.',
       fragen: ['Was macht ein Heimatverein? Schreibe deine Vermutung auf.', 'Was würdest du dort gern fragen?'],
       foto: 'Mach ein Foto vom Heimatverein.' }
   ],
@@ -444,6 +444,7 @@ $('#btnStil').onclick=()=>{ state.stil = state.stil==='farbe' ? 'sw' : 'farbe'; 
 
 /* ===================== Spiel ===================== */
 const complete = o => { const st=state.orte[o.id]||{}; return !!(st.found && st.foto && o.fragen.every((q,i)=>((st.antworten||[])[i]||'').trim())); };
+const boldTitle = o => { const i=o.titel.indexOf(o.schlag); return i<0 ? [o.titel] : [o.titel.slice(0,i), h('b',{},o.schlag), o.titel.slice(i+o.schlag.length)]; };
 const found = o => !!(state.orte[o.id] && state.orte[o.id].found);
 const nextTarget = () => CONFIG.orte.find(o=>o.id===state.aktiv && o.geo && !found(o)) || CONFIG.orte.find(o=>o.geo && !found(o)) || null;
 function updateHeader(){
@@ -457,7 +458,7 @@ function updateHeader(){
   if (!CONFIG.orte.some(o=>o.geo)) { box.append('Die Orte sind noch nicht auf der Karte zugeordnet (Lehrkraft: Adresse mit ?lehrer=1 öffnen).'); return; }
   if (!t){ box.append(h('b',{},'Geschafft! '),'Du hast alle Orte gefunden. ',h('button',{onclick:openResult,style:'margin-left:6px'},'Mein Blatt')); return; }
   const i=CONFIG.orte.indexOf(t)+1;
-  box.append(h('b',{},'Aufgabe '+i+' von '+CONFIG.orte.length+': '),'Finde ',t.titel,'. ',t.tippe,' Start: ',CONFIG.start.kurz,'.');
+  box.append(h('b',{},'Aufgabe '+i+' von '+CONFIG.orte.length+': '),'Finde ',...boldTitle(t),'. ',t.tippe,' Start: ',CONFIG.start.kurz,'.');
 }
 function onTap(sx,sy){
   const [wx,wy]=S2W(sx,sy), tol=16/view.s;
