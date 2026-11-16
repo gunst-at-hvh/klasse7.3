@@ -72,6 +72,7 @@ input[type=file]{display:none}
     <canvas id="cv"></canvas>
     <div id="teacher"></div>
     <div id="ctrl">
+      <button id="btnFull" aria-label="Vollbild" style="display:none">⛶</button>
       <button id="btnStil" aria-label="Kartenstil wechseln">🎨</button>
       <button id="btnGps" aria-label="Mein Standort">◎</button>
       <button id="btnHome" aria-label="Ganze Karte">⌂</button>
@@ -445,6 +446,22 @@ cv.addEventListener('wheel', e=>{ e.preventDefault(); zoomAt(e.offsetX,e.offsetY
 $('#btnIn').onclick=()=>zoomAt(W/2,H/2,view.s*1.5);
 $('#btnOut').onclick=()=>zoomAt(W/2,H/2,view.s/1.5);
 $('#btnHome').onclick=fitAll;
+/* Vollbild (geht auf Android/iPad; auf dem iPhone gibt es den Knopf nicht) */
+(function(){
+  const de=document.documentElement, b=$('#btnFull');
+  const req=de.requestFullscreen||de.webkitRequestFullscreen, ok=document.fullscreenEnabled||document.webkitFullscreenEnabled;
+  if (!req || !ok) return;
+  b.style.display='';
+  const isFull=()=>!!(document.fullscreenElement||document.webkitFullscreenElement);
+  b.onclick=()=>{
+    try {
+      const r = isFull() ? (document.exitFullscreen||document.webkitExitFullscreen).call(document) : req.call(de);
+      if (r && r.catch) r.catch(()=>toast('Vollbild geht hier gerade nicht.'));
+    } catch(e){ toast('Vollbild geht hier gerade nicht.'); }
+  };
+  const upd=()=>{ b.classList.toggle('on',isFull()); setTimeout(resize,150); };
+  document.addEventListener('fullscreenchange',upd); document.addEventListener('webkitfullscreenchange',upd);
+})();
 $('#btnStil').onclick=()=>{ state.stil = state.stil==='farbe' ? 'sw' : 'farbe'; save(); dirty=true; toast(state.stil==='farbe' ? 'Farbkarte' : 'Schwarzweiß-Karte', 1500); };
 
 /* ===================== Spiel ===================== */
