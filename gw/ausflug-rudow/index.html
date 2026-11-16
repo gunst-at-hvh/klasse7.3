@@ -399,7 +399,7 @@ function draw(){
   if (station){
     const [sx,sy]=W2S(...centroid(station));
     ctx.fillStyle='#111'; ctx.fillRect(sx-13,sy-13,26,26); ctx.fillStyle='#fff'; ctx.font='bold 17px system-ui,sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText('U',sx,sy+1);
-    ctx.textBaseline='alphabetic'; label(CONFIG.start.kurz+' · START', sx, sy+30);
+    ctx.textBaseline='alphabetic'; label(CONFIG.start.kurz.toUpperCase(), sx, sy+30);
   }
   CONFIG.orte.forEach((o,i)=>{
     if (!o.geo || !(state.orte[o.id]&&state.orte[o.id].found)) return;
@@ -486,7 +486,7 @@ function updateHeader(){
   if (!CONFIG.orte.some(o=>o.geo)) { box.append('Die Orte sind noch nicht auf der Karte zugeordnet (Lehrkraft: Adresse mit ?lehrer=1 öffnen).'); return; }
   if (!t){ box.append(h('b',{},'Geschafft! '),'Du hast alle Orte gefunden. ',h('button',{onclick:openResult,style:'margin-left:6px'},'Mein Blatt')); return; }
   const i=CONFIG.orte.indexOf(t)+1;
-  box.append(h('b',{},'Aufgabe '+i+' von '+CONFIG.orte.length+': '),'Finde ',...boldTitle(t),'. ',t.tippe,' Start: ',CONFIG.start.kurz,'.');
+  box.append(h('b',{},'Aufgabe '+i+' von '+CONFIG.orte.length+': '),'Finde ',...boldTitle(t),'. ',t.tippe);
 }
 function onTap(sx,sy){
   const [wx,wy]=S2W(sx,sy), tol=16/view.s;
