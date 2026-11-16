@@ -3,27 +3,34 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>DEMO – Abgabetag (eine Szene)</title>
+<title>DEMO – Abgabetag (eine Szene, drei Jahre)</title>
 <!--
   DEMO. Nur eine Vorführung der Spielidee aus KONZEPT.md.
   Kein Teil des Spiels und kein Motor: Der Code hier ist absichtlich einfach und fest verdrahtet.
-  Eine KI, die das Spiel baut, richtet sich nach BAUPLAN-KI.md und übernimmt von hier nur die Idee:
-  feste Abgabe bei schlechter Ernte, Lösung nur über andere Figuren, keine "richtige" Wahl,
-  Heute-Fenster nach der Entscheidung, dieselbe Szene aus einer zweiten Rolle.
-  Nein sagen ist immer möglich: Wer dreimal nichts gibt, verliert den Hof (KONZEPT.md, Abschnitt 5a).
-  Figuren sind Platzhalter, Zahlen sind erfunden.
+  Eine KI, die das Spiel baut, richtet sich nach BAUPLAN-KI.md und übernimmt von hier nur die Ideen:
+  1. Feste Abgabe, schwankende Ernte.
+  2. Nein sagen ist immer möglich, hat aber harte Folgen in drei Stufen.
+  3. Ob ein Nein gelingt, hängt von den anderen ab. Jede Dorffigur macht erst mit, wenn genug andere
+     mitmachen (Mitmach-Schwelle). Der Herr kann nur zwei bestrafen. Ab vier von sechs muss er verhandeln.
+  4. Die Schwellen lassen sich nur über andere Figuren senken (Sack für Ilse, Predigt des Pfarrers).
+  5. Wahl zwischen eigener Ausnahme (Fürsprache) und gemeinsamem Handeln (Predigt).
+  6. Jede Figur hat einen Grund, der aus ihrer Zeit heraus Sinn ergibt.
+  7. Heute-Fenster nach jedem Jahr, mit zwei Fragen: erst verstehen, dann urteilen.
+  8. Dieselbe Lage aus der Sicht des Knappen.
+  Figuren sind Platzhalter, Zahlen sind erfunden. Test ohne Wartezeit: ?schnell=1
 -->
 <style>
 :root{--surface-0:#f5f4ef;--surface-1:#efede6;--surface-2:#fff;--text-primary:#1f1e1c;--text-secondary:#5f5e5a;--text-accent:#0c447c;--bg-accent:#e6f1fb;--border:#d9d7cf;--border-strong:#b4b2a9;--radius:8px}
 *{box-sizing:border-box}
 body{margin:0;background:var(--surface-0);color:var(--text-primary);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
-main{max-width:720px;margin:0 auto;padding:12px}
+main{max-width:600px;margin:0 auto;padding:12px}
 .demo{border:2px dashed var(--text-primary);border-radius:var(--radius);padding:8px 12px;margin-bottom:12px;background:var(--surface-2);font-size:15px}
 .demo b{font-weight:600}
 button{font:inherit;background:var(--surface-2);color:var(--text-primary);border:1px solid var(--border-strong);border-radius:var(--radius);padding:10px 14px;min-height:44px;cursor:pointer}
 button:hover{background:var(--surface-1)}
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
-.ts{font-size:13px;fill:var(--text-secondary);stroke:none}
+svg text{font-size:13px;fill:var(--text-secondary);stroke:none}
+svg text.st{font-size:12px;font-weight:600;fill:var(--text-primary)}
 .c-gray rect,.c-gray circle,.c-gray ellipse{fill:#f1efe8;stroke:#5f5e5a}
 .c-teal rect,.c-teal circle{fill:#e1f5ee;stroke:#0f6e56}
 .c-purple rect,.c-purple circle{fill:#eeedfe;stroke:#534ab7}
@@ -35,41 +42,46 @@ button:hover{background:var(--surface-1)}
 .box{background:var(--surface-1);border-radius:var(--radius);padding:10px 14px}
 .lbl{font-size:13px;color:var(--text-secondary)}
 .num{font-size:22px;font-weight:600}
+#txt{white-space:pre-line}
 </style>
 </head>
 <body>
 <main>
 <div class="demo"><b>DEMO.</b> Eine einzelne Szene (Abgabetag, drei Jahre) zum Ausprobieren der Spielidee. Kein fertiges Spiel. Figuren sind Platzhalter, Zahlen sind erfunden.</div>
-<h1 class="sr-only">Demo: Abgabetag im Dorf, aus Sicht einer Bauerntochter und eines Knappen, mit Vergleich zu heute.</h1>
+<h1 class="sr-only">Demo: Abgabetag im Dorf über drei Jahre, aus Sicht einer Bauerntochter und eines Knappen, mit Vergleich zu heute.</h1>
 
-<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px">
-  <div class="box" style="flex:2;min-width:220px">
+<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px">
+  <div class="box" style="flex:1 1 100%">
     <div class="lbl">Deine Rolle</div>
     <div style="font-weight:600" id="rolle">Mette, Tochter eines Bauern</div>
     <div class="lbl" style="font-size:14px" id="ziel">Ziel: Drei Jahre durchhalten. Ihr braucht 8 Säcke im Jahr.</div>
   </div>
-  <div class="box" style="flex:1;min-width:92px"><div class="lbl" id="m1l">Säcke Korn</div><div class="num" id="m1">10</div></div>
-  <div class="box" style="flex:1;min-width:92px"><div class="lbl" id="m2l">Kraft der Familie</div><div class="num" id="m2">3 von 3</div></div>
-  <div class="box" style="flex:1;min-width:92px" id="b3"><div class="lbl">Mahnungen</div><div class="num" id="m3">0 von 3</div></div>
+  <div class="box" style="flex:1;min-width:92px" id="b1"><div class="lbl" id="m1l">Säcke Korn</div><div class="num" id="m1">12</div></div>
+  <div class="box" style="flex:1;min-width:92px" id="b2"><div class="lbl">Kraft der Familie</div><div class="num" id="m2">3 von 3</div></div>
+  <div class="box" style="flex:1;min-width:92px" id="b3"><div class="lbl">Strafen</div><div class="num" id="m3">0 von 3</div></div>
 </div>
 
-<div style="background:var(--surface-1);border-radius:12px;padding:8px">
-<svg viewBox="0 0 680 250" width="100%" role="img" xmlns="http://www.w3.org/2000/svg">
-<title>Dorfplatz am Abgabetag</title><desc>Kirche, Pfarrer, Tisch mit Verwalter und Knappe, ein Nachbar und ein Wagen mit Kornsäcken.</desc>
-<line x1="10" y1="205" x2="670" y2="205" stroke="#b4b2a9" stroke-width="1"/>
-<g class="c-gray"><rect x="30" y="95" width="80" height="110" rx="2"/><rect x="55" y="45" width="30" height="50" rx="2"/><rect x="62" y="150" width="16" height="55" rx="2"/><text class="ts" x="70" y="225" text-anchor="middle">Kirche</text></g>
-<g class="hs c-teal" data-id="pfarrer" tabindex="0" role="button" aria-label="Pfarrer"><rect class="ring" x="128" y="108" width="64" height="126" rx="4"/><circle cx="160" cy="130" r="12"/><rect x="146" y="144" width="28" height="60" rx="4"/><text class="ts" x="160" y="225" text-anchor="middle">Pfarrer</text></g>
-<g class="c-gray"><rect x="238" y="168" width="150" height="8" rx="2"/><rect x="246" y="176" width="6" height="29" rx="1"/><rect x="374" y="176" width="6" height="29" rx="1"/><rect x="258" y="158" width="34" height="10" rx="1"/></g>
-<g class="hs c-purple" data-id="verwalter" tabindex="0" role="button" aria-label="Verwalter"><rect class="ring" x="268" y="88" width="72" height="146" rx="4"/><circle cx="304" cy="112" r="12"/><rect x="290" y="126" width="28" height="42" rx="4"/><text class="ts" x="304" y="225" text-anchor="middle">Verwalter</text></g>
-<g class="c-purple"><circle cx="362" cy="124" r="9"/><rect x="352" y="135" width="20" height="33" rx="3"/><text class="ts" x="362" y="225" text-anchor="middle" id="lblKnappe">Knappe</text></g>
-<g class="hs c-coral" data-id="nachbar" tabindex="0" role="button" aria-label="Nachbar"><rect class="ring" x="418" y="108" width="64" height="126" rx="4"/><circle cx="450" cy="130" r="12"/><rect x="436" y="144" width="28" height="60" rx="4"/><text class="ts" x="450" y="225" text-anchor="middle">Nachbar</text></g>
-<g class="hs c-coral" data-id="wagen" tabindex="0" role="button" aria-label="Wagen mit Korn"><rect class="ring" x="500" y="108" width="170" height="126" rx="4"/><circle cx="522" cy="150" r="9"/><rect x="512" y="161" width="20" height="44" rx="3"/><rect x="546" y="170" width="112" height="18" rx="2"/><circle cx="568" cy="196" r="10"/><circle cx="636" cy="196" r="10"/><ellipse cx="566" cy="160" rx="14" ry="10"/><ellipse cx="598" cy="160" rx="14" ry="10"/><ellipse cx="630" cy="160" rx="14" ry="10"/><ellipse cx="582" cy="144" rx="14" ry="10"/><ellipse cx="614" cy="144" rx="14" ry="10"/><text class="ts" x="522" y="225" text-anchor="middle" id="lblKind">Du</text><text class="ts" x="602" y="225" text-anchor="middle">Wagen</text></g>
+<div style="background:var(--surface-1);border-radius:12px;padding:6px">
+<svg viewBox="0 0 400 322" width="100%" role="img" xmlns="http://www.w3.org/2000/svg">
+<title>Dorfplatz am Abgabetag</title><desc>Oben Kirche, Pfarrer, Tisch mit Verwalter und Knappe, Wagen mit Kornsäcken. Unten fünf Leute aus dem Dorf.</desc>
+<line x1="4" y1="132" x2="396" y2="132" stroke="#b4b2a9"/>
+<line x1="4" y1="262" x2="396" y2="262" stroke="#b4b2a9"/>
+<g class="c-gray"><rect x="8" y="42" width="44" height="90" rx="2"/><rect x="20" y="14" width="20" height="28" rx="2"/></g>
+<g class="hs c-teal" data-id="pfarrer" tabindex="0" role="button" aria-label="Pfarrer"><rect class="ring" x="58" y="50" width="62" height="106" rx="4"/><circle cx="89" cy="70" r="10"/><rect x="77" y="82" width="24" height="50" rx="4"/><text x="89" y="149" text-anchor="middle">Pfarrer</text></g>
+<g class="c-gray"><rect x="146" y="104" width="100" height="6" rx="2"/><rect x="152" y="110" width="5" height="22" rx="1"/><rect x="236" y="110" width="5" height="22" rx="1"/><rect x="200" y="96" width="26" height="8" rx="1"/></g>
+<g class="hs c-purple" data-id="verwalter" tabindex="0" role="button" aria-label="Verwalter"><rect class="ring" x="142" y="34" width="112" height="122" rx="4"/><circle cx="178" cy="60" r="10"/><rect x="166" y="72" width="24" height="32" rx="4"/><circle cx="228" cy="68" r="8"/><rect x="219" y="78" width="18" height="18" rx="3"/><text x="178" y="149" text-anchor="middle">Verwalter</text><text x="228" y="52" text-anchor="middle" id="lblKnappe">Knappe</text></g>
+<g class="hs c-coral" data-id="wagen" tabindex="0" role="button" aria-label="Wagen mit Korn"><rect class="ring" x="266" y="50" width="130" height="106" rx="4"/><circle cx="284" cy="82" r="8"/><rect x="275" y="92" width="18" height="40" rx="3"/><rect x="304" y="104" width="84" height="14" rx="2"/><circle cx="320" cy="124" r="8"/><circle cx="372" cy="124" r="8"/><ellipse cx="322" cy="96" rx="11" ry="8"/><ellipse cx="346" cy="96" rx="11" ry="8"/><ellipse cx="370" cy="96" rx="11" ry="8"/><ellipse cx="334" cy="84" rx="11" ry="8"/><ellipse cx="358" cy="84" rx="11" ry="8"/><text x="284" y="149" text-anchor="middle" id="lblKind">Du</text><text x="346" y="149" text-anchor="middle">Wagen</text></g>
+<g class="hs c-coral" data-id="heyne" tabindex="0" role="button" aria-label="Heyne"><rect class="ring" x="8" y="176" width="72" height="140" rx="4"/><circle cx="44" cy="198" r="10"/><rect x="32" y="210" width="24" height="52" rx="4"/><text x="44" y="280" text-anchor="middle">Heyne</text><text class="st" id="st-heyne" x="44" y="300" text-anchor="middle"></text></g>
+<g class="hs c-coral" data-id="ilse" tabindex="0" role="button" aria-label="Ilse"><rect class="ring" x="86" y="176" width="72" height="140" rx="4"/><circle cx="122" cy="198" r="10"/><rect x="110" y="210" width="24" height="52" rx="4"/><text x="122" y="280" text-anchor="middle">Ilse</text><text class="st" id="st-ilse" x="122" y="300" text-anchor="middle"></text></g>
+<g class="hs c-coral" data-id="gese" tabindex="0" role="button" aria-label="Gese"><rect class="ring" x="164" y="176" width="72" height="140" rx="4"/><circle cx="200" cy="198" r="10"/><rect x="188" y="210" width="24" height="52" rx="4"/><text x="200" y="280" text-anchor="middle">Gese</text><text class="st" id="st-gese" x="200" y="300" text-anchor="middle"></text></g>
+<g class="hs c-coral" data-id="tyle" tabindex="0" role="button" aria-label="Tyle"><rect class="ring" x="242" y="176" width="72" height="140" rx="4"/><circle cx="278" cy="198" r="10"/><rect x="266" y="210" width="24" height="52" rx="4"/><text x="278" y="280" text-anchor="middle">Tyle</text><text class="st" id="st-tyle" x="278" y="300" text-anchor="middle"></text></g>
+<g class="hs c-coral" data-id="claus" tabindex="0" role="button" aria-label="Claus, der Schulze"><rect class="ring" x="320" y="176" width="72" height="140" rx="4"/><circle cx="356" cy="198" r="10"/><rect x="344" y="210" width="24" height="52" rx="4"/><text x="356" y="280" text-anchor="middle">Claus</text><text class="st" id="st-claus" x="356" y="300" text-anchor="middle"></text></g>
 </svg>
 </div>
 
 <div style="background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:14px 18px;margin-top:12px;min-height:150px">
   <div class="lbl" id="wer">Abgabetag</div>
-  <div id="txt">Die Ernte war schlecht. Auf eurem Wagen liegen 10 Säcke Korn. Tippe eine Figur oder den Wagen an.</div>
+  <div id="txt"></div>
   <div id="ans"></div>
 </div>
 <div id="heute"></div>
@@ -77,74 +89,132 @@ button:hover{background:var(--surface-1)}
 <script>
 (function(){
 var $=function(i){return document.getElementById(i)};
-var s,role='mette',ERNTE=[10,12,14],WORT=['schlecht','mittel','gut'];
-var DM='Der Herr und die Kirche nehmen einen festen Teil. Ob die Ernte gut war, zählt nicht. Niemand fragt dich.';
-var HM='Erwachsene zahlen Steuern. Ein gewähltes Parlament beschließt sie. Wer wenig verdient, zahlt weniger Lohnsteuer.';
-var FM='Was ist gleich? Was ist anders?';
-var DN='Wer nicht zahlt, dem droht der Herr. Er ist zugleich der Richter.';
-var HN='Wer eine Forderung falsch findet, kann widersprechen und vor ein unabhängiges Gericht gehen.';
-var FN='Was kannst du heute tun, wenn du etwas ungerecht findest?';
+var TAKT=/[?&]schnell=1/.test(location.search)?0:850;
+var LEUTE=[['heyne','Heyne'],['ilse','Ilse'],['gese','Gese'],['tyle','Tyle'],['claus','Claus']];
+var JAHR=[{e:12,w:'gut',z:3},{e:10,w:'schlecht',z:5},{e:13,w:'ordentlich',z:3}];
+var HEUTE={
+ zahl:['Der Herr und die Kirche nehmen einen festen Teil. Ob die Ernte gut war, zählt nicht. Niemand fragt dich.','Erwachsene zahlen Steuern. Ein gewähltes Parlament beschließt sie. Wer wenig verdient, zahlt weniger Lohnsteuer.','Warum zahlen die Bauern, obwohl es ihnen schadet?'],
+ allein:['Wer allein Nein sagt, wird bestraft. Der Herr ist zugleich der Richter.','Wer eine Forderung falsch findet, kann widersprechen und vor ein unabhängiges Gericht gehen.','Warum macht fast niemand mit, wenn einer Nein sagt?'],
+ einig:['Erst als fast alle Nein sagten, musste der Herr verhandeln. Jeder Einzelne hat dabei viel gewagt.','Sich zusammentun ist erlaubt und geschützt: Gewerkschaft, Streik, Demonstration, Wahl.','Warum hat es diesmal geklappt?'],
+ gunst:['Wer einen Fürsprecher hatte, bekam eine Ausnahme. Ein Recht darauf gab es nicht.','Regeln sollen für alle gleich gelten. Wer Hilfe braucht, hat oft einen Anspruch darauf.','Warum nimmt eine Familie die Ausnahme an, auch wenn die Nachbarn hungern?'],
+ druck:['Auch der Herr schuldet jemandem etwas. Der Druck wandert von oben nach unten weiter.','Auch heute geben viele Druck weiter: Firmen, Chefinnen, Kunden. Aber Gesetze und Gerichte setzen Grenzen.','Warum gibt der Herr den Druck weiter?']};
+var s,role='mette';
 function clr(){Array.prototype.forEach.call(document.querySelectorAll('.hs'),function(x){x.classList.remove('on');});}
+function stat(id,t){$('st-'+id).textContent=t;}
 function say(w,t,a){$('wer').textContent=w;$('txt').textContent=t;var box=$('ans');box.innerHTML='';(a||[]).forEach(function(x){var b=document.createElement('button');b.className='ans';b.textContent=x[0];b.addEventListener('click',x[1]);box.appendChild(b);});}
-function upd(){$('m1').textContent=s.n;if(role==='mette'){$('m2').textContent=s.kraft+' von 3';$('m3').textContent=s.v+' von 3';}else{$('m2').textContent='30';}}
+function upd(){if(role==='mette'){$('m1').textContent=s.n;$('m2').textContent=s.kraft+' von 3';$('m3').textContent=s.v+' von 3';}}
 function reset(r){role=r;var m=r==='mette';$('heute').innerHTML='';clr();
  $('rolle').textContent=m?'Mette, Tochter eines Bauern':'Henning, Knappe des Herrn';
  $('ziel').textContent=m?'Ziel: Drei Jahre durchhalten. Ihr braucht 8 Säcke im Jahr.':'Ziel: Der Herr muss seine Steuer zahlen können.';
- $('m1l').textContent=m?'Säcke Korn':'Schon eingesammelt';$('m2l').textContent=m?'Kraft der Familie':'Der Herr braucht';
- $('b3').style.display=m?'':'none';
+ $('b2').style.display=m?'':'none';$('b3').style.display=m?'':'none';
+ $('m1l').textContent=m?'Säcke Korn':'Dem Herrn fehlen';
  $('lblKind').textContent=m?'Du':'Mette';$('lblKnappe').textContent=m?'Knappe':'Du';
- if(m){s={jahr:1,vorrat:0,kraft:3,v:0,mis:0,schuld:0,strafe:0,ochse:true,aus:false};jahrStart();}
- else{s={n:27,aus:false};say('Abgabetag','Du hilfst dem Verwalter beim Einsammeln. Es fehlen noch 3 Säcke. Tippe eine Figur oder den Wagen an.');upd();}}
-function jahrStart(){$('heute').innerHTML='';clr();s.aus=false;s.zehnt=false;s.fuer=false;s.tipp=false;
- var e=ERNTE[s.jahr-1]-(s.ochse?0:4);s.f=3+s.schuld+s.strafe;s.n=s.vorrat+e;
- var t='Jahr '+s.jahr+' von 3. Die Ernte war '+WORT[s.jahr-1]+': '+e+' Säcke.';
- if(!s.ochse)t+=' Ohne Ochsen konntet ihr weniger pflügen.';
+ if(m){s={j:0,vorrat:0,kraft:3,v:0,abzug:0,dorf:'',tyleV:false,aus:false};jahrStart();}
+ else{s={aus:false};$('m1').textContent='15 Säcke';stat('heyne','gibt nichts');stat('ilse','gibt nichts');stat('gese','gibt nichts');stat('tyle','zahlt');stat('claus','zahlt');
+  say('Ein Hungerjahr','Der Landesherr fordert eine Sondersteuer. Drei Höfe geben nichts. Dem Herrn fehlen 15 Säcke. Sprich mit den Leuten. Entscheide dann beim Verwalter.');}}
+function jahrStart(){$('heute').innerHTML='';clr();LEUTE.forEach(function(p){stat(p[0],'');});
+ s.aus=false;s.zehnt=false;s.sack=false;s.predigt=false;s.fuer=false;s.ilseNot=false;
+ var J=JAHR[s.j],e=J.e-s.abzug;s.z=J.z;s.n=s.vorrat+e;
+ var t='Jahr '+(s.j+1)+' von 3. Die Ernte war '+J.w+': '+e+' Säcke.';
+ if(s.abzug===3)t+=' Du warst im Verlies und konntest nicht helfen.';
+ if(s.abzug===4)t+=' Ohne Ochsen blieb ein Feld liegen.';
  if(s.vorrat>0)t+=' Vom letzten Jahr sind noch '+s.vorrat+' da.';
- t+=' Der Herr fordert '+s.f+' Säcke Zins. Tippe eine Figur oder den Wagen an.';
+ if(s.j===1)t+=' Und der Herr fordert '+s.z+' Säcke, zwei mehr als sonst. Das ganze Dorf hat Angst vor dem Winter.';
+ else t+=' Der Herr fordert '+s.z+' Säcke Zins.';
+ t+='\nSprich mit den Leuten im Dorf. Geh dann zum Verwalter.';
  say('Abgabetag',t);upd();}
-function zehntAb(){if(!s.zehnt){s.zehnt=true;s.n=Math.max(0,s.n-1);}}
+function schwelle(id){var j=s.j;
+ if(id==='heyne')return [0,1,2][j];
+ if(id==='ilse')return (j===1&&s.sack)?1:[5,4,5][j];
+ if(id==='gese')return (j===1&&s.predigt)?2:[5,4,5][j];
+ if(id==='tyle')return [4,5,4][j];
+ return 4;}
+function kaskade(duNein){var R=[],n=duNein?1:0,neu=true;
+ while(neu){neu=false;LEUTE.forEach(function(p){if(R.indexOf(p[0])<0&&schwelle(p[0])<=n){R.push(p[0]);n+=1;neu=true;}});}
+ return LEUTE.map(function(p){return p[0];}).filter(function(id){return R.indexOf(id)>=0;});}
+function name(id){for(var i=0;i<LEUTE.length;i++)if(LEUTE[i][0]===id)return LEUTE[i][1];return 'Du';}
 function zahle(k){s.n-=Math.min(k,s.n);}
-function mahnung(){s.v+=1;if(s.v===1)return ' Das ist die erste Mahnung.';if(s.v===2){s.ochse=false;return ' Das ist die zweite Mahnung. Der Verwalter pfändet euren Ochsen.';}return ' Das ist die dritte Mahnung.';}
-function schluss(art,text){zehntAb();var rest=s.n,t=text+' Nach dem Zehnt bleiben euch '+rest+' Säcke.';
- if(rest>=8){s.vorrat=rest-8;t+=' Das reicht für Saat und Essen.';}
- else if(rest===7){s.vorrat=0;t+=' Es wird knapp, aber es geht.';}
+function zehntAb(){if(!s.zehnt){s.zehnt=true;zahle(1);}}
+function zaehlen(wahl){s.aus=true;clr();zehntAb();upd();$('ans').innerHTML='';$('wer').textContent='Der Verwalter zählt';
+ var R=kaskade(wahl==='nein'),zeilen=[],i=0;
+ function zeig(){$('txt').textContent=zeilen.join('\n');}
+ function schritt(){
+  if(i<LEUTE.length){var id=LEUTE[i][0],nein=R.indexOf(id)>=0;stat(id,nein?'gibt nichts':'zahlt');
+   var z=LEUTE[i][1]+(nein?' gibt nichts.':' zahlt.');
+   if(id==='tyle'&&!nein&&wahl==='nein'&&s.j===1){z='Tyle zahlt doch.';s.tyleV=true;}
+   zeilen.push(z);zeig();i+=1;setTimeout(schritt,TAKT);}
+  else{zeilen.push(wahl==='nein'?'Du gibst nichts.':(wahl==='fuer'?'Der Pfarrer bittet für deine Familie.':'Du zahlst.'));zeig();setTimeout(function(){urteil(wahl,R,zeilen);},TAKT);}}
+ schritt();}
+function urteil(wahl,R,zeilen){var nein=wahl==='nein',alle=(nein?['du']:[]).concat(R),art;
+ if(alle.length>=4){
+  zeilen.push('\n'+alle.length+' von 6 Höfen geben nichts. So viele kann der Herr nicht einsperren. Wer soll dann pflügen? Der Verwalter verhandelt: Dieses Jahr gibt jeder Hof nur 2 Säcke.');
+  LEUTE.forEach(function(p){stat(p[0],'2 Säcke');});zahle(2);art='einig';if(s.j===1)s.dorf='einig';s.abzugNeu=0;}
+ else{
+  var straf=alle.slice(0,2),rest=alle.slice(2);
+  if(!alle.length)zeilen.push('\nAlle zahlen. Keiner wagt den Anfang.');
+  else{zeilen.push('\n'+(alle.length===1?'Ein Hof gibt nichts.':alle.length+' Höfe geben nichts.')+' Der Herr kann zwei bestrafen.');
+   straf.forEach(function(id){if(id!=='du'){stat(id,'Verlies');zeilen.push(name(id)+' kommt ins Verlies.');}});
+   rest.forEach(function(id){stat(id,'Mahnung');zeilen.push(name(id)+' kommt mit einer Mahnung davon.');});}
+  s.abzugNeu=0;
+  if(nein){s.v+=1;zahle(s.z);s.abzugNeu=s.v===1?3:4;
+   zeilen.push('Du kommst ins Verlies. Die '+s.z+' Säcke holt sich der Verwalter trotzdem.'+(s.v===2?' Dazu pfändet er euren Ochsen.':''));art='allein';}
+  else if(wahl==='fuer'){zahle(s.z-2);zeilen.push('Der Verwalter erlässt deiner Familie zwei Säcke. Die Nachbarn sehen es.');art='gunst';}
+  else{zahle(s.z);art='zahl';}
+  if(s.j===1)s.dorf=nein?'gescheitert':(wahl==='fuer'?'gunst':'still');}
+ var rest2=s.n,t='\nEuch bleiben '+rest2+' Säcke.';
+ if(rest2>=8){s.vorrat=rest2-8;t+=' Das reicht für Saat und Essen.';}
+ else if(rest2>=6){s.vorrat=0;t+=' Es wird knapp, aber es geht.';}
  else{s.vorrat=0;s.kraft-=1;t+=' Das ist zu wenig. Im Frühjahr hungert ihr.';}
  var aus=null;
  if(s.v>=3)aus='Das Gericht des Herrn nimmt euch den Hof. Der Richter ist der Herr selbst.';
  else if(s.kraft<=0)aus='Die Familie ist zu schwach für die Arbeit. Ihr müsst den Hof aufgeben.';
- var fertig=!!aus||s.jahr>=3;
- if(aus)t+=' '+aus;else if(fertig)t+=' Ihr habt drei Jahre durchgehalten.';
- upd();var h=art==='nein'?[DN,HN,FN]:[DM,HM,FM];
- ende(aus?'Verloren':(fertig?'Geschafft':'Ergebnis im Jahr '+s.jahr),t,h[0],h[1],h[2],fertig);}
-function ende(w,res,dam,heu,fr,fertig){s.aus=true;say(w,res);
- var other=role==='mette'?'Dieselbe Szene als Knappe sehen':'Dieselbe Szene als Mette sehen';
+ var fertig=!!aus||s.j>=2;
+ if(aus)t+='\n'+aus;
+ else if(fertig){t+='\nIhr habt drei Jahre durchgehalten.';
+  t+={einig:' Im Hungerjahr hat das Dorf zusammengehalten. Niemand ist verhungert.',gescheitert:' Im Hungerjahr saßen zwei im Verlies. Seitdem wagt im Dorf keiner mehr etwas.',gunst:' Im Hungerjahr kam deine Familie gut durch. Drei andere haben gehungert. Ilse grüßt dich nicht mehr.',still:' Im Hungerjahr hat das halbe Dorf gehungert. Gesagt hat keiner etwas.'}[s.dorf]||'';}
+ zeilen.push(t);upd();
+ ende(aus?'Verloren':(fertig?'Geschafft':'Ergebnis im Jahr '+(s.j+1)),zeilen.join('\n'),art,fertig);}
+function ende(w,res,art,fertig){s.aus=true;say(w,res);var h=HEUTE[art];
+ var other=role==='mette'?'Dieselbe Lage als Knappe sehen':'Als Mette spielen';
  var kn=fertig?'<button id="bSw">'+other+'</button><button id="bAg">Nochmal spielen</button>':'<button id="bNx">Weiter ins nächste Jahr</button>';
- $('heute').innerHTML='<div style="border:1px solid var(--border);border-radius:12px;padding:14px 18px;margin-top:12px;background:var(--surface-2)"><div style="font-weight:600;margin-bottom:10px">Und heute?</div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px"><div class="box"><div class="lbl">Damals</div><div>'+dam+'</div></div><div class="box" style="background:var(--bg-accent);border:1px solid var(--text-accent)"><div class="lbl" style="color:var(--text-accent)">Heute</div><div style="color:var(--text-accent)">'+heu+'</div></div></div><div style="margin:12px 0 4px">'+fr+'</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">'+kn+'</div></div>';
+ $('heute').innerHTML='<div style="border:1px solid var(--border);border-radius:12px;padding:14px 18px;margin-top:12px;background:var(--surface-2)"><div style="font-weight:600;margin-bottom:10px">Und heute?</div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px"><div class="box"><div class="lbl">Damals</div><div>'+h[0]+'</div></div><div class="box" style="background:var(--bg-accent);border:1px solid var(--text-accent)"><div class="lbl" style="color:var(--text-accent)">Heute</div><div style="color:var(--text-accent)">'+h[1]+'</div></div></div><div style="margin:12px 0 0"><span class="lbl">Verstehen</span><br>'+h[2]+'</div><div style="margin:8px 0 4px"><span class="lbl">Urteilen</span><br>Findest du das gerecht? Was ist heute anders?</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">'+kn+'</div></div>';
  if(fertig){$('bSw').addEventListener('click',function(){reset(role==='mette'?'henning':'mette');});$('bAg').addEventListener('click',function(){reset(role);});}
- else{$('bNx').addEventListener('click',function(){s.jahr+=1;jahrStart();});}}
+ else{$('bNx').addEventListener('click',function(){s.j+=1;s.abzug=s.abzugNeu||0;jahrStart();});}}
 var H={mette:{
- wagen:function(){say('Du','Auf dem Wagen liegen '+s.n+' Säcke. Ihr braucht 8 im Jahr: drei für die Saat, fünf zum Essen.');},
- nachbar:function(){s.tipp=true;say('Nachbar','Ich habe Korn zu Hause unterm Heu gelassen. Der Verwalter zählt nur, was auf dem Wagen liegt. Aber wehe, er merkt es.'+(s.mis>=1?' Bei dir schaut er jetzt genauer hin.':''));},
- pfarrer:function(){var a=[];if(!s.zehnt)a.push(['Hier ist der Zehnt.',function(){zehntAb();upd();say('Pfarrer','Gott vergelt es euch. Ein Sack für die Kirche.');}]);
-  if(!s.fuer)a.push(['Sprecht Ihr beim Verwalter für uns?',function(){if(s.v>0){say('Pfarrer','Du hast dem Herrn getrotzt. Da kann ich nicht für euch sprechen.');}else{s.fuer=true;say('Pfarrer','Ich lege ein Wort für euch ein. Versprechen kann ich nichts.');}}]);
+ wagen:function(){say('Du','Auf dem Wagen liegen '+s.n+' Säcke. Ihr braucht 8 im Jahr: drei für die Saat, fünf zum Essen. Ein Sack geht als Zehnt an die Kirche.');},
+ heyne:function(){say('Heyne',['Der Herr hat mir im Frühjahr die Wiese genommen. Das gab es früher nie. Ich gebe ihm nichts.','Ich saß den ganzen Winter im Verlies. Allein mache ich das nicht noch einmal. Aber wenn du anfängst, bin ich dabei.','Zweimal reicht mir. Ich mache nur noch mit, wenn das halbe Dorf mitgeht.'][s.j]);},
+ ilse:function(){var a=[];if(s.j===1)s.ilseNot=true;
+  if(!s.sack&&s.n>0)a.push(['Hier, ein Sack Korn für euch.',function(){s.sack=true;zahle(1);upd();say('Ilse',s.j===1?'Mit satten Kindern habe ich Mut. Wenn du anfängst, stehe ich neben dir.':'Danke, das vergesse ich dir nicht. Aber mit dem Herrn lege ich mich nicht an. Es geht uns ja nicht schlecht.');}]);
+  say('Ilse',s.sack?(s.j===1?'Wenn du anfängst, stehe ich neben dir.':'Danke für den Sack.'):(s.j===1?'Der Topf ist leer. Wenn ich zahle, hungern meine Kinder. Wenn ich nichts gebe, holt er mich. Was soll ich tun?':'Ich habe zwei Kinder und kaum Land. Ich zahle, was ich muss. Mit dem Herrn lege ich mich nicht an.'),a);},
+ gese:function(){say('Gese',(s.j===1&&s.predigt)?'Der Pfarrer hat recht: Wer Hungernden nimmt, versündigt sich. Wenn du anfängst, gebe ich auch nichts.':(s.j===1?'Die Ordnung ist von Gott. Ich gebe, was dem Herrn zusteht. Nur wenn der Pfarrer sagt, dass es recht ist, überlege ich es mir.':'Die Ordnung ist von Gott. Ich gebe, was dem Herrn zusteht.'));},
+ tyle:function(){say('Tyle',(s.j===2&&s.tyleV)?'Ich hatte Angst. Ich habe gesehen, was mit Heyne passiert ist.':(s.j===1?'Klar bin ich dabei! Auf mich kannst du zählen.':'Wenn alle mitmachen, bin ich dabei! Auf mich kannst du zählen.'));},
+ claus:function(){say('Claus, der Schulze','Ich bin der Schulze. Ich stelle mich nicht gegen den Herrn. Aber auch nicht gegen das ganze Dorf.');},
+ pfarrer:function(){var a=[];
+  if(!s.zehnt)a.push(['Hier ist der Zehnt.',function(){zehntAb();upd();say('Pfarrer','Gott vergelt es euch. Ein Sack für die Kirche.');}]);
+  a.push(['Könnt Ihr uns helfen?',function(){
+   if(s.j!==1){say('Pfarrer',s.j===0?'Es ist ein gutes Jahr. Niemand hungert. Gebt dem Herrn, was ihm zusteht.':'Dieses Jahr ist genug für alle da.');return;}
+   if(s.fuer||s.predigt){say('Pfarrer','Du hast mein Wort.');return;}
+   if(!s.ilseNot){say('Pfarrer','Der Herr bezahlt das Dach der Kirche. Warum sollte ich mich gegen ihn stellen? Zeig mir, wer wirklich hungert.');return;}
+   say('Pfarrer','Ich habe in Ilses Topf gesehen. Eines kann ich tun: beim Verwalter für deine Familie bitten. Oder am Sonntag für alle predigen. Beides geht nicht.',[
+    ['Bittet für meine Familie.',function(){s.fuer=true;say('Pfarrer','Gut. Sag dem Verwalter, dass ich für euch bitte.');}],
+    ['Predigt für alle.',function(){s.predigt=true;say('Pfarrer','Am Sonntag sage ich es laut: Wer dem Hungernden nimmt, versündigt sich. Was das Dorf daraus macht, liegt nicht bei mir.');}]]);}]);
   say('Pfarrer',s.zehnt?'Der Zehnt ist bezahlt.':'Der zehnte Teil der Ernte gehört der Kirche. Bei euch ist das ein Sack.',a);},
- verwalter:function(){var f=s.f,a=[];
-  a.push(['Hier sind '+f+' Säcke.',function(){zahle(f);s.schuld=0;s.strafe=0;schluss('zahl','Du gibst dem Verwalter '+f+' Säcke.');}]);
-  a.push(['Bitte erlasst uns einen Sack.',function(){if(s.fuer){zahle(f-1);s.schuld=1;s.strafe=0;schluss('nachlass','Der Pfarrer hat für euch gesprochen. Ihr gebt '+(f-1)+' Säcke. Einen schuldet ihr im nächsten Jahr.');}else{say('Verwalter','Der Herr braucht das Korn selbst. Oder hast du jemanden, der für euch spricht?',a.filter(function(x,i){return i!==1;}));}}]);
-  if(s.tipp)a.push(['Wir haben weniger geerntet. Einen Sack weniger.',function(){s.mis+=1;s.schuld=0;s.strafe=0;
-   if(s.mis>=2){zahle(f+1);schluss('nein','Der Verwalter glaubt dir nicht mehr. Er lässt die Scheune durchsuchen und nimmt '+(f+1)+' Säcke.'+mahnung());}
-   else{zahle(f-1);schluss('versteck','Der Verwalter nimmt '+(f-1)+' Säcke. Er glaubt dir nicht ganz und merkt sich euren Hof.');}}]);
-  a.push(['Ich gebe nichts.',function(){s.schuld=0;s.strafe=1;schluss('nein','Du gibst dem Verwalter nichts. Er droht: Nächstes Jahr kommt ein Sack Strafe dazu.'+mahnung());}]);
-  say('Verwalter','Euer Hof schuldet dem Herrn '+f+' Säcke Zins.'+(s.strafe?' Ein Sack davon ist Strafe.':'')+(s.schuld?' Ein Sack davon ist die Schuld vom letzten Jahr.':''),a);}
+ verwalter:function(){var a=[['Hier sind '+s.z+' Säcke.',function(){zaehlen('zahl');}]];
+  if(s.fuer)a.push(['Der Pfarrer bittet für meine Familie.',function(){zaehlen('fuer');}]);
+  a.push(['Ich gebe nichts.',function(){zaehlen('nein');}]);
+  say('Verwalter',s.j===1?'Der Landesherr fordert eine Sondersteuer. Zahlt unser Herr nicht, verliert er sein Lehen, und ihr bekommt einen Fremden als Herrn. Darum '+s.z+' Säcke von jedem Hof.':'Euer Hof schuldet dem Herrn '+s.z+' Säcke Zins. Wie jedes Jahr.',a);}
 },henning:{
- verwalter:function(){say('Verwalter','Der Landesherr fordert seine Steuer. Kann der Herr nicht zahlen, verliert er sein Ansehen und vielleicht sein Lehen. Uns fehlen drei Säcke.');},
- pfarrer:function(){say('Pfarrer','Bedenke: Wer im Frühjahr hungert, kann nicht pflügen. Dann bekommt der Herr nächstes Jahr noch weniger.');},
- nachbar:function(){say('Du','Der Mann schaut weg, als du ihn ansiehst. Hat er etwas zu verbergen?');},
- wagen:function(){var D='Auch der Herr schuldet jemandem etwas. Der Druck wandert von oben nach unten weiter.',Hh='Auch heute geben viele Druck weiter: Firmen, Chefinnen, Kunden. Aber Gesetze und Gerichte setzen Grenzen.',F='Wo erlebst du, dass Druck weitergegeben wird?';
-  say('Mette','Die Ernte war schlecht, Herr. Wir haben nur zehn Säcke.',[
-   ['Drei Säcke. Wie jedes Jahr.',function(){s.n+=3;upd();ende('Ergebnis','Der Herr kann seine Steuer zahlen. Im Dorf wird gemurrt, und eine Familie hungert im Frühjahr.',D,Hh,F,true);}],
-   ['Zwei jetzt, einen nach der nächsten Ernte.',function(){s.n+=2;upd();ende('Ergebnis','Dem Herrn fehlt ein Sack. Er muss sich in der Stadt Geld leihen. Das Dorf bleibt ruhig.',D,Hh,F,true);}],
-   ['Der Herr verzichtet dieses Jahr.',function(){upd();ende('Ergebnis','Dem Herrn fehlen drei Säcke. Er kann die Steuer nicht zahlen. Jetzt droht ihm der Landesherr.',D,Hh,F,true);}]]);}
+ heyne:function(){say('Heyne','Sperrt mich ruhig ein. Dann pflügt eben keiner mein Feld.');},
+ ilse:function(){say('Ilse','Herr, meine Kinder hungern. Ich habe nichts mehr.');},
+ gese:function(){say('Gese','Der Pfarrer sagt, es ist Sünde, Hungernden zu nehmen.');},
+ tyle:function(){say('Tyle','Ich habe gezahlt, Herr! Ich mache keinen Ärger.');},
+ claus:function(){say('Claus, der Schulze','Als Schulze rate ich: Seid klug. Ein leerer Hof zahlt gar nichts.');},
+ pfarrer:function(){say('Pfarrer','Auch der Herr ist Gott Rechenschaft schuldig.');},
+ wagen:function(){say('Mette','Wir haben gezahlt. Jetzt reicht es nicht bis zum Frühjahr.');},
+ verwalter:function(){say('Verwalter','Der Herr hat dem Landesherrn Treue geschworen. Zahlt er nicht, verliert er sein Lehen. Was rätst du ihm?',[
+  ['Zwei ins Verlies. Das Korn pfänden.',function(){ende('Ergebnis','Der Herr bekommt sein Korn und kann zahlen. Zwei Felder bleiben im Frühjahr liegen. Das Dorf schweigt, aber es vergisst nicht.','druck',true);}],
+  ['Mit dem Dorf verhandeln.',function(){ende('Ergebnis','Der Herr bekommt weniger. Er leiht sich Geld in der Stadt. Die Bauern merken: Zusammen erreichen sie etwas.','druck',true);}],
+  ['Der Herr soll dem Landesherrn Nein sagen.',function(){ende('Ergebnis','Jetzt ist der Herr der, der allein Nein sagt. Der Landesherr schickt Reiter. Der Herr kann sein Lehen verlieren.','druck',true);}]]);}
 }};
 Array.prototype.forEach.call(document.querySelectorAll('.hs'),function(g){function go(){if(s.aus)return;clr();g.classList.add('on');H[role][g.getAttribute('data-id')]();}
  g.addEventListener('click',go);g.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();go();}});});

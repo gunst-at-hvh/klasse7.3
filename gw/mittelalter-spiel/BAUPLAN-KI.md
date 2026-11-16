@@ -66,12 +66,15 @@ gw/mittelalter-spiel/
   demo/index.html         DEMO einer Szene, nur zur Vorführung (siehe REGEL 2.2)
   KONZEPT.md
   BAUPLAN-KI.md
+  IDEEN.md                Ideensammlung der Lehrkraft, kein Auftrag (siehe REGEL 2.3)
   OFFEN.md                offene Sachfragen an die Lehrkraft
 ```
 
 REGEL 2.1 (MUSS): Jede Inhaltsdatei hängt sich an das globale Objekt `PAKET` an und ändert nichts anderes.
 
-REGEL 2.2 (MUSS): `demo/` ist eine fest verdrahtete Vorführung der Idee (Abgabetag über drei Jahre aus zwei Rollen, mit Nein-Antwort, drei Stufen und Heute-Fenster). Sie ist kein Teil des Motors. Nicht darauf aufbauen und keinen Code daraus übernehmen, nur die Idee.
+REGEL 2.2 (MUSS): `demo/` ist eine fest verdrahtete Vorführung der Idee (Abgabetag über drei Jahre aus zwei Rollen: Nein-Antwort mit drei Stufen, Dorffiguren mit Mitmach-Schwellen, Heute-Fenster). Sie ist kein Teil des Motors. Nicht darauf aufbauen und keinen Code daraus übernehmen, nur die Idee.
+
+REGEL 2.3 (MUSS): `IDEEN.md` ist eine Sammlung von Überlegungen. Verbindlich ist nur, was in `KONZEPT.md` steht. Die KI baut nichts aus `IDEEN.md`, ohne die Lehrkraft zu fragen, und trägt neue Überlegungen der Lehrkraft dort ein statt ins Konzept.
 
 ---
 
