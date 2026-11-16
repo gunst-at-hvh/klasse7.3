@@ -10,8 +10,11 @@
 html,body{margin:0;height:100%;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:#fff;overscroll-behavior:none}
 #app{position:fixed;inset:0;display:flex;flex-direction:column}
 #top{display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:2px solid var(--ink);background:#fff}
-#top h1{font-size:1rem;margin:0;flex:1;line-height:1.2}
-#prog{font-weight:700;white-space:nowrap}
+#top h1{font-size:.9rem;margin:0;flex:1;line-height:1.2}
+#prog{display:flex;gap:3px}
+.chip{width:30px;height:30px;padding:0;border-radius:50%;font-weight:700;font-size:.9rem;line-height:1}
+.chip.done{background:var(--ink);color:#fff}
+.chip.sel{border-width:4px;border-style:double}
 button{font:inherit;border:2px solid var(--ink);background:#fff;color:var(--ink);border-radius:10px;padding:8px 12px;cursor:pointer;touch-action:manipulation}
 button:active,button.on{background:var(--ink);color:#fff}
 button.big{font-size:1.1rem;padding:12px 18px;font-weight:700}
@@ -440,11 +443,13 @@ $('#btnStil').onclick=()=>{ state.stil = state.stil==='farbe' ? 'sw' : 'farbe'; 
 
 /* ===================== Spiel ===================== */
 const found = o => !!(state.orte[o.id] && state.orte[o.id].found);
-const nextTarget = () => CONFIG.orte.find(o=>o.geo && !found(o)) || null;
+const nextTarget = () => CONFIG.orte.find(o=>o.id===state.aktiv && o.geo && !found(o)) || CONFIG.orte.find(o=>o.geo && !found(o)) || null;
 function updateHeader(){
   const n=CONFIG.orte.filter(found).length;
-  $('#prog').textContent = '●'.repeat(n)+'○'.repeat(CONFIG.orte.length-n);
   const t=nextTarget(), box=$('#task'); box.replaceChildren();
+  const pr=$('#prog'); pr.replaceChildren();
+  CONFIG.orte.forEach((o,i)=>pr.append(h('button',{class:'chip'+(found(o)?' done':'')+(t&&t.id===o.id?' sel':''),'aria-label':'Aufgabe '+(i+1)+': '+o.kurz,
+    onclick:()=>{ if (!o.geo) return; if (found(o)) openSheet(o,false); else { state.aktiv=o.id; wrongCount=0; hintRing=null; save(); updateHeader(); dirty=true; } }}, String(i+1))));
   if (TEACHER && teacherAssign){ const o=CONFIG.orte.find(x=>x.id===teacherAssign); box.append('Lehrkraft: Tippe auf das Gebäude für „'+o.kurz+'“.'); return; }
   if (!feats.length) { box.append('Die Karte wird geladen …'); return; }
   if (!CONFIG.orte.some(o=>o.geo)) { box.append('Die Orte sind noch nicht auf der Karte zugeordnet (Lehrkraft: Adresse mit ?lehrer=1 öffnen).'); return; }
