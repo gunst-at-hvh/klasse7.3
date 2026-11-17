@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Text-Retter: Schritt für Schritt</title>
+<style>
+@font-face{font-family:"Shantell Sans";src:url(fonts/shantell-sans-latin-400-normal.woff2) format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Shantell Sans";src:url(fonts/shantell-sans-latin-700-normal.woff2) format("woff2");font-weight:700;font-display:swap}
+:root{--bg:#fbfaf5;--grid:#dbe7f3;--ink:#1e1e1e;--muted:#6b6b6b;--gold:#ffe066;--soft:#e7f5ff}
+*{box-sizing:border-box}
+body{margin:0;color:var(--ink);font-family:"Shantell Sans","Comic Sans MS",cursive;font-size:19px;background-color:var(--bg);
+ background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:26px 26px}
+main{max-width:820px;margin:0 auto;padding:10px 14px 60px}
+h1{font-size:1.8rem;margin:.3em 0 .1em}h2{font-size:1.55rem;margin:.1em 0 .4em}h3{font-size:1.05rem;margin:1em 0 .3em}
+.sk{border:2.5px solid var(--ink);border-radius:14px 6px 16px 6px/6px 16px 6px 14px;background:#fff}
+.panel{padding:16px 20px;margin:12px 0}
+.muted{color:var(--muted)}.small{font-size:.85rem}
+button{cursor:pointer;font:inherit;font-size:1.1rem;border:2.5px solid var(--ink);border-radius:14px 6px 16px 6px/6px 16px 6px 14px;background:#fff;color:var(--ink);padding:8px 20px;box-shadow:2px 2px 0 var(--ink)}
+button:active{transform:translate(2px,2px);box-shadow:none}
+button:disabled{opacity:.35;cursor:default}
+button.go{background:#8ce99a}button.gold{background:var(--gold)}
+.dots{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.dots i{width:22px;height:22px;border:2px solid var(--ink);border-radius:50%;background:#fff;font-size:.65rem;display:flex;align-items:center;justify-content:center;font-style:normal;font-weight:700}
+.dots i.done{background:#8ce99a}.dots i.now{background:var(--gold)}
+.find{background:#f1f3f5;border:2px solid var(--ink);border-radius:8px;padding:8px 12px;margin:6px 0;font-family:monospace;font-size:1rem}
+ol.go{padding-left:1.4em}ol.go li{margin:10px 0}
+.k{display:inline-block;border:2px solid var(--ink);border-radius:6px;background:var(--gold);padding:0 8px;font-weight:700}
+.pv{border:2px dashed var(--ink);border-radius:10px;padding:10px 14px;background:#fff;font-family:Arial,sans-serif}
+.pv h1{font-size:1.9rem;margin:.1em 0}.pv h2{font-size:1.4rem;margin:.1em 0}.pv h3{font-size:1.1rem;margin:.1em 0}
+.pv p,.pv ul,.pv ol{margin:.2em 0}
+.pv .q{margin:.2em 0 .2em 2em}
+.pv .red{color:#c92a2a}
+.tip{background:var(--soft);border:2px dashed var(--ink);border-radius:10px;padding:8px 12px;margin:10px 0}
+.nav{display:flex;justify-content:space-between;gap:10px;margin-top:14px}
+</style>
+</head>
+<body>
+<main>
+<h1>Text-Retter: Schritt für Schritt ✏️</h1>
+<p class="muted">Mach immer nur das, was auf der Karte steht. Dann klicke auf <b>Weiter</b>. Du kannst nichts falsch machen: Mit Strg + Z geht jeder Schritt zurück.</p>
+<div class="dots" id="dots"></div>
+<div class="sk panel" id="card"></div>
+<div class="nav"><button id="back">← Zurück</button><button class="go" id="next">Weiter →</button></div>
+<p class="small muted" style="margin-top:18px">Lieber allein arbeiten mit Regeln? <a href="index.html">Zur normalen Seite</a></p>
+
+<script>
+(function(){
+'use strict';
+var K='<span class="k">';
+var STEPS=[
+ {t:'Pad öffnen',
+  go:['Öffne in IServ den Bereich '+K+'Texte</span>.','Klicke auf '+K+'Neu</span> (neues Dokument).','Gib dem Dokument den Namen '+K+'Text-Retter_DeinName</span>.'],
+  tip:'Das Dokument ist noch leer. Das ist richtig so.'},
+ {t:'Chaos-Text holen',
+  go:['Gehe zur Seite <a href="index.html#start">Text-Retter (normale Seite)</a>.','Klicke auf '+K+'Chaos-Text kopieren</span>.','Gehe zurück zu deinem Pad.'],
+  tip:'Du siehst keine Veränderung. Der Text ist jetzt in der Zwischenablage.'},
+ {t:'Text einfügen',
+  go:['Klicke einmal in die leere Seite im Pad.','Drücke '+K+'Strg</span> und gleichzeitig '+K+'V</span>.'],
+  pv:'<p>Sicher im Netz: Tipps von der 7.3 für neue Fünftklässler</p><p>Hallo! Ihr seid neu an der Schule …</p><p>Passwörter</p><p>…</p>',
+  tip:'Alles sieht gleich aus, nichts ist groß, nichts ist fett. Das ändern wir jetzt.'},
+ {t:'Titel: Überschrift 1',
+  find:['Sicher im Netz: Tipps von der 7.3 für neue Fünftklässler'],
+  go:['Klicke irgendwo in diese erste Zeile.','Öffne das Auswahlfeld für den Textstil. Dort steht meist '+K+'Normal</span> oder '+K+'Absatz</span>.','Wähle '+K+'Überschrift 1</span>.'],
+  pv:'<h1>Sicher im Netz: Tipps von der 7.3 für neue Fünftklässler</h1>'},
+ {t:'Abschnitt 1: Überschrift 2',
+  find:['Passwörter'],
+  go:['Klicke in die Zeile, in der nur das Wort '+K+'Passwörter</span> steht.','Wähle im Auswahlfeld '+K+'Überschrift 2</span>.'],
+  pv:'<h2>Passwörter</h2>'},
+ {t:'Abschnitt 2: Überschrift 2',
+  find:['Fremde im Chat'],
+  go:['Klicke in die Zeile '+K+'Fremde im Chat</span>.','Wähle '+K+'Überschrift 2</span>.'],
+  pv:'<h2>Fremde im Chat</h2>'},
+ {t:'Abschnitt 3: Überschrift 2',
+  find:['Fake-Nachrichten'],
+  go:['Klicke in die Zeile '+K+'Fake-Nachrichten</span>.','Wähle '+K+'Überschrift 2</span>.'],
+  pv:'<h2>Fake-Nachrichten</h2>'},
+ {t:'Passwort-Regeln: Aufzählung',
+  find:['mindestens 12 Zeichen','Buchstaben, Zahlen und Sonderzeichen mischen','für jede App ein anderes Passwort','nie weitergeben, auch nicht an Freunde'],
+  go:['Klicke vorne vor <b>mindestens</b>, halte die Maustaste gedrückt und ziehe bis hinter <b>Freunde</b>. Alle vier Zeilen sind jetzt markiert.','Klicke auf den Knopf '+K+'Aufzählung</span> (Liste mit Punkten).'],
+  pv:'<ul><li>mindestens 12 Zeichen</li><li>Buchstaben, Zahlen und Sonderzeichen mischen</li><li>für jede App ein anderes Passwort</li><li>nie weitergeben, auch nicht an Freunde</li></ul>'},
+ {t:'Drei Wörter fett',
+  find:['Ein gutes Passwort ist lang, einmalig und geheim.'],
+  go:['Mache einen Doppelklick auf das Wort '+K+'lang</span>. Es ist jetzt markiert.','Klicke auf '+K+'B</span> (oder drücke Strg + B).','Dasselbe mit '+K+'einmalig</span>.','Dasselbe mit '+K+'geheim</span>.'],
+  pv:'<p>Ein gutes Passwort ist <b>lang</b>, <b>einmalig</b> und <b>geheim</b>.</p>'},
+ {t:'Vier Schritte: nummerierte Liste',
+  find:['Stopp: nicht antworten','Blocken: die Person sperren','Melden: in der App melden','Erzählen: einem Erwachsenen sagen'],
+  go:['Markiere alle vier Zeilen: vor <b>Stopp</b> klicken, Maustaste gedrückt halten, bis hinter <b>Erwachsenen sagen</b> ziehen.','Klicke auf den Knopf '+K+'Nummerierte Liste</span> (1, 2, 3).'],
+  pv:'<ol><li>Stopp: nicht antworten</li><li>Blocken: die Person sperren</li><li>Melden: in der App melden</li><li>Erzählen: einem Erwachsenen sagen</li></ol>'},
+ {t:'Merksatz 1: einrücken',
+  find:['Merksatz aus dem Internet-Führerschein: „Lang, einmalig, geheim …“'],
+  go:['Das ist die Zeile weiter oben, nach dem Satz-Trick.','Klicke in diese Zeile.','Klicke auf '+K+'Einrücken</span> (Pfeil nach rechts). Wenn es das nicht gibt: Wähle '+K+'Zitat</span>.'],
+  pv:'<p>Aus „Jeden Morgen esse ich 2 Brötchen …“ wird …</p><p class="q">Merksatz aus dem Internet-Führerschein: „Lang, einmalig, geheim …“</p>'},
+ {t:'Merksatz 2: einrücken',
+  find:['Merksatz aus dem Internet-Führerschein: „Zeitdruck + Link + gib Daten ein = Fake …“'],
+  go:['Das ist die Zeile weiter unten, bei den Fakes.','Klicke in diese Zeile.','Klicke auf '+K+'Einrücken</span> (oder '+K+'Zitat</span>), genau wie eben.'],
+  pv:'<p class="q">Merksatz aus dem Internet-Führerschein: „Zeitdruck + Link + gib Daten ein = Fake …“</p>'},
+ {t:'Warnung: Farbe',
+  find:['ACHTUNG: Schickt Fremden niemals Fotos, eure Adresse oder eure Telefonnummer!'],
+  go:['Markiere die ganze Zeile.','Klicke auf den Knopf für die '+K+'Textfarbe</span> (meist ein <b>A</b> mit farbigem Strich) und wähle Rot.','Mache jetzt einen Doppelklick nur auf das Wort '+K+'ACHTUNG</span> und klicke auf '+K+'B</span> (fett).'],
+  pv:'<p class="red"><b>ACHTUNG</b>: Schickt Fremden niemals Fotos, eure Adresse oder eure Telefonnummer!</p>',
+  tip:'Das Wort ACHTUNG bleibt wichtig: Nicht jeder erkennt Farben.'},
+ {t:'Kleine Überschriften: Überschrift 3',
+  find:['Der Satz-Trick','Die vier Schritte','So erkennt ihr Fakes'],
+  go:['Klicke in die Zeile '+K+'Der Satz-Trick</span> und wähle '+K+'Überschrift 3</span>.','Klicke in die Zeile '+K+'Die vier Schritte</span> und wähle '+K+'Überschrift 3</span>.','Klicke in die Zeile '+K+'So erkennt ihr Fakes</span> und wähle '+K+'Überschrift 3</span>.'],
+  pv:'<h3>Der Satz-Trick</h3><h3>Die vier Schritte</h3><h3>So erkennt ihr Fakes</h3>'},
+ {t:'Der falsche Satz: durchstreichen',
+  find:['Euer Geburtstag ist ein super Passwort, weil ihr ihn nie vergesst.'],
+  go:['Dieser Satz stimmt nicht. Ein Geburtstag ist kein gutes Passwort, weil ihn viele kennen.','Markiere den ganzen Satz.','Klicke auf '+K+'Durchstreichen</span> (ein S mit Strich).','Schreibe hinter den Satz, was richtig ist: <span class="find" style="display:inline;padding:1px 6px">Ein Geburtstag ist kein gutes Passwort, weil ihn viele kennen.</span>'],
+  pv:'<p><s>Euer Geburtstag ist ein super Passwort, weil ihr ihn nie vergesst.</s> Ein Geburtstag ist kein gutes Passwort, weil ihn viele kennen.</p>'},
+ {t:'Geschafft! 🎉',
+  go:['Dein Text ist gerettet.','Gehe zur <a href="index.html#sich">normalen Seite, Teil 3 „Zum Schluss“</a> und fülle die Tabelle aus.','Klicke dort auf '+K+'Als Datei speichern</span>.'],
+  tip:'Vergiss nicht, auch dein Pad-Dokument zu speichern.',last:true}
+];
+var i=0;
+try{i=Math.min(STEPS.length-1,Math.max(0,parseInt(sessionStorage.getItem('itg-hilfe')||'0',10)||0));}catch(e){}
+var card=document.getElementById('card'),dots=document.getElementById('dots'),back=document.getElementById('back'),next=document.getElementById('next');
+function el(tag,cls,html){var e=document.createElement(tag);if(cls)e.className=cls;if(html!==undefined)e.innerHTML=html;return e;}
+function render(){
+ var s=STEPS[i];card.innerHTML='';dots.innerHTML='';
+ STEPS.forEach(function(_,n){var d=el('i',n<i?'done':n===i?'now':'',String(n+1));dots.appendChild(d);});
+ card.appendChild(el('div','small muted','Schritt '+(i+1)+' von '+STEPS.length));
+ card.appendChild(el('h2','',s.t));
+ if(s.find){card.appendChild(el('h3','',s.find.length>1?'Suche diese Zeilen im Pad:':'Suche diese Zeile im Pad:'));s.find.forEach(function(f){card.appendChild(el('div','find',f));});}
+ var ol=el('ol','go');s.go.forEach(function(g){ol.appendChild(el('li','',g));});card.appendChild(ol);
+ if(s.pv){card.appendChild(el('h3','',s.find||i===2?'So sieht es danach aus:':'So sieht es aus:'));card.appendChild(el('div','pv',s.pv));}
+ if(s.tip)card.appendChild(el('div','tip',s.tip));
+ back.disabled=i===0;next.disabled=!!s.last;next.textContent=i===STEPS.length-2?'Fertig →':'Weiter →';
+ try{sessionStorage.setItem('itg-hilfe',String(i));}catch(e){}
+ window.scrollTo(0,0);
+}
+back.addEventListener('click',function(){if(i>0){i--;render();}});
+next.addEventListener('click',function(){if(i<STEPS.length-1){i++;render();}});
+render();
+})();
+</script>
+</main>
+</body>
+</html>
