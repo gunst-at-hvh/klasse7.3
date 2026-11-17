@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Merkblatt-Werkstatt – ITG Klasse 7.3</title>
+<style>
+@font-face{font-family:"Shantell Sans";src:url(fonts/shantell-sans-latin-400-normal.woff2) format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Shantell Sans";src:url(fonts/shantell-sans-latin-700-normal.woff2) format("woff2");font-weight:700;font-display:swap}
+:root{--bg:#fbfaf5;--grid:#dbe7f3;--card:#fff;--ink:#1e1e1e;--muted:#6b6b6b;--gold:#ffe066;--ok:#2b8a3e;--okbg:#d3f9d8;--soft:#e7f5ff}
+*{box-sizing:border-box}
+body{margin:0;color:var(--ink);font-family:"Shantell Sans","Comic Sans MS",cursive;font-size:18px;background-color:var(--bg);
+ background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:26px 26px}
+main{max-width:980px;margin:0 auto;padding:10px 14px 60px}
+h1{font-size:2.1rem;margin:.3em 0 .1em}h2{font-size:1.5rem;margin:.2em 0 .4em}h3{font-size:1.15rem;margin:.8em 0 .3em}
+.sk{border:2.5px solid var(--ink);border-radius:14px 6px 16px 6px/6px 16px 6px 14px;background:var(--card)}
+.panel{padding:14px 18px;margin:12px 0}
+.muted{color:var(--muted)}.small{font-size:.85rem}
+button{cursor:pointer;font:inherit;border:2.5px solid var(--ink);border-radius:14px 6px 16px 6px/6px 16px 6px 14px;background:#fff;color:var(--ink);padding:6px 14px;box-shadow:2px 2px 0 var(--ink)}
+button:active{transform:translate(2px,2px);box-shadow:none}
+button.go{background:#8ce99a}button.gold{background:var(--gold)}
+input[type=text],textarea{font:inherit;width:100%;padding:8px 10px;border:2.5px solid var(--ink);border-radius:12px 5px 14px 5px/5px 14px 5px 12px;background:#fff;color:var(--ink)}
+textarea{min-height:90px;resize:vertical}
+nav{position:sticky;top:0;z-index:5;background:var(--bg);padding:6px 0;display:flex;gap:6px;flex-wrap:wrap;border-bottom:2.5px solid var(--ink)}
+nav a{text-decoration:none;color:var(--ink);border:2px solid var(--ink);border-radius:999px 14px 999px 14px;background:#fff;padding:2px 12px;font-weight:700;font-size:.95rem}
+nav a.on{background:var(--gold)}
+.bar{height:16px;border:2.5px solid var(--ink);border-radius:999px;background:#fff;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:#8ce99a;transition:width .3s}
+table{border-collapse:collapse;width:100%}
+th,td{border:2px solid var(--ink);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--soft)}
+td.chk{width:70px;text-align:center}
+input[type=checkbox]{width:26px;height:26px;accent-color:#2b8a3e;cursor:pointer}
+.task{display:flex;gap:12px;align-items:flex-start;padding:10px 12px;margin:8px 0}
+.task.done{background:var(--okbg)}
+.task label{flex:1;cursor:pointer}
+.tag{display:inline-block;border:2px solid var(--ink);border-radius:999px;padding:0 10px;font-size:.8rem;font-weight:700;margin-right:6px;background:#fff}
+.rule{padding:12px 16px;margin:10px 0}
+.rule b.fn{display:inline-block;background:var(--gold);border:2px solid var(--ink);border-radius:8px;padding:0 8px;margin-right:6px}
+.rule .yes{color:#1e1e1e}.rule .no{color:var(--muted)}
+.rule ul{margin:.3em 0 0;padding-left:1.2em}
+.hint{background:var(--soft);border:2px dashed var(--ink);border-radius:10px;padding:8px 12px;margin:8px 0}
+details{margin:6px 0}summary{cursor:pointer;font-weight:700}
+.lock{opacity:.45;pointer-events:none}
+.cols{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media(max-width:700px){.cols{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main>
+<h1>Merkblatt-Werkstatt ✏️</h1>
+<p class="muted">Für neue Fünftklässler: Tipps von der 7.3 zur Sicherheit im Netz. Du arbeitest hier in zwei Fenstern: diese Seite (Aufträge) und das Pad (Text).</p>
+
+<nav id="nav">
+ <a href="#start">0 Start</a><a href="#regeln">1 Regeln</a><a href="#pass">2 Funktionen-Pass</a><a href="#plan">3 Merkblatt planen</a><a href="#pruef">4 Gegenlesen</a><a href="#sich">5 Sicherung</a>
+</nav>
+
+<!-- 0 START -->
+<section id="start" class="sk panel">
+ <h2>0 · Start</h2>
+ <p>Dein Name: <input type="text" id="name" placeholder="Vorname" style="max-width:320px"></p>
+ <div class="bar"><i id="gbar"></i></div>
+ <p class="small muted" id="gtxt"></p>
+ <div class="hint">
+  <b>So geht's:</b>
+  <ol>
+   <li>Öffne in IServ das Modul <b>Texte</b> und lege ein neues, leeres Dokument an. Nenne es <b>Rettung_DeinName</b>.</li>
+   <li>Klicke hier auf <b>Chaos-Text kopieren</b> und füge ihn im Pad ein (Strg+V).</li>
+   <li>Lies zuerst die <b>Regeln</b> (1). Dann arbeite den <b>Funktionen-Pass</b> (2) von oben nach unten ab.</li>
+  </ol>
+  <button class="gold" id="copyChaos">Chaos-Text kopieren</button>
+  <a href="chaos-text.txt" download><button>Als Datei laden</button></a>
+  <span class="small muted" id="copyMsg"></span>
+ </div>
+ <p class="small muted">Dein Fortschritt bleibt auf diesem Computer gespeichert. Am Ende speicherst du ihn in Teil 5 als Datei.</p>
+</section>
+
+<!-- 1 REGELN -->
+<section id="regeln">
+ <div class="sk panel"><h2>1 · Regeln: Wann nehme ich was?</h2>
+ <p>Eine Funktion ist ein Werkzeug. Du nimmst sie nur, wenn sie dem Leser hilft. Prüfe immer mit der <b>Frage</b> in jedem Kästchen.</p></div>
+
+ <div class="sk rule"><b class="fn">Überschrift 1</b> <b>Frage: Ist das der Titel des ganzen Textes?</b>
+  <ul><li class="yes">Ja → nur <b>einmal</b>, ganz oben.</li><li class="no">Nein → nimm Überschrift 2.</li></ul></div>
+
+ <div class="sk rule"><b class="fn">Überschrift 2</b> <b>Frage: Beginnt hier ein neues Thema?</b>
+  <ul><li class="yes">Ja → jeder große Abschnitt bekommt eine (hier: Passwörter, Fremde im Chat, Fake-Nachrichten).</li><li class="no">Nein → kein Titel. Nie nur nehmen, damit etwas groß aussieht.</li></ul></div>
+
+ <div class="sk rule"><b class="fn">Überschrift 3</b> <b>Frage: Ist das ein Unterthema in einem Abschnitt?</b>
+  <ul><li class="yes">Ja → gehört immer unter eine Überschrift 2.</li><li class="no">Kommt eine 3 vor jeder 2? Dann stimmt die Reihenfolge nicht.</li></ul></div>
+
+ <div class="sk rule"><b class="fn">Aufzählung</b> <b>Frage: Sind es mehrere Dinge, und die Reihenfolge ist egal?</b>
+  <ul><li class="yes">Ja → Stichpunkte, kurz, mindestens drei.</li><li class="no">Reihenfolge wichtig → nummerierte Liste.</li></ul></div>
+
+ <div class="sk rule"><b class="fn">Nummerierte Liste</b> <b>Frage: Muss man es in dieser Reihenfolge tun?</b>
+  <ul><li class="yes">Ja → Schritte (Stopp, Blocken, Melden, Erzählen).</li><li class="no">Nein → Aufzählung mit Punkten.</li></ul></div>
+
+ <div class="sk rule"><b class="fn">Fett</b> <b>Frage: Ist das ein Schlüsselwort, das man nicht überlesen darf?</b>
+  <ul><li class="yes">Ja → nur einzelne Wörter, höchstens <b>5</b> im ganzen Text.</li><li class="no">Ganze Sätze fett? Dann fällt nichts mehr auf.</li></ul></div>
+
+ <div class="sk rule"><b class="fn">Einrücken (Zitat)</b> <b>Frage: Ist das ein Merksatz oder ein Satz von jemand anderem?</b>
+  <ul><li class="yes">Ja → einrücken, kurz (1–2 Zeilen), darunter die Quelle.</li><li class="no">Normaler Text bleibt außen.</li></ul></div>
+
+ <div class="sk rule"><b class="fn">Farbe</b> <b>Frage: Ist das eine Warnung?</b>
+  <ul><li class="yes">Ja → <b>eine</b> Farbe, nur für Warnungen, und das Wort ACHTUNG steht dabei. Farbe allein reicht nicht (Kopie in Schwarzweiß, Farbenblindheit).</li><li class="no">Sonst keine Farbe. Die Autorenfarbe des Pads stellt es selbst ein und zählt nicht.</li></ul></div>
+
+ <div class="sk rule"><b class="fn">Durchstreichen</b> <b>Frage: Verbessere ich gerade etwas?</b>
+  <ul><li class="yes">Ja → falschen Satz durchstreichen, richtigen daneben schreiben.</li><li class="no">Im fertigen Merkblatt steht nichts Durchgestrichenes mehr.</li></ul></div>
+
+ <div class="sk panel"><h3>Zwei Tests vor dem Abgeben</h3>
+  <ul><li><b>Fünf-Sekunden-Test:</b> Ein Fünftklässler soll in fünf Sekunden die Stelle zu „Passwörter“ finden.</li>
+  <li><b>Weglass-Test:</b> Nimm in Gedanken alle Formatierungen weg. Wenn das Merkblatt dann gleich gut ist, hast du zu viel formatiert.</li></ul></div>
+</section>
+
+<!-- 2 PASS -->
+<section id="pass" class="sk panel">
+ <h2>2 · Funktionen-Pass (im Pad)</h2>
+ <p>Arbeite von oben nach unten. Hake selbst ab. Dann zeigst du deine Lehrkraft die Stufe. <b>Hilferegel:</b> erst drei Mitschüler fragen, dann die Lehrkraft.</p>
+ <div id="passList"></div>
+ <h3>Stufe 3 · Berichtigung</h3>
+ <p>Ein Satz im Text stimmt nicht. Welcher? Schreibe in einem Satz, was richtig ist und warum.</p>
+ <textarea id="berichtigung" data-k="berichtigung" placeholder="Richtig ist, dass …"></textarea>
+</section>
+
+<!-- 3 PLAN -->
+<section id="plan" class="sk panel">
+ <h2>3 · Unser Merkblatt planen (Gruppe)</h2>
+ <p><b>Auftrag:</b> Schreibt zu dritt ein Merkblatt „Sicher im Netz“ für neue Fünftklässler, in <b>einem</b> gemeinsamen Pad, jede Person in ihrem Abschnitt. Stichpunkte statt langer Sätze. Keine echten Passwörter oder Namen!</p>
+ <p>Gruppe: <input type="text" data-k="gruppe" placeholder="Drei Namen"></p>
+
+ <h3>Pflicht für euer Merkblatt</h3>
+ <div id="pflichtList"></div>
+
+ <h3>Wer schreibt was? Erst Entwurf, dann ins Pad</h3>
+ <div class="cols">
+  <div><b>Passwörter</b><br><input type="text" data-k="w1" placeholder="Wer?"><textarea data-k="e1">• lang, einmalig, geheim
+• mindestens 12 Zeichen
+• nie weitergeben</textarea></div>
+  <div><b>Fremde im Chat</b><br><input type="text" data-k="w2" placeholder="Wer?"><textarea data-k="e2" placeholder="1. Stopp: nicht antworten
+2. …"></textarea></div>
+  <div><b>Fake-Nachrichten</b><br><input type="text" data-k="w3" placeholder="Wer?"><textarea data-k="e3" placeholder="• …"></textarea></div>
+ </div>
+
+ <details><summary>Hilfe: Stichwortkarten (nur wenn du nicht weiterkommst)</summary>
+  <table><tr><th>Abschnitt</th><th>Stichpunkte zum Übernehmen</th></tr>
+  <tr><td>Passwörter</td><td>lang, einmalig, geheim · mindestens 12 Zeichen · für jede App ein anderes Passwort · nie weitergeben · ein Satz statt eines Wortes</td></tr>
+  <tr><td>Fremde im Chat</td><td>Fremde bekommen keine echten Daten · Stopp, Blocken, Melden, Erzählen · nie Fotos oder Adresse schicken</td></tr>
+  <tr><td>Fake-Nachrichten</td><td>Gewinn-Nachricht? Löschen. · Zeitdruck, Link und „gib Daten ein“ heißt Fake · bei Unsicherheit Eltern oder Lehrkraft fragen</td></tr></table></details>
+
+ <details><summary>Hilfe: Merksätze fürs Zitat (such dir einen aus)</summary>
+  <ul><li>„Erst fragen, dann posten.“</li><li>„Privates bleibt privat.“</li><li>„Spitzname statt echtem Namen.“</li>
+  <li>„Lang, einmalig, geheim: ein Satz statt eines Wortes.“</li><li>„Zeitdruck + Link + gib Daten ein = Fake. Nicht klicken.“</li><li>„Nicht mitmachen, Beweise sichern, melden, Hilfe holen.“</li></ul>
+  <p class="small muted">Unter das Zitat in Kursiv: Merksatz aus dem Internet-Führerschein.</p></details>
+</section>
+
+<!-- 4 PRÜF -->
+<section id="pruef" class="sk panel">
+ <h2>4 · Gegenlesen (Galerie)</h2>
+ <p>Ihr lest das Merkblatt einer anderen Gruppe. Lest nur, ändert nichts!</p>
+ <p>Gruppe, die ihr prüft: <input type="text" data-k="pruefgruppe"></p>
+ <div id="pruefList"></div>
+ <h3>Das gefällt uns</h3><textarea data-k="lob"></textarea>
+ <h3>Dieser Tipp hilft euch</h3><textarea data-k="tipp"></textarea>
+ <p class="small muted">Schreibt Lob und Tipp auch als Kommentar ans Pad der Gruppe, wenn das Pad das kann.</p>
+</section>
+
+<!-- 5 SICHERUNG -->
+<section id="sich" class="sk panel">
+ <h2>5 · Sicherung: Funktion, wofür?</h2>
+ <p>Schreibe zu jeder Funktion, wofür du sie brauchst. Die erste ist vorgegeben.</p>
+ <table>
+  <tr><th style="width:34%">Funktion</th><th>Wofür brauche ich sie?</th></tr>
+  <tr><td>Überschrift (1, 2, 3)</td><td>Ordnung: Man findet alles schnell.</td></tr>
+  <tr><td>Aufzählung</td><td><input type="text" data-k="f1" placeholder="Überblick: kurze …"></td></tr>
+  <tr><td>Nummerierte Liste</td><td><input type="text" data-k="f2"></td></tr>
+  <tr><td>Fett</td><td><input type="text" data-k="f3"></td></tr>
+  <tr><td>Einrücken</td><td><input type="text" data-k="f4"></td></tr>
+  <tr><td>Farbe</td><td><input type="text" data-k="f5"></td></tr>
+  <tr><td>Durchstreichen</td><td><input type="text" data-k="f6"></td></tr>
+ </table>
+ <h3>Meine Regel für Farbe in einem Satz</h3>
+ <textarea data-k="farbregel" style="min-height:70px"></textarea>
+ <p><button class="go" id="saveFile">Ergebnis als Datei speichern</button> <button id="copyRes">Ergebnis kopieren</button> <span class="small muted" id="saveMsg"></span></p>
+ <p class="small muted">Lade die Datei in deinen IServ-Ordner oder gib sie deiner Lehrkraft. Sichere außerdem dein Pad-Dokument.</p>
+</section>
+</main>
+
+<script>
+(function(){
+'use strict';
+var KEY='itg-textverarbeitung-v1';
+var PASS=[
+ {s:1,t:'Mache die erste Zeile zur <b>Überschrift 1</b> (Titel).'},
+ {s:1,t:'Mache „Passwörter“, „Fremde im Chat“ und „Fake-Nachrichten“ zur <b>Überschrift 2</b>.'},
+ {s:1,t:'Mache die vier Passwort-Regeln („mindestens 12 Zeichen“ bis „nie weitergeben“) zu einer <b>Aufzählung</b>.'},
+ {s:1,t:'Schreibe die drei Wörter <b>lang, einmalig, geheim</b> fett.'},
+ {s:2,t:'Mache aus Stopp, Blocken, Melden, Erzählen eine <b>nummerierte Liste</b>.'},
+ {s:2,t:'<b>Rücke</b> die beiden Zeilen „Merksatz aus dem Internet-Führerschein“ ein.'},
+ {s:2,t:'Gib dem Satz mit ACHTUNG eine <b>Farbe</b>. Das Wort ACHTUNG schreibst du fett.'},
+ {s:3,t:'Mache „Der Satz-Trick“, „Die vier Schritte“ und „So erkennt ihr Fakes“ zur <b>Überschrift 3</b>.'},
+ {s:3,t:'Ein Satz stimmt nicht. Finde ihn und <b>streiche ihn durch</b>. Schreibe unten die Berichtigung.'}
+];
+var PFLICHT=['Titel als Überschrift 1','Drei Abschnitte als Überschrift 2: Passwörter, Fremde im Chat, Fake-Nachrichten','In jedem Abschnitt eine Aufzählung mit mindestens drei Stichpunkten','Bei „Fremde im Chat“ eine nummerierte Schrittfolge','Ein Merksatz als Zitat eingerückt','Ein Warnhinweis mit dem Wort ACHTUNG und mit Farbe','Höchstens fünf fette Wörter im ganzen Text'];
+var PRUEF=['Der Titel ist eine Überschrift 1','Es gibt drei Überschriften der Ebene 2','In jedem Abschnitt steht eine Aufzählung','Die Schritte stehen in einer nummerierten Liste','Ein Merksatz ist eingerückt','Der Warnhinweis hat das Wort ACHTUNG und eine Farbe','Es ist nicht zu viel fett oder bunt','Ein Fünftklässler findet in fünf Sekunden die Stelle zu „Passwörter“'];
+
+var S={};
+try{S=JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){S={};}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){} progress();}
+
+function checkList(id,items,pre,withStage){
+ var box=document.getElementById(id);
+ items.forEach(function(it,i){
+  var k=pre+i, txt=withStage?it.t:it, d=document.createElement('div');
+  d.className='sk task'; var cb=document.createElement('input'); cb.type='checkbox'; cb.id=k; cb.checked=!!S[k];
+  var lb=document.createElement('label'); lb.htmlFor=k;
+  if(withStage){var tg=document.createElement('span'); tg.className='tag'; tg.textContent='Stufe '+it.s+(it.s===1?' · Pflicht':''); lb.appendChild(tg);}
+  var sp=document.createElement('span'); sp.innerHTML=txt; lb.appendChild(sp);
+  d.appendChild(cb); d.appendChild(lb); box.appendChild(d);
+  function upd(){d.classList.toggle('done',cb.checked);} upd();
+  cb.addEventListener('change',function(){S[k]=cb.checked;upd();save();});
+ });
+}
+checkList('passList',PASS,'p',true);
+checkList('pflichtList',PFLICHT,'f',false);
+checkList('pruefList',PRUEF,'g',false);
+
+document.querySelectorAll('[data-k]').forEach(function(el){
+ var k=el.getAttribute('data-k'); if(S[k]!==undefined) el.value=S[k];
+ el.addEventListener('input',function(){S[k]=el.value;save();});
+});
+var nm=document.getElementById('name'); nm.value=S.name||'';
+nm.addEventListener('input',function(){S.name=nm.value;save();});
+
+function progress(){
+ var n=0,tot=PASS.length+PFLICHT.length+PRUEF.length;
+ PASS.forEach(function(_,i){if(S['p'+i])n++;});
+ PFLICHT.forEach(function(_,i){if(S['f'+i])n++;});
+ PRUEF.forEach(function(_,i){if(S['g'+i])n++;});
+ document.getElementById('gbar').style.width=Math.round(100*n/tot)+'%';
+ document.getElementById('gtxt').textContent=n+' von '+tot+' Häkchen gesetzt';
+}
+progress();
+
+function chaos(cb){
+ fetch('chaos-text.txt').then(function(r){return r.text();}).then(cb).catch(function(){cb(null);});
+}
+document.getElementById('copyChaos').addEventListener('click',function(){
+ var m=document.getElementById('copyMsg');
+ chaos(function(t){
+  if(!t){m.textContent='Konnte nicht laden. Nimm „Als Datei laden“.';return;}
+  (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(function(){m.textContent='Kopiert! Jetzt im Pad einfügen (Strg+V).';}).catch(function(){m.textContent='Kopieren ging nicht. Nimm „Als Datei laden“.';});
+ });
+});
+
+function result(){
+ var L=[];L.push('Merkblatt-Werkstatt – Ergebnis');L.push('Name: '+(S.name||''));L.push('Datum: '+new Date().toLocaleDateString('de-DE'));L.push('');
+ L.push('FUNKTIONEN-PASS');PASS.forEach(function(p,i){L.push((S['p'+i]?'[x] ':'[ ] ')+'Stufe '+p.s+': '+p.t.replace(/<[^>]+>/g,''));});
+ L.push('Berichtigung: '+(S.berichtigung||''));L.push('');
+ L.push('MERKBLATT – GRUPPE: '+(S.gruppe||''));PFLICHT.forEach(function(p,i){L.push((S['f'+i]?'[x] ':'[ ] ')+p);});
+ L.push('Passwörter ('+(S.w1||'')+'):\n'+(S.e1||''));L.push('Fremde im Chat ('+(S.w2||'')+'):\n'+(S.e2||''));L.push('Fake-Nachrichten ('+(S.w3||'')+'):\n'+(S.e3||''));L.push('');
+ L.push('GEGENLESEN – geprüft: '+(S.pruefgruppe||''));PRUEF.forEach(function(p,i){L.push((S['g'+i]?'[x] ':'[ ] ')+p);});
+ L.push('Lob: '+(S.lob||''));L.push('Tipp: '+(S.tipp||''));L.push('');
+ L.push('FUNKTION, WOFÜR?');['Aufzählung','Nummerierte Liste','Fett','Einrücken','Farbe','Durchstreichen'].forEach(function(n,i){L.push(n+': '+(S['f'+(i+1)]||''));});
+ L.push('Meine Regel für Farbe: '+(S.farbregel||''));
+ return L.join('\n');
+}
+document.getElementById('saveFile').addEventListener('click',function(){
+ var b=new Blob([result()],{type:'text/plain;charset=utf-8'}),a=document.createElement('a');
+ a.href=URL.createObjectURL(b);a.download='Merkblatt-Werkstatt_'+((S.name||'Name').replace(/[^\wäöüÄÖÜß-]+/g,'_'))+'.txt';
+ document.body.appendChild(a);a.click();a.remove();document.getElementById('saveMsg').textContent='Gespeichert (Ordner „Downloads“).';
+});
+document.getElementById('copyRes').addEventListener('click',function(){
+ var m=document.getElementById('saveMsg');
+ (navigator.clipboard?navigator.clipboard.writeText(result()):Promise.reject()).then(function(){m.textContent='Kopiert!';}).catch(function(){m.textContent='Kopieren ging nicht. Nimm „als Datei speichern“.';});
+});
+
+var links=[].slice.call(document.querySelectorAll('nav a'));
+function onScroll(){var cur=links[0];links.forEach(function(a){var s=document.querySelector(a.getAttribute('href'));if(s&&s.getBoundingClientRect().top<120)cur=a;});links.forEach(function(a){a.classList.toggle('on',a===cur);});}
+window.addEventListener('scroll',onScroll);onScroll();
+})();
+</script>
+</body>
+</html>
