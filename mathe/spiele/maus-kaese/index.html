@@ -15,7 +15,6 @@ body{color:var(--ink);font-family:"Shantell Sans","Comic Sans MS",cursive;font-s
 body.m-beamer{font-size:clamp(19px,1.5vw,32px)}
 body.m-phone{font-size:16px}
 .hidden{display:none!important}
-.ti{font-weight:700}
 .muted{color:var(--muted)}
 .xc{color:var(--xc)}.yc{color:var(--yc)}
 .mi{font-family:Arial,Helvetica,sans-serif;font-weight:700;display:inline-block;transform:scaleX(1.25);margin:0 .06em}
@@ -27,45 +26,68 @@ button.go{background:var(--green)}button.gold{background:var(--gold)}
 button.chip{font-size:.95em;padding:.15em .65em;box-shadow:1px 1px 0 var(--ink)}
 button.chip.on{background:var(--gold)}
 .row{display:flex;flex-wrap:wrap;gap:6px;margin:3px 0 9px}
-label.l{display:block;font-size:.95em;color:var(--muted);margin-top:8px}
-.wrap{min-height:100dvh;padding:12px;display:flex;flex-direction:column;align-items:center}
+label.l{display:block;font-size:.92em;color:var(--muted);margin-top:8px}
+.wrap{min-height:100dvh;padding:12px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.card{width:min(44em,100%);padding:.8em 1.1em}
+.card h1{margin:0;font-size:2em;text-align:center;line-height:1.1}
 
 /* ---------- Start ---------- */
-#setup .card{width:min(44em,100%);padding:.8em 1.1em;margin-top:6px}
+#home .card{width:min(30em,100%);text-align:center}
+.choices{display:grid;gap:.7em;margin:.9em 0 .6em}
+.choices button{display:flex;flex-direction:column;align-items:center;padding:.5em .8em;line-height:1.15}
+.choices button b{font-size:1.25em}
+.choices button small{font-size:.8em;color:#2b4a30}
+.choices .ic{font-size:1.8em;line-height:1}
+.homelinks{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.ver{font-size:.8em;margin-top:.7em}
+
+/* ---------- Einstellungen / Lobby / Beitreten ---------- */
 .opts{display:grid;grid-template-columns:1fr 1fr;gap:0 1.4em}
-@media (max-width:760px){.opts{grid-template-columns:1fr}#setup h1{font-size:1.7em}}
-#setup h1{margin:0;font-size:2em;text-align:center;line-height:1.1;white-space:nowrap}
-#setup .sub{text-align:center;color:var(--muted);margin:.2em 0 .4em}
+@media (max-width:760px){.opts{grid-template-columns:1fr}}
 .prow{display:flex;gap:8px;align-items:center;margin:5px 0}
 .prow .em{font-size:1.6em;padding:0 .4em}
-.prow input{flex:1;min-width:0;font:inherit;font-size:1.1em;padding:.25em .6em;border:2px solid var(--ink);border-radius:10px 4px 12px 4px;background:#fff}
+.prow input,.inp1{flex:1;min-width:0;font:inherit;font-size:1.1em;padding:.25em .6em;border:2px solid var(--ink);border-radius:10px 4px 12px 4px;background:#fff}
+.btnrow{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:.9em}
+.lob{width:min(70em,100%);display:grid;grid-template-columns:minmax(14em,20em) 1fr;gap:1em;align-items:start}
+@media (max-width:760px){.lob{grid-template-columns:1fr}}
+.joinbox{text-align:center;padding:.7em}
+.joinbox .code{font-weight:700;font-size:3em;letter-spacing:.12em;line-height:1.1}
+.joinbox .qr svg{width:min(11em,60vw);height:auto;margin:.3em auto;background:#fff;padding:4px;border-radius:6px;display:block}
+.joinbox .url{font-size:.75em;word-break:break-all}
+.setbox{padding:.7em 1em}
+.plist{display:flex;flex-wrap:wrap;gap:6px;margin:.3em 0 .4em;min-height:2.2em}
+.pchip{display:inline-flex;align-items:center;gap:.3em;padding:.05em .7em .05em .35em;font-size:1em;border:2px solid var(--ink);border-radius:999px 14px 999px 14px;background:#fff}
+.pchip .e{font-size:1.4em}.pchip.off{opacity:.4}.pchip.ok{background:#b2f2bb}
+.waitbox{text-align:center;padding:1.2em 1.4em;max-width:90vw}
+.waitbox .e{font-size:4em;line-height:1}
+#netInfo{position:fixed;left:0;right:0;top:0;z-index:90;background:#fff3bf;border-bottom:2px solid var(--ink);padding:.25em .6em;text-align:center;font-size:.9em}
 
 /* ---------- Spiel ---------- */
 #gameWrap{min-height:100dvh;padding:8px}
-#game{max-width:1900px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(20em,29em);gap:12px;align-items:start}
+#game{max-width:1900px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(17em,23em);gap:12px;align-items:start}
 .boardbox{display:flex;justify-content:center}
 .bsvg{display:block;height:auto;background:rgba(255,255,255,.7);border-radius:10px;user-select:none;-webkit-user-select:none}
-#board{width:min(100%,calc(100dvh - 20px))}
+#board{width:min(100%,calc(100dvh - 18px))}
 .side{display:flex;flex-direction:column;gap:.55em}
-.head,.inp,.evl{padding:.55em .7em;display:flex;flex-direction:column;gap:.5em}
+.head,.inp,.evl{padding:.5em .65em;display:flex;flex-direction:column;gap:.45em}
 .topline{display:flex;align-items:center;gap:6px}
 .topline .sp{flex:1}
-.topline .ri{font-weight:700}
+.topline .ri{font-weight:700;white-space:nowrap}
 .task{text-align:center}
-.task .q{font-size:1.25em;font-weight:700;line-height:1.15}
+.task .q{font-size:1.2em;font-weight:700;line-height:1.15}
 .task .who{font-size:1em;color:var(--muted)}
-.tbar{position:relative;height:1.7em;border:2px solid var(--ink);border-radius:10px 4px 10px 4px;background:#fff;overflow:hidden;margin-top:.35em}
+.tbar{position:relative;height:1.7em;border:2px solid var(--ink);border-radius:10px 4px 10px 4px;background:#fff;overflow:hidden;margin-top:.3em}
 .tfill{position:absolute;inset:0 auto 0 0;width:100%;background:var(--gold);transition:width .12s linear}
 .tbar span{position:relative;display:block;text-align:center;line-height:1.55em;font-size:.95em;font-weight:700}
 .tbar.low .tfill{background:#e9ecef}
-.fieldrow{display:flex;align-items:flex-start;justify-content:center;gap:.25em}
-.par,.bar{font-size:3.3em;line-height:1.05;font-weight:400;margin-top:.55em;color:var(--ink)}
-.bar{margin-top:.5em}
-.fld{flex:1;min-width:0;max-width:9.5em;text-align:center;cursor:pointer}
-.fh{font-weight:700;font-size:1.05em;line-height:1.1}
-.fh small{display:block;font-weight:400;font-size:.72em;color:var(--muted);white-space:nowrap}
+.fieldrow{display:flex;align-items:flex-start;justify-content:center;gap:.2em}
+.par,.bar{font-size:3em;line-height:1.05;font-weight:400;margin-top:.5em;color:var(--ink)}
+.bar{margin-top:.45em}
+.fld{flex:1;min-width:0;max-width:9em;text-align:center;cursor:pointer}
+.fh{font-weight:700;font-size:1.15em;line-height:1.1}
+.fh small{font-weight:400;font-size:.75em;color:var(--muted);margin-left:.2em}
 .fld.x .fh b{color:var(--xc)}.fld.y .fh b{color:var(--yc)}
-.fv{display:flex;align-items:center;justify-content:center;gap:.1em;height:2.3em;margin-top:.15em;border:3px solid var(--ink);border-radius:12px 5px 14px 5px/5px 14px 5px 12px;background:#fff;font-size:1.8em;line-height:1}
+.fv{display:flex;align-items:center;justify-content:center;gap:.1em;height:2.1em;margin-top:.15em;border:3px solid var(--ink);border-radius:12px 5px 14px 5px/5px 14px 5px 12px;background:#fff;font-size:1.8em;line-height:1}
 .fld.x .fv{border-color:var(--xc)}.fld.y .fv{border-color:var(--yc)}
 .fld.act .fv{background:#fff3bf;box-shadow:0 0 0 3px #ffe066,2px 2px 0 3px var(--ink)}
 .fv .sg{font-size:.9em;padding:0 .18em;border:none;box-shadow:none;background:transparent;min-width:.9em}
@@ -73,34 +95,35 @@ label.l{display:block;font-size:.95em;color:var(--muted);margin-top:8px}
 .fv .dg.empty::after{content:"?";color:#bbb}
 .fld.act .fv .dg.empty::after{content:"_";animation:blink 1s steps(2) infinite}
 @keyframes blink{50%{opacity:0}}
-.echo{min-height:2.5em;font-size:.88em;line-height:1.2;color:var(--ink);margin-top:.25em}
+.echo{min-height:1.5em;font-size:.85em;line-height:1.2;margin-top:.2em}
 .fld.x .echo b{color:var(--xc)}.fld.y .echo b{color:var(--yc)}
-.cheat{padding:.3em .6em;font-size:.88em;line-height:1.35;text-align:center}
-.cheat div+div{margin-top:.1em}
-.cheat i{font-style:normal;white-space:nowrap}
-.pad{display:grid;grid-template-columns:repeat(4,1fr);gap:.4em}
-.pad button{font-size:1.45em;padding:.1em 0;height:2.1em}
-.pad .okb{grid-column:2/5;background:var(--green);font-size:1.3em}
+.pad{display:grid;grid-template-columns:repeat(4,1fr);gap:.35em}
+.pad button{font-size:1.35em;padding:.1em 0;height:1.9em}
+.pad .okb{grid-column:2/5;background:var(--green);font-size:1.2em}
 .pad .sgn{background:var(--gold)}
 .pad .del{background:#ffe3e3}
 .evl .res{width:100%;border-collapse:collapse;font-size:1em}
 .evl .res th{font-size:.8em;color:var(--muted);font-weight:400;text-align:center;padding:0 .2em}
-.evl .res td{padding:.3em .25em;border-bottom:1px solid #e5e5e5;vertical-align:middle}
-.evl .res td.c{text-align:center;font-size:1.2em;white-space:nowrap}
-.evl .res td.n{text-align:right;font-weight:700;font-size:1.25em;white-space:nowrap}
+.evl .res td{padding:.25em .25em;border-bottom:1px solid #e5e5e5;vertical-align:middle}
+.evl .res td.c{text-align:center;font-size:1.15em;white-space:nowrap}
+.evl .res td.n{text-align:right;font-weight:700;font-size:1.2em;white-space:nowrap}
 .evl .res tr{animation:pop .4s cubic-bezier(.2,1.8,.4,1) both}
 .evl .badge{font-size:.8em;color:var(--muted);line-height:1.2}
 .ok{color:#2b8a3e;font-weight:700}.no{color:#c92a2a;font-weight:700}
 .msg{font-size:1.05em;line-height:1.3;text-align:center}
 .msg .big{font-size:1.2em;font-weight:700;display:block}
+.rankline{text-align:center;font-weight:700;font-size:1.05em}
+.sumline{font-size:.95em;line-height:1.35}
 .toast{position:fixed;left:50%;top:16%;transform:translateX(-50%);z-index:80;font-weight:700;font-size:1.9em;padding:.1em .7em;background:#fff;border:3px solid var(--ink);border-radius:255px 18px 225px 18px/18px 225px 18px 255px;box-shadow:4px 4px 0 var(--ink);animation:toast 1.5s both;pointer-events:none;white-space:nowrap}
 @keyframes toast{0%{transform:translateX(-50%) scale(.3);opacity:0}15%{transform:translateX(-50%) scale(1.05);opacity:1}80%{opacity:1}100%{opacity:0;transform:translateX(-50%) translateY(-20px)}}
 @keyframes pop{from{transform:scale(.6);opacity:0}}
 .drawin{stroke-dasharray:4000;stroke-dashoffset:4000;animation:drawin 1s ease-out forwards}
 @keyframes drawin{to{stroke-dashoffset:0}}
 .fadein{animation:fadein .5s both}@keyframes fadein{from{opacity:0}}
+#hostBar{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;gap:8px;justify-content:center;align-items:center;padding:6px 10px calc(6px + env(safe-area-inset-bottom));background:#2b2140}
+#hostBar span{color:#fff}#hostBar button{flex:1;max-width:300px;padding:.2em}
+body.hb #gameWrap{padding-bottom:4em}
 
-/* Hochformat / Handy: Aufgabe oben, Brett, dann Eingabe */
 @media (orientation:portrait),(max-width:760px){
   #gameWrap{padding:4px 4px 10px}
   #game{grid-template-columns:1fr;max-width:640px;gap:6px}
@@ -108,23 +131,20 @@ label.l{display:block;font-size:.95em;color:var(--muted);margin-top:8px}
   .head{order:1;padding:.35em .6em;gap:.25em}
   .boardbox{order:2}
   .inp,.evl{order:3;padding:.4em .6em;gap:.35em}
-  #board{width:min(100%,calc(100dvh - 26.5em))}
+  #board{width:min(100%,calc(100dvh - 22em))}
   body.m-beamer #board{width:100%}
   .task .q{font-size:1.1em}
-  .task .sub{display:none}
   .tbar{margin-top:.2em}
-  .fv{height:2.1em;font-size:1.6em}
-  .par,.bar{font-size:2.8em}
-  .echo{min-height:1.4em;font-size:.82em;margin-top:.1em}
-  .cheat{font-size:.78em;padding:.2em .4em}
+  .fv{height:2em;font-size:1.6em}
+  .par,.bar{font-size:2.6em}
+  .echo{font-size:.8em;min-height:1.3em}
   .pad{gap:.3em}
-  .pad button{height:1.7em;font-size:1.3em}
+  .pad button{height:1.65em;font-size:1.3em}
 }
 @media (max-height:700px) and (max-width:760px){
-  #board{width:min(100%,calc(100dvh - 24.5em))}
-  .cheat{display:none}
-  .pad button{height:1.55em}
-  .fv{height:1.9em}
+  #board{width:min(100%,calc(100dvh - 20em))}
+  .pad button{height:1.5em}
+  .fv{height:1.85em}
 }
 
 /* ---------- Abdecken ---------- */
@@ -134,65 +154,115 @@ label.l{display:block;font-size:.95em;color:var(--muted);margin-top:8px}
 #cover .e{font-size:4.5em;line-height:1}
 
 /* ---------- Endstand ---------- */
-#final .card{width:min(700px,100%);padding:.8em 1.1em;margin-top:14px;text-align:center}
-.pod{display:flex;justify-content:center;align-items:flex-end;gap:10px;margin:14px 0}
+#final .card{text-align:center;width:min(46em,100%)}
+.pod{display:flex;justify-content:center;align-items:flex-end;gap:10px;margin:12px 0}
 .pod>div{display:flex;flex-direction:column;align-items:center}
-.pod .e{font-size:2.6em}.pod .blk{width:5em;border:2.5px solid var(--ink);border-radius:8px 3px 9px 3px;display:grid;place-items:center;font-size:1.5em}
+.pod .e{font-size:2.4em}.pod .blk{width:5em;border:2.5px solid var(--ink);border-radius:8px 3px 9px 3px;display:grid;place-items:center;font-size:1.4em}
 .ft{width:100%;border-collapse:collapse;font-size:.95em;margin-top:.4em}
 .ft th{font-size:.78em;color:var(--muted);font-weight:400}
-.ft td,.ft th{padding:.3em .25em;border-bottom:1px solid #e5e5e5;text-align:center}
+.ft td,.ft th{padding:.25em .25em;border-bottom:1px solid #e5e5e5;text-align:center}
 .ft td:first-child,.ft th:first-child{text-align:left}
-.ft td.n{font-weight:700;font-size:1.2em}
+.ft td.n{font-weight:700;font-size:1.15em}
+.ft tr.me td{background:#fff3bf}
 .tip{margin-top:.6em;padding:.4em .7em;background:#fff9db;border:2px dashed var(--ink);border-radius:10px;font-size:.95em;text-align:left;line-height:1.3}
 
-/* ---------- Intro ---------- */
-#intro{position:fixed;inset:0;z-index:60;overflow:auto;display:flex;flex-direction:column;align-items:center;padding:.5em;
+/* ---------- Erklärung: ganz langsam, Schritt für Schritt ---------- */
+#intro{position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;align-items:center;padding:.4em .6em;
   background-color:var(--paper);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:26px 26px}
-.itop{width:min(1700px,100%);display:flex;align-items:center;gap:8px}
-.itop .ti{flex:1;font-size:1.7em;line-height:1.1}
-.ibody{width:min(1700px,100%);flex:1;display:grid;grid-template-columns:minmax(0,1fr) minmax(16em,22em);gap:14px;align-items:center;margin:.3em 0}
-.ibox{display:flex;justify-content:center}
-#introSvg{width:min(100%,calc(100dvh - 9.5em))}
-.itext{padding:.8em 1em;font-size:1.1em;line-height:1.35}
-.itext p{margin:.2em 0 .5em}
-.itext .bg2{margin-top:.5em;padding:.5em .7em;min-height:4.8em;background:#fff9db;border:2px dashed var(--ink);border-radius:12px;font-size:1.05em;line-height:1.4}
-.inav{width:min(1700px,100%);display:flex;align-items:center;justify-content:space-between;gap:8px}
+.itop{width:100%;display:flex;justify-content:flex-end}
+#iCap{font-size:2.2em;font-weight:700;text-align:center;line-height:1.15;min-height:1.3em;padding:0 .3em}
+.ibox{flex:1;display:flex;justify-content:center;align-items:center;min-height:0;width:100%}
+#introSvg{width:min(100%,calc(100dvh - 10.5em))}
+.inav{width:min(60em,100%);display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:.3em}
 .inav button{font-size:1.15em}
-.dots{display:flex;gap:8px}
-.dots i{width:.8em;height:.8em;border:2px solid var(--ink);border-radius:50%;background:#fff;display:block}
-.dots i.on{background:var(--gold);transform:scale(1.25)}
+.dots{display:flex;gap:7px;flex-wrap:wrap;justify-content:center}
+.dots i{width:.7em;height:.7em;border:2px solid var(--ink);border-radius:50%;background:#fff;display:block}
+.dots i.on{background:var(--gold);transform:scale(1.3)}
 @media (orientation:portrait),(max-width:760px){
-  .ibody{grid-template-columns:1fr;align-content:start;gap:6px}
-  #introSvg{width:min(100%,calc(100dvh - 22em))}
-  .itext{font-size:1em;padding:.5em .8em}
-  .itext .bg2{min-height:3.6em}
-  .itop .ti{font-size:1.4em}
+  #iCap{font-size:1.5em}
+  #introSvg{width:min(100%,calc(100dvh - 12em))}
 }
 </style>
 </head>
 <body class="m-beamer">
+<div id="netInfo" class="hidden"></div>
 
-<!-- ============ Start ============ -->
-<section id="setup" class="wrap">
+<!-- ============ Start: Spielart ============ -->
+<section id="home" class="wrap">
   <div class="card sk">
     <h1>🐭 Maus &amp; Käse 🧀</h1>
-    <div class="sub">Wo liegt der Käse? Tippe <b>x</b> und <b>y</b> ein – auch im <b>Minus</b>-Bereich!</div>
-    <label class="l">Wer spielt? (nacheinander an diesem Gerät)</label>
+    <div class="choices">
+      <button class="go" id="mA"><span class="ic">📺</span><b>Nur Beamer</b><small>ein Gerät – alle nacheinander</small></button>
+      <button class="go" id="mB"><span class="ic">📺 + 📱</span><b>Beamer + Handys</b><small>Beamer zeigt – Handys antworten</small></button>
+      <button class="go" id="mC"><span class="ic">📱</span><b>Nur Handys</b><small>kein Beamer – ein Handy erstellt den Raum</small></button>
+    </div>
+    <div class="homelinks"><button class="chip" id="hJoin">🔑 Mitspielen mit Code</button><button class="chip" id="hIntro">❓ Erklärung</button><button class="chip" id="hFs">⛶ Vollbild</button></div>
+    <div class="muted ver">Prototyp · Version <span id="verTxt"></span></div>
+  </div>
+</section>
+
+<!-- ============ Einstellungen: Nur Beamer ============ -->
+<section id="setup" class="wrap hidden">
+  <div class="card sk">
+    <h1>📺 Nur Beamer</h1>
+    <label class="l">Wer spielt? (nacheinander)</label>
     <div id="plist"></div>
     <button class="chip" id="addP">＋ Spieler</button>
     <div class="opts">
-      <div><label class="l">Stufe</label><div class="row" id="optLevel"></div></div>
-      <div><label class="l">Runden</label><div class="row" id="optRounds"></div>
-        <label class="l">Erklärung vor dem Start</label><div class="row" id="optIntro"></div></div>
-      <div><label class="l">Hilfen</label><div class="row" id="optHelp"></div></div>
-      <div><label class="l">Anzeige</label><div class="row" id="optMode"></div></div>
+      <div><label class="l">Zahlenraum</label><div class="row" id="optLevel"></div></div>
+      <div><label class="l">Runden</label><div class="row" id="optRounds"></div></div>
+      <div><label class="l">Hilfe</label><div class="row" id="optHelp"></div></div>
+      <div><label class="l">Erklärung vorab</label><div class="row" id="optIntro"></div></div>
     </div>
-    <div style="text-align:center;margin-top:12px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
-      <button id="introBtn">❓ Erklärung ansehen</button>
-      <button class="go" id="startBtn" style="font-size:1.4em;padding:.25em 1.1em">▶ Los geht's</button>
+    <div class="btnrow"><button id="backA">◀ zurück</button><button class="go" id="startA" style="font-size:1.35em;padding:.2em 1.1em">▶ Los geht's</button></div>
+  </div>
+</section>
+
+<!-- ============ Lobby: Beamer + Handys / Nur Handys (Raum) ============ -->
+<section id="hLobby" class="wrap hidden">
+  <div class="lob">
+    <div class="joinbox sk">
+      <div class="muted" style="font-size:.85em">Handy: Seite öffnen, Code eingeben</div>
+      <div class="code" id="hCode">····</div>
+      <div class="qr" id="hQr"></div>
+      <div class="url muted" id="hUrl"></div>
+      <div class="muted" id="hNet" style="font-size:.85em;margin-top:.3em">Verbinde …</div>
+      <button class="chip hidden" id="lShare" style="margin-top:.4em">📤 Link teilen</button>
+    </div>
+    <div class="setbox sk">
+      <div>Dabei: <b id="hCount">0</b></div>
+      <div class="plist" id="hList"></div>
+      <div class="opts">
+        <div><label class="l">Zahlenraum</label><div class="row" id="lLevel"></div></div>
+        <div><label class="l">Runden</label><div class="row" id="lRounds"></div></div>
+        <div><label class="l">Zeit pro Runde</label><div class="row" id="lTime"></div></div>
+        <div><label class="l">Nach der Auflösung</label><div class="row" id="lAuto"></div></div>
+        <div><label class="l">Hilfe</label><div class="row" id="lHelp"></div></div>
+        <div><label class="l">Erklärung vorab</label><div class="row" id="lIntro"></div></div>
+        <div><label class="l">Test-Bots 🧪</label><div class="row" id="lBots"></div></div>
+      </div>
+      <div class="btnrow"><button id="lBack">◀ zurück</button><button id="lFs" class="chip">⛶</button><button class="go" id="lStart" style="font-size:1.35em;padding:.2em 1.1em" disabled>▶ Los geht's</button></div>
     </div>
   </div>
-  <div class="muted" style="margin-top:8px;font-size:.85em">Prototyp · Version 2026-11-19</div>
+</section>
+
+<!-- ============ Handy: Beitreten ============ -->
+<section id="join" class="wrap hidden">
+  <div class="card sk" style="width:min(26em,100%)">
+    <h1 id="jTitle">🔑 Mitspielen</h1>
+    <label class="l" id="jCodeL">Code</label>
+    <input class="inp1" id="jCode" maxlength="4" autocapitalize="characters" autocomplete="off" placeholder="ABCD" style="width:100%;text-transform:uppercase;letter-spacing:.2em;text-align:center;font-size:1.6em">
+    <label class="l">Dein Name</label>
+    <div class="prow"><button class="em" id="jEmoji">🦊</button><input id="jName" maxlength="14" placeholder="Name" autocomplete="off"></div>
+    <div class="muted" id="jMsg" style="min-height:1.4em;text-align:center"></div>
+    <div class="btnrow" style="margin-top:.3em"><button id="jBack">◀</button><button class="go" id="jBtn" style="font-size:1.3em;padding:.2em 1.1em">Los ▶</button></div>
+  </div>
+</section>
+
+<!-- ============ Handy: Warten ============ -->
+<section id="wait" class="wrap hidden">
+  <div class="sk waitbox"><div class="e" id="wE">🦊</div><div style="font-size:1.6em;font-weight:700" id="wN"></div><div style="margin-top:.4em;font-size:1.15em" id="wT"></div>
+    <div class="btnrow"><button class="chip" id="wHelp">❓ Erklärung</button></div></div>
 </section>
 
 <!-- ============ Spiel ============ -->
@@ -202,77 +272,81 @@ label.l{display:block;font-size:.95em;color:var(--muted);margin-top:8px}
     <div class="side">
       <div class="head sk">
         <div class="topline">
-          <span class="ri" id="roundInfo">Runde 1 / 10</span><span class="sp"></span><span class="ri" id="scoreInfo">⭐ 0</span>
+          <span class="ri" id="roundInfo">Runde 1 / 10</span><span class="ri muted" id="clock"></span><span class="sp"></span><span class="ri" id="scoreInfo">⭐ 0</span>
           <button class="chip" id="helpBtn" title="Erklärung">❓</button><button class="chip" id="modeBtn" title="Beamer / Handy">📺</button><button class="chip" id="quitBtn" title="Beenden">✕</button>
         </div>
         <div class="task">
           <div class="who" id="who"></div>
-          <div class="q">Wo liegt der Käse 🧀?<span class="sub"><br><span style="font-weight:400;font-size:.8em">Gib x und y ein – die Maus 🐭 läuft los.</span></span></div>
-          <div class="tbar" id="tbar"><div class="tfill" id="tfill"></div><span id="tval">⚡ Tempo-Bonus +20</span></div>
+          <div class="q">Wo liegt der Käse 🧀?</div>
+          <div class="tbar" id="tbar"><div class="tfill" id="tfill"></div><span id="tval">⚡ +20</span></div>
         </div>
       </div>
       <div class="inp sk" id="inUi">
         <div class="fieldrow">
           <span class="par">(</span>
-          <div class="fld x act" id="fx" data-f="x"><div class="fh"><b>x</b><small>↔ links / rechts</small></div><div class="fv"><button class="sg" id="sx" tabindex="-1">+</button><span class="dg empty" id="dx"></span></div><div class="echo" id="ex"></div></div>
+          <div class="fld x act" id="fx" data-f="x"><div class="fh"><b>x</b><small>←→</small></div><div class="fv"><button class="sg" id="sx" tabindex="-1">+</button><span class="dg empty" id="dx"></span></div><div class="echo" id="ex"></div></div>
           <span class="bar">|</span>
-          <div class="fld y" id="fy" data-f="y"><div class="fh"><b>y</b><small>↕ unten / oben</small></div><div class="fv"><button class="sg" id="sy" tabindex="-1">+</button><span class="dg empty" id="dy"></span></div><div class="echo" id="ey"></div></div>
+          <div class="fld y" id="fy" data-f="y"><div class="fh"><b>y</b><small>↑↓</small></div><div class="fv"><button class="sg" id="sy" tabindex="-1">+</button><span class="dg empty" id="dy"></span></div><div class="echo" id="ey"></div></div>
           <span class="par">)</span>
-        </div>
-        <div class="cheat sk" id="cheat">
-          <div><b class="xc">x</b> (waagerecht): <i>← links <b>−</b></i> · <i>rechts <b>+</b> →</i></div>
-          <div><b class="yc">y</b> (senkrecht): <i>↑ oben <b>+</b></i> · <i>↓ unten <b>−</b></i></div>
         </div>
         <div class="pad" id="pad"></div>
       </div>
       <div class="evl sk hidden" id="evUi">
         <div class="msg" id="evMsg"></div>
+        <div class="rankline" id="evRank"></div>
         <table class="res" id="resT"></table>
-        <div style="text-align:center"><button class="gold" id="nextBtn" style="font-size:1.25em">Nächste Runde ▶</button></div>
+        <div style="text-align:center"><button class="gold" id="nextBtn" style="font-size:1.2em">Nächste Runde ▶</button></div>
+      </div>
+      <div class="evl sk hidden" id="hostUi">
+        <div class="sumline" id="hostInfo"></div>
+        <div class="plist" id="hostChips"></div>
+        <div style="text-align:center"><button class="gold" id="hostBtn" style="font-size:1.2em">▶ Auflösen</button></div>
       </div>
     </div>
   </div>
+  <div id="hostBar" class="hidden"><span>👑</span><button class="gold" id="hbNext">⏩ Weiter</button><button id="hbEnd">🏁</button></div>
 </section>
 
-<!-- ============ Abdecken (wer ist dran) ============ -->
-<div id="cover" class="hidden"><div class="sk"><div class="e" id="coverE"></div><div class="ti" style="font-size:2em" id="coverN"></div>
+<div id="cover" class="hidden"><div class="sk"><div class="e" id="coverE"></div><div style="font-size:2em;font-weight:700" id="coverN"></div>
   <div style="font-size:1.1em;margin:6px 0 14px">ist dran – die anderen schauen weg 🙈</div><button class="go" id="coverBtn" style="font-size:1.4em">Ich bin bereit ▶</button></div></div>
 
-<!-- ============ Endstand ============ -->
 <section id="final" class="wrap hidden">
-  <div class="card sk"><div class="ti" style="font-size:2.2em">🏆 Endstand</div><div class="pod" id="pod"></div><div id="finalT"></div><div id="finalTip"></div>
-    <div style="margin-top:12px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><button class="go" id="againBtn">🔄 Nochmal</button><button id="setupBtn">⚙️ Einstellungen</button></div></div>
+  <div class="card sk"><div style="font-size:2.1em;font-weight:700">🏆 Endstand</div><div class="pod" id="pod"></div><div id="finalT"></div><div id="finalTip"></div>
+    <div class="btnrow" id="finalBtns"></div></div>
 </section>
 
-<!-- ============ Erklärung (Intro) ============ -->
+<!-- ============ Erklärung ============ -->
 <div id="intro" class="hidden">
-  <div class="itop"><div class="ti" id="iTitle"></div><button class="chip" id="iSkip">Überspringen ✕</button></div>
-  <div class="ibody">
-    <div class="ibox"><svg id="introSvg" class="bsvg"></svg></div>
-    <div class="itext sk"><div id="iText"></div><div class="bg2" id="iBadge"></div><div style="margin-top:.5em"><button class="chip" id="iReplay">↻ nochmal ansehen</button></div></div>
-  </div>
-  <div class="inav"><button id="iPrev">◀ zurück</button><div class="dots" id="iDots"></div><button class="go" id="iNext">weiter ▶</button></div>
+  <div class="itop"><button class="chip" id="iSkip">Überspringen ✕</button></div>
+  <div id="iCap"></div>
+  <div class="ibox"><svg id="introSvg" class="bsvg"></svg></div>
+  <div class="inav"><button id="iPrev">◀</button><div class="dots" id="iDots"></div><button id="iPlay" title="Pause / weiter">⏸</button><button class="go" id="iNext">weiter ▶</button></div>
 </div>
 
+<script src="peerjs.min.js"></script>
+<script src="qrcode.js"></script>
 <script src="rough.js"></script>
 <script>
 (() => {
+const APP_VERSION = '2026-11-19b';
 const $ = id => document.getElementById(id);
 const show = (id, on = true) => $(id).classList.toggle('hidden', !on);
 const NS = 'http://www.w3.org/2000/svg';
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const rnd = a => a[Math.floor(Math.random() * a.length)];
 const sleep = ms => new Promise(r => setTimeout(r, ms));
-const escH = t => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const esc = t => String(t).replace(/[&<>"]/g, c => ({'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;'}[c]));
 const lin = (v, full, zero) => clamp((zero - v) / (zero - full), 0, 1);
 const easeIO = u => u < .5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2;
-/* Minus: in der Handschrift kaum zu sehen → klares Minus in Arial */
-const mfix = h => String(h).replace(/−/g, '<span class="mi">−</span>');
+const mfix = h => String(h).replace(/−/g, '<span class="mi">−</span>');         // klares Minus
 const num = v => v < 0 ? `<span class="mi">−</span>${-v}` : String(v);
 const coord = (x, y) => `(${num(x)}|${num(y)})`;
-function setT(e, t){ e.innerHTML = escH(t).replace(/−/g, '<tspan font-family="Arial, Helvetica, sans-serif" font-weight="700">−</tspan>'); }
+const plain = h => String(h).replace(/<[^>]+>/g, '');
+function setT(e, t){ e.innerHTML = esc(t).replace(/−/g, '<tspan font-family="Arial, Helvetica, sans-serif" font-weight="700">−</tspan>'); }
 const el = (tag, at, parent) => { const e = document.createElementNS(NS, tag); for (const k in at) e.setAttribute(k, at[k]); if (parent) parent.appendChild(e); return e; };
 function tween(ms, fn, ease = easeIO){ return new Promise(res => { const t0 = performance.now(); (function f(t){ const u = clamp((t - t0) / ms, 0, 1); fn(ease(u), u); u < 1 ? requestAnimationFrame(f) : res(); })(t0); }); }
+const Q = new URLSearchParams(location.search);
+$('verTxt').textContent = APP_VERSION;
 
 /* ---------- Töne ---------- */
 let AC = null;
@@ -283,67 +357,58 @@ const sKey = () => tone(1100, .03, 'square', .035);
 const sStep = () => tone(760 + Math.random() * 120, .05, 'triangle', .08);
 const sDing = () => { tone(880, .25, 'triangle', .16); tone(1320, .4, 'triangle', .1, .1); };
 const sTada = () => { [523, 659, 784, 1047].forEach((f, i) => tone(f, .22, 'square', .05, i * .11)); tone(1047, .8, 'triangle', .12, .5); };
-const sNom = () => { tone(300, .08, 'square', .07); tone(380, .08, 'square', .07, .1); tone(300, .08, 'square', .07, .2); };
+const sNom = () => { tone(300, .08, 'square', .07); tone(380, .08, 'square', .07, .2); tone(300, .08, 'square', .07, .3); };
 const sLow = () => { tone(300, .25, 'triangle', .1); tone(220, .4, 'triangle', .1, .2); };
+const sBlip = () => tone(1200, .08, 'sine', .08);
 
-/* ---------- Stufen ---------- */
-const CFG = {
-  '1': {lim:8,  grid:2, label:2, even:true,  min:4, t0:4, t1:16},   // gerade Zahlen
-  '2': {lim:6,  grid:1, label:1, even:false, min:3, t0:4, t1:16},   // alle ganzen Zahlen
-  '3': {lim:10, grid:1, label:2, even:false, min:5, t0:5, t1:20}    // Profi: nur jede 2. Zahl beschriftet
-};
-const EMOJIS = ['🦊','🐼','🐸','🦄','🐯','🐨','🐙','🦉','🐢','🐝','🦁','🐵','🚀','⚽','🌵','🍕','🎸','🦖'];
+/* ---------- Zahlenräume (immer 1, 2, 3 … – jede Zahl beschriftet) ---------- */
+const CFG = {'1':{lim:3, min:2}, '2':{lim:5, min:3}, '3':{lim:8, min:4}};
+const LEVEL_LBL = [['1', '① klein <small>(−3 … 3)</small>'], ['2', '② mittel <small>(−5 … 5)</small>'], ['3', '③ groß <small>(−8 … 8)</small>']];
+const EMOJIS = ['🦊','🐼','🐸','🦄','🐯','🐨','🐙','🦉','🐢','🐝','🦁','🐵','🚀','⚽','🌵','🍕','🎸','🦖','🐱','🐶','🦋','🐬','🍩','🎮'];
 const COLORS = ['#e8590c','#1971c2','#2f9e44','#ae3ec9','#c2255c','#0c8599','#f08c00','#5f3dc4','#d6336c','#364fc7'];
-const S = {players:[], level:'1', rounds:10, help:'1', mode:'auto', intro:'1', round:0, turn:0, task:null, phase:'setup', tok:0, lastQ:[], t0:0};
-const KEY = 'mauskaese-setup';
-try { const sv = JSON.parse(localStorage.getItem(KEY) || 'null'); if (sv) Object.assign(S, {players:sv.players || [], level:sv.level || '1', rounds:sv.rounds || 10, help:sv.help ?? '1', mode:sv.mode || 'auto', intro:sv.intro ?? '1'}); } catch(e){}
+const PCOL = ['#ff4d6d','#4dabf7','#51cf66','#cc5de8','#22d3ee','#748ffc','#f783ac','#94d82d','#9775fa','#20c997','#1c7ed6','#63e6be'];
+
+/* ---------- Zustand ---------- */
+const S = {role:'local', players:[], level:'2', rounds:10, help:'1', mode:'auto', intro:'1', round:0, turn:0, task:null, phase:'home', screen:'home', tok:0, lastQ:[], last:null, t0:0, limit:0};
+const KEY = 'mauskaese-setup2';
+try { const sv = JSON.parse(localStorage.getItem(KEY) || 'null'); if (sv) Object.assign(S, {players:sv.players || [], level:sv.level || '2', rounds:sv.rounds || 10, help:sv.help ?? '1', intro:sv.intro ?? '1'}); } catch(e){}
 if (!S.players.length) S.players = [{name:'', emoji:'🦊'}];
 
-/* ---------- Anzeige-Modus: Beamer / Handy ---------- */
+/* ---------- Anzeige: Beamer / Handy ---------- */
 const detectMode = () => (innerWidth < 760 || (matchMedia('(pointer:coarse)').matches && Math.min(innerWidth, innerHeight) < 820)) ? 'phone' : 'beamer';
 function applyMode(){
   const m = S.mode === 'auto' ? detectMode() : S.mode;
   document.body.classList.toggle('m-beamer', m === 'beamer'); document.body.classList.toggle('m-phone', m === 'phone');
-  $('modeBtn').textContent = m === 'beamer' ? '📺' : '📱'; $('modeBtn').title = m === 'beamer' ? 'Beamer-Ansicht (tippen: Handy)' : 'Handy-Ansicht (tippen: Beamer)';
+  $('modeBtn').textContent = m === 'beamer' ? '📺' : '📱';
   if (BD) BD.draw({}); if (IB) IB.draw({});
 }
 addEventListener('resize', () => { if (S.mode === 'auto') applyMode(); });
-
-/* ---------- Setup ---------- */
-function chips(id, list, key){
+const screens = ['home', 'setup', 'hLobby', 'join', 'wait', 'gameWrap', 'final'];
+function go(id){ screens.forEach(s => show(s, s === id)); show('cover', false); show('intro', false); window.scrollTo(0, 0); S.screen = id; }
+function netInfo(msg){ $('netInfo').textContent = msg; show('netInfo', !!msg); }
+function toast(t){ const d = document.createElement('div'); d.className = 'toast'; d.textContent = t; document.body.appendChild(d); setTimeout(() => d.remove(), 1600); }
+function setupFs(btn){
+  const root = document.documentElement, can = root.requestFullscreen || root.webkitRequestFullscreen;
+  if (!can){ btn.style.display = 'none'; return; }
+  const isFs = () => document.fullscreenElement || document.webkitFullscreenElement;
+  btn.onclick = () => isFs() ? (document.exitFullscreen || document.webkitExitFullscreen).call(document) : can.call(root);
+}
+function chipRow(id, list, get, set){
   const row = $(id); row.innerHTML = '';
-  list.forEach(([v, l]) => { const b = document.createElement('button'); b.className = 'chip' + (String(S[key]) === String(v) ? ' on' : ''); b.innerHTML = l;
-    b.onclick = () => { S[key] = typeof S[key] === 'number' ? +v : v; chips(id, list, key); if (key === 'mode') applyMode(); }; row.appendChild(b); });
+  list.forEach(([v, l]) => { const b = document.createElement('button'); b.className = 'chip' + (String(get()) === String(v) ? ' on' : ''); b.innerHTML = l;
+    b.onclick = () => { set(v); chipRow(id, list, get, set); }; row.appendChild(b); });
 }
-function renderSetup(){
-  const pl = $('plist'); pl.innerHTML = '';
-  S.players.forEach((p, i) => {
-    const r = document.createElement('div'); r.className = 'prow';
-    r.innerHTML = `<button class="em">${p.emoji}</button><input maxlength="14" placeholder="Name ${i + 1}" value="${(p.name || '').replace(/"/g, '&quot;')}">${S.players.length > 1 ? '<button class="chip">✕</button>' : ''}`;
-    r.querySelector('.em').onclick = () => { p.emoji = EMOJIS[(EMOJIS.indexOf(p.emoji) + 1) % EMOJIS.length]; renderSetup(); };
-    r.querySelector('input').oninput = e => { p.name = e.target.value; };
-    const x = r.querySelector('.chip'); if (x) x.onclick = () => { S.players.splice(i, 1); renderSetup(); };
-    pl.appendChild(r);
-  });
-  $('addP').disabled = S.players.length >= 8;
-  chips('optLevel', [['1', '① gerade Zahlen <small>(−8 … 8)</small>'], ['2', '② alle Zahlen <small>(−6 … 6)</small>'], ['3', '③ Profi <small>(−10 … 10)</small>']], 'level');
-  chips('optRounds', [[5, '5'], [10, '10'], [15, '15']], 'rounds');
-  chips('optHelp', [['1', '🧭 mit links/rechts-Hilfe'], ['2', '🧭 + Vorschau-Punkt'], ['0', 'ohne Hilfe']], 'help');
-  chips('optIntro', [['1', '✅ zeigen'], ['0', 'überspringen']], 'intro');
-  chips('optMode', [['auto', '🔄 automatisch'], ['beamer', '📺 Beamer'], ['phone', '📱 Handy']], 'mode');
-}
-$('addP').onclick = () => { const used = S.players.map(p => p.emoji); S.players.push({name:'', emoji: EMOJIS.find(e => !used.includes(e)) || '🙂'}); renderSetup(); };
 
 /* ================= Koordinatensystem (Brett) =================
-   Quadratisch von −lim … lim. Maus wohnt im Nullpunkt (Mausloch). */
+   Quadratisch −lim … lim, Raster immer in Einerschritten. Maus wohnt im Nullpunkt (Mausloch). */
 function Board(svg){
-  const B = {svg, lim:6, o:{lim:6, grid:1, label:1}, U:50, PAD:1.8, k:1, px:16};
+  const B = {svg, lim:5, o:{lim:5}, U:50, PAD:1.3, k:1, px:16};
   const bg = el('g', {}, svg), dyn = el('g', {}, svg); B.dyn = dyn;
   B.X = x => (x + B.lim + B.PAD) * B.U; B.Y = y => (B.lim - y + B.PAD) * B.U;
   B.fs = n => n * B.k; B.sw = n => n * B.k;
-  B.esz = () => Math.max(B.U * .95 * Math.min(B.o.grid || 1, 1.5), B.fs(26));   // Größe von Maus/Käse
+  B.esz = () => Math.max(B.U * .9, B.fs(22));
   B.draw = o => {
-    Object.assign(B.o, o); const {lim, grid, label} = B.o; B.lim = lim;
+    Object.assign(B.o, o); const lim = B.o.lim; B.lim = lim;
     const W = (2 * lim + 2 * B.PAD) * B.U; B.W = W; svg.setAttribute('viewBox', `0 0 ${W} ${W}`);
     const cw = svg.getBoundingClientRect().width || 600; B.k = W / cw;
     const px = B.o.px || (document.body.classList.contains('m-beamer') ? 21 : 15), fs = B.fs, sw = B.sw, X = B.X, Y = B.Y; B.px = px;
@@ -352,48 +417,42 @@ function Board(svg){
     const tx = (x, y, t, c, size, anchor, halo) => { const e = el('text', {x, y, 'font-family':'Shantell Sans, Comic Sans MS, cursive', 'font-size':fs(size), fill:c, 'text-anchor':anchor || 'middle', 'font-weight':700}, bg);
       if (halo){ e.setAttribute('paint-order', 'stroke'); e.setAttribute('stroke', '#fff'); e.setAttribute('stroke-width', fs(4)); e.setAttribute('stroke-linejoin', 'round'); } setT(e, t); return e; };
     const XC = '#1864ab', YC = '#d9480f';
-    for (let v = -lim; v <= lim; v += grid){
+    for (let v = -lim; v <= lim; v++){
       el('line', {x1:X(v), y1:Y(-lim), x2:X(v), y2:Y(lim), stroke:'#a5c8ea', 'stroke-width':sw(1.3)}, bg);
       el('line', {x1:X(-lim), y1:Y(v), x2:X(lim), y2:Y(v), stroke:'#a5c8ea', 'stroke-width':sw(1.3)}, bg);
     }
-    // Achsen mit Pfeilen
-    bg.appendChild(rc.line(X(-lim) - B.U * .5, Y(0), X(lim) + B.U * .75, Y(0), ro(3, XC)));
-    bg.appendChild(rc.line(X(0), Y(-lim) + B.U * .5, X(0), Y(lim) - B.U * .75, ro(3, YC)));
-    bg.appendChild(rc.linearPath([[X(lim) + B.U * .75 - sw(11), Y(0) - sw(8)], [X(lim) + B.U * .75, Y(0)], [X(lim) + B.U * .75 - sw(11), Y(0) + sw(8)]], ro(3, XC)));
-    bg.appendChild(rc.linearPath([[X(0) - sw(8), Y(lim) - B.U * .75 + sw(11)], [X(0), Y(lim) - B.U * .75], [X(0) + sw(8), Y(lim) - B.U * .75 + sw(11)]], ro(3, YC)));
-    // Zahlen + Striche
-    for (let v = -lim; v <= lim; v += grid){
+    const tip = B.U * .7;
+    bg.appendChild(rc.line(X(-lim) - B.U * .45, Y(0), X(lim) + tip, Y(0), ro(3, XC)));
+    bg.appendChild(rc.line(X(0), Y(-lim) + B.U * .45, X(0), Y(lim) - tip, ro(3, YC)));
+    bg.appendChild(rc.linearPath([[X(lim) + tip - sw(11), Y(0) - sw(8)], [X(lim) + tip, Y(0)], [X(lim) + tip - sw(11), Y(0) + sw(8)]], ro(3, XC)));
+    bg.appendChild(rc.linearPath([[X(0) - sw(8), Y(lim) - tip + sw(11)], [X(0), Y(lim) - tip], [X(0) + sw(8), Y(lim) - tip + sw(11)]], ro(3, YC)));
+    for (let v = -lim; v <= lim; v++){
       if (v === 0) continue;
       bg.appendChild(rc.line(X(v), Y(0) - sw(5), X(v), Y(0) + sw(5), ro(1.8, XC)));
       bg.appendChild(rc.line(X(0) - sw(5), Y(v), X(0) + sw(5), Y(v), ro(1.8, YC)));
-      if (v % label === 0){
-        tx(X(v), Y(0) + sw(8) + fs(px * .95), (v < 0 ? '−' : '') + Math.abs(v), XC, px, 'middle', true);
-        tx(X(0) - sw(10), Y(v) + fs(px * .34), (v < 0 ? '−' : '') + Math.abs(v), YC, px, 'end', true);
-      }
+      tx(X(v), Y(0) + sw(8) + fs(px * .95), (v < 0 ? '−' : '') + Math.abs(v), XC, px, 'middle', true);
+      tx(X(0) - sw(10), Y(v) + fs(px * .34), (v < 0 ? '−' : '') + Math.abs(v), YC, px, 'end', true);
     }
-    // Mausloch im Nullpunkt
-    bg.appendChild(rc.ellipse(X(0), Y(0), B.U * .85, B.U * .5, {fill:'#3b3b3b', fillStyle:'solid', stroke:'#1e1e1e', strokeWidth:sw(2), roughness:.6, seed:3}));
+    bg.appendChild(rc.ellipse(X(0), Y(0), B.U * .8, B.U * .48, {fill:'#3b3b3b', fillStyle:'solid', stroke:'#1e1e1e', strokeWidth:sw(2), roughness:.6, seed:3}));
     tx(X(0) + sw(10), Y(0) + fs(px + 12), '0', '#333', px, 'start', true);
-    // Achsennamen + Richtungswörter
-    tx(X(lim) + B.U * 1.2, Y(0) + fs(px * .4), 'x', XC, px + 7);
-    tx(X(0), Y(lim) - B.U * 1.0, 'y', YC, px + 7);
-    if (B.o.names !== false){
-      const p2 = px * .8;
-      tx(X(-lim) + sw(6), Y(0) - sw(9), '← links  −', XC, p2, 'start', true);
-      tx(X(lim) - sw(6), Y(0) - sw(9), '+  rechts →', XC, p2, 'end', true);
-      tx(X(0) + sw(13), Y(lim) + fs(p2 * .9), '↑ oben  +', YC, p2, 'start', true);
-      tx(X(0) + sw(13), Y(-lim) - sw(6), '↓ unten  −', YC, p2, 'start', true);
+    tx(X(lim) + B.U * 1.0, Y(0) + fs(px * .4), 'x', XC, px + 6);
+    tx(X(0), Y(lim) - B.U * .85, 'y', YC, px + 6);
+    if (B.o.names !== false){            // knappe Zeichen: links/rechts, oben/unten
+      const p2 = px * .72;
+      tx(X(-lim) + sw(6), Y(0) - sw(9), '← links −', XC, p2, 'start', true);
+      tx(X(lim) - sw(6), Y(0) - sw(9), '+ rechts →', XC, p2, 'end', true);
+      tx(X(0) + sw(13), Y(lim) + fs(p2 * .95), '↑ oben +', YC, p2, 'start', true);
+      tx(X(0) + sw(13), Y(-lim) - sw(6), '↓ unten −', YC, p2, 'start', true);
     }
   };
   return B;
 }
-/* Emoji-Marke (Maus, Käse) – Position in Koordinaten */
 function mkEmoji(B, parent, ch, x, y, o = {}){
   const g = el('g', {transform:`translate(${B.X(x)},${B.Y(y)})`}, parent), s = o.size || B.esz();
   if (o.ring){ el('circle', {r:s * .62, fill:'#fff', 'fill-opacity':.75, stroke:o.ring, 'stroke-width':B.sw(3.5)}, g); }
   const t = el('text', {'text-anchor':'middle', 'dominant-baseline':'central', 'font-size':s, y:s * .04}, g); t.textContent = ch;
   if (o.dot){ el('circle', {r:B.sw(3.4), fill:'#1e1e1e', stroke:'#fff', 'stroke-width':B.sw(1.4)}, g); }
-  g.place = (x2, y2, sc = 1, dx = 0) => g.setAttribute('transform', `translate(${B.X(x2) + dx},${B.Y(y2)}) scale(${sc})`);
+  g.place = (x2, y2, sc = 1, dx = 0, dy = 0) => g.setAttribute('transform', `translate(${B.X(x2) + dx},${B.Y(y2) + dy}) scale(${sc})`);
   return g;
 }
 function tag(B, parent, x, y, text, color, px, anchor, dx = 0, dy = 0){
@@ -405,22 +464,24 @@ function burst(B, parent, x, y){
   return tween(900, e => items.forEach(it => { const r = e * B.U * 1.6; it.t.setAttribute('x', B.X(x) + Math.cos(it.a) * r); it.t.setAttribute('y', B.Y(y) + Math.sin(it.a) * r); it.t.setAttribute('opacity', 1 - e * e); }), u => u).then(() => items.forEach(it => it.t.remove()));
 }
 
-/* ---------- Aufgaben ---------- */
+/* ---------- Aufgaben & Wertung ---------- */
 const quad = (x, y) => (x < 0 ? 'L' : x > 0 ? 'R' : 'A') + (y < 0 ? 'U' : y > 0 ? 'O' : 'A');
-function makeTask(){
-  const c = CFG[S.level], vals = []; for (let v = -c.lim; v <= c.lim; v += c.even ? 2 : 1) vals.push(v);
+function makeTask(level, mem){
+  const c = CFG[level], vals = []; for (let v = -c.lim; v <= c.lim; v++) vals.push(v);
+  mem.lastQ = mem.lastQ || [];
   for (let tries = 0; tries < 800; tries++){
     const x = rnd(vals), y = rnd(vals);
     if (Math.random() < .88 && x >= 0 && y >= 0) continue;                       // meist ins Minus
     if (Math.abs(x) + Math.abs(y) < c.min) continue;
     if ((x === 0 || y === 0) && Math.random() > .13) continue;                   // Achsenpunkte seltener
-    const q = quad(x, y); if (S.lastQ.length >= 2 && S.lastQ.every(z => z === q)) continue;
-    if (S.last && S.last.x === x && S.last.y === y) continue;
-    S.lastQ.push(q); if (S.lastQ.length > 2) S.lastQ.shift(); S.last = {x, y}; return {x, y};
+    const q = quad(x, y); if (mem.lastQ.length >= 2 && mem.lastQ.every(z => z === q)) continue;
+    if (mem.last && mem.last.x === x && mem.last.y === y) continue;
+    mem.lastQ.push(q); if (mem.lastQ.length > 2) mem.lastQ.shift(); mem.last = {x, y}; return {x, y};
   }
-  return {x:-4, y:-2};
+  return {x:-2, y:-1};
 }
 function classify(a, b, x, y){
+  if (a === null || b === null) return 'none';
   const xo = a === x, yo = b === y; if (xo && yo) return 'ok';
   if (a === y && b === x) return 'swap';
   if (!xo && x !== 0 && a === -x && yo) return 'sx';
@@ -428,20 +489,26 @@ function classify(a, b, x, y){
   if (!xo && !yo && x !== 0 && y !== 0 && a === -x && b === -y) return 'sb';
   return xo ? 'y' : yo ? 'x' : 'both';
 }
-const ERR_SHORT = {swap:'x und y vertauscht', sx:'Vorzeichen bei x', sy:'Vorzeichen bei y', sb:'beide Vorzeichen', x:'x falsch', y:'y falsch', both:'x und y falsch'};
+function scoreAnswer(T, a, b, t){
+  const xo = a === T.x, yo = b === T.y, px = xo ? 40 : 0, py = yo ? 40 : 0, pt = xo && yo ? Math.round(20 * lin(t, 4, 16)) : 0;
+  return {xo, yo, px, py, pt, pts:px + py + pt, err:classify(a, b, T.x, T.y), t};
+}
+const NONE_R = t => ({xo:false, yo:false, px:0, py:0, pt:0, pts:0, err:'none', t});
+const ERR_SHORT = {swap:'x und y vertauscht', sx:'Vorzeichen bei x', sy:'Vorzeichen bei y', sb:'beide Vorzeichen', x:'x falsch', y:'y falsch', both:'x und y falsch', none:'keine Antwort'};
 const stepX = x => x === 0 ? 'gar nicht nach links/rechts' : `${Math.abs(x)} nach ${x < 0 ? 'links ←' : 'rechts →'}`;
 const stepY = y => y === 0 ? 'gar nicht nach oben/unten' : `${Math.abs(y)} nach ${y < 0 ? 'unten ↓' : 'oben ↑'}`;
-function feedback(p){
-  const T = S.task, r = p.r, sol = `Richtig: <b>${coord(T.x, T.y)}</b> → <span class="xc">${mfix(stepX(T.x))}</span>, dann <span class="yc">${mfix(stepY(T.y))}</span>.`;
-  if (r.err === 'ok') return `<span class="big">${rnd(['🧀 Käse gefangen!', '🧀 Mmh, lecker!', '🧀 Treffer!', '🧀 Volltreffer!'])}</span>${r.pt >= 16 ? '⚡ Blitzschnell!' : r.pt >= 8 ? 'Schön flott.' : 'Richtig – nächstes Mal etwas schneller?'}`;
+const newStats = () => ({x:0, y:0, full:0, n:0, tsum:0, swap:0, sx:0, sy:0});
+function addStats(st, r){ st.n++; if (r.xo) st.x++; if (r.yo) st.y++; if (r.xo && r.yo){ st.full++; st.tsum += r.t; } if (r.err === 'swap') st.swap++; if (r.err === 'sx') st.sx++; if (r.err === 'sy') st.sy++; if (r.err === 'sb'){ st.sx++; st.sy++; } }
+function feedback(r, T){
+  const sol = `Richtig: <b>${coord(T.x, T.y)}</b> → <span class="xc">${mfix(stepX(T.x))}</span>, dann <span class="yc">${mfix(stepY(T.y))}</span>.`;
+  if (r.err === 'ok') return `<span class="big">${rnd(['🧀 Käse gefangen!', '🧀 Mmh, lecker!', '🧀 Treffer!', '🧀 Volltreffer!'])}</span>${r.pt >= 16 ? '⚡ Blitzschnell!' : r.pt >= 8 ? 'Schön flott.' : 'Richtig – nächstes Mal schneller?'}`;
+  if (r.err === 'none') return `<span class="big">Keine Antwort</span>${sol}`;
   const m = {
-    swap: `<b>x und y sind vertauscht.</b> Erst x (links/rechts), dann y (oben/unten).`,
-    sx: `<b>Vorzeichen bei x:</b> Der Käse liegt ${T.x < 0 ? 'links → x ist negativ (−)' : 'rechts → x ist positiv (+)'}.`,
-    sy: `<b>Vorzeichen bei y:</b> Der Käse liegt ${T.y < 0 ? 'unten → y ist negativ (−)' : 'oben → y ist positiv (+)'}.`,
-    sb: `<b>Beide Vorzeichen sind verdreht:</b> der Käse liegt ${T.x < 0 ? 'links (−)' : 'rechts (+)'} und ${T.y < 0 ? 'unten (−)' : 'oben (+)'}.`,
-    x: `<b>x stimmt nicht</b> – y war richtig. Zähle von der 0 aus nach links/rechts.`,
-    y: `<b>y stimmt nicht</b> – x war richtig. Zähle von der 0 aus nach oben/unten.`,
-    both: `<b>Leider kein Käse.</b> Erst x zählen (links/rechts), dann y (oben/unten).`
+    swap: `<b>x und y vertauscht.</b> Erst x (←→), dann y (↑↓).`,
+    sx: `<b>Vorzeichen bei x:</b> Der Käse liegt ${T.x < 0 ? 'links → Minus (−)' : 'rechts → Plus (+)'}.`,
+    sy: `<b>Vorzeichen bei y:</b> Der Käse liegt ${T.y < 0 ? 'unten → Minus (−)' : 'oben → Plus (+)'}.`,
+    sb: `<b>Beide Vorzeichen verdreht:</b> ${T.x < 0 ? 'links (−)' : 'rechts (+)'} und ${T.y < 0 ? 'unten (−)' : 'oben (+)'}.`,
+    x: `<b>x stimmt nicht</b> – y war richtig.`, y: `<b>y stimmt nicht</b> – x war richtig.`, both: `<b>Leider kein Käse.</b>`
   }[r.err];
   return `<span class="big">${r.xo ? 'x ✓' : 'x ✗'} · ${r.yo ? 'y ✓' : 'y ✗'}</span>${m}<br>${sol}`;
 }
@@ -451,28 +518,28 @@ let F = {x:{s:'+', d:''}, y:{s:'+', d:''}, act:'x'};
 const fval = f => f.d === '' ? null : (f.s === '-' && +f.d !== 0 ? -1 : 1) * +f.d;
 function echoText(axis, v){
   if (v === null) return '';
-  if (axis === 'x') return v === 0 ? 'bleibt in der Mitte' : v < 0 ? `<b>${-v}</b> nach links ←` : `<b>${v}</b> nach rechts →`;
-  return v === 0 ? 'bleibt in der Mitte' : v < 0 ? `<b>${-v}</b> nach unten ↓` : `<b>${v}</b> nach oben ↑`;
+  if (axis === 'x') return v === 0 ? 'in der Mitte' : v < 0 ? `<b>${-v}</b> nach links ←` : `<b>${v}</b> nach rechts →`;
+  return v === 0 ? 'in der Mitte' : v < 0 ? `<b>${-v}</b> nach unten ↓` : `<b>${v}</b> nach oben ↑`;
 }
 function renderFields(){
   ['x', 'y'].forEach(a => {
     const f = F[a], v = fval(f);
     $('f' + a).classList.toggle('act', F.act === a);
-    const sg = $('s' + a); sg.innerHTML = f.s === '-' ? '<span class="mi">−</span>' : '+';
+    $('s' + a).innerHTML = f.s === '-' ? '<span class="mi">−</span>' : '+';
     const dg = $('d' + a); dg.textContent = f.d; dg.classList.toggle('empty', f.d === '');
     $('e' + a).innerHTML = S.help === '0' ? '' : mfix(echoText(a, v));
   });
-  $('cheat').classList.toggle('hidden', S.help === '0');
   const ok = F.x.d !== '' && F.y.d !== '';
   const okb = document.querySelector('#pad .okb'); if (okb) okb.textContent = ok ? '🐭 Los!' : '▶ weiter';
   renderGhost();
+  if (S.role === 'player' && ok && S.phase === 'input') netSend({t:'draft', x:fval(F.x), y:fval(F.y)});
 }
 let GH = null;
 function renderGhost(){
   if (GH){ GH.remove(); GH = null; }
   if (S.help !== '2' || S.phase !== 'input') return;
   const a = fval(F.x), b = fval(F.y); if (a === null || b === null) return;
-  const lim = CFG[S.level].lim; if (Math.abs(a) > lim || Math.abs(b) > lim) return;
+  if (Math.abs(a) > BD.lim || Math.abs(b) > BD.lim) return;
   GH = el('g', {opacity:.85}, BD.dyn); el('circle', {cx:BD.X(a), cy:BD.Y(b), r:BD.sw(11), fill:'none', stroke:'#7048e8', 'stroke-width':BD.sw(3.2), 'stroke-dasharray':`${BD.sw(5)} ${BD.sw(4)}`}, GH);
 }
 function press(k){
@@ -482,10 +549,9 @@ function press(k){
   else if (k === '-'){ f.s = '-'; sKey(); }
   else if (k === '+'){ f.s = '+'; sKey(); }
   else if (k === 'del'){ if (f.d) f.d = f.d.slice(0, -1); else f.s = '+'; sKey(); }
-  else if (k === 'tog'){ f.s = f.s === '-' ? '+' : '-'; sKey(); }
   else if (k === 'sw'){ F.act = F.act === 'x' ? 'y' : 'x'; }
   else if (k === 'ok'){
-    if (F.x.d !== '' && F.y.d !== '') return submit();
+    if (F.x.d !== '' && F.y.d !== '') return submitAnswer();
     F.act = F.x.d === '' ? 'x' : F.y.d === '' ? 'y' : F.act; sKey();
   }
   renderFields();
@@ -501,7 +567,7 @@ function buildPad(){
 addEventListener('keydown', e => {
   if (e.target && e.target.tagName === 'INPUT') return;
   if (!$('intro').classList.contains('hidden')){
-    if (e.key === 'ArrowRight' || e.key === 'Enter') { e.preventDefault(); iNext(); } else if (e.key === 'ArrowLeft') iGo(II - 1); else if (e.key === 'Escape') iClose();
+    if (e.key === 'ArrowRight' || e.key === 'Enter' || e.key === ' ') { e.preventDefault(); iNext(); } else if (e.key === 'ArrowLeft') iGo(II - 1); else if (e.key === 'Escape') iClose();
     return; }
   if (S.phase !== 'input' || e.ctrlKey || e.metaKey || e.altKey) return;
   const k = e.key;
@@ -514,234 +580,524 @@ addEventListener('keydown', e => {
   else if (k === 'x' || k === 'X') { F.act = 'x'; renderFields(); }
   else if (k === 'y' || k === 'Y') { F.act = 'y'; renderFields(); }
 });
+const submitAnswer = () => S.role === 'local' ? localSubmit(fval(F.x), fval(F.y)) : netSubmit(fval(F.x), fval(F.y));
 
-/* ================= Ablauf ================= */
+/* ================= Runde zeigen & Auflösung (gemeinsam) ================= */
 let BD = null;     // Spielbrett
 const L = {};      // dynamische Ebenen
-function toast(t){ const d = document.createElement('div'); d.className = 'toast'; d.textContent = t; document.body.appendChild(d); setTimeout(() => d.remove(), 1600); }
-const pname = p => p.name || 'Spieler';
-const multi = () => S.players.length > 1;
-function startGame(){
-  S.players = S.players.map((p, i) => ({...p, name:(p.name || '').trim() || (S.players.length === 1 ? 'Ich' : 'Spieler ' + (i + 1)), color:COLORS[i % COLORS.length], total:0, st:{x:0, y:0, full:0, n:0, tsum:0, swap:0, sx:0, sy:0, sb:0}}));
-  try { localStorage.setItem(KEY, JSON.stringify({players:S.players.map(p => ({name:p.name, emoji:p.emoji})), level:S.level, rounds:S.rounds, help:S.help, mode:S.mode, intro:S.intro})); } catch(e){}
-  show('setup', false); show('final', false);
-  if (S.intro === '1') openIntro(beginGame); else beginGame();
-}
-function beginGame(){
-  S.round = 0; S.lastQ = []; S.last = null; show('gameWrap'); applyMode(); nextRound();
-}
-function nextRound(){
-  S.tok++; S.round++; S.task = makeTask(); S.turn = 0; S.players.forEach(p => { p.g = null; p.r = null; });
-  const c = CFG[S.level];
-  $('roundInfo').textContent = `Runde ${S.round} / ${S.rounds}`; $('scoreInfo').textContent = '⭐ ' + S.players.reduce((m, p) => Math.max(m, p.total), 0);
-  BD.draw({lim:c.lim, grid:c.grid, label:c.label});
-  BD.dyn.innerHTML = ''; L.cheat = el('g', {}, BD.dyn); L.home = el('g', {}, BD.dyn); L.runs = el('g', {}, BD.dyn); L.sol = el('g', {}, BD.dyn); L.top = el('g', {}, BD.dyn);
-  L.cheatG = mkEmoji(BD, L.cheat, '🧀', S.task.x, S.task.y, {dot:true}); L.cheatG.place(S.task.x, S.task.y, 0);
-  tween(550, e => L.cheatG.place(S.task.x, S.task.y, e), u => 1 + 2.2 * Math.pow(u - 1, 3) + 1.2 * Math.pow(u - 1, 2));   // Käse "poppt" auf
+function showRound(task, level){
+  S.task = task; S.level = level; BD.draw({lim:CFG[level].lim});
+  BD.dyn.innerHTML = ''; L.cheat = el('g', {}, BD.dyn); L.home = el('g', {}, BD.dyn); L.runs = el('g', {}, BD.dyn); L.sol = el('g', {}, BD.dyn); L.top = el('g', {}, BD.dyn); GH = null;
+  L.cheatG = mkEmoji(BD, L.cheat, '🧀', task.x, task.y, {dot:true}); L.cheatG.place(task.x, task.y, 0);
+  tween(550, e => L.cheatG.place(task.x, task.y, e), u => 1 + 2.2 * Math.pow(u - 1, 3) + 1.2 * Math.pow(u - 1, 2));
   L.mouse = mkEmoji(BD, L.home, '🐭', 0, 0);
-  show('inUi'); show('evUi', false); startTurn();
 }
-function startTurn(){
-  const p = S.players[S.turn]; F = {x:{s:'+', d:''}, y:{s:'+', d:''}, act:'x'}; renderFields();
-  $('who').innerHTML = multi() ? `<span style="font-size:1.4em;vertical-align:-.15em">${p.emoji}</span> <b style="color:${p.color}">${escH(pname(p))}</b> ist dran` : '';
-  $('tbar').classList.remove('low'); $('tfill').style.width = '100%'; $('tval').textContent = '⚡ Tempo-Bonus +20';
-  if (multi()){ S.phase = 'cover'; $('coverE').textContent = p.emoji; $('coverN').textContent = pname(p); show('cover'); }
-  else beginInput();
-}
-$('coverBtn').onclick = () => { ac(); show('cover', false); beginInput(); };
+function resetInput(){ F = {x:{s:'+', d:''}, y:{s:'+', d:''}, act:'x'}; renderFields(); }
 let TM = null;
-function beginInput(){
-  S.phase = 'input'; S.t0 = performance.now(); clearInterval(TM); TM = setInterval(updTimer, 100); updTimer(); renderFields();
-}
+function startTimer(){ clearInterval(TM); TM = setInterval(updTimer, 100); updTimer(); }
 function updTimer(){
   if (S.phase !== 'input') return;
-  const c = CFG[S.level], t = (performance.now() - S.t0) / 1000, b = Math.round(20 * lin(t, c.t0, c.t1));
+  const t = (performance.now() - S.t0) / 1000, b = Math.round(20 * lin(t, 4, 16));
   $('tfill').style.width = (b / 20 * 100) + '%'; $('tval').textContent = '⚡ Tempo-Bonus +' + b; $('tbar').classList.toggle('low', b === 0);
+  $('clock').textContent = S.limit ? '⏱ ' + Math.max(0, Math.ceil(S.limit - t)) : '';
 }
-function submit(){
-  if (S.phase !== 'input') return;
-  const p = S.players[S.turn], c = CFG[S.level], T = S.task, t = (performance.now() - S.t0) / 1000;
-  clearInterval(TM); S.phase = 'wait';
-  const a = fval(F.x), b = fval(F.y), xo = a === T.x, yo = b === T.y;
-  const px = xo ? 40 : 0, py = yo ? 40 : 0, pt = xo && yo ? Math.round(20 * lin(t, c.t0, c.t1)) : 0;
-  p.g = {x:a, y:b}; p.r = {xo, yo, px, py, pt, pts:px + py + pt, err:classify(a, b, T.x, T.y), t};
-  p.total += p.r.pts; const st = p.st; st.n++; if (xo) st.x++; if (yo) st.y++; if (xo && yo){ st.full++; st.tsum += t; } if (['swap', 'sx', 'sy'].includes(p.r.err)) st[p.r.err]++; if (p.r.err === 'sb'){ st.sx++; st.sy++; }
-  sDing(); if (GH){ GH.remove(); GH = null; }
-  S.turn++; if (S.turn < S.players.length) startTurn(); else reveal();
-}
-
-/* ---------- Auflösung: Mäuse laufen los ---------- */
-async function reveal(){
-  const tok = ++S.tok; S.phase = 'reveal'; show('inUi', false); show('evUi'); $('resT').innerHTML = ''; $('nextBtn').disabled = true;
-  $('nextBtn').textContent = S.round >= S.rounds ? 'Endstand 🏆' : 'Nächste Runde ▶'; $('who').innerHTML = ''; $('evMsg').innerHTML = '🐭 …läuft los!';
-  const T = S.task, lim = CFG[S.level].lim, n = S.players.length; L.home.innerHTML = '';
-  const pos = S.players.map((p, i) => {
-    const g = mkEmoji(BD, L.runs, '🐭', 0, 0, n > 1 ? {ring:p.color} : {}), ca = clamp(p.g.x, -lim, lim), cb = clamp(p.g.y, -lim, lim), dx = (i - (n - 1) / 2) * BD.fs(16);
-    return {p, g, ca, cb, dx};
-  });
-  await Promise.all(pos.map(async (o, i) => {
-    const len = Math.abs(o.ca) + Math.abs(o.cb); await sleep(i * 200); if (tok !== S.tok) return;
+/* entries: [{name,emoji,color,g:{x,y}|null,r}], style: 'solo' | 'multi' | 'crowd' */
+async function animateReveal(entries, style){
+  const tok = ++S.tok, T = S.task, lim = BD.lim; L.home.innerHTML = '';
+  const sz = style === 'crowd' ? BD.esz() * .62 : BD.esz(), grp = {};
+  entries.forEach(e => { if (!e.g) return; e.ca = clamp(e.g.x, -lim, lim); e.cb = clamp(e.g.y, -lim, lim); (grp[e.ca + ',' + e.cb] = grp[e.ca + ',' + e.cb] || []).push(e); });
+  const n = entries.length;
+  entries.forEach((e, i) => { if (!e.g) return; const arr = grp[e.ca + ',' + e.cb], idx = arr.indexOf(e);
+    e.mk = mkEmoji(BD, L.runs, '🐭', 0, 0, {size:sz, ring:style === 'multi' ? e.color : null});
+    if (style === 'crowd'){ e.dx = ((idx % 5) - 2) * sz * .38; e.dy = Math.floor(idx / 5) * sz * .38; } else { e.dx = style === 'multi' ? (i - (n - 1) / 2) * BD.fs(16) : 0; e.dy = 0; } });
+  await Promise.all(entries.map(async (e, i) => {
+    if (!e.g) return;
+    const len = Math.abs(e.ca) + Math.abs(e.cb); await sleep(style === 'crowd' ? Math.random() * 500 : i * 200); if (tok !== S.tok) return;
     let last = -1;
-    await tween(clamp(len * 150, 500, 2400), e => {
-      const d = e * len; let x, y; if (d <= Math.abs(o.ca)){ x = Math.sign(o.ca) * d; y = 0; } else { x = o.ca; y = Math.sign(o.cb) * (d - Math.abs(o.ca)); }
-      o.g.place(x, y, 1, o.dx); const s = Math.floor(d); if (s !== last){ last = s; if (!multi()) sStep(); } });
+    await tween(clamp(len * 150, 500, 2400), u => {
+      const d = u * len; let x, y; if (d <= Math.abs(e.ca)){ x = Math.sign(e.ca) * d; y = 0; } else { x = e.ca; y = Math.sign(e.cb) * (d - Math.abs(e.ca)); }
+      e.mk.place(x, y, 1, e.dx, e.dy); const s2 = Math.floor(d); if (s2 !== last){ last = s2; if (style === 'solo') sStep(); } });
   }));
-  if (tok !== S.tok) return;
-  const full = S.players.filter(p => p.r.xo && p.r.yo), anyWrong = full.length < n;
-  // Beschriftung der Tipps
-  pos.forEach(o => { if (n > 1){ const t = tag(BD, L.top, o.ca, o.cb, coord(o.p.g.x, o.p.g.y).replace(/<[^>]+>/g, ''), o.p.r.err === 'ok' ? '#2b8a3e' : (n > 1 ? o.p.color : '#c92a2a'), BD.px * .85, 'middle', o.dx, o.cb > lim * .6 ? BD.esz() * .95 : -BD.esz() * .78); t.setAttribute('class', 'fadein'); }
-    if (o.p.r.err !== 'ok'){ const q = el('text', {'text-anchor':'middle', 'dominant-baseline':'central', 'font-size':BD.esz() * .8, x:BD.X(o.ca) + o.dx + BD.esz() * .55, y:BD.Y(o.cb) - BD.esz() * .3, class:'fadein'}, L.top); q.textContent = '❓'; } });
+  if (tok !== S.tok) return false;
+  const full = entries.filter(e => e.g && e.r.xo && e.r.yo), anyWrong = entries.length === 0 || full.length < n;
+  if (style === 'multi') entries.forEach(e => { if (!e.g) return; tag(BD, L.top, e.ca, e.cb, plain(coord(e.g.x, e.g.y)), e.r.err === 'ok' ? '#2b8a3e' : e.color, BD.px * .85, 'middle', e.dx, e.cb > lim * .6 ? BD.esz() * .95 : -BD.esz() * .78).setAttribute('class', 'fadein'); });
+  if (style === 'crowd') Object.values(grp).forEach(arr => { if (arr.length > 1){ const e = arr[0]; tag(BD, L.top, e.ca, e.cb, '×' + arr.length, e.r.xo && e.r.yo ? '#2b8a3e' : '#c92a2a', BD.px * .95, 'middle', 0, -BD.esz() * .8); } });
+  if (style !== 'crowd') entries.forEach(e => { if (e.g && e.r.err !== 'ok'){ const q = el('text', {'text-anchor':'middle', 'dominant-baseline':'central', 'font-size':BD.esz() * .8, x:BD.X(e.ca) + e.dx + BD.esz() * .55, y:BD.Y(e.cb) - BD.esz() * .3, class:'fadein'}, L.top); q.textContent = '❓'; } });
   if (full.length){
-    await sleep(300); if (tok !== S.tok) return; sNom();
-    await tween(500, e => L.cheatG.place(T.x, T.y, e < .5 ? 1 + e * .6 : 1.3 * (1 - (e - .5) * 2)));
+    await sleep(300); if (tok !== S.tok) return false; sNom();
+    await tween(500, u => L.cheatG.place(T.x, T.y, u < .5 ? 1 + u * .6 : 1.3 * (1 - (u - .5) * 2)));
     L.cheatG.remove(); burst(BD, L.top, T.x, T.y); sTada();
-  } else { sLow(); await tween(500, e => L.cheatG.place(T.x, T.y, 1 + Math.sin(e * Math.PI * 6) * .12)); L.cheatG.place(T.x, T.y, 1); }
-  if (tok !== S.tok) return;
-  // richtiger Weg: vom Nullpunkt erst x, dann y
-  if (anyWrong){
+  } else { sLow(); await tween(500, u => L.cheatG.place(T.x, T.y, 1 + Math.sin(u * Math.PI * 6) * .12)); L.cheatG.place(T.x, T.y, 1); }
+  if (tok !== S.tok) return false;
+  if (anyWrong){        // richtiger Weg: vom Nullpunkt erst x, dann y
     const g = el('g', {}, L.sol), sw = BD.sw;
     if (T.x !== 0){ el('line', {x1:BD.X(0), y1:BD.Y(0), x2:BD.X(T.x), y2:BD.Y(0), stroke:'#1864ab', 'stroke-opacity':.6, 'stroke-width':sw(8), 'stroke-linecap':'round', class:'drawin'}, g);
       tag(BD, g, T.x / 2, 0, (T.x < 0 ? '←' : '→') + ' ' + Math.abs(T.x), '#1864ab', BD.px * 1.05, 'middle', 0, T.y > 0 ? BD.fs(BD.px * 2.5) : -BD.fs(BD.px * .9)); }
     if (T.y !== 0){ const l2 = el('line', {x1:BD.X(T.x), y1:BD.Y(0), x2:BD.X(T.x), y2:BD.Y(T.y), stroke:'#d9480f', 'stroke-opacity':.6, 'stroke-width':sw(8), 'stroke-linecap':'round', class:'drawin'}, g); l2.style.animationDelay = T.x !== 0 ? '.8s' : '0s';
       tag(BD, g, T.x, T.y / 2, (T.y < 0 ? '↓' : '↑') + ' ' + Math.abs(T.y), '#d9480f', BD.px * 1.05, T.x < 0 ? 'start' : 'end', T.x < 0 ? sw(14) : -sw(14), BD.fs(BD.px * .35)).setAttribute('class', 'fadein'); }
     if (!full.length) L.cheat.appendChild(L.cheatG);
-    await sleep(T.x !== 0 && T.y !== 0 ? 1700 : 1100); if (tok !== S.tok) return;
+    await sleep(T.x !== 0 && T.y !== 0 ? 1700 : 1100); if (tok !== S.tok) return false;
   }
-  // Käse-Koordinate anschreiben
-  tag(BD, L.top, T.x, T.y, coord(T.x, T.y).replace(/<[^>]+>/g, ''), '#1e1e1e', BD.px * 1.05, 'middle', 0, T.y < -lim * .6 ? -BD.esz() * .8 : BD.esz() * .95).setAttribute('class', 'fadein');
-  showEval(); S.phase = 'eval'; $('nextBtn').disabled = false; $('scoreInfo').textContent = '⭐ ' + S.players.reduce((m, p) => Math.max(m, p.total), 0);
-  if (full.length && full.some(p => p.r.pt >= 16)) toast('⚡ Blitz!'); else if (full.length === n && n === 1) toast('🧀 Richtig!');
+  tag(BD, L.top, T.x, T.y, plain(coord(T.x, T.y)), '#1e1e1e', BD.px * 1.05, 'middle', 0, T.y < -lim * .6 ? -BD.esz() * .8 : BD.esz() * .95).setAttribute('class', 'fadein');
+  if (style !== 'crowd' && full.some(e => e.r.pt >= 16)) toast('⚡ Blitz!'); else if (style === 'solo' && full.length) toast('🧀 Richtig!');
+  return true;
 }
-function showEval(){
-  const rows = [...S.players].sort((a, b) => b.r.pts - a.r.pts || a.r.t - b.r.t);
-  if (!multi()){ const p = S.players[0]; $('evMsg').innerHTML = feedback(p); }
-  else {
-    const T = S.task; $('evMsg').innerHTML = `Der Käse lag bei <b>${coord(T.x, T.y)}</b> → <span class="xc">${mfix(stepX(T.x))}</span>, dann <span class="yc">${mfix(stepY(T.y))}</span>.`;
-  }
-  $('resT').innerHTML = `<tr><th></th><th class="xc">x</th><th class="yc">y</th><th>⚡</th><th>Punkte</th>${multi() ? '<th>gesamt</th>' : ''}</tr>` + rows.map(p => `<tr><td><span style="font-size:1.4em">${p.emoji}</span> <span style="color:${multi() ? p.color : 'inherit'};font-weight:700">${escH(pname(p))}</span>
-    <div class="badge">${mfix(coord(p.g.x, p.g.y).replace(/<[^>]+>/g, ''))} · ${p.r.t.toFixed(1).replace('.', ',')} s${p.r.err !== 'ok' && multi() ? ' · ' + ERR_SHORT[p.r.err] : ''}</div></td>
+function resRows(rows, total){
+  return `<tr><th></th><th class="xc">x</th><th class="yc">y</th><th>⚡</th><th>Punkte</th>${total ? '<th>gesamt</th>' : ''}</tr>` + rows.map(p => `<tr><td><span style="font-size:1.4em">${esc(p.emoji)}</span> <span style="color:${total ? p.color : 'inherit'};font-weight:700">${esc(p.name)}</span>
+    <div class="badge">${p.g ? mfix(plain(coord(p.g.x, p.g.y))) + ' · ' + p.r.t.toFixed(1).replace('.', ',') + ' s' : 'keine Antwort'}${p.r.err !== 'ok' && total ? ' · ' + ERR_SHORT[p.r.err] : ''}</div></td>
     <td class="c ${p.r.xo ? 'ok' : 'no'}">${p.r.xo ? '✓' : '✗'}<div class="badge">${p.r.px}</div></td><td class="c ${p.r.yo ? 'ok' : 'no'}">${p.r.yo ? '✓' : '✗'}<div class="badge">${p.r.py}</div></td>
-    <td class="c">${p.r.pt ? '+' + p.r.pt : '–'}</td><td class="n">+${p.r.pts}</td>${multi() ? `<td class="c muted">${p.total}</td>` : ''}</tr>`).join('');
+    <td class="c">${p.r.pt ? '+' + p.r.pt : '–'}</td><td class="n">+${p.r.pts}</td>${total ? `<td class="c muted">${p.total}</td>` : ''}</tr>`).join('');
 }
-$('nextBtn').onclick = () => { ac(); if (S.round >= S.rounds) showFinal(); else nextRound(); };
+function setHostUi(on){ show('hostUi', on); show('inUi', !on); show('evUi', false); show('tbar', !on); $('clock').textContent = ''; }
+
+/* ================= Nur Beamer (ein Gerät, nacheinander) ================= */
+const multi = () => S.players.length > 1;
+function renderSetup(){
+  const pl = $('plist'); pl.innerHTML = '';
+  S.players.forEach((p, i) => {
+    const r = document.createElement('div'); r.className = 'prow';
+    r.innerHTML = `<button class="em">${p.emoji}</button><input maxlength="14" placeholder="Name ${i + 1}" value="${esc(p.name || '')}">${S.players.length > 1 ? '<button class="chip">✕</button>' : ''}`;
+    r.querySelector('.em').onclick = () => { p.emoji = EMOJIS[(EMOJIS.indexOf(p.emoji) + 1) % EMOJIS.length]; renderSetup(); };
+    r.querySelector('input').oninput = e => { p.name = e.target.value; };
+    const x = r.querySelector('.chip'); if (x) x.onclick = () => { S.players.splice(i, 1); renderSetup(); };
+    pl.appendChild(r);
+  });
+  $('addP').disabled = S.players.length >= 8;
+  chipRow('optLevel', LEVEL_LBL, () => S.level, v => S.level = v);
+  chipRow('optRounds', [[5, '5'], [10, '10'], [15, '15']], () => S.rounds, v => S.rounds = +v);
+  chipRow('optHelp', [['1', 'mit Hilfe'], ['2', '+ Vorschau-Punkt'], ['0', 'ohne']], () => S.help, v => S.help = v);
+  chipRow('optIntro', [['1', '✅ zeigen'], ['0', 'überspringen']], () => S.intro, v => S.intro = v);
+}
+$('addP').onclick = () => { const used = S.players.map(p => p.emoji); S.players.push({name:'', emoji:EMOJIS.find(e => !used.includes(e)) || '🙂'}); renderSetup(); };
+function startLocal(){
+  S.role = 'local';
+  S.players = S.players.map((p, i) => ({...p, name:(p.name || '').trim() || (S.players.length === 1 ? 'Ich' : 'Spieler ' + (i + 1)), color:COLORS[i % COLORS.length], total:0, st:newStats()}));
+  try { localStorage.setItem(KEY, JSON.stringify({players:S.players.map(p => ({name:p.name, emoji:p.emoji})), level:S.level, rounds:S.rounds, help:S.help, intro:S.intro})); } catch(e){}
+  const begin = () => { S.round = 0; S.lastQ = []; S.last = null; setHostUi(false); go('gameWrap'); applyMode(); nextRoundLocal(); };
+  if (S.intro === '1') openIntro(begin); else begin();
+}
+function nextRoundLocal(){
+  S.tok++; S.round++; S.turn = 0; S.limit = 0; S.players.forEach(p => { p.g = null; p.r = null; });
+  const task = makeTask(S.level, S); $('roundInfo').textContent = `Runde ${S.round} / ${S.rounds}`; $('scoreInfo').textContent = '⭐ ' + S.players.reduce((m, p) => Math.max(m, p.total), 0);
+  showRound(task, S.level); show('inUi'); show('evUi', false); startTurnLocal();
+}
+function startTurnLocal(){
+  const p = S.players[S.turn]; resetInput();
+  $('who').innerHTML = multi() ? `<span style="font-size:1.4em;vertical-align:-.15em">${p.emoji}</span> <b style="color:${p.color}">${esc(p.name)}</b> ist dran` : '';
+  $('tbar').classList.remove('low'); $('tfill').style.width = '100%'; $('tval').textContent = '⚡ +20';
+  if (multi()){ S.phase = 'cover'; $('coverE').textContent = p.emoji; $('coverN').textContent = p.name; show('cover'); }
+  else beginInputLocal();
+}
+$('coverBtn').onclick = () => { ac(); show('cover', false); beginInputLocal(); };
+function beginInputLocal(){ S.phase = 'input'; S.t0 = performance.now(); startTimer(); renderFields(); }
+function localSubmit(a, b){
+  if (S.phase !== 'input') return;
+  const p = S.players[S.turn], t = (performance.now() - S.t0) / 1000; clearInterval(TM); S.phase = 'wait';
+  p.g = {x:a, y:b}; p.r = scoreAnswer(S.task, a, b, t); p.total += p.r.pts; addStats(p.st, p.r);
+  sDing(); if (GH){ GH.remove(); GH = null; }
+  S.turn++; if (S.turn < S.players.length) startTurnLocal(); else revealLocal();
+}
+async function revealLocal(){
+  S.phase = 'reveal'; show('inUi', false); show('evUi'); $('resT').innerHTML = ''; $('evRank').textContent = ''; show('nextBtn', false); $('who').innerHTML = ''; $('evMsg').innerHTML = '🐭 …läuft los!';
+  const ok = await animateReveal(S.players, multi() ? 'multi' : 'solo'); if (!ok) return;
+  S.phase = 'eval'; const T = S.task;
+  $('evMsg').innerHTML = multi() ? `Der Käse lag bei <b>${coord(T.x, T.y)}</b> → <span class="xc">${mfix(stepX(T.x))}</span>, dann <span class="yc">${mfix(stepY(T.y))}</span>.` : feedback(S.players[0].r, T);
+  $('resT').innerHTML = resRows([...S.players].sort((a, b) => b.r.pts - a.r.pts || a.r.t - b.r.t), multi());
+  $('nextBtn').textContent = S.round >= S.rounds ? 'Endstand 🏆' : 'Nächste Runde ▶'; show('nextBtn');
+  $('scoreInfo').textContent = '⭐ ' + S.players.reduce((m, p) => Math.max(m, p.total), 0);
+}
+$('nextBtn').onclick = () => { ac(); if (S.role !== 'local') return; if (S.round >= S.rounds) finalLocal(); else nextRoundLocal(); };
+function finalLocal(){
+  S.tok++; S.phase = 'final';
+  renderFinal(S.players.map(p => ({name:p.name, emoji:p.emoji, total:p.total, st:p.st})), S.rounds, null);
+  $('finalBtns').innerHTML = '<button class="go" id="fAgain">🔄 Nochmal</button><button id="fMenu">⚙️ Einstellungen</button>';
+  $('fAgain').onclick = () => { ac(); startLocal(); }; $('fMenu').onclick = () => { go('setup'); renderSetup(); };
+}
 
 /* ---------- Endstand ---------- */
-function showFinal(){
-  S.tok++; S.phase = 'final'; show('gameWrap', false); show('final');
-  const r = [...S.players].sort((a, b) => b.total - a.total), max = S.rounds * 100;
-  const pod = [r[1], r[0], r[2]].filter(Boolean), cols = {0:'#ffe066', 1:'#dee2e6', 2:'#ffd8a8'};
-  $('pod').innerHTML = pod.map(p => { const pl = r.indexOf(p); return `<div><div class="e">${p.emoji}</div>${escH(pname(p))}<div class="blk" style="height:${[5, 3.8, 3][pl] || 3}em;background:${cols[pl] || '#fff'}">${pl + 1}.</div></div>`; }).join('');
-  $('finalT').innerHTML = `<table class="ft"><tr><th></th><th>Punkte</th><th class="xc">x ✓</th><th class="yc">y ✓</th><th>ganz ✓</th><th>Ø Tempo</th></tr>` + r.map(p => `<tr><td>${p.emoji} ${escH(pname(p))}</td><td class="n">${p.total}<div class="muted" style="font-size:.7em;font-weight:400">von ${max}</div></td>
+function tipFor(st){
+  const bits = [], errs = st.sx + st.sy;
+  if (errs >= 2 && errs >= st.swap) bits.push('Vorzeichen üben: <b>Minus = links (x) / unten (y)</b>');
+  if (st.swap >= 2) bits.push('x und y nicht vertauschen: <b>x zuerst (←→), dann y (↑↓)</b>');
+  if (!bits.length && st.n && st.full === st.n) bits.push('alles richtig 🎉');
+  return bits.join(' · ');
+}
+function renderFinal(list, rounds, meId){
+  go('final');
+  const r = [...list].sort((a, b) => b.total - a.total), max = rounds * 100, cols = ['#ffe066', '#dee2e6', '#ffd8a8'];
+  r.forEach((p, i) => p.place = i + 1);
+  const pod = [r[1], r[0], r[2]].filter(Boolean);
+  $('pod').innerHTML = pod.map(p => `<div><div class="e">${esc(p.emoji)}</div>${esc(p.name)}<div class="blk" style="height:${[5, 3.8, 3][p.place - 1]}em;background:${cols[p.place - 1]}">${p.place}.</div></div>`).join('');
+  const rows = r.length > 8 ? r.filter((p, i) => i < 8 || p.pid === meId) : r;
+  $('finalT').innerHTML = `<table class="ft"><tr><th></th><th>Punkte</th><th class="xc">x ✓</th><th class="yc">y ✓</th><th>ganz ✓</th><th>Ø Tempo</th></tr>` + rows.map(p => `<tr class="${p.pid && p.pid === meId ? 'me' : ''}"><td>${p.place}. ${esc(p.emoji)} ${esc(p.name)}</td><td class="n">${p.total}<div class="muted" style="font-size:.7em;font-weight:400">von ${max}</div></td>
     <td>${p.st.x}/${p.st.n}</td><td>${p.st.y}/${p.st.n}</td><td>${p.st.full}/${p.st.n}</td><td>${p.st.full ? (p.st.tsum / p.st.full).toFixed(1).replace('.', ',') + ' s' : '–'}</td></tr>`).join('') + '</table>';
-  const tips = r.map(p => { const s = p.st, errs = s.sx + s.sy, bits = [];
-    if (errs >= 2 && errs >= s.swap) bits.push(`Vorzeichen üben: <b>Minus = links (x) / unten (y)</b>`);
-    if (s.swap >= 2) bits.push(`x und y nicht vertauschen: <b>x zuerst (↔), dann y (↕)</b>`);
-    if (!bits.length && s.full === s.n) bits.push('alles richtig 🎉');
-    return bits.length ? `<div>${p.emoji} <b>${escH(pname(p))}</b>: ${bits.join(' · ')}</div>` : ''; }).join('');
-  $('finalTip').innerHTML = tips ? `<div class="tip">${tips}</div>` : '';
-  sTada();
+  let tips;
+  if (meId){ const me = r.find(p => p.pid === meId), t = me ? tipFor(me.st) : ''; tips = t ? `<div>${t}</div>` : ''; }
+  else if (r.length > 8){ const agg = newStats(); r.forEach(p => ['x', 'y', 'full', 'n', 'swap', 'sx', 'sy'].forEach(k => agg[k] += p.st[k])); const t = tipFor(agg); tips = t ? `<div>Klasse: ${t}</div>` : ''; }
+  else tips = r.map(p => { const t = tipFor(p.st); return t ? `<div>${esc(p.emoji)} <b>${esc(p.name)}</b>: ${t}</div>` : ''; }).join('');
+  $('finalTip').innerHTML = tips ? `<div class="tip">${tips}</div>` : ''; sTada();
 }
-$('againBtn').onclick = () => { ac(); startGame(); };
-$('setupBtn').onclick = () => { show('final', false); show('setup'); renderSetup(); };
-$('startBtn').onclick = () => { ac(); startGame(); };
-$('quitBtn').onclick = () => { if (!confirm('Spiel beenden?')) return; S.tok++; clearInterval(TM); S.phase = 'setup'; show('gameWrap', false); show('cover', false); show('setup'); renderSetup(); };
-$('modeBtn').onclick = () => { const cur = document.body.classList.contains('m-beamer') ? 'beamer' : 'phone'; S.mode = cur === 'beamer' ? 'phone' : 'beamer'; applyMode(); };
 
-/* ================= Erklärung (Intro) ================= */
-let IB = null, II = 0, IT = 0, introDone = null, pauseAt = 0;
-const SL = [
- {t:'🧭 Das Koordinatensystem', h:`<p>Zwei <b>Zahlenstrahlen</b> kreuzen sich. Dort, wo sie sich treffen, ist die <b>0</b> – das <b>Mausloch</b> 🕳️. Hier wohnt die Maus 🐭.</p>
-   <p><b class="xc">x-Achse</b> = <b>waagerecht</b> (links ↔ rechts)<br><b class="yc">y-Achse</b> = <b>senkrecht</b> (unten ↕ oben)</p>`,
-  run: async tok => {
-    const B = IB, g = el('g', {}, B.dyn); mkEmoji(B, g, '🐭', 0, 0); await sleep(500); if (tok !== IT) return;
-    setBadge(`<b class="xc">x-Achse</b>: geht nach <b>links</b> und <b>rechts</b> ↔`);
-    const lim = B.lim, sw = B.sw, a = el('line', {x1:B.X(-lim), y1:B.Y(0), x2:B.X(lim), y2:B.Y(0), stroke:'#1864ab', 'stroke-opacity':.4, 'stroke-width':sw(14), 'stroke-linecap':'round', class:'drawin'}, g);
-    void a; await sleep(1500); if (tok !== IT) return;
-    setBadge(`<b class="yc">y-Achse</b>: geht nach <b>unten</b> und <b>oben</b> ↕`);
-    el('line', {x1:B.X(0), y1:B.Y(-lim), x2:B.X(0), y2:B.Y(lim), stroke:'#d9480f', 'stroke-opacity':.4, 'stroke-width':sw(14), 'stroke-linecap':'round', class:'drawin'}, g);
-    await sleep(1500); if (tok !== IT) return;
-    setBadge(`Merke: <b>x</b> kommt im Alphabet vor <b>y</b> – darum immer <b>erst x</b>, dann y.`);
-  }},
- {t:'↔ x: links und rechts', h:`<p>Die Maus startet im Mausloch bei <b>0</b>.</p><p><b>Plus (+)</b> heißt <b>rechts</b> →<br><b>Minus (−)</b> heißt <b>links</b> ←</p>`,
-  run: async tok => {
-    const B = IB, g = el('g', {}, B.dyn), m = mkEmoji(B, g, '🐭', 0, 0); await sleep(600); if (tok !== IT) return;
-    setBadge(`<b class="xc">x = +3</b> → <b>3</b> Schritte nach <b>rechts</b> →`);
-    for (let i = 1; i <= 3; i++){ await tween(450, e => m.place(i - 1 + e, 0)); sStep(); tag(B, g, i, 0, String(i), '#1864ab', B.px * 1.1, 'middle', 0, -B.fs(26)); if (tok !== IT) return; }
-    await sleep(1100); if (tok !== IT) return;
-    await tween(500, e => m.place(3 * (1 - e), 0)); g.querySelectorAll(':scope > text').forEach(t => t.remove());
-    setBadge(`<b class="xc">x = −2</b> → <b>2</b> Schritte nach <b>links</b> ←`);
-    for (let i = 1; i <= 2; i++){ await tween(450, e => m.place(-(i - 1) - e, 0)); sStep(); tag(B, g, -i, 0, String(i), '#1864ab', B.px * 1.1, 'middle', 0, -B.fs(26)); if (tok !== IT) return; }
-    await sleep(900); if (tok !== IT) return;
-    setBadge(`<b class="xc">+</b> = rechts → &nbsp;&nbsp; <b class="xc">−</b> = links ←`);
-  }},
- {t:'↕ y: unten und oben', h:`<p>Jetzt geht es <b>senkrecht</b>.</p><p><b>Plus (+)</b> heißt <b>oben</b> ↑<br><b>Minus (−)</b> heißt <b>unten</b> ↓</p>`,
-  run: async tok => {
-    const B = IB, g = el('g', {}, B.dyn), m = mkEmoji(B, g, '🐭', 0, 0); await sleep(600); if (tok !== IT) return;
-    setBadge(`<b class="yc">y = +3</b> → <b>3</b> Schritte nach <b>oben</b> ↑`);
-    for (let i = 1; i <= 3; i++){ await tween(450, e => m.place(0, i - 1 + e)); sStep(); tag(B, g, 0, i, String(i), '#d9480f', B.px * 1.1, 'start', B.fs(22), B.fs(8)); if (tok !== IT) return; }
-    await sleep(1100); if (tok !== IT) return;
-    await tween(500, e => m.place(0, 3 * (1 - e))); g.querySelectorAll(':scope > text').forEach(t => t.remove());
-    setBadge(`<b class="yc">y = −2</b> → <b>2</b> Schritte nach <b>unten</b> ↓`);
-    for (let i = 1; i <= 2; i++){ await tween(450, e => m.place(0, -(i - 1) - e)); sStep(); tag(B, g, 0, -i, String(i), '#d9480f', B.px * 1.1, 'start', B.fs(22), B.fs(8)); if (tok !== IT) return; }
-    await sleep(900); if (tok !== IT) return;
-    setBadge(`<b class="yc">+</b> = oben ↑ &nbsp;&nbsp; <b class="yc">−</b> = unten ↓`);
-  }},
- {t:'🧀 Beides zusammen: (x | y)', h:`<p>Ein Punkt hat <b>zwei Zahlen</b>: <b>(x | y)</b>.</p><p>Beispiel <b>(<span class="xc"><span class="mi">−</span>2</span> | <span class="yc">3</span>)</b>:<br>Erst x – dann y.<br><i>Erst durch die Haustür, dann die Treppe hoch.</i></p>`,
-  run: async tok => {
-    const B = IB, g = el('g', {}, B.dyn), ch = mkEmoji(B, g, '🧀', -2, 3, {dot:true}); ch.place(-2, 3, 0); await tween(500, e => ch.place(-2, 3, e));
-    const m = mkEmoji(B, g, '🐭', 0, 0); await sleep(500); if (tok !== IT) return;
-    setBadge(`<b>(<span class="xc">−2</span> | <span class="yc">3</span>)</b><br><span class="xc">x = −2</span> → erst 2 nach <b>links</b> ←`);
-    el('line', {x1:B.X(0), y1:B.Y(0), x2:B.X(-2), y2:B.Y(0), stroke:'#1864ab', 'stroke-opacity':.55, 'stroke-width':B.sw(9), 'stroke-linecap':'round'}, g).setAttribute('class', 'drawin');
-    for (let i = 1; i <= 2; i++){ await tween(500, e => m.place(-(i - 1) - e, 0)); sStep(); if (tok !== IT) return; }
-    await sleep(500); if (tok !== IT) return;
-    setBadge(`<b>(<span class="xc">−2</span> | <span class="yc">3</span>)</b><br><span class="yc">y = 3</span> → dann 3 nach <b>oben</b> ↑`);
-    const l2 = el('line', {x1:B.X(-2), y1:B.Y(0), x2:B.X(-2), y2:B.Y(3), stroke:'#d9480f', 'stroke-opacity':.55, 'stroke-width':B.sw(9), 'stroke-linecap':'round'}, g); l2.setAttribute('class', 'drawin');
-    for (let i = 1; i <= 3; i++){ await tween(500, e => m.place(-2, i - 1 + e)); sStep(); if (tok !== IT) return; }
-    sNom(); await tween(450, e => ch.place(-2, 3, e < .5 ? 1 + e * .6 : 1.3 * (1 - (e - .5) * 2))); ch.remove(); burst(B, g, -2, 3); sTada();
-    setBadge(`🧀 Gefangen! Die Maus hat den Käse bei <b>(<span class="xc"><span class="mi">−</span>2</span> | <span class="yc">3</span>)</b>.`);
-  }},
- {t:'⚠️ Vorsicht: Minus!', h:`<p>Das Koordinatensystem hat <b>vier Bereiche</b>. In den meisten Aufgaben liegt der Käse im <b>Minus</b>!</p><p><b class="xc">x</b> negativ → <b>links</b><br><b class="yc">y</b> negativ → <b>unten</b></p>`,
-  run: async tok => {
-    const B = IB, g = el('g', {}, B.dyn), pts = [[3, 2, '(+|+)', 'rechts oben'], [-3, 2, '(−|+)', 'links oben'], [-3, -2, '(−|−)', 'links unten'], [3, -2, '(+|−)', 'rechts unten']];
-    setBadge('Schau, wo der Käse jeweils liegt …');
-    for (const [x, y, c, n] of pts){
-      const ch = mkEmoji(B, g, '🧀', x, y, {dot:true}); ch.place(x, y, 0); await tween(450, e => ch.place(x, y, e)); sStep();
-      tag(B, g, x, y, c, '#1e1e1e', B.px * 1.05, 'middle', 0, y > 0 ? -B.esz() * .75 : B.esz() * .95); tag(B, g, x, y, n, '#555', B.px * .85, 'middle', 0, y > 0 ? -B.esz() * 1.45 : B.esz() * 1.7);
-      setBadge(`<b>${mfix(c)}</b> = ${n}`); await sleep(1100); if (tok !== IT) return;
-    }
-    setBadge(`<b class="xc">− bei x</b> = links ← &nbsp; <b class="yc">− bei y</b> = unten ↓<br>Bereit? 🧀`);
-  }}
-];
-const setBadge = h => { $('iBadge').innerHTML = mfix(h); };
-function iGo(i){
-  II = clamp(i, 0, SL.length - 1); const tok = ++IT, s = SL[II];
-  $('iTitle').innerHTML = s.t; $('iText').innerHTML = mfix(s.h); setBadge('&nbsp;');
-  $('iDots').innerHTML = SL.map((_, k) => `<i class="${k === II ? 'on' : ''}"></i>`).join('');
-  $('iPrev').disabled = II === 0; $('iNext').textContent = II === SL.length - 1 ? "Los geht's 🧀" : 'weiter ▶';
-  IB.draw({lim:5, grid:1, label:1, names:true}); IB.dyn.innerHTML = ''; ac(); s.run(tok);
+/* ================= Erklärung: ganz langsam, Schritt für Schritt ================= */
+let IB = null, II = 0, IT = 0, introDone = null, pauseAt = 0, iAuto = true, iTimer = null;
+const hop = (m, x0, y0, x1, y1, ms = 600) => tween(ms, u => m.place(x0 + (x1 - x0) * u, y0 + (y1 - y0) * u));
+async function walk(B, g, m, dx, dy, n, color){          // Maus läuft n Schritte und zählt mit
+  const sg = dx + dy < 0 ? '−' : '+';
+  for (let i = 1; i <= n; i++){
+    await hop(m, dx * (i - 1), dy * (i - 1), dx * i, dy * i, 650); sStep();
+    tag(B, g, dx * i, dy * i, sg + i, color, B.px * 1.2, dx ? 'middle' : 'start', dx ? 0 : B.fs(26), dx ? -B.fs(24) : B.fs(8)).setAttribute('class', 'fadein');
+    await sleep(250);
+  }
 }
-function iNext(){ if (II >= SL.length - 1) iClose(); else iGo(II + 1); }
+const legX = (B, g, to, ms) => el('line', {x1:B.X(0), y1:B.Y(0), x2:B.X(to), y2:B.Y(0), stroke:'#1864ab', 'stroke-opacity':.55, 'stroke-width':B.sw(9), 'stroke-linecap':'round'}, g);
+const ISTEPS = [
+ {c:'Hier startet die Maus: <b>0</b>', run: async (B, g) => { mkEmoji(B, g, '🐭', 0, 0); const r = el('circle', {cx:B.X(0), cy:B.Y(0), r:B.sw(30), fill:'none', stroke:'#e03131', 'stroke-width':B.sw(4)}, g); await tween(900, u => { r.setAttribute('r', B.sw(30 + u * 22)); r.setAttribute('opacity', 1 - u * .6); }); }},
+ {c:'Nach <b>rechts</b> → ist <b>plus +</b>', run: async (B, g) => { const m = mkEmoji(B, g, '🐭', 0, 0); await sleep(600); await walk(B, g, m, 1, 0, 3, '#1864ab'); }},
+ {c:'Nach <b>links</b> ← ist <b>minus −</b>', run: async (B, g) => { const m = mkEmoji(B, g, '🐭', 0, 0); await sleep(600); await walk(B, g, m, -1, 0, 3, '#1864ab'); }},
+ {c:'Nach <b>oben</b> ↑ ist <b>plus +</b>', run: async (B, g) => { const m = mkEmoji(B, g, '🐭', 0, 0); await sleep(600); await walk(B, g, m, 0, 1, 3, '#d9480f'); }},
+ {c:'Nach <b>unten</b> ↓ ist <b>minus −</b>', run: async (B, g) => { const m = mkEmoji(B, g, '🐭', 0, 0); await sleep(600); await walk(B, g, m, 0, -1, 3, '#d9480f'); }},
+ {c:'Erst <b class="xc">x</b> (←→), dann <b class="yc">y</b> (↑↓)', run: async (B, g) => {
+    el('line', {x1:B.X(-B.lim), y1:B.Y(0), x2:B.X(B.lim), y2:B.Y(0), stroke:'#1864ab', 'stroke-opacity':.4, 'stroke-width':B.sw(16), 'stroke-linecap':'round', class:'drawin'}, g); await sleep(1500);
+    el('line', {x1:B.X(0), y1:B.Y(-B.lim), x2:B.X(0), y2:B.Y(B.lim), stroke:'#d9480f', 'stroke-opacity':.4, 'stroke-width':B.sw(16), 'stroke-linecap':'round', class:'drawin'}, g); await sleep(1200); }},
+ {c:'Beispiel: <b>(<span class="xc">−2</span> | <span class="yc">3</span>)</b>', run: async (B, g) => { const ch = mkEmoji(B, g, '🧀', -2, 3, {dot:true}); ch.place(-2, 3, 0); mkEmoji(B, g, '🐭', 0, 0); await tween(600, u => ch.place(-2, 3, u)); tag(B, g, -2, 3, '(−2|3)', '#1e1e1e', B.px * 1.1, 'middle', 0, -B.esz() * .85); await sleep(800); }},
+ {c:'<b class="xc">x = −2</b>: 2 nach links ←', run: async (B, g) => { mkEmoji(B, g, '🧀', -2, 3, {dot:true}); const m = mkEmoji(B, g, '🐭', 0, 0); await sleep(500);
+    el('line', {x1:B.X(0), y1:B.Y(0), x2:B.X(-2), y2:B.Y(0), stroke:'#1864ab', 'stroke-opacity':.55, 'stroke-width':B.sw(9), 'stroke-linecap':'round', class:'drawin'}, g);
+    for (let i = 1; i <= 2; i++){ await hop(m, -(i - 1), 0, -i, 0, 700); sStep(); } await sleep(600); }},
+ {c:'<b class="yc">y = 3</b>: 3 nach oben ↑', run: async (B, g) => { const ch = mkEmoji(B, g, '🧀', -2, 3, {dot:true}); legX(B, g, -2); const m = mkEmoji(B, g, '🐭', -2, 0); await sleep(500);
+    el('line', {x1:B.X(-2), y1:B.Y(0), x2:B.X(-2), y2:B.Y(3), stroke:'#d9480f', 'stroke-opacity':.55, 'stroke-width':B.sw(9), 'stroke-linecap':'round', class:'drawin'}, g);
+    for (let i = 1; i <= 3; i++){ await hop(m, -2, i - 1, -2, i, 700); sStep(); }
+    sNom(); await tween(450, u => ch.place(-2, 3, u < .5 ? 1 + u * .6 : 1.3 * (1 - (u - .5) * 2))); ch.remove(); burst(B, g, -2, 3); sTada(); await sleep(900); }},
+ {c:'Los geht\'s! 🧀', last:true, run: async () => { await sleep(300); }}
+];
+function iGo(i){
+  II = clamp(i, 0, ISTEPS.length - 1); const tok = ++IT, s = ISTEPS[II]; clearTimeout(iTimer);
+  $('iCap').innerHTML = mfix(s.c);
+  $('iDots').innerHTML = ISTEPS.map((_, k) => `<i class="${k === II ? 'on' : ''}"></i>`).join('');
+  $('iPrev').disabled = II === 0; $('iNext').textContent = s.last ? "Los geht's 🧀" : 'weiter ▶'; $('iPlay').textContent = iAuto ? '⏸' : '▶';
+  IB.draw({lim:4, names:true}); IB.dyn.innerHTML = ''; ac(); const g = el('g', {}, IB.dyn);
+  Promise.resolve(s.run(IB, g)).then(() => { if (tok === IT && iAuto && !s.last) iTimer = setTimeout(() => { if (tok === IT && iAuto) iGo(II + 1); }, 1600); }).catch(() => {});
+}
+function iNext(){ if (ISTEPS[II].last) iClose(); else iGo(II + 1); }
 function openIntro(cb){
-  introDone = cb || null; show('intro'); if (!IB) IB = Board($('introSvg')); IB.draw({}); iGo(0);
+  introDone = cb || null; show('intro'); if (!IB) IB = Board($('introSvg')); iAuto = true; IB.draw({lim:4}); iGo(0);
   if (S.phase === 'input'){ pauseAt = performance.now(); }
 }
 function iClose(){
-  IT++; show('intro', false);
+  IT++; clearTimeout(iTimer); show('intro', false);
   if (S.phase === 'input' && pauseAt){ S.t0 += performance.now() - pauseAt; pauseAt = 0; }
   const cb = introDone; introDone = null; if (cb) cb();
 }
-$('iNext').onclick = iNext; $('iPrev').onclick = () => iGo(II - 1); $('iSkip').onclick = iClose; $('iReplay').onclick = () => iGo(II);
-$('introBtn').onclick = () => openIntro(null);
-$('helpBtn').onclick = () => openIntro(null);
+$('iNext').onclick = iNext; $('iPrev').onclick = () => iGo(II - 1); $('iSkip').onclick = iClose;
+$('iPlay').onclick = () => { iAuto = !iAuto; $('iPlay').textContent = iAuto ? '⏸' : '▶'; if (iAuto && !ISTEPS[II].last) iGo(II); };
+$('helpBtn').onclick = () => openIntro(null); $('hIntro').onclick = () => openIntro(null); $('wHelp').onclick = () => openIntro(null);
 if (typeof ResizeObserver !== 'undefined'){
   let raf = 0; const ro = new ResizeObserver(() => { cancelAnimationFrame(raf); raf = requestAnimationFrame(() => { if (BD && !$('gameWrap').classList.contains('hidden')) BD.draw({}); if (IB && !$('intro').classList.contains('hidden')) IB.draw({}); }); });
   ro.observe($('board')); ro.observe($('introSvg'));
 }
 
-/* ---------- Start ---------- */
-BD = Board($('board'));
-buildPad(); applyMode(); renderSetup();
-if (new URLSearchParams(location.search).get('debug')) window.__dbg = {S, makeTask, classify, press, fval, submit, SL, iGo};
+/* =====================================================================
+   NETZ: Beamer + Handys / Nur Handys (PeerJS wie bei Geraden-Live)
+   ===================================================================== */
+const PEER_OPTS = Q.get('ph') ? {host:Q.get('ph'), port:+(Q.get('pp') || 9000), path:Q.get('ppath') || '/', secure:Q.get('ps') === '1'} : {};
+PEER_OPTS.debug = 1;
+PEER_OPTS.config = {iceServers:[
+  {urls:'stun:stun.relay.metered.ca:80'}, {urls:'stun:stun.l.google.com:19302'},
+  {urls:'turn:global.relay.metered.ca:80', username:'a8c27e443d09af6572e14185', credential:'lXvBAswWQlUTXAaL'},
+  {urls:'turn:global.relay.metered.ca:80?transport=tcp', username:'a8c27e443d09af6572e14185', credential:'lXvBAswWQlUTXAaL'},
+  {urls:'turn:global.relay.metered.ca:443', username:'a8c27e443d09af6572e14185', credential:'lXvBAswWQlUTXAaL'},
+  {urls:'turns:global.relay.metered.ca:443?transport=tcp', username:'a8c27e443d09af6572e14185', credential:'lXvBAswWQlUTXAaL'}]};
+const PREFIX = 'hvh-mauskaese-', CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const joinUrl = code => { const u = new URL(location.href), keep = new URLSearchParams(); ['ph', 'pp', 'ps', 'ppath'].forEach(k => { if (Q.get(k)) keep.set(k, Q.get(k)); }); keep.set('join', code); return u.origin + u.pathname + '?' + keep.toString(); };
+function keepRegistered(getPeer){
+  const check = () => { const peer = getPeer(); if (!peer || peer.destroyed) return; if (peer.disconnected){ try { peer.reconnect(); } catch(e){} } };
+  setInterval(check, 4000); document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') check(); }); addEventListener('online', check);
+}
+
+/* ---------- Host (Beamer oder Raum-Ersteller) ---------- */
+const H = {peer:null, code:'', players:new Map(), phase:'lobby', room:false, creatorPid:null, level:'2', rounds:8, time:30, auto:'0', help:'1', intro:'1', bots:0,
+  round:0, task:null, startAt:0, timer:null, autoT:null, lastQ:[], last:null, ready:false, sig:''};
+const inGame = () => [...H.players.values()];
+const active = () => inGame().filter(p => p.online || p.bot);
+function hSend(p, m){ if (p.conn && p.conn.open) try { p.conn.send(m); } catch(e){} }
+const hBroadcast = m => H.players.forEach(p => hSend(p, m));
+function freeCol(){ const used = inGame().map(x => x.color), c = PCOL.find(c => !used.includes(c)); return c || `hsl(${(H.players.size * 47) % 360} 75% 58%)`; }
+function hOpenPeer(){
+  H.code = [...Array(4)].map(() => CODE_CHARS[Math.floor(Math.random() * CODE_CHARS.length)]).join('');
+  $('hNet').textContent = 'Verbinde …'; $('hCode').textContent = '····';
+  const peer = new Peer(PREFIX + H.code, PEER_OPTS); H.peer = peer;
+  peer.on('open', () => {
+    $('hCode').textContent = H.code; const url = joinUrl(H.code); $('hUrl').textContent = url.replace(/^https?:\/\//, '');
+    try { const qr = qrcode(0, 'M'); qr.addData(url); qr.make(); $('hQr').innerHTML = qr.createSvgTag({cellSize:6, margin:2, scalable:true}); } catch(e){ $('hQr').textContent = ''; }
+    $('hNet').textContent = '✅ Bereit – Handys können beitreten'; netInfo(''); H.url = url; H.ready = true; if (H.onReady){ const f = H.onReady; H.onReady = null; f(url); }
+  });
+  peer.on('connection', conn => { conn.on('data', m => hOnMsg(conn, m)); conn.on('close', () => { const p = inGame().find(x => x.conn === conn); if (p){ p.online = false; hRender(); } }); });
+  if (!H.keep){ H.keep = true; keepRegistered(() => H.peer); }
+  peer.on('error', err => { if (err.type === 'unavailable-id'){ peer.destroy(); hOpenPeer(); return; } $('hNet').textContent = '⚠️ Verbindungsproblem: ' + err.type; netInfo('⚠️ Netzwerk: ' + err.type); });
+  peer.on('disconnected', () => { try { peer.reconnect(); } catch(e){} });
+}
+const hCreatorName = () => { const c = H.players.get(H.creatorPid); return c ? c.emoji + ' ' + c.name : 'dem Host'; };
+const lobbyText = () => H.room ? `Warte, bis ${hCreatorName()} startet …` : 'Schau zum Beamer – gleich geht\'s los.';
+function hOnMsg(conn, m){
+  if (!m || typeof m !== 'object') return;
+  const from = inGame().find(x => x.conn === conn);
+  if (m.t === 'hello'){
+    let p = H.players.get(m.pid);
+    const name = String(m.name || 'Spieler').slice(0, 14), emoji = String(m.avatar || '🦊').slice(0, 8);
+    if (!p){ p = {pid:m.pid, name, emoji, color:freeCol(), total:0, st:newStats(), g:null, sub:false, draft:null, r:null, t:0}; H.players.set(m.pid, p); sBlip(); }
+    else { p.name = name; p.emoji = emoji; }
+    p.conn = conn; p.online = true;
+    hSend(p, {t:'welcome', v:APP_VERSION, name:p.name, emoji:p.emoji, color:p.color});
+    if (H.phase === 'lobby') hSend(p, {t:'wait', text:lobbyText()});
+    else if (H.phase === 'input') hSend(p, hRoundMsg());
+    else hSend(p, {t:'wait', text:'Gleich geht\'s weiter …'});
+    hRender();
+  } else if (m.t === 'draft' && from && H.phase === 'input' && !from.sub){ if (Number.isInteger(m.x) && Number.isInteger(m.y)) from.draft = {x:m.x, y:m.y}; }
+  else if (m.t === 'submit' && from){ hSubmit(from, m.x, m.y); }
+}
+function hRender(){
+  const ps = inGame();
+  if (H.phase === 'lobby'){
+    const n = active().length; $('hCount').textContent = n;
+    $('hList').innerHTML = ps.map(p => `<span class="pchip ${p.online || p.bot ? '' : 'off'}"><span class="e">${esc(p.emoji)}</span>${esc(p.name)}</span>`).join('');
+    $('lStart').disabled = n < 1;
+  } else if (H.phase === 'input' && !H.room) bUpdate();
+}
+function lobbyChips(){
+  chipRow('lLevel', LEVEL_LBL, () => H.level, v => H.level = v);
+  chipRow('lRounds', [[5, '5'], [8, '8'], [10, '10'], [15, '15']], () => H.rounds, v => H.rounds = +v);
+  chipRow('lTime', [[20, '20 s'], [30, '30 s'], [45, '45 s'], [60, '60 s'], [0, '∞']], () => H.time, v => H.time = +v);
+  chipRow('lAuto', [['0', '👆 per Klick weiter'], ['1', '⏱️ automatisch']], () => H.auto, v => H.auto = v);
+  chipRow('lHelp', [['1', 'mit Hilfe'], ['0', 'ohne']], () => H.help, v => H.help = v);
+  chipRow('lIntro', [['1', '✅ zeigen'], ['0', 'überspringen']], () => H.intro, v => H.intro = v);
+  chipRow('lBots', [[0, 'keine'], [3, '3'], [10, '10'], [25, '25']], () => H.bots, v => { H.bots = +v; hSyncBots(); });
+}
+/* ---------- Bots (zum Testen) ---------- */
+const BOT_N = ['Robbi','Bleep','Pixel','Bolt','Zippo','Kiki','Nano','Byte','Chip','Gizmo','Turbo','Volt','Neo','Spark','Dot','Flux','Mecha','Orbit','Rusty','Sigma','Tron','Unit','Wired','Xeno','Zap'];
+const BOT_A = ['🤖','👾','🦾','🛸','🧠','🎰','🐙','🦖','🐧','🦉','🐢','🦀','🐝','🦊','🐸','🐼','🦁','🐯','🐨','🐵','🦄','🐳','🦋','🐞','🌵'];
+function hSyncBots(){
+  if (H.phase !== 'lobby') return;
+  inGame().filter(p => p.bot).forEach(p => H.players.delete(p.pid));
+  for (let i = 0; i < H.bots; i++){ const pid = 'bot-' + i; H.players.set(pid, {pid, bot:true, online:true, name:BOT_N[i], emoji:BOT_A[i], color:freeCol(), total:0, st:newStats(), g:null, sub:false, draft:null, r:null, t:0}); }
+  hRender();
+}
+function botAnswer(p){
+  const T = H.task, k = Math.random(); let a = T.x, b = T.y;
+  if (k > .8) a = -a || 1; else if (k > .7) b = -b || 1; else if (k > .64){ a = T.y; b = T.x; } else if (k > .6){ a += 1; }
+  hSubmit(p, a, b);
+}
+/* ---------- Ablauf ---------- */
+function hStart(){
+  ac(); H.players.forEach(p => { p.total = 0; p.st = newStats(); }); H.round = 0; H.lastQ = []; H.last = null;
+  if (H.intro === '1'){
+    hBroadcast({t:'intro'});
+    if (!H.room){ S.role = 'host'; setHostUi(true); go('gameWrap'); applyMode(); }
+    openIntro(hNextRound);
+  } else hNextRound();
+}
+const hRoundMsg = () => ({t:'round', n:H.round, rounds:H.rounds, level:H.level, task:H.task, limit:H.time, elapsed:(Date.now() - H.startAt) / 1000, help:H.help});
+function hNextRound(){
+  clearTimeout(H.timer); clearTimeout(H.autoT);
+  H.round++; H.task = makeTask(H.level, H); H.phase = 'input'; H.startAt = Date.now();
+  H.players.forEach(p => { p.g = null; p.sub = false; p.draft = null; p.r = null; p.t = 0; });
+  if (H.time) H.timer = setTimeout(hTimeUp, H.time * 1000);
+  inGame().filter(p => p.bot).forEach(p => setTimeout(() => { if (H.phase === 'input' && !p.sub) botAnswer(p); }, (3 + Math.random() * Math.min(12, (H.time || 20) * .6)) * 1000));
+  hBroadcast(hRoundMsg());
+  if (!H.room) bRound();
+}
+function hSubmit(p, x, y){
+  if (H.phase !== 'input' || p.sub || !Number.isInteger(x) || !Number.isInteger(y) || Math.abs(x) > 99 || Math.abs(y) > 99) return;
+  p.g = {x, y}; p.sub = true; p.t = (Date.now() - H.startAt) / 1000; hRender(); hCheckAll();
+}
+function hCheckAll(){ if (active().length && active().every(p => p.sub)) setTimeout(() => { if (H.phase === 'input') hReveal(); }, 700); }
+function hTimeUp(){ if (H.phase !== 'input') return; inGame().forEach(p => { if (!p.sub && p.draft){ p.g = p.draft; p.sub = true; p.t = H.time; } }); hReveal(); }
+function hReveal(){
+  clearTimeout(H.timer); H.phase = 'reveal';
+  inGame().forEach(p => { if (!(p.online || p.bot) && !p.g){ p.r = null; return; } p.r = p.g ? scoreAnswer(H.task, p.g.x, p.g.y, p.t) : NONE_R(H.time || 0); p.total += p.r.pts; addStats(p.st, p.r); });
+  const res = inGame().filter(p => p.r).map(p => ({pid:p.pid, name:p.name, emoji:p.emoji, color:p.color, g:p.g, r:p.r, total:p.total}));
+  const msg = {t:'reveal', task:H.task, round:H.round, rounds:H.rounds, res}; hBroadcast(msg);
+  if (!H.room) bReveal(msg);
+  if (H.auto === '1') H.autoT = setTimeout(() => { if (H.phase === 'reveal') hAdvance(); }, 14000);
+}
+function hAdvance(){
+  ac(); if (H.phase === 'input') return hTimeUp();
+  if (H.phase === 'reveal'){ if (H.round >= H.rounds) return hEnd(); return hNextRound(); }
+}
+function hEnd(){
+  clearTimeout(H.timer); clearTimeout(H.autoT); H.phase = 'end';
+  const rank = inGame().filter(p => p.st.n).map(p => ({pid:p.pid, name:p.name, emoji:p.emoji, total:p.total, st:p.st}));
+  hBroadcast({t:'end', rank, rounds:H.rounds});
+  if (!H.room){ S.phase = 'final'; renderFinal(rank, H.rounds, null); hFinalBtns(); }
+}
+function hFinalBtns(){
+  $('finalBtns').innerHTML = '<button class="go" id="fAgain">🔄 Neues Spiel (alle bleiben)</button><button id="fMenu">🏠 Menü</button>';
+  $('fAgain').onclick = () => { H.phase = 'lobby'; hBroadcast({t:'wait', text:lobbyText()}); if (H.room) pShowRoom(); else { S.role = 'host'; go('hLobby'); } hRender(); };
+  $('fMenu').onclick = () => location.replace(location.pathname);
+}
+/* ---------- Beamer-Ansicht ---------- */
+function startBeamer(){
+  S.role = 'host'; H.room = false; H.phase = 'lobby'; go('hLobby'); show('lShare', false); lobbyChips(); hRender();
+  if (!H.peer) hOpenPeer();
+}
+function bRound(){
+  S.role = 'host'; S.phase = 'hostinput'; setHostUi(true); go('gameWrap'); applyMode(); show('hostBar', false);
+  $('roundInfo').textContent = `Runde ${H.round} / ${H.rounds}`; $('scoreInfo').textContent = ''; $('who').innerHTML = ''; show('evUi', false);
+  showRound(H.task, H.level); $('hostBtn').textContent = '▶ Auflösen'; show('hostBtn'); $('hostBtn').disabled = false; bUpdate();
+  clearInterval(TM); if (H.time){ show('tbar'); $('tbar').classList.remove('low'); TM = setInterval(bTick, 200); bTick(); } else { show('tbar', false); $('clock').textContent = ''; }
+}
+function bTick(){
+  if (H.phase !== 'input'){ clearInterval(TM); return; }
+  const rest = Math.max(0, H.time - (Date.now() - H.startAt) / 1000); $('tfill').style.width = (rest / H.time * 100) + '%'; $('tval').textContent = '⏱ ' + Math.ceil(rest) + ' s'; $('tbar').classList.toggle('low', rest < 6);
+}
+function bUpdate(){
+  if (H.phase !== 'input') return;
+  const ps = active(), done = ps.filter(p => p.sub).length;
+  $('hostInfo').innerHTML = `<b>${done} / ${ps.length}</b> haben geantwortet <span class="muted">· Code ${H.code}</span>`;
+  $('hostChips').innerHTML = ps.map(p => `<span class="pchip ${p.sub ? 'ok' : ''}"><span class="e">${esc(p.emoji)}</span>${esc(p.name)}</span>`).join('');
+}
+async function bReveal(m){
+  clearInterval(TM); const res = m.res; S.phase = 'reveal';
+  $('hostInfo').innerHTML = '🐭 …läuft los!'; $('hostChips').innerHTML = ''; show('hostBtn', false);
+  const crowd = res.length > 6, ok = await animateReveal(res, crowd ? 'crowd' : 'multi'); if (!ok || H.phase !== 'reveal') return;
+  const full = res.filter(p => p.r.xo && p.r.yo), xs = res.filter(p => p.r.xo).length, ys = res.filter(p => p.r.yo).length, T = m.task;
+  const fast = [...full].sort((a, b) => a.r.t - b.r.t)[0], errs = {}; res.forEach(p => { if (p.r.err !== 'ok') errs[p.r.err] = (errs[p.r.err] || 0) + 1; });
+  const top = Object.entries(errs).sort((a, b) => b[1] - a[1])[0], rank = [...res].sort((a, b) => b.total - a.total).slice(0, 5);
+  $('hostInfo').innerHTML = `<div class="msg"><span class="big">✓ ${full.length} von ${res.length} ganz richtig</span></div>
+    <div>x ✓ ${xs} · y ✓ ${ys}${fast ? ` · ⚡ ${esc(fast.emoji)} ${esc(fast.name)} (${fast.r.t.toFixed(1).replace('.', ',')} s)` : ''}</div>
+    ${top ? `<div>häufigster Fehler: ${top[1]}× ${ERR_SHORT[top[0]]}</div>` : ''}
+    <div class="muted" style="margin-top:.2em">${coord(T.x, T.y).replace('|', ' | ')}</div>`;
+  $('hostChips').innerHTML = rank.map((p, i) => `<span class="pchip"><b>${i + 1}.</b> <span class="e">${esc(p.emoji)}</span>${esc(p.name)} <b>${p.total}</b></span>`).join('');
+  $('hostBtn').textContent = H.round >= H.rounds ? 'Endstand 🏆' : 'Nächste Runde ▶'; show('hostBtn'); $('hostBtn').disabled = false;
+}
+$('hostBtn').onclick = () => { if (S.role === 'host') hAdvance(); };
+
+/* ---------- Spieler (Handy) ---------- */
+const C = {pid:'', name:'', emoji:'🦊', code:'', peer:null, conn:null, gen:0, retry:0, isCreator:false, color:'#e8590c', total:0};
+try { C.pid = localStorage.getItem('mauskaese-pid') || ''; if (!C.pid){ C.pid = 'p' + Math.random().toString(36).slice(2, 10); localStorage.setItem('mauskaese-pid', C.pid); } } catch(e){ C.pid = 'p' + Math.random().toString(36).slice(2, 10); }
+let me = {}; try { me = JSON.parse(localStorage.getItem('mauskaese-me') || '{}') || {}; } catch(e){}
+function netSend(m){ if (C.conn && C.conn.open) try { C.conn.send(m); } catch(e){} }
+function startJoin(code, create){
+  S.role = 'player'; C.isCreator = !!create; go('join');
+  $('jTitle').textContent = create ? '📱 Raum erstellen' : '🔑 Mitspielen'; show('jCode', !create); show('jCodeL', !create); $('jBtn').textContent = create ? 'Raum erstellen ▶' : 'Los ▶';
+  C.emoji = me.avatar || rnd(EMOJIS); $('jEmoji').textContent = C.emoji; $('jName').value = me.name || ''; $('jCode').value = code || ''; $('jMsg').textContent = '';
+  $('jBtn').disabled = false;
+  if (code && me.name && !create) setTimeout(joinNow, 300);
+}
+$('jEmoji').onclick = () => { C.emoji = EMOJIS[(EMOJIS.indexOf(C.emoji) + 1) % EMOJIS.length]; $('jEmoji').textContent = C.emoji; };
+$('jBack').onclick = () => location.replace(location.pathname);
+$('jBtn').onclick = () => C.isCreator ? createRoom() : joinNow();
+function saveMe(){ try { localStorage.setItem('mauskaese-me', JSON.stringify({name:C.name, avatar:C.emoji})); } catch(e){} }
+function joinNow(){
+  const code = $('jCode').value.trim().toUpperCase(), name = $('jName').value.trim();
+  if (code.length < 4){ $('jMsg').textContent = 'Bitte den Code eingeben.'; return; }
+  if (!name){ $('jMsg').textContent = 'Bitte einen Namen eingeben.'; return; }
+  C.name = name; C.code = code; saveMe(); $('jMsg').textContent = 'Verbinde …'; $('jBtn').disabled = true; ac(); C.retry = 0; pConnect();
+}
+function pConnect(){
+  const gen = ++C.gen; clearTimeout(C.retryTimer);
+  const old = C.peer; C.peer = null; C.conn = null; if (old){ try { old.destroy(); } catch(e){} }
+  const peer = new Peer(undefined, PEER_OPTS); C.peer = peer;
+  const retryLater = (ms, msg) => { if (gen !== C.gen) return; if (msg) netInfo(msg); C.retryTimer = setTimeout(() => { if (gen === C.gen) pConnect(); }, ms); };
+  peer.on('open', () => {
+    if (gen !== C.gen) return;
+    const conn = peer.connect(PREFIX + C.code, {reliable:true}); C.conn = conn;
+    conn.on('open', () => { if (gen !== C.gen) return; C.retry = 0; netInfo(''); conn.send({t:'hello', pid:C.pid, name:C.name, avatar:C.emoji, v:APP_VERSION}); });
+    conn.on('data', m => { if (gen === C.gen) pOnMsg(m); });
+    conn.on('close', () => retryLater(1500, 'Verbindung verloren – verbinde neu …'));
+    conn.on('error', () => retryLater(1500, 'Verbindung gestört – verbinde neu …'));
+  });
+  peer.on('error', err => {
+    if (gen !== C.gen) return;
+    if (err.type === 'peer-unavailable'){
+      if (S.screen === 'join'){ C.gen++; $('jMsg').textContent = 'Kein Spiel mit diesem Code gefunden.'; $('jBtn').disabled = false; } else retryLater(2500, 'Spiel nicht erreichbar – versuche erneut …');
+      return;
+    }
+    if (++C.retry >= 5){ netInfo('😕 Verbindung klappt nicht – WLAN prüfen und Seite neu laden.'); $('jBtn').disabled = false; return; }
+    retryLater(2000, '⚠️ Netzwerk: ' + err.type + ' – neuer Versuch …');
+  });
+}
+function showWait(text){
+  S.phase = 'wait'; S.tok++; clearInterval(TM); show('hostBar', false); document.body.classList.remove('hb');
+  $('wE').textContent = C.emoji; $('wN').textContent = C.name; $('wT').textContent = text; go('wait');
+}
+function pOnMsg(m){
+  if (!m || typeof m !== 'object') return;
+  if (m.t === 'welcome'){ C.name = m.name; C.emoji = m.emoji; C.color = m.color; }
+  else if (m.t === 'wait'){ show('intro', false); IT++; if (C.isCreator && H.room && H.phase === 'lobby') pShowRoom(); else showWait(m.text); }
+  else if (m.t === 'intro'){ if (!C.isCreator){ showWait('Gleich geht\'s los …'); openIntro(null); } }
+  else if (m.t === 'round') pRound(m);
+  else if (m.t === 'reveal') pReveal(m);
+  else if (m.t === 'end'){
+    S.phase = 'final'; S.tok++; clearInterval(TM); show('hostBar', false); document.body.classList.remove('hb'); show('intro', false); IT++; renderFinal(m.rank, m.rounds, C.pid);
+    if (C.isCreator && H.room) hFinalBtns();
+    else { $('finalBtns').innerHTML = '<div class="muted">Warte auf den nächsten Start …</div><button id="fMenu">🏠 Menü</button>'; $('fMenu').onclick = () => location.replace(location.pathname); }
+  }
+}
+function pRound(m){
+  show('intro', false); IT++; S.role = 'player'; S.help = m.help; S.limit = m.limit; S.rounds = m.rounds; S.round = m.n; S.tok++;
+  setHostUi(false); go('gameWrap'); applyMode(); show('nextBtn', false);
+  const hb = !!C.isCreator && H.room; show('hostBar', hb); document.body.classList.toggle('hb', hb);
+  $('roundInfo').textContent = `Runde ${m.n} / ${m.rounds}`; $('scoreInfo').textContent = '⭐ ' + (C.total || 0); $('who').innerHTML = '';
+  showRound(m.task, m.level); show('inUi'); show('evUi', false); $('tbar').classList.remove('low'); $('tfill').style.width = '100%';
+  resetInput(); S.phase = 'input'; S.t0 = performance.now() - (m.elapsed || 0) * 1000; startTimer(); renderFields();
+}
+function netSubmit(a, b){
+  if (S.phase !== 'input') return;
+  const t = (performance.now() - S.t0) / 1000; clearInterval(TM); S.phase = 'sent'; sDing(); if (GH){ GH.remove(); GH = null; }
+  netSend({t:'submit', x:a, y:b});
+  show('inUi', false); show('evUi'); show('nextBtn', false); $('resT').innerHTML = ''; $('evRank').textContent = '';
+  $('evMsg').innerHTML = `<span class="big">✓ Abgegeben</span>${mfix(plain(coord(a, b)))} · ${t.toFixed(1).replace('.', ',')} s<br><span class="muted">Warte auf die anderen …</span>`;
+}
+async function pReveal(m){
+  S.phase = 'reveal'; S.tok++; clearInterval(TM); S.task = m.task;
+  const mine = m.res.find(r => r.pid === C.pid); if (mine) C.total = mine.total;
+  if (S.screen !== 'gameWrap'){ setHostUi(false); go('gameWrap'); applyMode(); showRound(m.task, S.level); }
+  show('inUi', false); show('evUi'); show('nextBtn', false); $('resT').innerHTML = ''; $('evRank').textContent = ''; $('evMsg').innerHTML = '🐭 …läuft los!';
+  const ok = await animateReveal(mine ? [mine] : [], 'solo'); if (!ok) return;
+  const r = mine ? mine.r : NONE_R(0), sorted = [...m.res].sort((a, b) => b.total - a.total), place = sorted.findIndex(x => x.pid === C.pid) + 1;
+  $('evMsg').innerHTML = feedback(r, m.task);
+  $('resT').innerHTML = mine ? resRows([mine], false) : '';
+  $('evRank').innerHTML = mine ? `Platz ${place} von ${sorted.length} · ${mine.total} P` : '';
+  $('scoreInfo').textContent = '⭐ ' + (C.total || 0);
+  if (!(C.isCreator && H.room)) $('evMsg').innerHTML += `<br><span class="muted">${m.round >= m.rounds ? 'gleich kommt der Endstand …' : 'gleich geht es weiter …'}</span>`;
+}
+/* ---------- Nur Handys: Raum erstellen (Host läuft auf diesem Handy) ---------- */
+let wakeLock = null;
+async function keepAwake(){ try { if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); } catch(e){} }
+document.addEventListener('visibilitychange', () => { if (H.room && document.visibilityState === 'visible') keepAwake(); });
+function createRoom(){
+  const name = $('jName').value.trim(); if (!name){ $('jMsg').textContent = 'Bitte einen Namen eingeben.'; return; }
+  C.name = name; saveMe(); ac(); $('jBtn').disabled = true; $('jMsg').textContent = 'Raum wird erstellt …';
+  H.room = true; H.creatorPid = C.pid; S.role = 'player';
+  H.onReady = () => {
+    const hostSide = {open:true, send: m => setTimeout(() => pOnMsg(m), 0)};              // Host → Spieler (gleiches Gerät)
+    C.conn = {open:true, send: m => setTimeout(() => hOnMsg(hostSide, m), 0)};              // Spieler → Host
+    C.conn.send({t:'hello', pid:C.pid, name:C.name, avatar:C.emoji, v:APP_VERSION}); keepAwake(); pShowRoom();
+  };
+  lobbyChips(); hOpenPeer();
+}
+function pShowRoom(){ S.role = 'player'; go('hLobby'); show('lShare', true); show('hostBar', false); document.body.classList.remove('hb'); hRender(); }
+$('lShare').onclick = async () => { const url = H.url; try { if (navigator.share){ await navigator.share({title:'Maus & Käse', text:'Spiel mit! Code: ' + H.code, url}); return; } } catch(e){ return; }
+  try { await navigator.clipboard.writeText(url); toast('Link kopiert ✓'); } catch(e){ prompt('Link kopieren:', url); } };
+$('hbNext').onclick = () => { if (H.room) hAdvance(); };
+$('hbEnd').onclick = () => { if (H.room && H.phase !== 'end' && confirm('Spiel jetzt beenden?')) hEnd(); };
+
+/* ================= Start ================= */
+$('mA').onclick = () => { ac(); S.role = 'local'; go('setup'); renderSetup(); };
+$('mB').onclick = () => { ac(); startBeamer(); };
+$('mC').onclick = () => { ac(); startJoin('', true); };
+$('hJoin').onclick = () => { ac(); startJoin('', false); };
+$('backA').onclick = () => go('home'); $('lBack').onclick = () => location.replace(location.pathname);
+$('startA').onclick = () => { ac(); startLocal(); };
+$('lStart').onclick = () => { if (H.phase === 'lobby' && active().length) hStart(); };
+$('quitBtn').onclick = () => { if (!confirm('Spiel beenden?')) return; if (S.role === 'local'){ S.tok++; clearInterval(TM); S.phase = 'setup'; go('setup'); renderSetup(); } else location.replace(location.pathname); };
+$('modeBtn').onclick = () => { const cur = document.body.classList.contains('m-beamer') ? 'beamer' : 'phone'; S.mode = cur === 'beamer' ? 'phone' : 'beamer'; applyMode(); };
+setupFs($('hFs')); setupFs($('lFs'));
+['gesturestart', 'gesturechange'].forEach(t => document.addEventListener(t, e => e.preventDefault(), {passive:false}));
+if (typeof Peer === 'undefined'){ $('mB').disabled = true; $('mC').disabled = true; $('hJoin').disabled = true; }
+BD = Board($('board')); buildPad(); applyMode(); go('home');
+if (Q.get('debug')) window.__dbg = {S, H, C, makeTask, classify, press, fval, ISTEPS, iGo, hStart, hAdvance};
+if (Q.get('join') !== null) startJoin(Q.get('join'), false);
+else if (Q.get('host') !== null) startBeamer();
 })();
 </script>
 </body>
