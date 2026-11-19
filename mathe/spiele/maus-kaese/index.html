@@ -10,7 +10,7 @@
 :root{--ink:#1e1e1e;--muted:#5f5f5f;--paper:#fbfaf5;--grid:#dbe7f3;--gold:#ffe066;--green:#8ce99a;--xc:#1864ab;--yc:#d9480f}
 *{box-sizing:border-box}
 html,body{margin:0;min-height:100%}
-body{color:var(--ink);font-family:"Shantell Sans","Comic Sans MS",cursive;font-size:17px;background-color:var(--paper);
+body{--bh:calc(100dvh - 18px);color:var(--ink);font-family:"Shantell Sans","Comic Sans MS",cursive;font-size:17px;background-color:var(--paper);
   background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:26px 26px;-webkit-text-size-adjust:100%}
 body.m-beamer{font-size:clamp(19px,1.5vw,32px)}
 body.m-phone{font-size:16px}
@@ -67,10 +67,13 @@ label.l{display:block;font-size:.92em;color:var(--muted);margin-top:8px}
 #game{max-width:1900px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(17em,23em);gap:12px;align-items:start}
 .boardbox{display:flex;justify-content:center}
 .bsvg{display:block;height:auto;background:rgba(255,255,255,.7);border-radius:10px;user-select:none;-webkit-user-select:none}
-#board{width:min(100%,calc(100dvh - 18px))}
+#board{width:min(100%,calc(var(--bh) * var(--asp,1)))}
+.boardbox{align-self:center}
+@media (min-width:761px) and (orientation:landscape){#game{min-height:calc(100dvh - 16px);align-items:center}}
+.single .fld{max-width:15em}
 .side{display:flex;flex-direction:column;gap:.55em}
 .head,.inp,.evl{padding:.5em .65em;display:flex;flex-direction:column;gap:.45em}
-.topline{display:flex;align-items:center;gap:6px}
+.topline{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .topline .sp{flex:1}
 .topline .ri{font-weight:700;white-space:nowrap}
 .task{text-align:center}
@@ -131,8 +134,7 @@ body.hb #gameWrap{padding-bottom:4em}
   .head{order:1;padding:.35em .6em;gap:.25em}
   .boardbox{order:2}
   .inp,.evl{order:3;padding:.4em .6em;gap:.35em}
-  #board{width:min(100%,calc(100dvh - 22em))}
-  body.m-beamer #board{width:100%}
+  body{--bh:calc(100dvh - 22em)}
   .task .q{font-size:1.1em}
   .tbar{margin-top:.2em}
   .fv{height:2em;font-size:1.6em}
@@ -142,7 +144,7 @@ body.hb #gameWrap{padding-bottom:4em}
   .pad button{height:1.65em;font-size:1.3em}
 }
 @media (max-height:700px) and (max-width:760px){
-  #board{width:min(100%,calc(100dvh - 20em))}
+  body{--bh:calc(100dvh - 20em)}
   .pad button{height:1.5em}
   .fv{height:1.85em}
 }
@@ -172,7 +174,7 @@ body.hb #gameWrap{padding-bottom:4em}
 .itop{width:100%;display:flex;justify-content:flex-end}
 #iCap{font-size:2.2em;font-weight:700;text-align:center;line-height:1.15;min-height:1.3em;padding:0 .3em}
 .ibox{flex:1;display:flex;justify-content:center;align-items:center;min-height:0;width:100%}
-#introSvg{width:min(100%,calc(100dvh - 10.5em))}
+#introSvg{width:min(100%,calc((100dvh - 10.5em) * var(--asp,1)))}
 .inav{width:min(60em,100%);display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:.3em}
 .inav button{font-size:1.15em}
 .dots{display:flex;gap:7px;flex-wrap:wrap;justify-content:center}
@@ -180,7 +182,7 @@ body.hb #gameWrap{padding-bottom:4em}
 .dots i.on{background:var(--gold);transform:scale(1.3)}
 @media (orientation:portrait),(max-width:760px){
   #iCap{font-size:1.5em}
-  #introSvg{width:min(100%,calc(100dvh - 12em))}
+  #introSvg{width:min(100%,calc((100dvh - 12em) * var(--asp,1)))}
 }
 </style>
 </head>
@@ -209,8 +211,9 @@ body.hb #gameWrap{padding-bottom:4em}
     <div id="plist"></div>
     <button class="chip" id="addP">＋ Spieler</button>
     <div class="opts">
+      <div><label class="l">Stufe</label><div class="row" id="optStage"></div></div>
       <div><label class="l">Zahlenraum</label><div class="row" id="optLevel"></div></div>
-      <div><label class="l">Runden</label><div class="row" id="optRounds"></div></div>
+      <div><label class="l">Runden pro Stufe</label><div class="row" id="optRounds"></div></div>
       <div><label class="l">Hilfe</label><div class="row" id="optHelp"></div></div>
       <div><label class="l">Erklärung vorab</label><div class="row" id="optIntro"></div></div>
     </div>
@@ -233,8 +236,9 @@ body.hb #gameWrap{padding-bottom:4em}
       <div>Dabei: <b id="hCount">0</b></div>
       <div class="plist" id="hList"></div>
       <div class="opts">
+        <div><label class="l">Stufe</label><div class="row" id="lStage"></div></div>
         <div><label class="l">Zahlenraum</label><div class="row" id="lLevel"></div></div>
-        <div><label class="l">Runden</label><div class="row" id="lRounds"></div></div>
+        <div><label class="l">Runden pro Stufe</label><div class="row" id="lRounds"></div></div>
         <div><label class="l">Zeit pro Runde</label><div class="row" id="lTime"></div></div>
         <div><label class="l">Nach der Auflösung</label><div class="row" id="lAuto"></div></div>
         <div><label class="l">Hilfe</label><div class="row" id="lHelp"></div></div>
@@ -277,7 +281,7 @@ body.hb #gameWrap{padding-bottom:4em}
         </div>
         <div class="task">
           <div class="who" id="who"></div>
-          <div class="q">Wo liegt der Käse 🧀?</div>
+          <div class="q">Maus 🐭 → Käse 🧀 – wie weit?</div>
           <div class="tbar" id="tbar"><div class="tfill" id="tfill"></div><span id="tval">⚡ +20</span></div>
         </div>
       </div>
@@ -362,16 +366,18 @@ const sLow = () => { tone(300, .25, 'triangle', .1); tone(220, .4, 'triangle', .
 const sBlip = () => tone(1200, .08, 'sine', .08);
 
 /* ---------- Zahlenräume (immer 1, 2, 3 … – jede Zahl beschriftet) ---------- */
-const CFG = {'1':{lim:3, min:2}, '2':{lim:5, min:3}, '3':{lim:8, min:4}};
-const LEVEL_LBL = [['1', '① klein <small>(−3 … 3)</small>'], ['2', '② mittel <small>(−5 … 5)</small>'], ['3', '③ groß <small>(−8 … 8)</small>']];
+const CFG = {'1':{lim:3, line:5, min:3}, '2':{lim:5, line:7, min:4}, '3':{lim:8, line:9, min:5}};
+const LEVEL_LBL = [['1', '① klein'], ['2', '② mittel'], ['3', '③ groß']];
+const STAGE_LBL = [['auto', '🔁 Auto: x → y → System'], ['x', '↔ nur x'], ['y', '↕ nur y'], ['xy', '✛ System']];
+const STG = {x:'x-Achse', y:'y-Achse', xy:'Koordinatensystem'};
 const EMOJIS = ['🦊','🐼','🐸','🦄','🐯','🐨','🐙','🦉','🐢','🐝','🦁','🐵','🚀','⚽','🌵','🍕','🎸','🦖','🐱','🐶','🦋','🐬','🍩','🎮'];
 const COLORS = ['#e8590c','#1971c2','#2f9e44','#ae3ec9','#c2255c','#0c8599','#f08c00','#5f3dc4','#d6336c','#364fc7'];
 const PCOL = ['#ff4d6d','#4dabf7','#51cf66','#cc5de8','#22d3ee','#748ffc','#f783ac','#94d82d','#9775fa','#20c997','#1c7ed6','#63e6be'];
 
 /* ---------- Zustand ---------- */
-const S = {role:'local', players:[], level:'2', rounds:10, help:'1', mode:'auto', intro:'1', round:0, turn:0, task:null, phase:'home', screen:'home', tok:0, lastQ:[], last:null, t0:0, limit:0};
+const S = {role:'local', players:[], level:'2', rounds:10, help:'1', mode:'auto', intro:'1', stage:'auto', sl:['xy'], si:0, round:0, turn:0, task:null, phase:'home', screen:'home', tok:0, lastQ:[], last:null, t0:0, limit:0};
 const KEY = 'mauskaese-setup2';
-try { const sv = JSON.parse(localStorage.getItem(KEY) || 'null'); if (sv) Object.assign(S, {players:sv.players || [], level:sv.level || '2', rounds:sv.rounds || 10, help:sv.help ?? '1', intro:sv.intro ?? '1'}); } catch(e){}
+try { const sv = JSON.parse(localStorage.getItem(KEY) || 'null'); if (sv) Object.assign(S, {players:sv.players || [], level:sv.level || '2', rounds:sv.rounds || 10, help:sv.help ?? '1', intro:sv.intro ?? '1', stage:sv.stage || 'auto'}); } catch(e){}
 if (!S.players.length) S.players = [{name:'', emoji:'🦊'}];
 
 /* ---------- Anzeige: Beamer / Handy ---------- */
@@ -399,50 +405,65 @@ function chipRow(id, list, get, set){
     b.onclick = () => { set(v); chipRow(id, list, get, set); }; row.appendChild(b); });
 }
 
-/* ================= Koordinatensystem (Brett) =================
-   Quadratisch −lim … lim, Raster immer in Einerschritten. Maus wohnt im Nullpunkt (Mausloch). */
+/* ================= Brett: Koordinatensystem oder Zahlenstrahl =================
+   mode 'xy' = Koordinatensystem, 'x' = waagerechter Zahlenstrahl, 'y' = senkrechter. Raster immer in Einerschritten. */
 function Board(svg){
-  const B = {svg, lim:5, o:{lim:5}, U:50, PAD:1.3, k:1, px:16};
+  const B = {svg, lim:5, o:{lim:5, mode:'xy'}, U:50, PAD:1.3, k:1, px:16, mode:'xy', ox:0, oy:0, lx:0, ly:0};
   const bg = el('g', {}, svg), dyn = el('g', {}, svg); B.dyn = dyn;
-  B.X = x => (x + B.lim + B.PAD) * B.U; B.Y = y => (B.lim - y + B.PAD) * B.U;
+  B.X = x => B.ox + x * B.U + B.lx; B.Y = y => B.oy - y * B.U + B.ly;      // Figuren (bei Zahlenstrahl etwas neben der Linie)
+  B.AX = x => B.ox + x * B.U; B.AY = y => B.oy - y * B.U;                    // Achsenpunkte
   B.fs = n => n * B.k; B.sw = n => n * B.k;
   B.esz = () => Math.max(B.U * .9, B.fs(22));
   B.draw = o => {
-    Object.assign(B.o, o); const lim = B.o.lim; B.lim = lim;
-    const W = (2 * lim + 2 * B.PAD) * B.U; B.W = W; svg.setAttribute('viewBox', `0 0 ${W} ${W}`);
+    Object.assign(B.o, o); const lim = B.o.lim, mode = B.o.mode || 'xy', U = B.U; B.lim = lim; B.mode = mode;
+    const span = (2 * lim + 2 * B.PAD) * U; let W, H;
+    if (mode === 'xy'){ W = H = span; B.ox = B.oy = span / 2; B.lx = B.ly = 0; }
+    else if (mode === 'x'){ W = span; H = 3.8 * U; B.ox = span / 2; B.oy = 2.5 * U; B.lx = 0; B.ly = -.8 * U; }
+    else { W = 5 * U; H = span; B.ox = 2 * U; B.oy = span / 2; B.lx = .85 * U; B.ly = 0; }
+    B.W = W; B.H = H; svg.setAttribute('viewBox', `0 0 ${W} ${H}`); svg.style.setProperty('--asp', W / H);
     const cw = svg.getBoundingClientRect().width || 600; B.k = W / cw;
-    const px = B.o.px || (document.body.classList.contains('m-beamer') ? 21 : 15), fs = B.fs, sw = B.sw, X = B.X, Y = B.Y; B.px = px;
+    const beam = document.body.classList.contains('m-beamer'), base = B.o.px || (beam ? 21 : 15), px = mode === 'xy' ? base : base * (beam ? 1.3 : .82); B.px = px;
+    const fs = B.fs, sw = B.sw, X = B.AX, Y = B.AY;
     bg.innerHTML = ''; const rc = rough.svg(svg); let seed = 11;
     const ro = (w, c) => ({roughness:.5, bowing:.5, stroke:c || '#1e1e1e', strokeWidth:sw(w), seed:seed++});
     const tx = (x, y, t, c, size, anchor, halo) => { const e = el('text', {x, y, 'font-family':'Shantell Sans, Comic Sans MS, cursive', 'font-size':fs(size), fill:c, 'text-anchor':anchor || 'middle', 'font-weight':700}, bg);
       if (halo){ e.setAttribute('paint-order', 'stroke'); e.setAttribute('stroke', '#fff'); e.setAttribute('stroke-width', fs(4)); e.setAttribute('stroke-linejoin', 'round'); } setT(e, t); return e; };
-    const XC = '#1864ab', YC = '#d9480f';
+    const XC = '#1864ab', YC = '#d9480f', GC = '#a5c8ea';
     for (let v = -lim; v <= lim; v++){
-      el('line', {x1:X(v), y1:Y(-lim), x2:X(v), y2:Y(lim), stroke:'#a5c8ea', 'stroke-width':sw(1.3)}, bg);
-      el('line', {x1:X(-lim), y1:Y(v), x2:X(lim), y2:Y(v), stroke:'#a5c8ea', 'stroke-width':sw(1.3)}, bg);
+      if (mode === 'xy'){
+        el('line', {x1:X(v), y1:Y(-lim), x2:X(v), y2:Y(lim), stroke:GC, 'stroke-width':sw(1.3)}, bg);
+        el('line', {x1:X(-lim), y1:Y(v), x2:X(lim), y2:Y(v), stroke:GC, 'stroke-width':sw(1.3)}, bg);
+      } else if (mode === 'x') el('line', {x1:X(v), y1:.15 * U, x2:X(v), y2:H - .15 * U, stroke:GC, 'stroke-width':sw(1.3)}, bg);
+      else el('line', {x1:.15 * U, y1:Y(v), x2:W - .15 * U, y2:Y(v), stroke:GC, 'stroke-width':sw(1.3)}, bg);
     }
-    const tip = B.U * .7;
-    bg.appendChild(rc.line(X(-lim) - B.U * .45, Y(0), X(lim) + tip, Y(0), ro(3, XC)));
-    bg.appendChild(rc.line(X(0), Y(-lim) + B.U * .45, X(0), Y(lim) - tip, ro(3, YC)));
-    bg.appendChild(rc.linearPath([[X(lim) + tip - sw(11), Y(0) - sw(8)], [X(lim) + tip, Y(0)], [X(lim) + tip - sw(11), Y(0) + sw(8)]], ro(3, XC)));
-    bg.appendChild(rc.linearPath([[X(0) - sw(8), Y(lim) - tip + sw(11)], [X(0), Y(lim) - tip], [X(0) + sw(8), Y(lim) - tip + sw(11)]], ro(3, YC)));
+    const tip = U * .7;
+    if (mode !== 'y'){
+      bg.appendChild(rc.line(X(-lim) - U * .45, Y(0), X(lim) + tip, Y(0), ro(3, XC)));
+      bg.appendChild(rc.linearPath([[X(lim) + tip - sw(11), Y(0) - sw(8)], [X(lim) + tip, Y(0)], [X(lim) + tip - sw(11), Y(0) + sw(8)]], ro(3, XC)));
+      tx(X(lim) + U * 1.0, Y(0) + fs(px * .4), 'x', XC, px + 6);
+    }
+    if (mode !== 'x'){
+      bg.appendChild(rc.line(X(0), Y(-lim) + U * .45, X(0), Y(lim) - tip, ro(3, YC)));
+      bg.appendChild(rc.linearPath([[X(0) - sw(8), Y(lim) - tip + sw(11)], [X(0), Y(lim) - tip], [X(0) + sw(8), Y(lim) - tip + sw(11)]], ro(3, YC)));
+      tx(X(0), Y(lim) - U * .85, 'y', YC, px + 6);
+    }
     for (let v = -lim; v <= lim; v++){
-      if (v === 0) continue;
-      bg.appendChild(rc.line(X(v), Y(0) - sw(5), X(v), Y(0) + sw(5), ro(1.8, XC)));
-      bg.appendChild(rc.line(X(0) - sw(5), Y(v), X(0) + sw(5), Y(v), ro(1.8, YC)));
-      tx(X(v), Y(0) + sw(8) + fs(px * .95), (v < 0 ? '−' : '') + Math.abs(v), XC, px, 'middle', true);
-      tx(X(0) - sw(10), Y(v) + fs(px * .34), (v < 0 ? '−' : '') + Math.abs(v), YC, px, 'end', true);
+      if (v === 0 && mode === 'xy') continue;
+      const t = (v < 0 ? '−' : '') + Math.abs(v);
+      if (mode !== 'y'){ if (v) bg.appendChild(rc.line(X(v), Y(0) - sw(5), X(v), Y(0) + sw(5), ro(1.8, XC))); tx(X(v), Y(0) + sw(8) + fs(px * .95), t, XC, px, 'middle', true); }
+      if (mode !== 'x'){ if (v) bg.appendChild(rc.line(X(0) - sw(5), Y(v), X(0) + sw(5), Y(v), ro(1.8, YC))); if (mode === 'y' || v) tx(X(0) - sw(10), Y(v) + fs(px * .34), t, YC, px, 'end', true); }
     }
-    bg.appendChild(rc.ellipse(X(0), Y(0), B.U * .8, B.U * .48, {fill:'#3b3b3b', fillStyle:'solid', stroke:'#1e1e1e', strokeWidth:sw(2), roughness:.6, seed:3}));
-    tx(X(0) + sw(10), Y(0) + fs(px + 12), '0', '#333', px, 'start', true);
-    tx(X(lim) + B.U * 1.0, Y(0) + fs(px * .4), 'x', XC, px + 6);
-    tx(X(0), Y(lim) - B.U * .85, 'y', YC, px + 6);
-    if (B.o.names !== false){            // knappe Zeichen: links/rechts, oben/unten
+    if (mode === 'xy') tx(X(0) + sw(10), Y(0) + fs(px + 12), '0', '#333', px, 'start', true);
+    if (B.o.names !== false){
       const p2 = px * .72;
-      tx(X(-lim) + sw(6), Y(0) - sw(9), '← links −', XC, p2, 'start', true);
-      tx(X(lim) - sw(6), Y(0) - sw(9), '+ rechts →', XC, p2, 'end', true);
-      tx(X(0) + sw(13), Y(lim) + fs(p2 * .95), '↑ oben +', YC, p2, 'start', true);
-      tx(X(0) + sw(13), Y(-lim) - sw(6), '↓ unten −', YC, p2, 'start', true);
+      if (mode === 'xy'){
+        tx(X(-lim) + sw(6), Y(0) - sw(9), '← links −', XC, p2, 'start', true); tx(X(lim) - sw(6), Y(0) - sw(9), '+ rechts →', XC, p2, 'end', true);
+        tx(X(0) + sw(13), Y(lim) + fs(p2 * .95), '↑ oben +', YC, p2, 'start', true); tx(X(0) + sw(13), Y(-lim) - sw(6), '↓ unten −', YC, p2, 'start', true);
+      } else if (mode === 'x'){
+        tx(X(-lim) - U * .3, Y(0) - U * 1.75, '← links −', XC, p2 * 1.15, 'start'); tx(X(lim) + U * .3, Y(0) - U * 1.75, '+ rechts →', XC, p2 * 1.15, 'end');
+      } else {
+        tx(W - sw(6), Y(lim) + fs(p2), '↑ oben +', YC, p2 * 1.1, 'end'); tx(W - sw(6), Y(-lim) - sw(2), '↓ unten −', YC, p2 * 1.1, 'end');
+      }
     }
   };
   return B;
@@ -464,62 +485,95 @@ function burst(B, parent, x, y){
   return tween(900, e => items.forEach(it => { const r = e * B.U * 1.6; it.t.setAttribute('x', B.X(x) + Math.cos(it.a) * r); it.t.setAttribute('y', B.Y(y) + Math.sin(it.a) * r); it.t.setAttribute('opacity', 1 - e * e); }), u => u).then(() => items.forEach(it => it.t.remove()));
 }
 
-/* ---------- Aufgaben & Wertung ---------- */
+/* ---------- Aufgaben & Wertung ----------
+   Task: Maus startet bei (sx|sy), Käse liegt bei (cx|cy). Gefragt ist der WEG: x = cx − sx, y = cy − sy (wie bei der Temperatur: von 8 zu −3 → −11). */
 const quad = (x, y) => (x < 0 ? 'L' : x > 0 ? 'R' : 'A') + (y < 0 ? 'U' : y > 0 ? 'O' : 'A');
-function makeTask(level, mem){
-  const c = CFG[level], vals = []; for (let v = -c.lim; v <= c.lim; v++) vals.push(v);
+function makeTask(level, mem, axes = 'xy'){
+  const c = CFG[level], R = axes === 'xy' ? c.lim : c.line, vals = []; for (let v = -R; v <= R; v++) vals.push(v);
   mem.lastQ = mem.lastQ || [];
-  for (let tries = 0; tries < 800; tries++){
-    const x = rnd(vals), y = rnd(vals);
-    if (Math.random() < .88 && x >= 0 && y >= 0) continue;                       // meist ins Minus
-    if (Math.abs(x) + Math.abs(y) < c.min) continue;
-    if ((x === 0 || y === 0) && Math.random() > .13) continue;                   // Achsenpunkte seltener
-    const q = quad(x, y); if (mem.lastQ.length >= 2 && mem.lastQ.every(z => z === q)) continue;
-    if (mem.last && mem.last.x === x && mem.last.y === y) continue;
-    mem.lastQ.push(q); if (mem.lastQ.length > 2) mem.lastQ.shift(); mem.last = {x, y}; return {x, y};
+  for (let tries = 0; tries < 1500; tries++){
+    let sx = 0, sy = 0, cx = 0, cy = 0;
+    if (axes !== 'y'){ sx = rnd(vals); cx = rnd(vals); }
+    if (axes !== 'x'){ sy = rnd(vals); cy = rnd(vals); }
+    const dx = cx - sx, dy = cy - sy, t = {axes, sx, sy, cx, cy, x:dx, y:dy};
+    if (mem.last && ['sx', 'sy', 'cx', 'cy'].every(k => mem.last[k] === t[k])) continue;
+    if (mem.last && mem.last.x === dx && mem.last.y === dy) continue;
+    if (axes === 'xy'){
+      if (Math.abs(dx) + Math.abs(dy) < c.min) continue;
+      if ((dx === 0 || dy === 0) && Math.random() > .13) continue;
+      if (dx >= 0 && dy >= 0 && Math.random() < .75) continue;                  // meist ins Minus
+      const q = quad(dx, dy); if (mem.lastQ.length >= 2 && mem.lastQ.every(z => z === q)) continue;
+      mem.lastQ.push(q); if (mem.lastQ.length > 2) mem.lastQ.shift();
+    } else {
+      const d = axes === 'x' ? dx : dy, st = axes === 'x' ? sx : sy, en = axes === 'x' ? cx : cy;
+      if (Math.abs(d) < 2) continue;
+      if (d > 0 && Math.random() < .55) continue;
+      if (st >= 0 && en >= 0 && Math.random() < .5) continue;                   // oft über/ins Minus
+    }
+    mem.last = t; return t;
   }
-  return {x:-2, y:-1};
+  return {axes, sx:axes === 'y' ? 0 : 2, sy:axes === 'x' ? 0 : 1, cx:axes === 'y' ? 0 : -2, cy:axes === 'x' ? 0 : -3, x:axes === 'y' ? 0 : -4, y:axes === 'x' ? 0 : -4};
 }
-function classify(a, b, x, y){
-  if (a === null || b === null) return 'none';
-  const xo = a === x, yo = b === y; if (xo && yo) return 'ok';
-  if (a === y && b === x) return 'swap';
-  if (!xo && x !== 0 && a === -x && yo) return 'sx';
-  if (!yo && y !== 0 && b === -y && xo) return 'sy';
-  if (!xo && !yo && x !== 0 && y !== 0 && a === -x && b === -y) return 'sb';
-  return xo ? 'y' : yo ? 'x' : 'both';
+function classify(T, a, b){
+  const ax = T.axes, nx = ax !== 'y', ny = ax !== 'x';
+  if ((nx && a === null) || (ny && b === null)) return 'none';
+  const xo = !nx || a === T.x, yo = !ny || b === T.y; if (xo && yo) return 'ok';
+  if (ax === 'xy' && a === T.y && b === T.x) return 'swap';
+  const sg = (v, t) => t !== 0 && v === -t, ab = (v, c, s) => s !== 0 && v === c;
+  const ex = !xo ? (sg(a, T.x) ? 'sx' : ab(a, T.cx, T.sx) ? 'ax' : 'x') : null, ey = !yo ? (sg(b, T.y) ? 'sy' : ab(b, T.cy, T.sy) ? 'ay' : 'y') : null;
+  if (ex && ey) return ex === 'sx' && ey === 'sy' ? 'sb' : 'both';
+  return ex || ey;
 }
 function scoreAnswer(T, a, b, t){
-  const xo = a === T.x, yo = b === T.y, px = xo ? 40 : 0, py = yo ? 40 : 0, pt = xo && yo ? Math.round(20 * lin(t, 4, 16)) : 0;
-  return {xo, yo, px, py, pt, pts:px + py + pt, err:classify(a, b, T.x, T.y), t};
+  const ax = T.axes, xo = ax === 'y' ? true : a === T.x, yo = ax === 'x' ? true : b === T.y, m = ax === 'xy' ? 40 : 80;
+  const px = ax === 'y' ? 0 : xo ? m : 0, py = ax === 'x' ? 0 : yo ? m : 0, pt = xo && yo ? Math.round(20 * lin(t, 4, 16)) : 0;
+  return {xo, yo, px, py, pt, pts:px + py + pt, err:classify(T, a, b), t};
 }
 const NONE_R = t => ({xo:false, yo:false, px:0, py:0, pt:0, pts:0, err:'none', t});
-const ERR_SHORT = {swap:'x und y vertauscht', sx:'Vorzeichen bei x', sy:'Vorzeichen bei y', sb:'beide Vorzeichen', x:'x falsch', y:'y falsch', both:'x und y falsch', none:'keine Antwort'};
+const ERR_SHORT = {swap:'x und y vertauscht', sx:'Vorzeichen bei x', sy:'Vorzeichen bei y', sb:'beide Vorzeichen', ax:'Ziel statt Weg (x)', ay:'Ziel statt Weg (y)', x:'x falsch', y:'y falsch', both:'x und y falsch', none:'keine Antwort'};
 const stepX = x => x === 0 ? 'gar nicht nach links/rechts' : `${Math.abs(x)} nach ${x < 0 ? 'links ←' : 'rechts →'}`;
 const stepY = y => y === 0 ? 'gar nicht nach oben/unten' : `${Math.abs(y)} nach ${y < 0 ? 'unten ↓' : 'oben ↑'}`;
-const newStats = () => ({x:0, y:0, full:0, n:0, tsum:0, swap:0, sx:0, sy:0});
-function addStats(st, r){ st.n++; if (r.xo) st.x++; if (r.yo) st.y++; if (r.xo && r.yo){ st.full++; st.tsum += r.t; } if (r.err === 'swap') st.swap++; if (r.err === 'sx') st.sx++; if (r.err === 'sy') st.sy++; if (r.err === 'sb'){ st.sx++; st.sy++; } }
+const newStats = () => ({x:0, y:0, nx:0, ny:0, full:0, n:0, tsum:0, swap:0, sx:0, sy:0, abs:0});
+function addStats(st, r, ax){ st.n++; if (ax !== 'y'){ st.nx++; if (r.xo) st.x++; } if (ax !== 'x'){ st.ny++; if (r.yo) st.y++; }
+  if (r.xo && r.yo){ st.full++; st.tsum += r.t; } if (r.err === 'swap') st.swap++; if (r.err === 'sx') st.sx++; if (r.err === 'sy') st.sy++; if (r.err === 'sb'){ st.sx++; st.sy++; } if (r.err === 'ax' || r.err === 'ay') st.abs++; }
+const ansTxt = (T, g) => T.axes === 'x' ? num(g.x) : T.axes === 'y' ? num(g.y) : coord(g.x, g.y);
+const ansPlain = (T, g) => plain(ansTxt(T, g));
+function solText(T){
+  const part = a => { const s = a === 'x' ? T.sx : T.sy, c = a === 'x' ? T.cx : T.cy, d = a === 'x' ? T.x : T.y;
+    return `<span class="${a === 'x' ? 'xc' : 'yc'}"><b>${a}</b>: von ${num(s)} zu ${num(c)} = ${a === 'x' ? stepX(d) : stepY(d)} → <b>${d > 0 ? '+' : ''}${num(d)}</b></span>`; };
+  return mfix(T.axes === 'x' ? part('x') : T.axes === 'y' ? part('y') : part('x') + '<br>' + part('y'));
+}
 function feedback(r, T){
-  const sol = `Richtig: <b>${coord(T.x, T.y)}</b> → <span class="xc">${mfix(stepX(T.x))}</span>, dann <span class="yc">${mfix(stepY(T.y))}</span>.`;
+  const sol = `Richtig:<br>${solText(T)}`, one = T.axes !== 'xy';
   if (r.err === 'ok') return `<span class="big">${rnd(['🧀 Käse gefangen!', '🧀 Mmh, lecker!', '🧀 Treffer!', '🧀 Volltreffer!'])}</span>${r.pt >= 16 ? '⚡ Blitzschnell!' : r.pt >= 8 ? 'Schön flott.' : 'Richtig – nächstes Mal schneller?'}`;
   if (r.err === 'none') return `<span class="big">Keine Antwort</span>${sol}`;
+  const dirX = T.x < 0 ? 'links → Minus (−)' : 'rechts → Plus (+)', dirY = T.y < 0 ? 'unten → Minus (−)' : 'oben → Plus (+)';
   const m = {
     swap: `<b>x und y vertauscht.</b> Erst x (←→), dann y (↑↓).`,
-    sx: `<b>Vorzeichen bei x:</b> Der Käse liegt ${T.x < 0 ? 'links → Minus (−)' : 'rechts → Plus (+)'}.`,
-    sy: `<b>Vorzeichen bei y:</b> Der Käse liegt ${T.y < 0 ? 'unten → Minus (−)' : 'oben → Plus (+)'}.`,
+    sx: `<b>Vorzeichen:</b> Die Maus muss nach ${dirX}.`, sy: `<b>Vorzeichen:</b> Die Maus muss nach ${dirY}.`,
     sb: `<b>Beide Vorzeichen verdreht:</b> ${T.x < 0 ? 'links (−)' : 'rechts (+)'} und ${T.y < 0 ? 'unten (−)' : 'oben (+)'}.`,
-    x: `<b>x stimmt nicht</b> – y war richtig.`, y: `<b>y stimmt nicht</b> – x war richtig.`, both: `<b>Leider kein Käse.</b>`
+    ax: `<b>Das ist die Zielzahl.</b> Gefragt ist der Weg: Ziel − Start.`, ay: `<b>Das ist die Zielzahl.</b> Gefragt ist der Weg: Ziel − Start.`,
+    x: one ? `<b>Leider daneben.</b>` : `<b>x stimmt nicht</b> – y war richtig.`, y: one ? `<b>Leider daneben.</b>` : `<b>y stimmt nicht</b> – x war richtig.`, both: `<b>Leider kein Käse.</b>`
   }[r.err];
-  return `<span class="big">${r.xo ? 'x ✓' : 'x ✗'} · ${r.yo ? 'y ✓' : 'y ✗'}</span>${m}<br>${sol}`;
+  const big = one ? 'Nicht ganz' : `${r.xo ? 'x ✓' : 'x ✗'} · ${r.yo ? 'y ✓' : 'y ✗'}`;
+  return `<span class="big">${big}</span>${m}<br>${sol}`;
 }
 
 /* ================= Eingabe (Felder + Ziffernblock) ================= */
 let F = {x:{s:'+', d:''}, y:{s:'+', d:''}, act:'x'};
 const fval = f => f.d === '' ? null : (f.s === '-' && +f.d !== 0 ? -1 : 1) * +f.d;
+const used = () => S.task ? S.task.axes : 'xy';
+const filled = () => { const a = used(); return (a === 'y' || F.x.d !== '') && (a === 'x' || F.y.d !== ''); };
+const vals = () => { const a = used(); return [a === 'y' ? 0 : fval(F.x), a === 'x' ? 0 : fval(F.y)]; };
+function applyAxes(){
+  const a = used(); show('fx', a !== 'y'); show('fy', a !== 'x');
+  document.querySelectorAll('.par,.bar').forEach(e => e.classList.toggle('hidden', a !== 'xy')); $('inUi').classList.toggle('single', a !== 'xy');
+  if (a !== 'xy') F.act = a;
+}
 function echoText(axis, v){
   if (v === null) return '';
-  if (axis === 'x') return v === 0 ? 'in der Mitte' : v < 0 ? `<b>${-v}</b> nach links ←` : `<b>${v}</b> nach rechts →`;
-  return v === 0 ? 'in der Mitte' : v < 0 ? `<b>${-v}</b> nach unten ↓` : `<b>${v}</b> nach oben ↑`;
+  if (axis === 'x') return v === 0 ? 'bleibt stehen' : v < 0 ? `<b>${-v}</b> nach links ←` : `<b>${v}</b> nach rechts →`;
+  return v === 0 ? 'bleibt stehen' : v < 0 ? `<b>${-v}</b> nach unten ↓` : `<b>${v}</b> nach oben ↑`;
 }
 function renderFields(){
   ['x', 'y'].forEach(a => {
@@ -529,18 +583,18 @@ function renderFields(){
     const dg = $('d' + a); dg.textContent = f.d; dg.classList.toggle('empty', f.d === '');
     $('e' + a).innerHTML = S.help === '0' ? '' : mfix(echoText(a, v));
   });
-  const ok = F.x.d !== '' && F.y.d !== '';
+  const ok = filled();
   const okb = document.querySelector('#pad .okb'); if (okb) okb.textContent = ok ? '🐭 Los!' : '▶ weiter';
   renderGhost();
-  if (S.role === 'player' && ok && S.phase === 'input') netSend({t:'draft', x:fval(F.x), y:fval(F.y)});
+  if (S.role === 'player' && ok && S.phase === 'input'){ const [a, b] = vals(); netSend({t:'draft', x:a, y:b}); }
 }
 let GH = null;
 function renderGhost(){
   if (GH){ GH.remove(); GH = null; }
-  if (S.help !== '2' || S.phase !== 'input') return;
-  const a = fval(F.x), b = fval(F.y); if (a === null || b === null) return;
-  if (Math.abs(a) > BD.lim || Math.abs(b) > BD.lim) return;
-  GH = el('g', {opacity:.85}, BD.dyn); el('circle', {cx:BD.X(a), cy:BD.Y(b), r:BD.sw(11), fill:'none', stroke:'#7048e8', 'stroke-width':BD.sw(3.2), 'stroke-dasharray':`${BD.sw(5)} ${BD.sw(4)}`}, GH);
+  if (S.help !== '2' || S.phase !== 'input' || !S.task || !filled()) return;
+  const [a, b] = vals(), T = S.task, ex = T.sx + a, ey = T.sy + b;
+  if (Math.abs(ex) > BD.lim || Math.abs(ey) > BD.lim) return;
+  GH = el('g', {opacity:.85}, BD.dyn); el('circle', {cx:BD.X(ex), cy:BD.Y(ey), r:BD.sw(11), fill:'none', stroke:'#7048e8', 'stroke-width':BD.sw(3.2), 'stroke-dasharray':`${BD.sw(5)} ${BD.sw(4)}`}, GH);
 }
 function press(k){
   if (S.phase !== 'input') return;
@@ -549,10 +603,10 @@ function press(k){
   else if (k === '-'){ f.s = '-'; sKey(); }
   else if (k === '+'){ f.s = '+'; sKey(); }
   else if (k === 'del'){ if (f.d) f.d = f.d.slice(0, -1); else f.s = '+'; sKey(); }
-  else if (k === 'sw'){ F.act = F.act === 'x' ? 'y' : 'x'; }
+  else if (k === 'sw'){ if (used() === 'xy') F.act = F.act === 'x' ? 'y' : 'x'; }
   else if (k === 'ok'){
-    if (F.x.d !== '' && F.y.d !== '') return submitAnswer();
-    F.act = F.x.d === '' ? 'x' : F.y.d === '' ? 'y' : F.act; sKey();
+    if (filled()) return submitAnswer();
+    if (used() === 'xy') F.act = F.x.d === '' ? 'x' : 'y'; sKey();
   }
   renderFields();
 }
@@ -577,22 +631,29 @@ addEventListener('keydown', e => {
   else if (k === 'Backspace' || k === 'Delete') { e.preventDefault(); press('del'); }
   else if (k === 'Enter') { e.preventDefault(); press('ok'); }
   else if (k === 'Tab' || k === 'ArrowLeft' || k === 'ArrowRight') { e.preventDefault(); press('sw'); }
-  else if (k === 'x' || k === 'X') { F.act = 'x'; renderFields(); }
-  else if (k === 'y' || k === 'Y') { F.act = 'y'; renderFields(); }
+  else if ((k === 'x' || k === 'X') && used() === 'xy') { F.act = 'x'; renderFields(); }
+  else if ((k === 'y' || k === 'Y') && used() === 'xy') { F.act = 'y'; renderFields(); }
 });
-const submitAnswer = () => S.role === 'local' ? localSubmit(fval(F.x), fval(F.y)) : netSubmit(fval(F.x), fval(F.y));
+const submitAnswer = () => { const [a, b] = vals(); S.role === 'local' ? localSubmit(a, b) : netSubmit(a, b); };
 
 /* ================= Runde zeigen & Auflösung (gemeinsam) ================= */
 let BD = null;     // Spielbrett
 const L = {};      // dynamische Ebenen
 function showRound(task, level){
-  S.task = task; S.level = level; BD.draw({lim:CFG[level].lim});
-  BD.dyn.innerHTML = ''; L.cheat = el('g', {}, BD.dyn); L.home = el('g', {}, BD.dyn); L.runs = el('g', {}, BD.dyn); L.sol = el('g', {}, BD.dyn); L.top = el('g', {}, BD.dyn); GH = null;
-  L.cheatG = mkEmoji(BD, L.cheat, '🧀', task.x, task.y, {dot:true}); L.cheatG.place(task.x, task.y, 0);
-  tween(550, e => L.cheatG.place(task.x, task.y, e), u => 1 + 2.2 * Math.pow(u - 1, 3) + 1.2 * Math.pow(u - 1, 2));
-  L.mouse = mkEmoji(BD, L.home, '🐭', 0, 0);
+  S.task = task; S.level = level; const ax = task.axes || 'xy';
+  BD.draw({lim:ax === 'xy' ? CFG[level].lim : CFG[level].line, mode:ax});
+  BD.dyn.innerHTML = ''; L.cheat = el('g', {}, BD.dyn); L.stem = el('g', {}, L.cheat); L.home = el('g', {}, BD.dyn); L.runs = el('g', {}, BD.dyn); L.sol = el('g', {}, BD.dyn); L.top = el('g', {}, BD.dyn); GH = null;
+  if (ax !== 'xy'){      // Lot vom Käse auf die Skala
+    const h = ax === 'x';
+    el('line', {x1:BD.AX(task.cx), y1:BD.AY(task.cy), x2:h ? BD.AX(task.cx) : BD.X(task.cx) - BD.esz() * .4, y2:h ? BD.Y(task.cy) + BD.esz() * .4 : BD.AY(task.cy), stroke:'#7a7a7a', 'stroke-width':BD.sw(2), 'stroke-dasharray':`${BD.sw(4)} ${BD.sw(3)}`}, L.stem);
+    el('circle', {cx:BD.AX(task.cx), cy:BD.AY(task.cy), r:BD.sw(5), fill:'#ffd43b', stroke:'#1e1e1e', 'stroke-width':BD.sw(1.5)}, L.stem);
+  }
+  L.cheatG = mkEmoji(BD, L.cheat, '🧀', task.cx, task.cy, {dot:ax === 'xy'}); L.cheatG.place(task.cx, task.cy, 0);
+  tween(550, e => L.cheatG.place(task.cx, task.cy, e), u => 1 + 2.2 * Math.pow(u - 1, 3) + 1.2 * Math.pow(u - 1, 2));
+  L.mouse = mkEmoji(BD, L.home, '🐭', task.sx, task.sy);
+  applyAxes();
 }
-function resetInput(){ F = {x:{s:'+', d:''}, y:{s:'+', d:''}, act:'x'}; renderFields(); }
+function resetInput(){ applyAxes(); F = {x:{s:'+', d:''}, y:{s:'+', d:''}, act:used() === 'y' ? 'y' : 'x'}; renderFields(); }
 let TM = null;
 function startTimer(){ clearInterval(TM); TM = setInterval(updTimer, 100); updTimer(); }
 function updTimer(){
@@ -603,55 +664,63 @@ function updTimer(){
 }
 /* entries: [{name,emoji,color,g:{x,y}|null,r}], style: 'solo' | 'multi' | 'crowd' */
 async function animateReveal(entries, style){
-  const tok = ++S.tok, T = S.task, lim = BD.lim; L.home.innerHTML = '';
+  const tok = ++S.tok, T = S.task, lim = BD.lim, ax = T.axes; L.home.innerHTML = '';
   const sz = style === 'crowd' ? BD.esz() * .62 : BD.esz(), grp = {};
-  entries.forEach(e => { if (!e.g) return; e.ca = clamp(e.g.x, -lim, lim); e.cb = clamp(e.g.y, -lim, lim); (grp[e.ca + ',' + e.cb] = grp[e.ca + ',' + e.cb] || []).push(e); });
+  entries.forEach(e => { if (!e.g) return; e.ca = clamp(T.sx + e.g.x, -lim, lim); e.cb = clamp(T.sy + e.g.y, -lim, lim); (grp[e.ca + ',' + e.cb] = grp[e.ca + ',' + e.cb] || []).push(e); });
   const n = entries.length;
   entries.forEach((e, i) => { if (!e.g) return; const arr = grp[e.ca + ',' + e.cb], idx = arr.indexOf(e);
-    e.mk = mkEmoji(BD, L.runs, '🐭', 0, 0, {size:sz, ring:style === 'multi' ? e.color : null});
-    if (style === 'crowd'){ e.dx = ((idx % 5) - 2) * sz * .38; e.dy = Math.floor(idx / 5) * sz * .38; } else { e.dx = style === 'multi' ? (i - (n - 1) / 2) * BD.fs(16) : 0; e.dy = 0; } });
+    e.mk = mkEmoji(BD, L.runs, '🐭', T.sx, T.sy, {size:sz, ring:style === 'multi' ? e.color : null});
+    if (style === 'crowd'){ e.dx = ((idx % 5) - 2) * sz * .38; e.dy = Math.floor(idx / 5) * sz * .38; }
+    else if (style === 'multi'){ const o = (i - (n - 1) / 2) * BD.fs(16); if (ax === 'x'){ e.dx = 0; e.dy = o; } else { e.dx = o; e.dy = 0; } }
+    else { e.dx = 0; e.dy = 0; }
+    e.mk.place(T.sx, T.sy, 1, e.dx, e.dy); });
   await Promise.all(entries.map(async (e, i) => {
     if (!e.g) return;
-    const len = Math.abs(e.ca) + Math.abs(e.cb); await sleep(style === 'crowd' ? Math.random() * 500 : i * 200); if (tok !== S.tok) return;
+    const lx = Math.abs(e.ca - T.sx), len = lx + Math.abs(e.cb - T.sy); await sleep(style === 'crowd' ? Math.random() * 500 : i * 200); if (tok !== S.tok) return;
     let last = -1;
-    await tween(clamp(len * 150, 500, 2400), u => {
-      const d = u * len; let x, y; if (d <= Math.abs(e.ca)){ x = Math.sign(e.ca) * d; y = 0; } else { x = e.ca; y = Math.sign(e.cb) * (d - Math.abs(e.ca)); }
+    await tween(clamp(len * 150, 500, 2600), u => {
+      const d = u * len; let x, y; if (d <= lx){ x = T.sx + Math.sign(e.ca - T.sx) * d; y = T.sy; } else { x = e.ca; y = T.sy + Math.sign(e.cb - T.sy) * (d - lx); }
       e.mk.place(x, y, 1, e.dx, e.dy); const s2 = Math.floor(d); if (s2 !== last){ last = s2; if (style === 'solo') sStep(); } });
   }));
   if (tok !== S.tok) return false;
-  const full = entries.filter(e => e.g && e.r.xo && e.r.yo), anyWrong = entries.length === 0 || full.length < n;
-  if (style === 'multi') entries.forEach(e => { if (!e.g) return; tag(BD, L.top, e.ca, e.cb, plain(coord(e.g.x, e.g.y)), e.r.err === 'ok' ? '#2b8a3e' : e.color, BD.px * .85, 'middle', e.dx, e.cb > lim * .6 ? BD.esz() * .95 : -BD.esz() * .78).setAttribute('class', 'fadein'); });
-  if (style === 'crowd') Object.values(grp).forEach(arr => { if (arr.length > 1){ const e = arr[0]; tag(BD, L.top, e.ca, e.cb, '×' + arr.length, e.r.xo && e.r.yo ? '#2b8a3e' : '#c92a2a', BD.px * .95, 'middle', 0, -BD.esz() * .8); } });
-  if (style !== 'crowd') entries.forEach(e => { if (e.g && e.r.err !== 'ok'){ const q = el('text', {'text-anchor':'middle', 'dominant-baseline':'central', 'font-size':BD.esz() * .8, x:BD.X(e.ca) + e.dx + BD.esz() * .55, y:BD.Y(e.cb) - BD.esz() * .3, class:'fadein'}, L.top); q.textContent = '❓'; } });
+  const full = entries.filter(e => e.g && e.r.xo && e.r.yo), anyWrong = entries.length === 0 || full.length < n, esz = BD.esz();
+  if (style === 'multi') entries.forEach(e => { if (!e.g) return; const up = ax === 'x' ? -esz * .85 : e.cb > lim * .6 ? esz * .95 : -esz * .78;
+    tag(BD, L.top, e.ca, e.cb, ansPlain(T, e.g), e.r.err === 'ok' ? '#2b8a3e' : e.color, BD.px * .85, ax === 'y' ? 'start' : 'middle', ax === 'y' ? esz * .6 + e.dx : e.dx, ax === 'y' ? 0 : up + (ax === 'x' ? e.dy : 0)).setAttribute('class', 'fadein'); });
+  if (style === 'crowd') Object.values(grp).forEach(arr => { if (arr.length > 1){ const e = arr[0]; tag(BD, L.top, e.ca, e.cb, '×' + arr.length, e.r.xo && e.r.yo ? '#2b8a3e' : '#c92a2a', BD.px * .95, 'middle', 0, -esz * .8); } });
+  if (style !== 'crowd') entries.forEach(e => { if (e.g && e.r.err !== 'ok'){ const q = el('text', {'text-anchor':'middle', 'dominant-baseline':'central', 'font-size':esz * .8, x:BD.X(e.ca) + e.dx + esz * .55, y:BD.Y(e.cb) + e.dy - esz * .3, class:'fadein'}, L.top); q.textContent = '❓'; } });
   if (full.length){
     await sleep(300); if (tok !== S.tok) return false; sNom();
-    await tween(500, u => L.cheatG.place(T.x, T.y, u < .5 ? 1 + u * .6 : 1.3 * (1 - (u - .5) * 2)));
-    L.cheatG.remove(); burst(BD, L.top, T.x, T.y); sTada();
-  } else { sLow(); await tween(500, u => L.cheatG.place(T.x, T.y, 1 + Math.sin(u * Math.PI * 6) * .12)); L.cheatG.place(T.x, T.y, 1); }
+    await tween(500, u => L.cheatG.place(T.cx, T.cy, u < .5 ? 1 + u * .6 : 1.3 * (1 - (u - .5) * 2)));
+    L.cheatG.remove(); L.stem.remove(); burst(BD, L.top, T.cx, T.cy); sTada();
+  } else { sLow(); await tween(500, u => L.cheatG.place(T.cx, T.cy, 1 + Math.sin(u * Math.PI * 6) * .12)); L.cheatG.place(T.cx, T.cy, 1); }
   if (tok !== S.tok) return false;
-  if (anyWrong){        // richtiger Weg: vom Nullpunkt erst x, dann y
+  if (anyWrong){        // richtiger Weg: vom Start erst x, dann y
     const g = el('g', {}, L.sol), sw = BD.sw;
-    if (T.x !== 0){ el('line', {x1:BD.X(0), y1:BD.Y(0), x2:BD.X(T.x), y2:BD.Y(0), stroke:'#1864ab', 'stroke-opacity':.6, 'stroke-width':sw(8), 'stroke-linecap':'round', class:'drawin'}, g);
-      tag(BD, g, T.x / 2, 0, (T.x < 0 ? '←' : '→') + ' ' + Math.abs(T.x), '#1864ab', BD.px * 1.05, 'middle', 0, T.y > 0 ? BD.fs(BD.px * 2.5) : -BD.fs(BD.px * .9)); }
-    if (T.y !== 0){ const l2 = el('line', {x1:BD.X(T.x), y1:BD.Y(0), x2:BD.X(T.x), y2:BD.Y(T.y), stroke:'#d9480f', 'stroke-opacity':.6, 'stroke-width':sw(8), 'stroke-linecap':'round', class:'drawin'}, g); l2.style.animationDelay = T.x !== 0 ? '.8s' : '0s';
-      tag(BD, g, T.x, T.y / 2, (T.y < 0 ? '↓' : '↑') + ' ' + Math.abs(T.y), '#d9480f', BD.px * 1.05, T.x < 0 ? 'start' : 'end', T.x < 0 ? sw(14) : -sw(14), BD.fs(BD.px * .35)).setAttribute('class', 'fadein'); }
+    if (T.x !== 0){ el('line', {x1:BD.X(T.sx), y1:BD.Y(T.sy), x2:BD.X(T.cx), y2:BD.Y(T.sy), stroke:'#1864ab', 'stroke-opacity':.6, 'stroke-width':sw(8), 'stroke-linecap':'round', class:'drawin'}, g);
+      tag(BD, g, (T.sx + T.cx) / 2, T.sy, (T.x < 0 ? '←' : '→') + ' ' + Math.abs(T.x), '#1864ab', BD.px * 1.05, 'middle', 0, ax === 'x' ? -esz * .75 : T.cy > T.sy ? BD.fs(BD.px * 2.5) : -BD.fs(BD.px * .9)); }
+    if (T.y !== 0){ const l2 = el('line', {x1:BD.X(T.cx), y1:BD.Y(T.sy), x2:BD.X(T.cx), y2:BD.Y(T.cy), stroke:'#d9480f', 'stroke-opacity':.6, 'stroke-width':sw(8), 'stroke-linecap':'round', class:'drawin'}, g); l2.style.animationDelay = T.x !== 0 ? '.8s' : '0s';
+      const right = ax === 'y' || T.cx < 0;
+      tag(BD, g, T.cx, (T.sy + T.cy) / 2, (T.y < 0 ? '↓' : '↑') + ' ' + Math.abs(T.y), '#d9480f', BD.px * 1.05, right ? 'start' : 'end', right ? sw(14) : -sw(14), BD.fs(BD.px * .35)).setAttribute('class', 'fadein'); }
     if (!full.length) L.cheat.appendChild(L.cheatG);
     await sleep(T.x !== 0 && T.y !== 0 ? 1700 : 1100); if (tok !== S.tok) return false;
   }
-  tag(BD, L.top, T.x, T.y, plain(coord(T.x, T.y)), '#1e1e1e', BD.px * 1.05, 'middle', 0, T.y < -lim * .6 ? -BD.esz() * .8 : BD.esz() * .95).setAttribute('class', 'fadein');
+  const cT = ax === 'xy' ? plain(coord(T.cx, T.cy)) : plain(num(ax === 'x' ? T.cx : T.cy));
+  tag(BD, L.top, T.cx, T.cy, cT, '#1e1e1e', BD.px * 1.05, ax === 'y' ? 'start' : 'middle', ax === 'y' ? esz * .6 : 0, ax === 'x' ? -esz * .85 : ax === 'y' ? 0 : (T.cy < -lim * .6 ? -esz * .8 : esz * .95)).setAttribute('class', 'fadein');
   if (style !== 'crowd' && full.some(e => e.r.pt >= 16)) toast('⚡ Blitz!'); else if (style === 'solo' && full.length) toast('🧀 Richtig!');
   return true;
 }
 function resRows(rows, total){
+  const T = S.task, ax = T.axes, cell = (ok, pts, on) => on ? `<td class="c ${ok ? 'ok' : 'no'}">${ok ? '✓' : '✗'}<div class="badge">${pts}</div></td>` : '<td class="c muted">–</td>';
   return `<tr><th></th><th class="xc">x</th><th class="yc">y</th><th>⚡</th><th>Punkte</th>${total ? '<th>gesamt</th>' : ''}</tr>` + rows.map(p => `<tr><td><span style="font-size:1.4em">${esc(p.emoji)}</span> <span style="color:${total ? p.color : 'inherit'};font-weight:700">${esc(p.name)}</span>
-    <div class="badge">${p.g ? mfix(plain(coord(p.g.x, p.g.y))) + ' · ' + p.r.t.toFixed(1).replace('.', ',') + ' s' : 'keine Antwort'}${p.r.err !== 'ok' && total ? ' · ' + ERR_SHORT[p.r.err] : ''}</div></td>
-    <td class="c ${p.r.xo ? 'ok' : 'no'}">${p.r.xo ? '✓' : '✗'}<div class="badge">${p.r.px}</div></td><td class="c ${p.r.yo ? 'ok' : 'no'}">${p.r.yo ? '✓' : '✗'}<div class="badge">${p.r.py}</div></td>
+    <div class="badge">${p.g ? mfix(ansPlain(T, p.g)) + ' · ' + p.r.t.toFixed(1).replace('.', ',') + ' s' : 'keine Antwort'}${p.r.err !== 'ok' && total ? ' · ' + ERR_SHORT[p.r.err] : ''}</div></td>
+    ${cell(p.r.xo, p.r.px, ax !== 'y')}${cell(p.r.yo, p.r.py, ax !== 'x')}
     <td class="c">${p.r.pt ? '+' + p.r.pt : '–'}</td><td class="n">+${p.r.pts}</td>${total ? `<td class="c muted">${p.total}</td>` : ''}</tr>`).join('');
 }
 function setHostUi(on){ show('hostUi', on); show('inUi', !on); show('evUi', false); show('tbar', !on); $('clock').textContent = ''; }
 
 /* ================= Nur Beamer (ein Gerät, nacheinander) ================= */
 const multi = () => S.players.length > 1;
+const stageTxt = ax => ' · ' + ({x:'x', y:'y', xy:'✛'}[ax]);
 function renderSetup(){
   const pl = $('plist'); pl.innerHTML = '';
   S.players.forEach((p, i) => {
@@ -663,8 +732,9 @@ function renderSetup(){
     pl.appendChild(r);
   });
   $('addP').disabled = S.players.length >= 8;
+  chipRow('optStage', STAGE_LBL, () => S.stage, v => S.stage = v);
   chipRow('optLevel', LEVEL_LBL, () => S.level, v => S.level = v);
-  chipRow('optRounds', [[5, '5'], [10, '10'], [15, '15']], () => S.rounds, v => S.rounds = +v);
+  chipRow('optRounds', [[5, '5'], [8, '8'], [10, '10']], () => S.rounds, v => S.rounds = +v);
   chipRow('optHelp', [['1', 'mit Hilfe'], ['2', '+ Vorschau-Punkt'], ['0', 'ohne']], () => S.help, v => S.help = v);
   chipRow('optIntro', [['1', '✅ zeigen'], ['0', 'überspringen']], () => S.intro, v => S.intro = v);
 }
@@ -672,13 +742,17 @@ $('addP').onclick = () => { const used = S.players.map(p => p.emoji); S.players.
 function startLocal(){
   S.role = 'local';
   S.players = S.players.map((p, i) => ({...p, name:(p.name || '').trim() || (S.players.length === 1 ? 'Ich' : 'Spieler ' + (i + 1)), color:COLORS[i % COLORS.length], total:0, st:newStats()}));
-  try { localStorage.setItem(KEY, JSON.stringify({players:S.players.map(p => ({name:p.name, emoji:p.emoji})), level:S.level, rounds:S.rounds, help:S.help, intro:S.intro})); } catch(e){}
-  const begin = () => { S.round = 0; S.lastQ = []; S.last = null; setHostUi(false); go('gameWrap'); applyMode(); nextRoundLocal(); };
-  if (S.intro === '1') openIntro(begin); else begin();
+  try { localStorage.setItem(KEY, JSON.stringify({players:S.players.map(p => ({name:p.name, emoji:p.emoji})), level:S.level, rounds:S.rounds, help:S.help, intro:S.intro, stage:S.stage})); } catch(e){}
+  S.sl = S.stage === 'auto' ? ['x', 'y', 'xy'] : [S.stage]; S.si = 0; beginStageLocal();
+}
+function beginStageLocal(){
+  S.round = 0; S.lastQ = []; S.last = null; S.phase = 'intro'; const ax = S.sl[S.si];
+  const run = () => { go('gameWrap'); applyMode(); setHostUi(false); nextRoundLocal(); };
+  if (S.intro === '1') openIntro(ax, run); else run();
 }
 function nextRoundLocal(){
   S.tok++; S.round++; S.turn = 0; S.limit = 0; S.players.forEach(p => { p.g = null; p.r = null; });
-  const task = makeTask(S.level, S); $('roundInfo').textContent = `Runde ${S.round} / ${S.rounds}`; $('scoreInfo').textContent = '⭐ ' + S.players.reduce((m, p) => Math.max(m, p.total), 0);
+  const task = makeTask(S.level, S, S.sl[S.si]); $('roundInfo').textContent = `Runde ${S.round} / ${S.rounds}` + stageTxt(task.axes); $('scoreInfo').textContent = '⭐ ' + S.players.reduce((m, p) => Math.max(m, p.total), 0);
   showRound(task, S.level); show('inUi'); show('evUi', false); startTurnLocal();
 }
 function startTurnLocal(){
@@ -693,7 +767,7 @@ function beginInputLocal(){ S.phase = 'input'; S.t0 = performance.now(); startTi
 function localSubmit(a, b){
   if (S.phase !== 'input') return;
   const p = S.players[S.turn], t = (performance.now() - S.t0) / 1000; clearInterval(TM); S.phase = 'wait';
-  p.g = {x:a, y:b}; p.r = scoreAnswer(S.task, a, b, t); p.total += p.r.pts; addStats(p.st, p.r);
+  p.g = {x:a, y:b}; p.r = scoreAnswer(S.task, a, b, t); p.total += p.r.pts; addStats(p.st, p.r, S.task.axes);
   sDing(); if (GH){ GH.remove(); GH = null; }
   S.turn++; if (S.turn < S.players.length) startTurnLocal(); else revealLocal();
 }
@@ -701,15 +775,16 @@ async function revealLocal(){
   S.phase = 'reveal'; show('inUi', false); show('evUi'); $('resT').innerHTML = ''; $('evRank').textContent = ''; show('nextBtn', false); $('who').innerHTML = ''; $('evMsg').innerHTML = '🐭 …läuft los!';
   const ok = await animateReveal(S.players, multi() ? 'multi' : 'solo'); if (!ok) return;
   S.phase = 'eval'; const T = S.task;
-  $('evMsg').innerHTML = multi() ? `Der Käse lag bei <b>${coord(T.x, T.y)}</b> → <span class="xc">${mfix(stepX(T.x))}</span>, dann <span class="yc">${mfix(stepY(T.y))}</span>.` : feedback(S.players[0].r, T);
+  $('evMsg').innerHTML = multi() ? `<b>Richtig:</b><br>${solText(T)}` : feedback(S.players[0].r, T);
   $('resT').innerHTML = resRows([...S.players].sort((a, b) => b.r.pts - a.r.pts || a.r.t - b.r.t), multi());
-  $('nextBtn').textContent = S.round >= S.rounds ? 'Endstand 🏆' : 'Nächste Runde ▶'; show('nextBtn');
+  const endStage = S.round >= S.rounds, more = S.si + 1 < S.sl.length;
+  $('nextBtn').textContent = !endStage ? 'Nächste Runde ▶' : more ? 'Nächste Stufe ▶' : 'Endstand 🏆'; show('nextBtn');
   $('scoreInfo').textContent = '⭐ ' + S.players.reduce((m, p) => Math.max(m, p.total), 0);
 }
-$('nextBtn').onclick = () => { ac(); if (S.role !== 'local') return; if (S.round >= S.rounds) finalLocal(); else nextRoundLocal(); };
+$('nextBtn').onclick = () => { ac(); if (S.role !== 'local') return; if (S.round < S.rounds) nextRoundLocal(); else if (S.si + 1 < S.sl.length){ S.si++; beginStageLocal(); } else finalLocal(); };
 function finalLocal(){
   S.tok++; S.phase = 'final';
-  renderFinal(S.players.map(p => ({name:p.name, emoji:p.emoji, total:p.total, st:p.st})), S.rounds, null);
+  renderFinal(S.players.map(p => ({name:p.name, emoji:p.emoji, total:p.total, st:p.st})), S.rounds * S.sl.length, null);
   $('finalBtns').innerHTML = '<button class="go" id="fAgain">🔄 Nochmal</button><button id="fMenu">⚙️ Einstellungen</button>';
   $('fAgain').onclick = () => { ac(); startLocal(); }; $('fMenu').onclick = () => { go('setup'); renderSetup(); };
 }
@@ -719,6 +794,7 @@ function tipFor(st){
   const bits = [], errs = st.sx + st.sy;
   if (errs >= 2 && errs >= st.swap) bits.push('Vorzeichen üben: <b>Minus = links (x) / unten (y)</b>');
   if (st.swap >= 2) bits.push('x und y nicht vertauschen: <b>x zuerst (←→), dann y (↑↓)</b>');
+  if (st.abs >= 2) bits.push('gefragt ist der Weg: <b>Ziel − Start</b>');
   if (!bits.length && st.n && st.full === st.n) bits.push('alles richtig 🎉');
   return bits.join(' · ');
 }
@@ -730,56 +806,66 @@ function renderFinal(list, rounds, meId){
   $('pod').innerHTML = pod.map(p => `<div><div class="e">${esc(p.emoji)}</div>${esc(p.name)}<div class="blk" style="height:${[5, 3.8, 3][p.place - 1]}em;background:${cols[p.place - 1]}">${p.place}.</div></div>`).join('');
   const rows = r.length > 8 ? r.filter((p, i) => i < 8 || p.pid === meId) : r;
   $('finalT').innerHTML = `<table class="ft"><tr><th></th><th>Punkte</th><th class="xc">x ✓</th><th class="yc">y ✓</th><th>ganz ✓</th><th>Ø Tempo</th></tr>` + rows.map(p => `<tr class="${p.pid && p.pid === meId ? 'me' : ''}"><td>${p.place}. ${esc(p.emoji)} ${esc(p.name)}</td><td class="n">${p.total}<div class="muted" style="font-size:.7em;font-weight:400">von ${max}</div></td>
-    <td>${p.st.x}/${p.st.n}</td><td>${p.st.y}/${p.st.n}</td><td>${p.st.full}/${p.st.n}</td><td>${p.st.full ? (p.st.tsum / p.st.full).toFixed(1).replace('.', ',') + ' s' : '–'}</td></tr>`).join('') + '</table>';
+    <td>${p.st.nx ? p.st.x + '/' + p.st.nx : '–'}</td><td>${p.st.ny ? p.st.y + '/' + p.st.ny : '–'}</td><td>${p.st.full}/${p.st.n}</td><td>${p.st.full ? (p.st.tsum / p.st.full).toFixed(1).replace('.', ',') + ' s' : '–'}</td></tr>`).join('') + '</table>';
   let tips;
   if (meId){ const me = r.find(p => p.pid === meId), t = me ? tipFor(me.st) : ''; tips = t ? `<div>${t}</div>` : ''; }
-  else if (r.length > 8){ const agg = newStats(); r.forEach(p => ['x', 'y', 'full', 'n', 'swap', 'sx', 'sy'].forEach(k => agg[k] += p.st[k])); const t = tipFor(agg); tips = t ? `<div>Klasse: ${t}</div>` : ''; }
+  else if (r.length > 8){ const agg = newStats(); r.forEach(p => ['x', 'y', 'nx', 'ny', 'full', 'n', 'swap', 'sx', 'sy', 'abs'].forEach(k => agg[k] += p.st[k])); const t = tipFor(agg); tips = t ? `<div>Klasse: ${t}</div>` : ''; }
   else tips = r.map(p => { const t = tipFor(p.st); return t ? `<div>${esc(p.emoji)} <b>${esc(p.name)}</b>: ${t}</div>` : ''; }).join('');
   $('finalTip').innerHTML = tips ? `<div class="tip">${tips}</div>` : ''; sTada();
 }
 
 /* ================= Erklärung: ganz langsam, Schritt für Schritt ================= */
-let IB = null, II = 0, IT = 0, introDone = null, pauseAt = 0, iAuto = true, iTimer = null;
+let IB = null, II = 0, IT = 0, introDone = null, pauseAt = 0, iAuto = true, iTimer = null, IS = [], IMODE = 'x';
+const XCc = '#1864ab', YCc = '#d9480f';
 const hop = (m, x0, y0, x1, y1, ms = 600) => tween(ms, u => m.place(x0 + (x1 - x0) * u, y0 + (y1 - y0) * u));
-async function walk(B, g, m, dx, dy, n, color){          // Maus läuft n Schritte und zählt mit
+async function walk(B, g, m, x0, y0, dx, dy, n, color){          // Maus läuft n Schritte und zählt mit
   const sg = dx + dy < 0 ? '−' : '+';
   for (let i = 1; i <= n; i++){
-    await hop(m, dx * (i - 1), dy * (i - 1), dx * i, dy * i, 650); sStep();
-    tag(B, g, dx * i, dy * i, sg + i, color, B.px * 1.2, dx ? 'middle' : 'start', dx ? 0 : B.fs(26), dx ? -B.fs(24) : B.fs(8)).setAttribute('class', 'fadein');
+    await hop(m, x0 + dx * (i - 1), y0 + dy * (i - 1), x0 + dx * i, y0 + dy * i, 650); sStep();
+    tag(B, g, x0 + dx * i, y0 + dy * i, sg + i, color, B.px * 1.2, dx ? 'middle' : 'start', dx ? 0 : B.esz() * .6, dx ? -B.esz() * .7 : B.fs(6)).setAttribute('class', 'fadein');
     await sleep(250);
   }
 }
-const legX = (B, g, to, ms) => el('line', {x1:B.X(0), y1:B.Y(0), x2:B.X(to), y2:B.Y(0), stroke:'#1864ab', 'stroke-opacity':.55, 'stroke-width':B.sw(9), 'stroke-linecap':'round'}, g);
-const ISTEPS = [
- {c:'Hier startet die Maus: <b>0</b>', run: async (B, g) => { mkEmoji(B, g, '🐭', 0, 0); const r = el('circle', {cx:B.X(0), cy:B.Y(0), r:B.sw(30), fill:'none', stroke:'#e03131', 'stroke-width':B.sw(4)}, g); await tween(900, u => { r.setAttribute('r', B.sw(30 + u * 22)); r.setAttribute('opacity', 1 - u * .6); }); }},
- {c:'Nach <b>rechts</b> → ist <b>plus +</b>', run: async (B, g) => { const m = mkEmoji(B, g, '🐭', 0, 0); await sleep(600); await walk(B, g, m, 1, 0, 3, '#1864ab'); }},
- {c:'Nach <b>links</b> ← ist <b>minus −</b>', run: async (B, g) => { const m = mkEmoji(B, g, '🐭', 0, 0); await sleep(600); await walk(B, g, m, -1, 0, 3, '#1864ab'); }},
- {c:'Nach <b>oben</b> ↑ ist <b>plus +</b>', run: async (B, g) => { const m = mkEmoji(B, g, '🐭', 0, 0); await sleep(600); await walk(B, g, m, 0, 1, 3, '#d9480f'); }},
- {c:'Nach <b>unten</b> ↓ ist <b>minus −</b>', run: async (B, g) => { const m = mkEmoji(B, g, '🐭', 0, 0); await sleep(600); await walk(B, g, m, 0, -1, 3, '#d9480f'); }},
- {c:'Erst <b class="xc">x</b> (←→), dann <b class="yc">y</b> (↑↓)', run: async (B, g) => {
-    el('line', {x1:B.X(-B.lim), y1:B.Y(0), x2:B.X(B.lim), y2:B.Y(0), stroke:'#1864ab', 'stroke-opacity':.4, 'stroke-width':B.sw(16), 'stroke-linecap':'round', class:'drawin'}, g); await sleep(1500);
-    el('line', {x1:B.X(0), y1:B.Y(-B.lim), x2:B.X(0), y2:B.Y(B.lim), stroke:'#d9480f', 'stroke-opacity':.4, 'stroke-width':B.sw(16), 'stroke-linecap':'round', class:'drawin'}, g); await sleep(1200); }},
- {c:'Beispiel: <b>(<span class="xc">−2</span> | <span class="yc">3</span>)</b>', run: async (B, g) => { const ch = mkEmoji(B, g, '🧀', -2, 3, {dot:true}); ch.place(-2, 3, 0); mkEmoji(B, g, '🐭', 0, 0); await tween(600, u => ch.place(-2, 3, u)); tag(B, g, -2, 3, '(−2|3)', '#1e1e1e', B.px * 1.1, 'middle', 0, -B.esz() * .85); await sleep(800); }},
- {c:'<b class="xc">x = −2</b>: 2 nach links ←', run: async (B, g) => { mkEmoji(B, g, '🧀', -2, 3, {dot:true}); const m = mkEmoji(B, g, '🐭', 0, 0); await sleep(500);
-    el('line', {x1:B.X(0), y1:B.Y(0), x2:B.X(-2), y2:B.Y(0), stroke:'#1864ab', 'stroke-opacity':.55, 'stroke-width':B.sw(9), 'stroke-linecap':'round', class:'drawin'}, g);
-    for (let i = 1; i <= 2; i++){ await hop(m, -(i - 1), 0, -i, 0, 700); sStep(); } await sleep(600); }},
- {c:'<b class="yc">y = 3</b>: 3 nach oben ↑', run: async (B, g) => { const ch = mkEmoji(B, g, '🧀', -2, 3, {dot:true}); legX(B, g, -2); const m = mkEmoji(B, g, '🐭', -2, 0); await sleep(500);
-    el('line', {x1:B.X(-2), y1:B.Y(0), x2:B.X(-2), y2:B.Y(3), stroke:'#d9480f', 'stroke-opacity':.55, 'stroke-width':B.sw(9), 'stroke-linecap':'round', class:'drawin'}, g);
-    for (let i = 1; i <= 3; i++){ await hop(m, -2, i - 1, -2, i, 700); sStep(); }
-    sNom(); await tween(450, u => ch.place(-2, 3, u < .5 ? 1 + u * .6 : 1.3 * (1 - (u - .5) * 2))); ch.remove(); burst(B, g, -2, 3); sTada(); await sleep(900); }},
- {c:'Los geht\'s! 🧀', last:true, run: async () => { await sleep(300); }}
-];
+const dirStep = (cap, dx, dy, color) => ({c:cap, run: async (B, g) => { const m = mkEmoji(B, g, '🐭', 0, 0); await sleep(600); await walk(B, g, m, 0, 0, dx, dy, 3, color); }});
+const showBoth = (sx, sy, cx, cy) => async (B, g) => { const ch = mkEmoji(B, g, '🧀', cx, cy, {dot:B.mode === 'xy'}); ch.place(cx, cy, 0); mkEmoji(B, g, '🐭', sx, sy); await tween(600, u => ch.place(cx, cy, u)); await sleep(900); };
+const leg = (sx, sy, cx, cy, part, eat) => async (B, g) => {      // part: 'x' = nur x-Strecke, 'y' = nur y-Strecke (ab Käse-x), 'both'
+  const ch = mkEmoji(B, g, '🧀', cx, cy, {dot:B.mode === 'xy'}), x0 = part === 'y' ? cx : sx, m = mkEmoji(B, g, '🐭', x0, sy); await sleep(500);
+  const dl = (x1, y1, x2, y2, c) => el('line', {x1:B.X(x1), y1:B.Y(y1), x2:B.X(x2), y2:B.Y(y2), stroke:c, 'stroke-opacity':.5, 'stroke-width':B.sw(9), 'stroke-linecap':'round', class:'drawin'}, g);
+  if (part !== 'y' && cx !== sx){ dl(sx, sy, cx, sy, XCc); await walk(B, g, m, sx, sy, Math.sign(cx - sx), 0, Math.abs(cx - sx), XCc); }
+  if (part !== 'x' && cy !== sy){ dl(cx, sy, cx, cy, YCc); await walk(B, g, m, cx, sy, 0, Math.sign(cy - sy), Math.abs(cy - sy), YCc); }
+  if (eat){ sNom(); await tween(450, u => ch.place(cx, cy, u < .5 ? 1 + u * .6 : 1.3 * (1 - (u - .5) * 2))); ch.remove(); burst(B, g, cx, cy); sTada(); await sleep(700); } else await sleep(500);
+};
+const resultStep = (sx, sy, cx, cy, txt, color) => async (B, g) => { mkEmoji(B, g, '🧀', cx, cy); mkEmoji(B, g, '🐭', sx, sy);
+  const h = B.mode === 'x'; el('line', {x1:B.X(sx), y1:B.Y(sy), x2:B.X(cx), y2:B.Y(cy), stroke:color, 'stroke-opacity':.55, 'stroke-width':B.sw(9), 'stroke-linecap':'round', class:'drawin'}, g);
+  await sleep(700); tag(B, g, (sx + cx) / 2, (sy + cy) / 2, txt, color, B.px * 2, h ? 'middle' : 'start', h ? 0 : B.esz() * .7, h ? -B.esz() * .85 : 0).setAttribute('class', 'fadein'); await sleep(1200); };
+const GOSTEP = {c:"Los geht's! 🧀", last:true, run: async () => { await sleep(300); }};
+const ISTEPS = {
+ x: [dirStep('Nach <b>rechts</b> → ist <b>plus +</b>', 1, 0, XCc), dirStep('Nach <b>links</b> ← ist <b>minus −</b>', -1, 0, XCc),
+     {c:'Maus bei <b>2</b>, Käse bei <b>−3</b>', run:showBoth(2, 0, -3, 0)}, {c:'Wie weit? <b>5</b> nach links ←', run:leg(2, 0, -3, 0, 'x', true)},
+     {c:'Das gibt <b class="xc">−5</b>', run:resultStep(2, 0, -3, 0, '−5', XCc)}, GOSTEP],
+ y: [dirStep('Nach <b>oben</b> ↑ ist <b>plus +</b>', 0, 1, YCc), dirStep('Nach <b>unten</b> ↓ ist <b>minus −</b>', 0, -1, YCc),
+     {c:'Maus bei <b>1</b>, Käse bei <b>−3</b>', run:showBoth(0, 1, 0, -3)}, {c:'Wie weit? <b>4</b> nach unten ↓', run:leg(0, 1, 0, -3, 'y', true)},
+     {c:'Das gibt <b class="yc">−4</b>', run:resultStep(0, 1, 0, -3, '−4', YCc)}, GOSTEP],
+ xy: [dirStep('Nach <b>rechts</b> → ist <b>plus +</b>', 1, 0, XCc), dirStep('Nach <b>links</b> ← ist <b>minus −</b>', -1, 0, XCc), dirStep('Nach <b>oben</b> ↑ ist <b>plus +</b>', 0, 1, YCc), dirStep('Nach <b>unten</b> ↓ ist <b>minus −</b>', 0, -1, YCc),
+     {c:'Erst <b class="xc">x</b> (←→), dann <b class="yc">y</b> (↑↓)', run: async (B, g) => {
+        el('line', {x1:B.X(-B.lim), y1:B.Y(0), x2:B.X(B.lim), y2:B.Y(0), stroke:XCc, 'stroke-opacity':.4, 'stroke-width':B.sw(16), 'stroke-linecap':'round', class:'drawin'}, g); await sleep(1500);
+        el('line', {x1:B.X(0), y1:B.Y(-B.lim), x2:B.X(0), y2:B.Y(B.lim), stroke:YCc, 'stroke-opacity':.4, 'stroke-width':B.sw(16), 'stroke-linecap':'round', class:'drawin'}, g); await sleep(1200); }},
+     {c:'Maus bei <b>(1|−1)</b>, Käse bei <b>(−2|2)</b>', run:showBoth(1, -1, -2, 2)},
+     {c:'<b class="xc">x</b>: von 1 zu −2 = <b>−3</b> ←', run:leg(1, -1, -2, 2, 'x', false)},
+     {c:'<b class="yc">y</b>: von −1 zu 2 = <b>+3</b> ↑', run:leg(1, -1, -2, 2, 'y', true)}, GOSTEP]
+};
 function iGo(i){
-  II = clamp(i, 0, ISTEPS.length - 1); const tok = ++IT, s = ISTEPS[II]; clearTimeout(iTimer);
+  II = clamp(i, 0, IS.length - 1); const tok = ++IT, s = IS[II]; clearTimeout(iTimer);
   $('iCap').innerHTML = mfix(s.c);
-  $('iDots').innerHTML = ISTEPS.map((_, k) => `<i class="${k === II ? 'on' : ''}"></i>`).join('');
+  $('iDots').innerHTML = IS.map((_, k) => `<i class="${k === II ? 'on' : ''}"></i>`).join('');
   $('iPrev').disabled = II === 0; $('iNext').textContent = s.last ? "Los geht's 🧀" : 'weiter ▶'; $('iPlay').textContent = iAuto ? '⏸' : '▶';
-  IB.draw({lim:4, names:true}); IB.dyn.innerHTML = ''; ac(); const g = el('g', {}, IB.dyn);
+  IB.draw({lim:IMODE === 'xy' ? 4 : 5, mode:IMODE, names:true}); IB.dyn.innerHTML = ''; ac(); const g = el('g', {}, IB.dyn);
   Promise.resolve(s.run(IB, g)).then(() => { if (tok === IT && iAuto && !s.last) iTimer = setTimeout(() => { if (tok === IT && iAuto) iGo(II + 1); }, 1600); }).catch(() => {});
 }
-function iNext(){ if (ISTEPS[II].last) iClose(); else iGo(II + 1); }
-function openIntro(cb){
-  introDone = cb || null; show('intro'); if (!IB) IB = Board($('introSvg')); iAuto = true; IB.draw({lim:4}); iGo(0);
+function iNext(){ if (IS[II].last) iClose(); else iGo(II + 1); }
+function openIntro(stage, cb){
+  IMODE = ISTEPS[stage] ? stage : 'xy'; IS = ISTEPS[IMODE];
+  introDone = cb || null; show('intro'); if (!IB) IB = Board($('introSvg')); iAuto = true; IB.draw({lim:IMODE === 'xy' ? 4 : 5, mode:IMODE}); iGo(0);
   if (S.phase === 'input'){ pauseAt = performance.now(); }
 }
 function iClose(){
@@ -787,9 +873,10 @@ function iClose(){
   if (S.phase === 'input' && pauseAt){ S.t0 += performance.now() - pauseAt; pauseAt = 0; }
   const cb = introDone; introDone = null; if (cb) cb();
 }
+const curAxes = () => (S.task && S.task.axes) || (S.stage && S.stage !== 'auto' ? S.stage : 'x');
 $('iNext').onclick = iNext; $('iPrev').onclick = () => iGo(II - 1); $('iSkip').onclick = iClose;
-$('iPlay').onclick = () => { iAuto = !iAuto; $('iPlay').textContent = iAuto ? '⏸' : '▶'; if (iAuto && !ISTEPS[II].last) iGo(II); };
-$('helpBtn').onclick = () => openIntro(null); $('hIntro').onclick = () => openIntro(null); $('wHelp').onclick = () => openIntro(null);
+$('iPlay').onclick = () => { iAuto = !iAuto; $('iPlay').textContent = iAuto ? '⏸' : '▶'; if (iAuto && !IS[II].last) iGo(II); };
+$('helpBtn').onclick = () => openIntro(curAxes(), null); $('hIntro').onclick = () => openIntro(curAxes(), null); $('wHelp').onclick = () => openIntro(curAxes(), null);
 if (typeof ResizeObserver !== 'undefined'){
   let raf = 0; const ro = new ResizeObserver(() => { cancelAnimationFrame(raf); raf = requestAnimationFrame(() => { if (BD && !$('gameWrap').classList.contains('hidden')) BD.draw({}); if (IB && !$('intro').classList.contains('hidden')) IB.draw({}); }); });
   ro.observe($('board')); ro.observe($('introSvg'));
@@ -814,7 +901,7 @@ function keepRegistered(getPeer){
 }
 
 /* ---------- Host (Beamer oder Raum-Ersteller) ---------- */
-const H = {peer:null, code:'', players:new Map(), phase:'lobby', room:false, creatorPid:null, level:'2', rounds:8, time:30, auto:'0', help:'1', intro:'1', bots:0,
+const H = {peer:null, code:'', players:new Map(), phase:'lobby', room:false, creatorPid:null, stage:'auto', sl:['xy'], si:0, rn:0, level:'2', rounds:8, time:30, auto:'0', help:'1', intro:'1', bots:0,
   round:0, task:null, startAt:0, timer:null, autoT:null, lastQ:[], last:null, ready:false, sig:''};
 const inGame = () => [...H.players.values()];
 const active = () => inGame().filter(p => p.online || p.bot);
@@ -863,8 +950,9 @@ function hRender(){
   } else if (H.phase === 'input' && !H.room) bUpdate();
 }
 function lobbyChips(){
+  chipRow('lStage', STAGE_LBL, () => H.stage, v => H.stage = v);
   chipRow('lLevel', LEVEL_LBL, () => H.level, v => H.level = v);
-  chipRow('lRounds', [[5, '5'], [8, '8'], [10, '10'], [15, '15']], () => H.rounds, v => H.rounds = +v);
+  chipRow('lRounds', [[5, '5'], [8, '8'], [10, '10']], () => H.rounds, v => H.rounds = +v);
   chipRow('lTime', [[20, '20 s'], [30, '30 s'], [45, '45 s'], [60, '60 s'], [0, '∞']], () => H.time, v => H.time = +v);
   chipRow('lAuto', [['0', '👆 per Klick weiter'], ['1', '⏱️ automatisch']], () => H.auto, v => H.auto = v);
   chipRow('lHelp', [['1', 'mit Hilfe'], ['0', 'ohne']], () => H.help, v => H.help = v);
@@ -882,22 +970,27 @@ function hSyncBots(){
 }
 function botAnswer(p){
   const T = H.task, k = Math.random(); let a = T.x, b = T.y;
-  if (k > .8) a = -a || 1; else if (k > .7) b = -b || 1; else if (k > .64){ a = T.y; b = T.x; } else if (k > .6){ a += 1; }
+  if (k > .8) a = -a || 1; else if (k > .7) b = -b || 1; else if (k > .64){ a = T.y; b = T.x; } else if (k > .62){ a = T.cx || 1; } else if (k > .6){ a += 1; }
   hSubmit(p, a, b);
 }
 /* ---------- Ablauf ---------- */
 function hStart(){
-  ac(); H.players.forEach(p => { p.total = 0; p.st = newStats(); }); H.round = 0; H.lastQ = []; H.last = null;
+  ac(); H.players.forEach(p => { p.total = 0; p.st = newStats(); }); H.round = 0;
+  H.sl = H.stage === 'auto' ? ['x', 'y', 'xy'] : [H.stage]; H.si = 0; hBeginStage();
+}
+const hMore = () => H.si + 1 < H.sl.length;
+function hBeginStage(){
+  H.rn = 0; H.lastQ = []; H.last = null; H.phase = 'intro'; const ax = H.sl[H.si];
   if (H.intro === '1'){
-    hBroadcast({t:'intro'});
-    if (!H.room){ S.role = 'host'; setHostUi(true); go('gameWrap'); applyMode(); }
-    openIntro(hNextRound);
+    hBroadcast({t:'intro', stage:ax});
+    if (!H.room){ S.role = 'host'; S.phase = 'intro'; setHostUi(true); go('gameWrap'); applyMode(); }
+    openIntro(ax, hNextRound);
   } else hNextRound();
 }
-const hRoundMsg = () => ({t:'round', n:H.round, rounds:H.rounds, level:H.level, task:H.task, limit:H.time, elapsed:(Date.now() - H.startAt) / 1000, help:H.help});
+const hRoundMsg = () => ({t:'round', n:H.rn, rounds:H.rounds, level:H.level, task:H.task, limit:H.time, elapsed:(Date.now() - H.startAt) / 1000, help:H.help, staged:H.sl.length > 1});
 function hNextRound(){
   clearTimeout(H.timer); clearTimeout(H.autoT);
-  H.round++; H.task = makeTask(H.level, H); H.phase = 'input'; H.startAt = Date.now();
+  H.rn++; H.round++; H.task = makeTask(H.level, H, H.sl[H.si]); H.phase = 'input'; H.startAt = Date.now();
   H.players.forEach(p => { p.g = null; p.sub = false; p.draft = null; p.r = null; p.t = 0; });
   if (H.time) H.timer = setTimeout(hTimeUp, H.time * 1000);
   inGame().filter(p => p.bot).forEach(p => setTimeout(() => { if (H.phase === 'input' && !p.sub) botAnswer(p); }, (3 + Math.random() * Math.min(12, (H.time || 20) * .6)) * 1000));
@@ -911,22 +1004,22 @@ function hSubmit(p, x, y){
 function hCheckAll(){ if (active().length && active().every(p => p.sub)) setTimeout(() => { if (H.phase === 'input') hReveal(); }, 700); }
 function hTimeUp(){ if (H.phase !== 'input') return; inGame().forEach(p => { if (!p.sub && p.draft){ p.g = p.draft; p.sub = true; p.t = H.time; } }); hReveal(); }
 function hReveal(){
-  clearTimeout(H.timer); H.phase = 'reveal';
-  inGame().forEach(p => { if (!(p.online || p.bot) && !p.g){ p.r = null; return; } p.r = p.g ? scoreAnswer(H.task, p.g.x, p.g.y, p.t) : NONE_R(H.time || 0); p.total += p.r.pts; addStats(p.st, p.r); });
+  clearTimeout(H.timer); H.phase = 'reveal'; const ax = H.task.axes;
+  inGame().forEach(p => { if (!(p.online || p.bot) && !p.g){ p.r = null; return; } p.r = p.g ? scoreAnswer(H.task, p.g.x, p.g.y, p.t) : NONE_R(H.time || 0); p.total += p.r.pts; addStats(p.st, p.r, ax); });
   const res = inGame().filter(p => p.r).map(p => ({pid:p.pid, name:p.name, emoji:p.emoji, color:p.color, g:p.g, r:p.r, total:p.total}));
-  const msg = {t:'reveal', task:H.task, round:H.round, rounds:H.rounds, res}; hBroadcast(msg);
+  const msg = {t:'reveal', task:H.task, level:H.level, round:H.rn, rounds:H.rounds, last:H.rn >= H.rounds && !hMore(), res}; hBroadcast(msg);
   if (!H.room) bReveal(msg);
   if (H.auto === '1') H.autoT = setTimeout(() => { if (H.phase === 'reveal') hAdvance(); }, 14000);
 }
 function hAdvance(){
   ac(); if (H.phase === 'input') return hTimeUp();
-  if (H.phase === 'reveal'){ if (H.round >= H.rounds) return hEnd(); return hNextRound(); }
+  if (H.phase === 'reveal'){ if (H.rn >= H.rounds){ if (hMore()){ H.si++; return hBeginStage(); } return hEnd(); } return hNextRound(); }
 }
 function hEnd(){
-  clearTimeout(H.timer); clearTimeout(H.autoT); H.phase = 'end';
+  clearTimeout(H.timer); clearTimeout(H.autoT); H.phase = 'end'; const tot = H.rounds * H.sl.length;
   const rank = inGame().filter(p => p.st.n).map(p => ({pid:p.pid, name:p.name, emoji:p.emoji, total:p.total, st:p.st}));
-  hBroadcast({t:'end', rank, rounds:H.rounds});
-  if (!H.room){ S.phase = 'final'; renderFinal(rank, H.rounds, null); hFinalBtns(); }
+  hBroadcast({t:'end', rank, rounds:tot});
+  if (!H.room){ S.phase = 'final'; renderFinal(rank, tot, null); hFinalBtns(); }
 }
 function hFinalBtns(){
   $('finalBtns').innerHTML = '<button class="go" id="fAgain">🔄 Neues Spiel (alle bleiben)</button><button id="fMenu">🏠 Menü</button>';
@@ -940,7 +1033,7 @@ function startBeamer(){
 }
 function bRound(){
   S.role = 'host'; S.phase = 'hostinput'; setHostUi(true); go('gameWrap'); applyMode(); show('hostBar', false);
-  $('roundInfo').textContent = `Runde ${H.round} / ${H.rounds}`; $('scoreInfo').textContent = ''; $('who').innerHTML = ''; show('evUi', false);
+  $('roundInfo').textContent = `Runde ${H.rn} / ${H.rounds}` + stageTxt(H.task.axes); $('scoreInfo').textContent = ''; $('who').innerHTML = ''; show('evUi', false);
   showRound(H.task, H.level); $('hostBtn').textContent = '▶ Auflösen'; show('hostBtn'); $('hostBtn').disabled = false; bUpdate();
   clearInterval(TM); if (H.time){ show('tbar'); $('tbar').classList.remove('low'); TM = setInterval(bTick, 200); bTick(); } else { show('tbar', false); $('clock').textContent = ''; }
 }
@@ -964,9 +1057,9 @@ async function bReveal(m){
   $('hostInfo').innerHTML = `<div class="msg"><span class="big">✓ ${full.length} von ${res.length} ganz richtig</span></div>
     <div>x ✓ ${xs} · y ✓ ${ys}${fast ? ` · ⚡ ${esc(fast.emoji)} ${esc(fast.name)} (${fast.r.t.toFixed(1).replace('.', ',')} s)` : ''}</div>
     ${top ? `<div>häufigster Fehler: ${top[1]}× ${ERR_SHORT[top[0]]}</div>` : ''}
-    <div class="muted" style="margin-top:.2em">${coord(T.x, T.y).replace('|', ' | ')}</div>`;
+    <div class="muted" style="margin-top:.2em">${solText(T)}</div>`;
   $('hostChips').innerHTML = rank.map((p, i) => `<span class="pchip"><b>${i + 1}.</b> <span class="e">${esc(p.emoji)}</span>${esc(p.name)} <b>${p.total}</b></span>`).join('');
-  $('hostBtn').textContent = H.round >= H.rounds ? 'Endstand 🏆' : 'Nächste Runde ▶'; show('hostBtn'); $('hostBtn').disabled = false;
+  $('hostBtn').textContent = H.rn < H.rounds ? 'Nächste Runde ▶' : hMore() ? 'Nächste Stufe ▶' : 'Endstand 🏆'; show('hostBtn'); $('hostBtn').disabled = false;
 }
 $('hostBtn').onclick = () => { if (S.role === 'host') hAdvance(); };
 
@@ -1023,7 +1116,7 @@ function pOnMsg(m){
   if (!m || typeof m !== 'object') return;
   if (m.t === 'welcome'){ C.name = m.name; C.emoji = m.emoji; C.color = m.color; }
   else if (m.t === 'wait'){ show('intro', false); IT++; if (C.isCreator && H.room && H.phase === 'lobby') pShowRoom(); else showWait(m.text); }
-  else if (m.t === 'intro'){ if (!C.isCreator){ showWait('Gleich geht\'s los …'); openIntro(null); } }
+  else if (m.t === 'intro'){ if (!C.isCreator){ showWait('Gleich geht\'s los …'); openIntro(m.stage, null); } }
   else if (m.t === 'round') pRound(m);
   else if (m.t === 'reveal') pReveal(m);
   else if (m.t === 'end'){
@@ -1036,7 +1129,7 @@ function pRound(m){
   show('intro', false); IT++; S.role = 'player'; S.help = m.help; S.limit = m.limit; S.rounds = m.rounds; S.round = m.n; S.tok++;
   setHostUi(false); go('gameWrap'); applyMode(); show('nextBtn', false);
   const hb = !!C.isCreator && H.room; show('hostBar', hb); document.body.classList.toggle('hb', hb);
-  $('roundInfo').textContent = `Runde ${m.n} / ${m.rounds}`; $('scoreInfo').textContent = '⭐ ' + (C.total || 0); $('who').innerHTML = '';
+  $('roundInfo').textContent = `Runde ${m.n} / ${m.rounds}` + stageTxt(m.task.axes); $('scoreInfo').textContent = '⭐ ' + (C.total || 0); $('who').innerHTML = '';
   showRound(m.task, m.level); show('inUi'); show('evUi', false); $('tbar').classList.remove('low'); $('tfill').style.width = '100%';
   resetInput(); S.phase = 'input'; S.t0 = performance.now() - (m.elapsed || 0) * 1000; startTimer(); renderFields();
 }
@@ -1045,12 +1138,12 @@ function netSubmit(a, b){
   const t = (performance.now() - S.t0) / 1000; clearInterval(TM); S.phase = 'sent'; sDing(); if (GH){ GH.remove(); GH = null; }
   netSend({t:'submit', x:a, y:b});
   show('inUi', false); show('evUi'); show('nextBtn', false); $('resT').innerHTML = ''; $('evRank').textContent = '';
-  $('evMsg').innerHTML = `<span class="big">✓ Abgegeben</span>${mfix(plain(coord(a, b)))} · ${t.toFixed(1).replace('.', ',')} s<br><span class="muted">Warte auf die anderen …</span>`;
+  $('evMsg').innerHTML = `<span class="big">✓ Abgegeben</span>${mfix(ansPlain(S.task, {x:a, y:b}))} · ${t.toFixed(1).replace('.', ',')} s<br><span class="muted">Warte auf die anderen …</span>`;
 }
 async function pReveal(m){
   S.phase = 'reveal'; S.tok++; clearInterval(TM); S.task = m.task;
   const mine = m.res.find(r => r.pid === C.pid); if (mine) C.total = mine.total;
-  if (S.screen !== 'gameWrap'){ setHostUi(false); go('gameWrap'); applyMode(); showRound(m.task, S.level); }
+  if (S.screen !== 'gameWrap'){ setHostUi(false); go('gameWrap'); applyMode(); showRound(m.task, m.level); }
   show('inUi', false); show('evUi'); show('nextBtn', false); $('resT').innerHTML = ''; $('evRank').textContent = ''; $('evMsg').innerHTML = '🐭 …läuft los!';
   const ok = await animateReveal(mine ? [mine] : [], 'solo'); if (!ok) return;
   const r = mine ? mine.r : NONE_R(0), sorted = [...m.res].sort((a, b) => b.total - a.total), place = sorted.findIndex(x => x.pid === C.pid) + 1;
@@ -1058,7 +1151,7 @@ async function pReveal(m){
   $('resT').innerHTML = mine ? resRows([mine], false) : '';
   $('evRank').innerHTML = mine ? `Platz ${place} von ${sorted.length} · ${mine.total} P` : '';
   $('scoreInfo').textContent = '⭐ ' + (C.total || 0);
-  if (!(C.isCreator && H.room)) $('evMsg').innerHTML += `<br><span class="muted">${m.round >= m.rounds ? 'gleich kommt der Endstand …' : 'gleich geht es weiter …'}</span>`;
+  if (!(C.isCreator && H.room)) $('evMsg').innerHTML += `<br><span class="muted">${m.last ? 'gleich kommt der Endstand …' : 'gleich geht es weiter …'}</span>`;
 }
 /* ---------- Nur Handys: Raum erstellen (Host läuft auf diesem Handy) ---------- */
 let wakeLock = null;
@@ -1095,7 +1188,7 @@ setupFs($('hFs')); setupFs($('lFs'));
 ['gesturestart', 'gesturechange'].forEach(t => document.addEventListener(t, e => e.preventDefault(), {passive:false}));
 if (typeof Peer === 'undefined'){ $('mB').disabled = true; $('mC').disabled = true; $('hJoin').disabled = true; }
 BD = Board($('board')); buildPad(); applyMode(); go('home');
-if (Q.get('debug')) window.__dbg = {S, H, C, makeTask, classify, press, fval, ISTEPS, iGo, hStart, hAdvance};
+if (Q.get('debug')) window.__dbg = {S, H, C, makeTask, classify, press, fval, iGo, hStart, hAdvance};
 if (Q.get('join') !== null) startJoin(Q.get('join'), false);
 else if (Q.get('host') !== null) startBeamer();
 })();
