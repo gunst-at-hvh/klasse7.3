@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Chemie-Training: Versuche &amp; Begriffe</title>
+<style>
+:root{--ink:#1b2f7a;--paper:#fbf7ea;--hl:#ffe66b;--good:#1f7a3a;--bad:#b3261e}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;color:var(--ink);background:var(--paper) radial-gradient(#c9c3ad 1.2px,transparent 1.4px) 0 0/24px 24px;
+ font-family:"Ink Free","Segoe Print","Bradley Hand","Chalkboard SE","Comic Sans MS","Marker Felt",cursive;font-size:19px;line-height:1.45}
+#app{max-width:780px;margin:0 auto;padding:14px 14px 60px}
+h1{font-size:2.1em;margin:.2em 0 0;line-height:1.1}
+h2{font-size:1.45em;margin:.2em 0 .4em}
+p{margin:.4em 0}
+.sub{opacity:.8;margin-bottom:12px}
+.card{background:#fff;border:3px solid var(--ink);border-radius:18px 6px 22px 8px/8px 20px 6px 18px;box-shadow:4px 4px 0 var(--ink);padding:14px 16px;margin:14px 0}
+.hl{background:linear-gradient(transparent 55%,var(--hl) 55%)}
+.btn,.chip,.gap{font:inherit;color:var(--ink);background:#fff;border:3px solid var(--ink);cursor:pointer;
+ border-radius:255px 14px 225px 14px/14px 225px 14px 255px;padding:.35em .9em;box-shadow:3px 3px 0 var(--ink);text-align:left}
+.btn:active,.chip:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+.btn:focus-visible,.chip:focus-visible,.gap:focus-visible{outline:3px dashed var(--ink);outline-offset:3px}
+.btn.primary{background:var(--hl);font-weight:700}
+.btn.small{font-size:.8em;padding:.2em .7em}
+.btn.block{display:block;width:100%;margin:10px 0}
+.btn[disabled],.chip[disabled]{opacity:.45;cursor:default}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.exp{display:flex;flex-direction:column;gap:2px}
+.exp b{font-size:1.05em}
+.stars{letter-spacing:2px;font-size:1.1em}
+.sketch{width:100%;height:auto;max-height:300px;display:block;background:#fffef7;border:2px dashed var(--ink);border-radius:10px}
+.sketch text{font-family:inherit}
+.opt{display:block;width:100%;margin:9px 0}
+.opt.sel,.chip.sel{background:var(--hl)}
+.opt.no,.chip.no,.gap.no{background:#f9d9d6;border-color:var(--bad);color:var(--bad)}
+.opt.ok,.chip.ok,.gap.ok{background:#d9f2d9;border-color:var(--good);color:var(--good)}
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0}
+.gap{display:inline-block;min-width:6.5em;min-height:1.6em;padding:0 .5em;margin:0 2px;background:#fffbe0;border-style:dashed;text-align:center;vertical-align:baseline}
+.gap.act{background:var(--hl)}
+.lueck{line-height:2.3}
+.msg{margin:10px 0;padding:8px 12px;border-left:6px solid var(--ink);background:#f4f1e2}
+.msg.good{border-color:var(--good);color:var(--good)}
+.msg.bad{border-color:var(--bad);color:var(--bad)}
+.note{font-size:.85em;border:2px dotted var(--ink);padding:6px 10px;border-radius:8px;margin:10px 0;background:#fffbe0}
+.pair{display:grid;grid-template-columns:1fr 1.4fr;gap:10px}
+.pair .btn{width:100%;margin:5px 0;font-size:.9em}
+.pair .btn.done{opacity:.35;pointer-events:none;text-decoration:line-through}
+.big{font-size:1.6em;text-align:center;margin:16px 0}
+.cats{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.prog{height:14px;border:2px solid var(--ink);border-radius:8px;overflow:hidden;background:#fff;margin:6px 0}
+.prog i{display:block;height:100%;background:var(--hl);border-right:2px solid var(--ink)}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.shake{animation:shake .3s}
+@media (max-width:520px){body{font-size:17px}.pair{grid-template-columns:1fr 1fr}}
+@media (prefers-reduced-motion:reduce){.shake{animation:none}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="wob"><feTurbulence type="fractalNoise" baseFrequency="0.025" numOctaves="2" seed="4" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="3"/></filter></svg>
+<div id="app"></div>
+<noscript>Dieses Übungsspiel braucht JavaScript.</noscript>
+<script>
+"use strict";
+/* ============ Hilfsfunktionen ============ */
+const KEY="chemie-training-sterne-v1";
+let prog={};try{prog=JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){prog={}}
+const saveProg=()=>{try{localStorage.setItem(KEY,JSON.stringify(prog))}catch(e){}};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const starStr=n=>"★".repeat(n)+"☆".repeat(3-n);
+
+/* ============ Skizzen-Bausteine (SVG) ============ */
+const INK="#1b2f7a";let uid=0;
+const S=(o={})=>`fill="${o.fill||"none"}" stroke="${INK}" stroke-width="${o.w||2.4}" stroke-linecap="round" stroke-linejoin="round"${o.dash?` stroke-dasharray="${o.dash}"`:""}`;
+let TXT=[];
+const T=(x,y,s,sz=15,a="middle")=>{TXT.push(`<text x="${x}" y="${y}" font-size="${sz}" text-anchor="${a}" fill="${INK}">${s}</text>`);return ""};
+const arrow=(x1,y1,x2,y2)=>{const a=Math.atan2(y2-y1,x2-x1),h=9,p=t=>[x2-h*Math.cos(a+t),y2-h*Math.sin(a+t)],[ax,ay]=p(.5),[bx,by]=p(-.5);
+ return `<path d="M${x1} ${y1}L${x2} ${y2}M${ax.toFixed(1)} ${ay.toFixed(1)}L${x2} ${y2}L${bx.toFixed(1)} ${by.toFixed(1)}" ${S()}/>`};
+const tube=(x,y,h,layers,w=30)=>{const id="c"+(++uid),r=w/2,p=`M${x} ${y}V${y+h-r}A${r} ${r} 0 0 0 ${x+w} ${y+h-r}V${y}`;
+ let cy=y,o=`<clipPath id="${id}"><path d="${p}Z"/></clipPath>`;
+ layers.forEach(l=>{const hh=l.f*h;if(l.c!=="none")o+=`<rect x="${x}" y="${cy}" width="${w}" height="${hh+1}" fill="${l.c}" opacity=".9" clip-path="url(#${id})"/>`;cy+=hh});
+ return o+`<path d="${p}" ${S()}/>`};
+const glass=(x,y,w,h,c,lv=.6)=>{const id="c"+(++uid),cl=`M${x} ${y}L${x+3} ${y+h}H${x+w-3}L${x+w} ${y}Z`,ly=y+h*(1-lv);
+ return `<clipPath id="${id}"><path d="${cl}"/></clipPath>`+(c==="none"?"":`<rect x="${x}" y="${ly}" width="${w}" height="${y+h-ly}" fill="${c}" opacity=".9" clip-path="url(#${id})"/>`)+`<path d="M${x} ${y}L${x+3} ${y+h}H${x+w-3}L${x+w} ${y}" ${S()}/>`};
+const flame=(x,y,s=1,c="#f28c28")=>`<path d="M${x} ${y}c${-10*s} ${-14*s} ${-2*s} ${-22*s} ${2*s} ${-36*s}c${4*s} ${10*s} ${16*s} ${16*s} ${10*s} ${34*s}c${-3*s} ${8*s} ${-9*s} ${8*s} ${-12*s} ${2*s}z" ${S({fill:c,w:2})}/>`;
+const burst=(cx,cy,r1,r2,n=10,c="#ffd84d")=>{const p=[];for(let i=0;i<n*2;i++){const r=i%2?r1:r2,a=Math.PI*i/n;p.push((cx+r*Math.cos(a)).toFixed(1)+","+(cy+r*Math.sin(a)).toFixed(1))}return `<polygon points="${p.join(" ")}" ${S({fill:c})}/>`};
+const drop=(x,y,c="#6ab0f3",s=1)=>`<path d="M${x} ${y}c${-9*s} ${12*s} ${-10*s} ${22*s} 0 ${22*s}s${9*s} ${-10*s} 0 ${-22*s}z" ${S({fill:c,w:2})}/>`;
+const leaf=(x,y,rot,c="#6bbf59")=>`<g transform="translate(${x} ${y}) rotate(${rot})"><path d="M0 0C20 -28 60 -28 80 0C60 28 20 28 0 0Z" ${S({fill:c})}/><path d="M0 0H80" ${S({w:1.6})}/></g>`;
+const bubbles=(pts,r=4)=>pts.map(([x,y,rr])=>`<circle cx="${x}" cy="${y}" r="${rr||r}" ${S({fill:"#fff",w:1.6})}/>`).join("");
+
+/* ---- Zeichnungen: r=false -> Aufbau, r=true -> Ergebnis ---- */
+const D={};
+D[1]=r=>{let s=`<rect x="25" y="95" width="370" height="105" rx="4" ${S({fill:"#fffef2"})}/>`;
+ const xs=[90,210,330];
+ if(r)[12,24,40].forEach((rr,i)=>s+=`<ellipse cx="${xs[i]}" cy="150" rx="${rr}" ry="${rr*.7}" fill="#ffe27a" opacity=".9" stroke="${INK}" stroke-width="1.6" stroke-dasharray="3 3"/>`);
+ s+=`<ellipse cx="90" cy="150" rx="8" ry="5" ${S({fill:"#d8b77a"})}/><ellipse cx="210" cy="150" rx="11" ry="7" ${S({fill:"#b98b52"})}/><circle cx="330" cy="150" r="13" ${S({fill:"#c9a06a"})}/><path d="M322 150q4-6 8 0t8 0" ${S({w:1.6})}/>`;
+ s+=T(90,190,"Cashew")+T(210,190,"Mandel")+T(330,190,"Walnuss")+T(210,50,"je 1 g, auf Papier zerdrückt",16);
+ if(r)s+=T(90,85,"wenig Öl",14)+T(210,85,"mittel",14)+T(330,85,"sehr viel Öl",14);
+ return s};
+D[2]=r=>{let s="";const X=[40,165,290],Y=50,H=120;
+ if(!r){X.forEach(x=>s+=tube(x,Y,H,[{f:.7,c:"none"},{f:.3,c:"#ffd84d"}]));
+  s+=arrow(55,22,55,Y+10)+T(55,14,"+ Wasser",14)+arrow(180,22,180,Y+10)+T(185,14,"+ Wasser,",14)+T(185,34,"Spülmittel",14)+arrow(305,22,305,Y+10)+T(305,14,"+ Benzin",14);
+  X.forEach(x=>s+=T(x+15,Y+H+22,"1 cm Öl",14));s+=T(210,222,"danach alle schütteln",16);
+ }else{
+  s+=tube(X[0],Y,H,[{f:.1,c:"none"},{f:.45,c:"#ffd84d"},{f:.45,c:"#8cc8f5"}]);
+  s+=tube(X[1],Y,H,[{f:.1,c:"none"},{f:.45,c:"#ffd84d"},{f:.45,c:"#8cc8f5"}])+bubbles([[X[1]+8,Y+10],[X[1]+20,Y+6],[X[1]+14,Y+16]],4);
+  s+=tube(X[2],Y,H,[{f:.1,c:"none"},{f:.9,c:"#ffe98a"}]);
+  s+=T(X[0]+38,Y+30,"Öl",14,"start")+T(X[0]+38,Y+90,"Wasser",14,"start")+T(X[1]+38,Y+8,"Schaum",14,"start")+T(X[1]+38,Y+40,"Öl",14,"start")+T(X[1]+38,Y+95,"Wasser",14,"start")+T(X[2]+38,Y+55,"Benzin",14,"start")+T(X[2]+38,Y+73,"+ Öl",14,"start");
+  s+=T(X[0]+15,Y+H+24,"1",15)+T(X[1]+15,Y+H+24,"2",15)+T(X[2]+15,Y+H+24,"3",15);
+  s+=T(210,222,"nach dem Schütteln",15);}
+ return s};
+D[3]=r=>{let s=`<path d="M90 138h150l-12 32h-126z" ${S({fill:"#cfd6e6"})}/><path d="M238 146L335 136V144L236 154" ${S({fill:"#8a6d4b"})}/><path d="M100 142h130l-3 6h-124z" fill="#ffe66b" stroke="${INK}" stroke-width="1.6"/><rect x="105" y="180" width="120" height="10" ${S({fill:"#aaa"})}/>`;
+ if(!r){s+=flame(130,179,.5)+flame(165,179,.5)+flame(200,179,.5)+T(165,45,"Butter wird erhitzt,",16)+T(165,66,"bis sie sich entzündet",16)}
+ else{s+=flame(120,138,1,"#f28c28")+flame(165,138,1.5,"#f9a03f")+flame(210,138,1.1,"#f28c28")+drop(60,40)+arrow(66,70,100,104)+T(60,30,"Wasser!",14)+burst(320,70,26,42,9)+T(320,75,"BUMM",16)}
+ s+=T(190,218,r?"Wasser auf brennendes Fett":"Pfanne mit Butter",15);return s};
+D[5]=r=>{let s=`<ellipse cx="65" cy="105" rx="38" ry="26" ${S({fill:"#d9b27a"})}/><circle cx="55" cy="100" r="2.5" fill="${INK}"/><circle cx="78" cy="112" r="2.5" fill="${INK}"/>`
+ +arrow(110,105,148,105)+T(130,92,"reiben",14)
+ +`<path d="M155 75h75v70h-75z" ${S({fill:"#f1efe6"})}/><path d="M155 95h75M155 115h75M175 75v70M205 75v70" ${S({w:1.2})}/>`
+ +arrow(236,105,276,105)+T(256,92,"drücken",14)
+ +glass(285,65,75,110,"#bfe0f7",.75);
+ if(r)s+=`<path d="M288 168q15 -8 30 0t38 0l-2 5h-64z" ${S({fill:"#fff"})}/>`+bubbles([[300,166,2],[322,164,2],[345,166,2]],2)+arrow(395,140,352,168)+T(375,130,"weiße Stärke",13);
+ s+=T(65,155,"Kartoffel")+T(193,165,"Tuch")+T(322,198,"Wasser",14);
+ return s};
+D[6]=r=>{let s=`<ellipse cx="130" cy="140" rx="75" ry="42" ${S({fill:"#f1d9a2"})}/>`;
+ if(r)s+=[[95,135],[130,150],[165,130]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="13" fill="#15152b" opacity=".92"/>`).join("");
+ s+=`<rect x="275" y="125" width="42" height="60" rx="8" ${S({fill:"#8a5a2b"})}/><rect x="289" y="100" width="14" height="25" ${S({fill:"#8a5a2b"})}/>`+drop(296,62,"#a0652a",.8)+arrow(280,90,190,120)
+ +T(296,205,"Jod",15)+T(130,205,"Lebensmittel",15);
+ s+=r?T(210,40,"schwarz = Stärke!",20):T(210,40,"Jod wird aufgetropft",18);return s};
+D[7]=r=>{let s=`<path d="M105 100h150v80a8 8 0 0 1-8 8h-134a8 8 0 0 1-8-8z" ${S({fill:r?"#f3efe2":"#bfe0f7"})}/><path d="M105 120H80M255 120h25" ${S({w:5})}/>`;
+ if(!r)s+=bubbles([[140,115,5],[190,108,4],[225,118,5],[165,125,3]])+arrow(190,25,190,75)+T(190,18,"+ Stärkesuspension, rühren",14)+`<path d="M215 60L185 140" ${S({w:4})}/>`;
+ else s+=`<path d="M115 100q15-14 30 0t30 0t30 0t40 0" ${S({fill:"#f3efe2"})}/>`+bubbles([[140,115,6],[190,125,7],[225,112,5],[165,140,4],[205,150,5]])+arrow(330,70,255,100)+T(330,62,"Kleister",15);
+ s+=T(180,215,r?"dick, blasig, klebrig":"Wasser kocht",15);return s};
+D[8]=r=>{let s=glass(80,80,70,100,"#4a2a7a",.8)+glass(260,80,70,100,r?"#eadcf7":"#4a2a7a",r?.8:.8)
+ +drop(295,24,"#e9f6ff")+arrow(295,52,295,76)+T(340,38,"+ Spucke",14,"start")
+ +T(115,200,"ohne Spucke",14)+T(295,200,"mit Spucke",14)+T(200,60,"Stärke + Jod",16);
+ if(r)s+=T(295,220,"entfärbt!",16)+T(115,220,"bleibt dunkel",16);return s};
+D[9]=r=>{let s="";
+ if(!r){s+=leaf(25,160,-8)+`<path d="M15 135h100v55H15z" ${S({fill:"#c9ccd3"})}/><path d="M25 135l8 55M45 135l8 55M65 135l8 55M85 135l8 55" ${S({w:1})}/>`+T(65,208,"Alufolie (dunkel)",13)
+  +leaf(180,160,-8)+`<circle cx="260" cy="45" r="18" ${S({fill:"#ffe66b"})}/><path d="M260 15v-8M260 75v8M230 45h-8M290 45h8M239 24l-6-6M281 24l6-6M239 66l-6 6M281 66l6 6" ${S()}/>`+T(220,208,"42 h Licht",14)
+  +T(330,120,"dann:",14)+T(330,140,"Wasser",14)+T(330,160,"Ethanol",14)+T(330,180,"Jod",14);
+ }else{s+=glass(160,60,100,120,"#4cd04c",.75)+leaf(175,125,-15,"#f3f0c8")+leaf(185,150,10,"#f3f0c8")+T(210,205,"Ethanol wird knallgrün",16)+T(325,120,"Blätter",14)+T(325,140,"entfärbt",14)+T(325,165,"(Chlorophyll",14)+T(325,183,"gelöst)",14)}
+ return s};
+D[10]=r=>{let s=glass(30,100,50,70,"#ffe66b",.6)+glass(100,100,50,70,"#ffb347",.6)+glass(170,100,50,70,"#e8453c",.6)
+ +T(55,92,"3 EL",14)+T(125,92,"6 EL",14)+T(195,92,"9 EL",14)+T(125,195,"je 100 ml Wasser + Zucker",13)+T(125,40,"gefärbte Zuckerlösungen",15);
+ if(!r)s+=tube(300,30,160,[{f:1,c:"none"}],44)+arrow(235,130,292,130)+T(265,118,"langsam",12)+T(322,210,"Standzylinder",13);
+ else s+=tube(300,30,160,[{f:.1,c:"none"},{f:.3,c:"#ffe66b"},{f:.3,c:"#ffb347"},{f:.3,c:"#e8453c"}],44)+T(354,85,"3 EL",13,"start")+T(354,125,"6 EL",13,"start")+T(354,165,"9 EL",13,"start")+arrow(260,70,260,170)+T(262,58,"Dichte ↑",12);
+ return s};
+D[11]=r=>{let s="";
+ if(!r){s+=glass(160,90,100,70,"none")+`<path d="M170 150q40-12 80 0v8h-80z" fill="#f4ecd8" stroke="${INK}" stroke-width="1.6"/>`+bubbles([[185,146,2],[210,144,2],[235,146,2]],1.5)+`<rect x="150" y="190" width="120" height="10" ${S({fill:"#aaa"})}/>`+flame(190,188,.8)+flame(230,188,.8)+T(210,40,"Zucker über dem Gasbrenner erhitzen",16)+T(210,222,"Zucker (weiß)",14);
+ }else{const C=[45,125,205,285,365],F=["#f4ecd8","#b9772f","#222","#222","#222"],L=["Zucker","Karamell","verkohlt","brennt","Kohle"];
+  C.forEach((c,i)=>{s+=glass(c-25,85,50,60,"none")+`<rect x="${c-22}" y="${i===0?118:i===1?112:100}" width="44" height="${i===0?26:i===1?32:44}" fill="${F[i]}" opacity=".92"/>`+T(c,170,L[i],14);if(i<4)s+=arrow(c+28,115,c+52,115)});
+  s+=flame(285,100,.9,"#f28c28")+T(210,40,"Zucker wird immer stärker erhitzt",16)+T(210,210,"Kohlenhydrate = Kohle + Wasser",16)}
+ return s};
+
+/* ============ Daten: Versuche ============ */
+const EXP=[
+{id:1,title:"Fette und Öle",
+ aufbau:"Cashew, Walnuss und Mandel (je 1 g) werden auf Papier zerdrückt.",
+ obs:{q:"Was siehst du auf dem Papier?",opts:["Die Walnuss macht den größten Fettfleck, die Cashew fast keinen.","Alle drei machen gleich große Flecken.","Nur die Mandel hinterlässt einen Fleck.","Das Papier löst sich auf."]},
+ terms:{ok:["Lipide"],decoy:["Suspension","Emulsion","Irreversibel","Amylase","Hydrophil","Phasentrennung"]},
+ gaps:{text:"Fette und Öle zusammen heißen {Lipide}. Die Walnuss enthält am {meisten} Öl, die Cashew am {wenigsten}.",decoy:["Emulgator","Suspension"]},
+ merk:"Alle Nüsse und Samen enthalten Öl. Fette sind fest, Öle sind flüssig."},
+{id:2,title:"Löslichkeitstest",
+ aufbau:"In drei Reagenzgläser kommt je 1 cm Öl. Dazu: (1) 1 cm Wasser, (2) 1 cm Wasser + 1 Tropfen Spülmittel, (3) 1 cm Benzin. Alle werden geschüttelt.",
+ obs:{q:"Was passiert in den drei Gläsern?",opts:["(1) Öl schwimmt oben, trennt sich nach dem Schütteln wieder. (2) Schaum, mischt sich beim Schütteln, trennt sich wieder. (3) Benzin mischt sich gut mit Öl und trennt sich nicht.","Öl sinkt in allen Gläsern nach unten.","In allen drei Gläsern mischt sich alles dauerhaft.","Benzin trennt sich vom Öl wie Wasser vom Öl."]},
+ terms:{ok:["Hydrophob","Lipophil","Emulgator","Dichte"],decoy:["Suspension","Amylase","Irreversibel","Stoffumwandlung","Photosynthese"]},
+ gaps:{text:"Öl und Wasser mischen sich nicht, Öl ist {hydrophob}. Es schwimmt oben, weil es eine geringere {Dichte} hat. Spülmittel ist ein {Emulgator}. Benzin löst sich in Öl, es ist {lipophil}.",decoy:["hydrophil","Suspension"]},
+ merk:"Öl = hydrophob (wasserfeindlich). Benzin = lipophil (ölfreundlich). Spülmittel = Emulgator."},
+{id:3,title:"Löschversuch mit überhitztem Fett",
+ aufbau:"Butter wird erhitzt, bis sie sich entzündet. Dann wird versucht, sie mit Wasser zu löschen.",
+ obs:{q:"Was passiert, wenn man Wasser auf das brennende Fett spritzt?",opts:["Es gibt eine Explosion (Stichflamme), das Fett spritzt brennend weg.","Das Wasser löscht die Flamme sofort.","Die Flamme wird langsam kleiner.","Das Wasser perlt ab, nichts passiert."]},
+ terms:{ok:["Dichte","Siedepunkt","Stichflamme"],decoy:["Suspension","Amylase","Chlorophyll","Emulgator","Irreversibel"]},
+ gaps:{text:"Wasser hat eine höhere {Dichte} als Fett und sinkt darunter. Dort sind über 200 °C, das ist über dem {Siedepunkt} von Wasser. Es verdampft schlagartig, sein Volumen wird etwa {1700}-fach größer und reißt Fett nach oben. Fett kommt mit mehr Sauerstoff in Berührung: {Stichflamme}.",decoy:["Emulsion","17","Sauerstoffmangel"]},
+ merk:"Brennendes Fett nie mit Wasser löschen! Mit Deckel oder Löschdecke ersticken."},
+{id:5,title:"Kohlenhydrate: Stärke aus der Kartoffel",
+ aufbau:"Eine Kartoffel wird gerieben, in ein Tuch gegeben und im Wasser ausgedrückt.",
+ obs:{q:"Was passiert mit der Stärke im Wasser?",opts:["Sie setzt sich als weißer Bodensatz am Boden ab.","Sie löst sich vollständig klar auf.","Sie schwimmt oben auf dem Wasser.","Das Wasser wird blau."]},
+ terms:{ok:["Suspension","Heterogen"],decoy:["Lösung","Homogen","Emulsion","Amylase","Photosynthese","Stoffumwandlung"]},
+ gaps:{text:"Beim Reiben werden die {Zellwände} zerstört, so kommt man an die Stärke. Sie löst sich nicht und setzt sich ab. Feststoff in Flüssigkeit ist eine {Suspension}, also ein {heterogenes} Gemisch.",decoy:["Lösung","homogenes","Chloroplasten"]},
+ merk:"Stärke ist in den Zellen. Durch Reiben werden die Zellwände kaputt, man kann die Stärke auswaschen."},
+{id:6,title:"Nachweis von Stärke",
+ aufbau:"Lebensmittel werden mit Jod beträufelt.",
+ obs:{q:"Was passiert bei stärkehaltigen Lebensmitteln?",opts:["Sie werden schwarz.","Sie werden grün.","Nichts, das Jod verschwindet.","Sie werden rot."]},
+ terms:{ok:["Stärke","Nachweis"],decoy:["Glukose","Emulgator","Chlorophyll","Dichte","Lösung"]},
+ gaps:{text:"Jod färbt sich bei Kontakt mit {Stärke} {schwarz}. So kann man Stärke in Lebensmitteln {nachweisen}.",decoy:["Zucker","gelb","lösen"]},
+ merk:"Jod + Stärke = schwarz (blauschwarz).",
+ note:"Im Heft fehlt für diesen Versuch die Auswertung und welche Lebensmittel getestet wurden. Das hier ist ein Vorschlag, bitte mit dem Unterricht abgleichen."},
+{id:7,title:"Verkleisterung von Stärke",
+ aufbau:"Wasser wird bis zum Siedepunkt erhitzt. Die Stärkesuspension wird hinzugefügt und dauernd gerührt.",
+ obs:{q:"Was beobachtest du sofort?",opts:["Es verdickt sich und macht Blasen.","Die Stärke löst sich klar wie Zucker.","Die Stärke sinkt nach unten.","Das Wasser wird dunkelblau."]},
+ terms:{ok:["Irreversibel","Stärke"],decoy:["Reversibel","Emulgator","Chlorophyll","Lipophil","Amylase"]},
+ gaps:{text:"Die Stärkekörner {quellen} auf und verkleben zu einer festen Masse. Die Verkleisterung ist {irreversibel}, also nicht umkehrbar.",decoy:["schrumpfen","reversibel"]},
+ merk:"Verkleistern von Stärke = irreversibel."},
+{id:8,title:"Abbau von Stärke mit Speichel",
+ aufbau:"Zwei Gläser mit Stärkesuspension werden mit Jod eingefärbt. In eins kommt Spucke.",
+ obs:{q:"Was passiert in dem Glas mit Spucke?",opts:["Es entfärbt sich komplett, das Glas ohne Spucke bleibt dunkel.","Es wird noch dunkler.","Beide Gläser entfärben sich gleich.","Es bildet sich Schaum."]},
+ terms:{ok:["Amylase","Enzym","Stärke"],decoy:["Emulgator","Chlorophyll","Dichte","Lipide","Siedepunkt"]},
+ gaps:{text:"Im Speichel ist das Enzym {Amylase}. Sie baut {Stärke} in {Zucker} um. Deshalb verschwindet die dunkle Jodfärbung.",decoy:["Glykogen","Emulgator","Chlorophyll"]},
+ merk:"Amylase (Enzym im Speichel): Stärke wird zu Zucker. Deshalb schmeckt Brot beim langen Kauen süß.",
+ note:"Das Vergleichsglas ohne Spucke steht im Heft nicht ausdrücklich dabei (ergänzt)."},
+{id:9,title:"Nachweis von Stärke in Pflanzen",
+ aufbau:"Ein Blatt wird mit Alufolie lichtdicht verpackt, das andere 42 Stunden mit Licht bestrahlt. Beide Blätter werden in Wasser, dann in Ethanol gekocht und mit Jod beträufelt.",
+ obs:{q:"Was passiert beim Kochen?",opts:["In Wasser passiert nichts. In Ethanol wird das Ethanol knallgrün und beide Blätter sind komplett entfärbt.","In Wasser werden die Blätter schwarz.","Das Ethanol bleibt klar, die Blätter bleiben grün.","Die Blätter lösen sich auf."]},
+ terms:{ok:["Chlorophyll","Photosynthese","Glukose"],decoy:["Amylase","Emulgator","Dichte","Lipide","Siedepunkt"]},
+ gaps:{text:"Beim Kochen werden die Zellen aufgebrochen, dann kann das Ethanol das {Chlorophyll} lösen. Im belichteten Blatt ist Stärke, weil es {Photosynthese} betreiben und über Traubenzucker ({Glukose}) Stärke herstellen konnte.",decoy:["Amylase","Insulin"]},
+ merk:"Ohne Licht keine Photosynthese, also keine Stärke im abgedunkelten Blatt.",
+ note:"Im Heft steht, dass sich das belichtete Blatt mit Jod „leicht braun“ färbt; das Ergebnis für das abgedunkelte Blatt fehlt. Stärke färbt Jod eigentlich blauschwarz. Bitte mit dem Unterricht abgleichen."},
+{id:10,title:"Löslichkeitstest von Zucker (Dichteturm)",
+ aufbau:"Drei Bechergläser mit je 100 ml Wasser: 3 EL, 6 EL und 9 EL Zucker, bunt eingefärbt. Nacheinander von viel Zucker nach wenig Zucker langsam in einen Standzylinder gießen.",
+ obs:{q:"Was siehst du im Standzylinder?",opts:["Die Lösung mit dem meisten Zucker liegt unten, die Schichten bleiben getrennt.","Alle Farben mischen sich sofort zu Braun.","Die Lösung mit dem meisten Zucker schwimmt oben.","Der Zucker setzt sich als Pulver ab, das Wasser bleibt klar."]},
+ terms:{ok:["Lösung","Dichte","Hydrophil"],decoy:["Emulsion","Suspension","Lipophil","Amylase","Irreversibel"]},
+ gaps:{text:"Zucker ist {wasserlöslich}. Je mehr Zucker die Lösung enthält, desto höher wird die {Dichte}. Die Lösung mit der höchsten Dichte sinkt immer nach {unten}.",decoy:["unlöslich","oben"]},
+ merk:"Mehr Zucker = höhere Dichte = sinkt nach unten."},
+{id:11,title:"Zucker und Feuer",
+ aufbau:"Zucker wird über dem Gasbrenner geschmolzen.",
+ obs:{q:"Was passiert mit dem Zucker?",opts:["Er schmilzt, karamellisiert, fängt an zu brennen und wird zu schwarzer Zuckerkohle.","Er verdampft restlos.","Er bleibt weiß und unverändert.","Er bildet beim Abkühlen wieder Kristalle."]},
+ terms:{ok:["Irreversibel","Stoffumwandlung","Kohlenhydrate"],decoy:["Emulgator","Suspension","Amylase","Chlorophyll","Hydrophob"]},
+ gaps:{text:"Zucker schmilzt und {karamellisiert}, dann {verkohlt} er und es entsteht Zuckerkohle. Das ist eine {Stoffumwandlung} und {irreversibel}. Dabei wird {Wasserdampf} freigesetzt, deshalb heißt die Stoffgruppe Kohlenhydrate (Kohle + Wasser).",decoy:["kristallisiert","Sauerstoff"]},
+ merk:"Kohlenhydrate = Kohle + Wasser."}
+];
+
+/* ============ Daten: Begriffe ============ */
+const VOC=[
+{t:"Hydrophil",d:"wasserfreundlich, löst sich in Wasser"},
+{t:"Hydrophob",d:"wasserfeindlich, löst sich nicht in Wasser (z. B. Öl)"},
+{t:"Lipophil",d:"ölfreundlich"},
+{t:"Lipophob",d:"ölfeindlich"},
+{t:"Lösung",d:"einheitliches Gemisch aus mindestens zwei Stoffen"},
+{t:"Heterogen",d:"nicht einheitliches Gemisch"},
+{t:"Homogen",d:"einheitliches Gemisch, die Bestandteile erkennt man nicht mehr"},
+{t:"Suspension",d:"Feststoff und Flüssigkeit, setzt sich wieder ab"},
+{t:"Emulsion",d:"zwei Flüssigkeiten, die sich kurz verbinden und wieder trennen"},
+{t:"Emulgator",d:"Hilfsstoff, der die Emulsion stabilisiert"},
+{t:"Phasentrennung",d:"wenn sich zwei Phasen deutlich trennen"},
+{t:"Dekantieren",d:"warten, bis sich etwas absetzt (dann abgießen)"},
+{t:"Irreversibel",d:"nicht umkehrbarer Vorgang"},
+{t:"Amylase",d:"Enzym im Speichel, baut Stärke zu Zucker ab"},
+{t:"Lipide",d:"Fette und Öle"},
+{t:"Masse",d:"Menge an Materie, gemessen in kg"},
+{t:"Einfachzucker",d:"besteht aus einem Baustein (z. B. Glukose)"},
+{t:"Zweifachzucker",d:"besteht aus zwei Bausteinen (z. B. Rohrzucker)"},
+{t:"Mehrfachzucker",d:"besteht aus vielen Bausteinen (z. B. Stärke), nie süß"},
+{t:"Glykogen",d:"Speicherform von Zucker, z. B. in den Muskeln"}
+];
+const BLITZ={
+ mix:{name:"Gemische",cats:["Lösung","Suspension","Emulsion"],items:[
+  ["Zucker in Wasser","Lösung"],["Benzin in Öl","Lösung"],["Stärke in Wasser (setzt sich ab)","Suspension"],["Geriebene Kartoffelstärke in Wasser","Suspension"],["Öl und Wasser, geschüttelt","Emulsion"],["Öl, Wasser und Spülmittel, geschüttelt","Emulsion"]]},
+ wasser:{name:"Wasser und Öl",cats:["Hydrophil","Hydrophob","Lipophil"],items:[
+  ["Öl","Hydrophob"],["Zucker","Hydrophil"],["Benzin","Lipophil"],["Butter und Fett","Hydrophob"],["Zucker löst sich in Wasser: der Zucker ist …","Hydrophil"],["Benzin löst sich in Öl: das Benzin ist …","Lipophil"]]},
+ zucker:{name:"Zuckerarten",cats:["Einfachzucker","Zweifachzucker","Mehrfachzucker"],items:[
+  ["Glukose (Traubenzucker)","Einfachzucker"],["Fructose (Fruchtzucker)","Einfachzucker"],["Galaktose (Schleimzucker)","Einfachzucker"],["Saccharose (Rohrzucker)","Zweifachzucker"],["Laktose (Milchzucker)","Zweifachzucker"],["Maltose (Malzzucker)","Zweifachzucker"],["Stärke","Mehrfachzucker"],["Glykogen","Mehrfachzucker"]]}
+};
+const FACTS=[
+{q:"Warum darf man brennendes Fett nicht mit Wasser löschen?",ok:"Das Wasser verdampft schlagartig und reißt das Fett als Stichflamme nach oben.",bad:["Wasser ist leichter als Fett und schwimmt oben.","Wasser löst das Fett auf und verteilt es.","Das Fett kühlt dadurch zu schnell ab."]},
+{q:"Wie weist man Stärke nach?",ok:"Mit Jod: Es färbt sich schwarz.",bad:["Mit Ethanol: Es wird grün.","Mit Spülmittel: Es schäumt.","Mit Wasser: Es löst sich auf."]},
+{q:"Warum schwimmt Öl auf Wasser?",ok:"Öl hat eine geringere Dichte als Wasser.",bad:["Öl hat eine höhere Dichte als Wasser.","Öl ist hydrophil.","Öl ist schwerer als Wasser."]},
+{q:"Wie nennt man Stoffe, die sich nicht in Wasser lösen (z. B. Öl)?",ok:"Hydrophob",bad:["Hydrophil","Lipophil","Homogen"]},
+{q:"Was macht das Enzym Amylase im Speichel?",ok:"Es baut Stärke in Zucker um.",bad:["Es baut Zucker in Stärke um.","Es löst Fett auf.","Es färbt Jod schwarz."]},
+{q:"Was entsteht, wenn man Zucker sehr stark erhitzt?",ok:"Erst Karamell, dann verkohlt er zu Zuckerkohle; Wasserdampf wird frei.",bad:["Er verdampft komplett.","Er wird zu Öl.","Er kristallisiert zu Stärke."]},
+{q:"Warum heißen Kohlenhydrate so?",ok:"Beim Erhitzen entstehen Kohle und Wasser.",bad:["Sie enthalten Kohlensäure.","Sie werden aus Kohle hergestellt.","Sie lösen sich in Kohlenwasser."]},
+{q:"Was passiert mit überschüssiger Glukose, wenn die Speicher in den Muskeln voll sind?",ok:"Sie wird in Fett umgewandelt und im Fettgewebe gespeichert.",bad:["Sie wird sofort ausgeschieden.","Sie wird zu Stärke.","Sie wird zu Chlorophyll."]},
+{q:"Was bewirkt Insulin?",ok:"Glukose wird in die Körperzellen aufgenommen, Fett wird gespeichert.",bad:["Es baut Stärke im Mund ab.","Es färbt Jod schwarz.","Es löst Fett auf."]},
+{q:"Warum machen Süßigkeiten und Limonade nur kurz satt?",ok:"Sie enthalten schnell verfügbaren Zucker.",bad:["Sie enthalten viele Ballaststoffe.","Sie enthalten viel Stärke.","Sie enthalten nur Fett."]},
+{q:"Warum sinkt beim Dichteturm die Lösung mit viel Zucker nach unten?",ok:"Sie hat die höchste Dichte.",bad:["Sie hat die geringste Dichte.","Sie ist hydrophob.","Sie ist eine Emulsion."]},
+{q:"Wozu dient das Ethanol beim Blattversuch?",ok:"Es löst das Chlorophyll aus dem Blatt.",bad:["Es färbt das Blatt schwarz.","Es baut Stärke ab.","Es macht das Blatt lichtdicht."]},
+{q:"Was ist der Unterschied zwischen Fetten und Ölen?",ok:"Fette sind fest, Öle sind flüssig.",bad:["Fette sind flüssig, Öle sind fest.","Fette lösen sich in Wasser, Öle nicht.","Es gibt keinen Unterschied."]},
+{q:"Was passiert beim Verkleistern von Stärke?",ok:"Die Körner quellen auf und verkleben, das ist nicht umkehrbar.",bad:["Die Stärke löst sich klar auf und kommt zurück, wenn es abkühlt.","Die Stärke wird zu Zucker.","Die Stärke wird hydrophob."]},
+{q:"Woran erkennt man, dass im belichteten Blatt Photosynthese stattgefunden hat?",ok:"Es enthält Stärke, die aus Traubenzucker (Glukose) gebildet wurde.",bad:["Es enthält Ethanol.","Es enthält kein Chlorophyll mehr.","Es ist komplett schwarz verbrannt."]},
+{q:"Welche Kohlenhydrate verdaut der Mensch nicht?",ok:"Nahrungsfasern (Zellulose)",bad:["Glukose","Stärke","Rohrzucker"]}
+];
+
+/* ============ Zustand ============ */
+let st={screen:"home"},ex=null,pg=null,bl=null,ts=null;
+
+/* ============ Ansichten ============ */
+function sketch(id,r){TXT=[];const shapes=D[id](r);return `<svg class="sketch" viewBox="0 0 420 230" role="img" aria-label="Skizze zu Versuch ${id}: ${r?"Ergebnis":"Aufbau"}"><g filter="url(#wob)">${shapes}</g>${TXT.join("")}</svg>`}
+
+function viewHome(){
+ const done=EXP.filter(e=>prog[e.id]).length,stars=EXP.reduce((a,e)=>a+(prog[e.id]||0),0);
+ return `<h1>⚗ Chemie-<span class="hl">Training</span></h1>
+ <p class="sub">Versuche kennen, beobachten, auswerten – und die Fachwörter üben.</p>
+ <div class="card"><h2>1 · Versuche-Parcours</h2>
+ <p>Pro Versuch: Aufbau ansehen → <b>Beobachtung raten</b> → <b>Fachwörter</b> auswählen → <b>Auswertung</b> ergänzen.</p>
+ <div class="prog" aria-hidden="true"><i style="width:${done/EXP.length*100}%"></i></div>
+ <p>${done} von ${EXP.length} geschafft · ${stars} von ${EXP.length*3} Sternen</p>
+ <div class="grid">${EXP.map((e,i)=>`<button class="btn exp" data-a="exp" data-i="${i}"><b>Versuch ${e.id}</b><span>${esc(e.title)}</span><span class="stars">${starStr(prog[e.id]||0)}</span></button>`).join("")}</div>
+ <p class="note">Versuch 4 war in den Notizen nicht dabei und fehlt deshalb. Er lässt sich in der Datei einfach ergänzen.</p></div>
+ <div class="card"><h2>2 · Begriffe-Spiele</h2>
+ <button class="btn block" data-a="pairs">🔗 Begriff und Erklärung zuordnen</button>
+ <button class="btn block" data-a="blitz" data-k="mix">⚡ Blitz: Gemische (Lösung, Suspension, Emulsion)</button>
+ <button class="btn block" data-a="blitz" data-k="wasser">⚡ Blitz: Wasser und Öl (hydrophil, hydrophob, lipophil)</button>
+ <button class="btn block" data-a="blitz" data-k="zucker">⚡ Blitz: Zuckerarten</button></div>
+ <div class="card"><h2>3 · Test-Simulation</h2><p>12 gemischte Fragen wie im Chemietest.</p><button class="btn primary block" data-a="test">Los geht’s</button></div>`}
+
+function viewExp(){
+ const e=EXP[ex.i],steps=["Beobachtung","Fachwörter","Auswertung","Merkblatt"];
+ let h=`<div class="bar"><button class="btn small" data-a="home">← Menü</button><span>Versuch ${e.id} · Schritt ${ex.step+1}/4: ${steps[ex.step]}</span></div><div class="card"><h2>${e.id}. ${esc(e.title)}</h2>`;
+ if(ex.step===0){
+  h+=sketch(e.id,ex.obsDone)+`<p><b>Aufbau:</b> ${esc(e.aufbau)}</p>`;
+  h+=`<p class="hl"><b>${esc(e.obs.q)}</b> Rate zuerst!</p>`;
+  ex.obsOrder.forEach(k=>{const cls=ex.obsDone&&k===0?"ok":ex.obsWrong.has(k)?"no":"";h+=`<button class="btn opt ${cls}${ex.shake===k?" shake":""}" data-a="obs" data-k="${k}"${ex.obsDone?" disabled":""}>${cls==="ok"?"✓ ":cls==="no"?"✗ ":""}${esc(e.obs.opts[k])}</button>`});
+  if(ex.obsDone)h+=`<div class="msg good">Richtig! Das war die Beobachtung. Sie beschreibt nur, was man sieht.</div><button class="btn primary" data-a="next">Weiter: Fachwörter →</button>`;
+  else if(ex.obsWrong.size)h+=`<div class="msg bad">Noch nicht. Schau dir den Aufbau nochmal an.</div>`;
+ }
+ if(ex.step===1){
+  h+=sketch(e.id,true)+`<p><b>Beobachtung:</b> ${esc(e.obs.opts[0])}</p><p class="hl"><b>Welche ${e.terms.ok.length} Fachwörter gehören zur Auswertung?</b></p><div class="chips">`;
+  ex.bank.forEach(w=>{const on=ex.sel.has(w);let cls=on?"sel":"",mark="";if(ex.chk&&on){const ok=e.terms.ok.includes(w);cls=ok?"ok":"no";mark=ok?"✓ ":"✗ "}if(ex.termDone&&e.terms.ok.includes(w)){cls="ok";mark="✓ "}
+   h+=`<button class="chip ${cls}" data-a="term" data-w="${esc(w)}"${ex.termDone?" disabled":""}>${mark}${esc(w)}</button>`});
+  h+=`</div>`;
+  if(ex.termDone)h+=`<div class="msg good">Genau! Diese Wörter braucht die Auswertung.</div><button class="btn primary" data-a="next">Weiter: Auswertung →</button>`;
+  else{h+=`<button class="btn primary" data-a="termcheck"${ex.sel.size?"":" disabled"}>Prüfen</button>`;
+   if(ex.chk)h+=`<div class="msg bad">${ex.chk.bad?`${ex.chk.bad} falsch (✗ antippen entfernt es). `:""}${ex.chk.miss?`${ex.chk.miss} fehlt noch.`:""}</div>`;
+   if(ex.fails>=2)h+=` <button class="btn small" data-a="termshow">Lösung zeigen</button>`}
+ }
+ if(ex.step===2){
+  h+=`<p class="hl"><b>Ergänze die Auswertung.</b> Tippe ein Wort an, es springt in die nächste Lücke (oder erst eine Lücke wählen).</p><div class="lueck">`;
+  let gi=0;ex.gparts.forEach(p=>{if(!p.gap){h+=esc(p.t)}else{const i=gi++,f=ex.fill[i],res=ex.gres?ex.gres[i]:null;
+   const cls=res===true?"ok":res===false?"no":ex.gsel===i?"act":"";
+   h+=`<button class="gap ${cls}" data-a="gslot" data-i="${i}" aria-label="Lücke ${i+1}">${f===null?"…":(res===true?"✓ ":res===false?"✗ ":"")+esc(ex.bank2[f])}</button>`}});
+  h+=`</div><div class="chips">`;
+  ex.bank2.forEach((w,i)=>h+=`<button class="chip" data-a="gchip" data-i="${i}"${ex.fill.includes(i)||ex.gapDone?" disabled":""}>${esc(w)}</button>`);
+  h+=`</div>`;
+  if(ex.gapDone)h+=`<div class="msg good">Perfekt, die Auswertung stimmt!</div><button class="btn primary" data-a="next">Weiter: Merkblatt →</button>`;
+  else{h+=`<button class="btn primary" data-a="gcheck"${ex.fill.every(x=>x!==null)?"":" disabled"}>Prüfen</button>`;
+   if(ex.gres&&ex.gres.includes(false))h+=`<div class="msg bad">Die ✗-Lücken antippen, leeren und neu versuchen.</div>`;
+   if(ex.gfails>=2)h+=` <button class="btn small" data-a="gshow">Lösung zeigen</button>`}
+ }
+ if(ex.step===3){
+  const full=ex.gparts.map(p=>p.gap?`<b class="hl">${esc(p.t)}</b>`:esc(p.t)).join("");
+  const stars=ex.mistakes<=1?3:ex.mistakes<=4?2:1;
+  h+=sketch(e.id,true)+`<p><b>Aufbau:</b> ${esc(e.aufbau)}</p><p><b>Beobachtung:</b> ${esc(e.obs.opts[0])}</p><p><b>Auswertung:</b> ${full}</p><p><b>Merke:</b> ${esc(e.merk)}</p>`;
+  if(e.note)h+=`<div class="note">Hinweis: ${esc(e.note)}</div>`;
+  h+=`<p class="big stars">${starStr(stars)}</p><p style="text-align:center">${ex.mistakes} Fehlversuch${ex.mistakes===1?"":"e"}</p><div class="row" style="justify-content:center">`
+   +(ex.i<EXP.length-1?`<button class="btn primary" data-a="exp" data-i="${ex.i+1}">Nächster Versuch →</button>`:"")+`<button class="btn" data-a="exp" data-i="${ex.i}">Nochmal</button><button class="btn" data-a="home">Menü</button></div>`;
+ }
+ return h+`</div>`}
+
+function viewPairs(){
+ const all=pg.done.size===pg.ps.length;
+ let h=`<div class="bar"><button class="btn small" data-a="home">← Menü</button><span>Fehler: ${pg.mist}</span></div><div class="card"><h2>🔗 Zuordnen</h2><p>Tippe links einen Begriff an und rechts die passende Erklärung.</p><div class="pair"><div>`;
+ pg.L.forEach(i=>h+=`<button class="btn ${pg.done.has(i)?"done":""} ${pg.selL===i?"sel":""} ${pg.bad&&pg.bad.l===i?"no shake":""}" data-a="pl" data-i="${i}">${esc(pg.ps[i].t)}</button>`);
+ h+=`</div><div>`;
+ pg.R.forEach(i=>h+=`<button class="btn ${pg.done.has(i)?"done":""} ${pg.selR===i?"sel":""} ${pg.bad&&pg.bad.r===i?"no shake":""}" data-a="pr" data-i="${i}">${esc(pg.ps[i].d)}</button>`);
+ h+=`</div></div>`;
+ if(all)h+=`<div class="msg good">Geschafft mit ${pg.mist} Fehler${pg.mist===1?"":"n"}!</div><button class="btn primary" data-a="pairs">Neue Runde</button>`;
+ return h+`</div>`}
+
+function viewBlitz(){
+ const set=BLITZ[bl.k];
+ if(bl.i>=bl.items.length)return `<div class="bar"><button class="btn small" data-a="home">← Menü</button></div><div class="card"><h2>⚡ ${esc(set.name)}: fertig</h2><p class="big">${bl.score} von ${bl.items.length} richtig</p><div class="row"><button class="btn primary" data-a="blitz" data-k="${bl.k}">Nochmal</button><button class="btn" data-a="home">Menü</button></div></div>`;
+ const it=bl.items[bl.i];
+ let h=`<div class="bar"><button class="btn small" data-a="home">← Menü</button><span>${bl.i+1}/${bl.items.length}</span></div><div class="card"><h2>⚡ ${esc(set.name)}</h2><div class="prog"><i style="width:${bl.i/bl.items.length*100}%"></i></div><p class="big">${esc(it[0])}</p><div class="cats">`;
+ set.cats.forEach(c=>{const cls=bl.ans?(c===it[1]?"ok":c===bl.ans?"no":""):"";h+=`<button class="btn ${cls}" data-a="bans" data-c="${esc(c)}"${bl.ans?" disabled":""}>${cls==="ok"?"✓ ":cls==="no"?"✗ ":""}${esc(c)}</button>`});
+ h+=`</div>`;
+ if(bl.ans)h+=`<div class="msg ${bl.ans===it[1]?"good":"bad"}">${bl.ans===it[1]?"Richtig!":"Richtig wäre: "+esc(it[1])}</div><button class="btn primary" data-a="bnext">Weiter →</button>`;
+ return h+`</div>`}
+
+function viewTest(){
+ if(ts.i>=ts.qs.length){
+  return `<div class="bar"><button class="btn small" data-a="home">← Menü</button></div><div class="card"><h2>Test-Simulation: Ergebnis</h2><p class="big">${ts.score} von ${ts.qs.length}</p><p class="msg">${ts.score>=10?"Sehr gut vorbereitet!":ts.score>=7?"Gut, die Fehler unten nochmal ansehen.":"Noch etwas üben: Versuche-Parcours und Begriffe-Spiele helfen."}</p>`
+   +(ts.wrong.length?`<h2>Nochmal anschauen</h2>`+ts.wrong.map(w=>`<div class="msg"><b>${esc(w.q)}</b><br>✓ ${esc(w.ok)}</div>`).join(""):"")
+   +`<div class="row"><button class="btn primary" data-a="test">Neuer Test</button><button class="btn" data-a="home">Menü</button></div></div>`}
+ const q=ts.qs[ts.i];
+ let h=`<div class="bar"><button class="btn small" data-a="home">← Menü</button><span>${ts.i+1}/${ts.qs.length}</span></div><div class="card"><div class="prog"><i style="width:${ts.i/ts.qs.length*100}%"></i></div><h2>${esc(q.q)}</h2>`;
+ q.opts.forEach((o,k)=>{const cls=ts.pick!==null?(o===q.ok?"ok":k===ts.pick?"no":""):"";h+=`<button class="btn opt ${cls}" data-a="tans" data-k="${k}"${ts.pick!==null?" disabled":""}>${cls==="ok"?"✓ ":cls==="no"?"✗ ":""}${esc(o)}</button>`});
+ if(ts.pick!==null)h+=`<button class="btn primary" data-a="tnext">${ts.i===ts.qs.length-1?"Ergebnis":"Weiter"} →</button>`;
+ return h+`</div>`}
+
+function render(){
+ const v={home:viewHome,exp:viewExp,pairs:viewPairs,blitz:viewBlitz,test:viewTest}[st.screen];
+ document.getElementById("app").innerHTML=v();
+ window.scrollTo(0,0);
+}
+function rerender(){const y=window.scrollY;document.getElementById("app").innerHTML=({home:viewHome,exp:viewExp,pairs:viewPairs,blitz:viewBlitz,test:viewTest})[st.screen]();window.scrollTo(0,y)}
+
+/* ============ Logik ============ */
+function parseGaps(t){const out=[];let last=0;t.replace(/\{([^}]+)\}/g,(m,w,idx)=>{out.push({t:t.slice(last,idx)});out.push({gap:true,t:w});last=idx+m.length;return m});out.push({t:t.slice(last)});return out}
+function startExp(i){const e=EXP[i],parts=parseGaps(e.gaps.text),answers=parts.filter(p=>p.gap).map(p=>p.t);
+ ex={i,step:0,mistakes:0,obsOrder:shuffle(e.obs.opts.map((t,k)=>k)),obsWrong:new Set(),obsDone:false,shake:null,
+  bank:shuffle([...e.terms.ok,...e.terms.decoy]),sel:new Set(),chk:null,fails:0,termDone:false,
+  gparts:parts,answers,bank2:shuffle([...new Set([...answers,...e.gaps.decoy])]),fill:answers.map(()=>null),gsel:null,gres:null,gfails:0,gapDone:false};
+ st.screen="exp";render()}
+function startPairs(){const ps=shuffle(VOC).slice(0,6);pg={ps,L:shuffle(ps.map((p,i)=>i)),R:shuffle(ps.map((p,i)=>i)),selL:null,selR:null,done:new Set(),bad:null,mist:0};st.screen="pairs";render()}
+function startBlitz(k){bl={k,items:shuffle(BLITZ[k].items),i:0,score:0,ans:null};st.screen="blitz";render()}
+function startTest(){
+ const f=shuffle(FACTS).slice(0,8).map(x=>({q:x.q,ok:x.ok,opts:shuffle([x.ok,...x.bad])}));
+ const v=shuffle(VOC).slice(0,4).map(p=>({q:`Was bedeutet „${p.t}“?`,ok:p.d,opts:shuffle([p.d,...shuffle(VOC.filter(o=>o!==p)).slice(0,3).map(o=>o.d)])}));
+ ts={qs:shuffle([...f,...v]),i:0,score:0,pick:null,wrong:[]};st.screen="test";render()}
+function pairResolve(){
+ if(pg.selL===null||pg.selR===null)return;
+ if(pg.selL===pg.selR){pg.done.add(pg.selL);pg.selL=pg.selR=null}
+ else{pg.mist++;pg.bad={l:pg.selL,r:pg.selR};pg.selL=pg.selR=null;setTimeout(()=>{if(pg){pg.bad=null;rerender()}},600)}
+}
+function finishExp(){const stars=ex.mistakes<=1?3:ex.mistakes<=4?2:1,id=EXP[ex.i].id;prog[id]=Math.max(prog[id]||0,stars);saveProg()}
+
+document.getElementById("app").addEventListener("click",ev=>{
+ const b=ev.target.closest("[data-a]");if(!b||b.disabled)return;
+ const a=b.dataset.a,e=ex&&EXP[ex.i];
+ if(ex&&a!=="obs")ex.shake=null;
+ switch(a){
+  case"home":st.screen="home";render();return;
+  case"exp":startExp(+b.dataset.i);return;
+  case"pairs":startPairs();return;
+  case"blitz":startBlitz(b.dataset.k);return;
+  case"test":startTest();return;
+  case"obs":{const k=+b.dataset.k;if(ex.obsDone)return;if(k===0)ex.obsDone=true;else{ex.obsWrong.add(k);ex.mistakes++;ex.shake=k}break}
+  case"term":{const w=b.dataset.w;ex.chk=null;ex.sel.has(w)?ex.sel.delete(w):ex.sel.add(w);break}
+  case"termcheck":{const ok=new Set(e.terms.ok),bad=[...ex.sel].filter(w=>!ok.has(w)).length,miss=[...ok].filter(w=>!ex.sel.has(w)).length;
+   if(!bad&&!miss){ex.termDone=true;ex.chk=null}else{ex.chk={bad,miss};ex.fails++;ex.mistakes+=bad+(miss?1:0)}break}
+  case"termshow":ex.termDone=true;ex.sel=new Set(e.terms.ok);ex.chk=null;break;
+  case"gchip":{const i=+b.dataset.i;let slot=ex.gsel!==null&&ex.fill[ex.gsel]===null?ex.gsel:ex.fill.indexOf(null);if(slot<0)break;ex.fill[slot]=i;ex.gsel=null;if(ex.gres)ex.gres[slot]=null;break}
+  case"gslot":{const i=+b.dataset.i;if(ex.fill[i]!==null){ex.fill[i]=null;if(ex.gres)ex.gres[i]=null}else ex.gsel=i;break}
+  case"gcheck":{ex.gres=ex.fill.map((f,i)=>ex.bank2[f]===ex.answers[i]);const wrong=ex.gres.filter(x=>!x).length;if(!wrong)ex.gapDone=true;else{ex.gfails++;ex.mistakes+=wrong}break}
+  case"gshow":ex.fill=ex.answers.map(w=>ex.bank2.indexOf(w));ex.gres=ex.fill.map(()=>true);ex.gapDone=true;break;
+  case"next":ex.step++;if(ex.step===3)finishExp();break;
+  case"pl":pg.selL=+b.dataset.i;pairResolve();break;
+  case"pr":pg.selR=+b.dataset.i;pairResolve();break;
+  case"bans":{if(bl.ans)return;bl.ans=b.dataset.c;if(bl.ans===bl.items[bl.i][1])bl.score++;break}
+  case"bnext":bl.i++;bl.ans=null;break;
+  case"tans":{if(ts.pick!==null)return;const q=ts.qs[ts.i];ts.pick=+b.dataset.k;if(q.opts[ts.pick]===q.ok)ts.score++;else ts.wrong.push(q);break}
+  case"tnext":ts.i++;ts.pick=null;break;
+ }
+ if(a==="next"||a==="bnext"||a==="tnext")render();else rerender();
+});
+render();
+</script>
+</body>
+</html>
