@@ -51,6 +51,9 @@ p{margin:.4em 0}
 .cats{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
 .prog{height:14px;border:2px solid var(--ink);border-radius:8px;overflow:hidden;background:#fff;margin:6px 0}
 .prog i{display:block;height:100%;background:var(--hl);border-right:2px solid var(--ink)}
+.tbl{border-collapse:collapse;width:100%;font-size:.85em;margin:10px 0}.tbl th,.tbl td{border:2px solid var(--ink);padding:6px 8px;text-align:left;vertical-align:top}.tbl th{background:var(--hl)}
+.list{margin:.3em 0 .3em 1.1em;padding:0}.list li{margin:.45em 0}
+.badge{display:inline-block;min-width:1.7em;height:1.7em;border:2px solid var(--ink);border-radius:50%;text-align:center;line-height:1.45;margin-right:.5em;background:var(--hl);font-weight:700}
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
 .shake{animation:shake .3s}
 @media (max-width:520px){body{font-size:17px}.pair{grid-template-columns:1fr 1fr}}
@@ -154,6 +157,13 @@ D[11]=r=>{let s="";
   s+=flame(285,100,.9,"#f28c28")+T(210,40,"Zucker wird immer stärker erhitzt",16)+T(210,210,"Kohlenhydrate = Kohle + Wasser",16)}
  return s};
 
+D.photo=r=>{let s=`<circle cx="50" cy="45" r="20" ${S({fill:"#ffe66b"})}/><path d="M50 12v-8M50 78v8M17 45h-8M83 45h8M26 21l-6-6M74 21l6-6M26 69l-6 6M74 69l6 6" ${S()}/>`
+ +`<path d="M145 118C170 62 250 62 275 118C250 172 170 172 145 118Z" ${S({fill:"#6bbf59"})}/><path d="M145 118H275" ${S({w:1.6})}/>`
+ +arrow(82,66,160,92)+arrow(12,138,138,124)+arrow(210,222,210,166)+arrow(280,108,335,84)+arrow(280,130,335,152);
+ T(128,70,"Licht",15)+T(72,126,"CO₂ (Luft)",14)+T(222,208,"H₂O aus den Wurzeln",14,"start")+T(210,106,"Chlorophyll",14)+T(210,146,"Chloroplasten",13)
+ +T(375,78,"O₂ (Abfall)",14)+T(375,168,"Glukose",15)+T(375,186,"(Zucker)",13)+T(50,106,"Sonne",14);
+ return s};
+
 /* ============ Daten: Versuche ============ */
 const EXP=[
 {id:1,title:"Fette und Öle",
@@ -241,16 +251,16 @@ const VOC=[
 {t:"Masse",d:"Menge an Materie, gemessen in kg"},
 {t:"Einfachzucker",d:"besteht aus einem Baustein (z. B. Glukose)"},
 {t:"Zweifachzucker",d:"besteht aus zwei Bausteinen (z. B. Rohrzucker)"},
-{t:"Mehrfachzucker",d:"besteht aus vielen Bausteinen (z. B. Stärke), nie süß"},
-{t:"Glykogen",d:"Speicherform von Zucker, z. B. in den Muskeln"}
+{t:"Vielfachzucker",d:"besteht aus vielen Bausteinen (z. B. Stärke), nie süß (auch: Mehrfachzucker)"},
+{t:"Glykogen",d:"Speicherform von Zucker in Muskeln und Leber"}
 ];
 const BLITZ={
  mix:{name:"Gemische",cats:["Lösung","Suspension","Emulsion"],items:[
   ["Zucker in Wasser","Lösung"],["Benzin in Öl","Lösung"],["Stärke in Wasser (setzt sich ab)","Suspension"],["Geriebene Kartoffelstärke in Wasser","Suspension"],["Öl und Wasser, geschüttelt","Emulsion"],["Öl, Wasser und Spülmittel, geschüttelt","Emulsion"]]},
  wasser:{name:"Wasser und Öl",cats:["Hydrophil","Hydrophob","Lipophil"],items:[
   ["Öl","Hydrophob"],["Zucker","Hydrophil"],["Benzin","Lipophil"],["Butter und Fett","Hydrophob"],["Zucker löst sich in Wasser: der Zucker ist …","Hydrophil"],["Benzin löst sich in Öl: das Benzin ist …","Lipophil"]]},
- zucker:{name:"Zuckerarten",cats:["Einfachzucker","Zweifachzucker","Mehrfachzucker"],items:[
-  ["Glukose (Traubenzucker)","Einfachzucker"],["Fructose (Fruchtzucker)","Einfachzucker"],["Galaktose (Schleimzucker)","Einfachzucker"],["Saccharose (Rohrzucker)","Zweifachzucker"],["Laktose (Milchzucker)","Zweifachzucker"],["Maltose (Malzzucker)","Zweifachzucker"],["Stärke","Mehrfachzucker"],["Glykogen","Mehrfachzucker"]]}
+ zucker:{name:"Zuckerarten",cats:["Einfachzucker","Zweifachzucker","Vielfachzucker","Nahrungsfasern"],items:[
+  ["Glukose (Traubenzucker)","Einfachzucker"],["Fructose (Fruchtzucker)","Einfachzucker"],["Galaktose (Schleimzucker)","Einfachzucker"],["Saccharose (Rohrzucker)","Zweifachzucker"],["Laktose (Milchzucker)","Zweifachzucker"],["Maltose (Malzzucker)","Zweifachzucker"],["Stärke","Vielfachzucker"],["Glykogen","Vielfachzucker"],["Zellulose","Nahrungsfasern"]]}
 };
 const FACTS=[
 {q:"Warum darf man brennendes Fett nicht mit Wasser löschen?",ok:"Das Wasser verdampft schlagartig und reißt das Fett als Stichflamme nach oben.",bad:["Wasser ist leichter als Fett und schwimmt oben.","Wasser löst das Fett auf und verteilt es.","Das Fett kühlt dadurch zu schnell ab."]},
@@ -271,11 +281,68 @@ const FACTS=[
 {q:"Welche Kohlenhydrate verdaut der Mensch nicht?",ok:"Nahrungsfasern (Zellulose)",bad:["Glukose","Stärke","Rohrzucker"]}
 ];
 
+VOC.push(
+{t:"Fotosynthese",d:"Pflanzen bilden aus Wasser und CO₂ mit Licht Traubenzucker und Sauerstoff"},
+{t:"Chlorophyll",d:"grüner Farbstoff, fängt das Licht ein"},
+{t:"Chloroplasten",d:"Zellbestandteile im Blatt, in denen die Fotosynthese stattfindet"},
+{t:"Spaltöffnungen",d:"kleine Öffnungen im Blatt: CO₂ kommt rein, O₂ geht raus"},
+{t:"Stärke",d:"Speicherstoff der Pflanzen aus vielen Glukose-Bausteinen"},
+{t:"Glukose",d:"Traubenzucker, ein Einfachzucker"},
+{t:"Insulin",d:"bringt Glukose in die Zellen und sorgt dafür, dass Fett gespeichert wird"});
+const PAIRSETS={
+ photo:{name:"Fotosynthese-Begriffe",pairs:[VOC.find(p=>p.t==="Fotosynthese"),VOC.find(p=>p.t==="Chlorophyll"),VOC.find(p=>p.t==="Chloroplasten"),VOC.find(p=>p.t==="Spaltöffnungen"),VOC.find(p=>p.t==="Stärke"),VOC.find(p=>p.t==="Glukose")]},
+ bausteine:{name:"Zuckerarten und ihre Bausteine",pairs:[{t:"Einfachzucker",d:"1 Baustein"},{t:"Zweifachzucker",d:"2 Bausteine"},{t:"Vielfachzucker",d:"<10 bis 1.000 Bausteine"},{t:"Nahrungsfasern",d:"100 bis 10.000 Bausteine"}]},
+ fach:{name:"Fachnamen der Zuckerarten",pairs:[{t:"Monosaccharide",d:"Einfachzucker"},{t:"Disaccharide",d:"Zweifachzucker"},{t:"Polysaccharide",d:"Vielfachzucker (z. B. Stärke, Glykogen)"},{t:"Zellulose",d:"Nahrungsfaser, vom Menschen nicht verdaulich"}]},
+ namen:{name:"Zuckernamen",pairs:[{t:"Traubenzucker",d:"Glukose"},{t:"Fruchtzucker",d:"Fructose"},{t:"Schleimzucker",d:"Galaktose"},{t:"Rüben- oder Rohrzucker",d:"Saccharose"},{t:"Milchzucker",d:"Laktose"},{t:"Malzzucker",d:"Maltose"}]}
+};
+const GAPSETS={
+ formel:{title:"Formel der Fotosynthese",intro:"Setze die vier Stoffe in die Formel ein.",
+  text:"Wasser: {6 H₂O}  +  Kohlenstoffdioxid: {6 CO₂}  →  (Licht, Chlorophyll)  →  Traubenzucker: {C₆H₁₂O₆}  +  Sauerstoff: {6 O₂}",
+  decoy:["12 H₂O","6 N₂","C₂H₅OH"],merk:"6 H₂O + 6 CO₂ → C₆H₁₂O₆ + 6 O₂. Die Energie des Sonnenlichts ist danach chemisch in der Glukose gespeichert."},
+ worte:{title:"Fotosynthese in Worten",intro:"Ergänze den Text mit den passenden Wörtern.",
+  text:"Die Pflanze nimmt {Kohlenstoffdioxid} aus der Luft und {Wasser} aus dem Boden auf. Das grüne {Chlorophyll} in den {Chloroplasten} fängt das {Licht} ein. Daraus entstehen {Traubenzucker} und {Sauerstoff}. Viele Zuckerbausteine werden zu {Stärke} verknüpft und gespeichert.",
+  decoy:["Stickstoff","Insulin","Amylase"],merk:"Wasser + Kohlenstoffdioxid → Glukose + Sauerstoff, mit Licht und Chlorophyll."},
+ zucker:{title:"Kohlenhydrate in Worten",intro:"Ergänze den Text mit den passenden Wörtern.",
+  text:"Alle Kohlenhydrate bestehen aus Wasserstoff, {Kohlenstoff} und {Sauerstoff}. Einfachzucker stehen {schnell} als Energie zur Verfügung, weil sie nicht {gespalten} werden müssen. Zellulose ist ein {Ballaststoff}, der Mensch kann sie nicht {verdauen}.",
+  decoy:["langsam","Stickstoff","Fett"],merk:"Wenig Bausteine = schnell im Blut, aber nur kurz satt. Zellulose ist für den Darm trotzdem wichtig."}
+};
+const ORDERS={
+ photo:{title:"Ablauf der Fotosynthese",intro:"Tippe die Schritte in der richtigen Reihenfolge an.",
+  steps:["Das Chlorophyll in den Chloroplasten fängt das Sonnenlicht ein.","Wasser aus den Wurzeln und Kohlenstoffdioxid durch die Spaltöffnungen gelangen ins Blatt.","Mit der Lichtenergie wird das Wasser gespalten.","Es entsteht Glukose, der Sauerstoff wird als Abfall abgegeben.","Viele Glukose-Bausteine werden zu Stärke verknüpft und gespeichert."],
+  merk:"Licht einfangen → Stoffe aufnehmen → Wasser spalten → Glukose + Sauerstoff → Stärke speichern."},
+ zucker:{title:"Der Weg des Zuckers im Körper",intro:"Tippe die Schritte in der richtigen Reihenfolge an.",
+  steps:["Im Verdauungstrakt werden Kohlenhydrate in Glukose, Fructose und Galaktose zerlegt.","Die Darmwand nimmt die Einfachzucker auf, sie gelangen ins Blut.","Der Blutzuckerspiegel steigt und Insulin wird freigesetzt.","Insulin schleust die Glukose in die Körperzellen.","Überschuss wird als Glykogen in Muskeln und Leber gespeichert.","Sind die Speicher voll, wird der Rest in Fett umgewandelt und im Fettgewebe gespeichert."],
+  merk:"Zerlegen → ins Blut → Insulin → in die Zellen → Glykogen → Fett."}
+};
+const QUIZ={
+ photo:{title:"Fotosynthese-Quiz",q:[
+  {q:"Was braucht die Pflanze für die Fotosynthese?",ok:"Wasser, Kohlenstoffdioxid und Licht",bad:["Sauerstoff, Traubenzucker und Wärme","Stärke, Wasser und Stickstoff","Nur Licht und Erde"]},
+  {q:"Was entsteht bei der Fotosynthese?",ok:"Traubenzucker (Glukose) und Sauerstoff",bad:["Stärke und Kohlenstoffdioxid","Wasser und Ethanol","Glukose und Insulin"]},
+  {q:"Wie lautet die Formel der Fotosynthese?",ok:"6 H₂O + 6 CO₂ → C₆H₁₂O₆ + 6 O₂",bad:["6 H₂O + 6 O₂ → C₆H₁₂O₆ + 6 CO₂","C₆H₁₂O₆ + 6 O₂ → 6 H₂O + 6 CO₂","6 CO₂ → 6 O₂ + 6 H₂"]},
+  {q:"Wo findet die Fotosynthese in der Pflanze statt?",ok:"In den Chloroplasten der Blattzellen",bad:["In den Wurzeln","In den Spaltöffnungen","Im Ethanol"]},
+  {q:"Wofür ist das Chlorophyll da?",ok:"Es fängt das Sonnenlicht ein (grüner Farbstoff).",bad:["Es baut Stärke ab.","Es nimmt Wasser aus dem Boden auf.","Es erzeugt Kohlenstoffdioxid."]},
+  {q:"Wodurch gelangen CO₂ ins Blatt und O₂ hinaus?",ok:"Durch die Spaltöffnungen",bad:["Durch die Wurzeln","Durch die Blattadern aus dem Wasser","Durch die Samen"]},
+  {q:"Was passiert mit Glukose, die nicht sofort gebraucht wird?",ok:"Sie wird zu Stärke verknüpft und gespeichert.",bad:["Sie wird zu Ethanol.","Sie wird als Sauerstoff abgegeben.","Sie wird zu Chlorophyll."]},
+  {q:"Was ist der Sauerstoff bei der Fotosynthese?",ok:"Ein Abfallprodukt, das abgegeben wird.",bad:["Der Ausgangsstoff, aus dem Zucker entsteht.","Der grüne Farbstoff.","Ein Speicherstoff."]},
+  {q:"Warum sollte das abgedunkelte Blatt keine Stärke enthalten?",ok:"Ohne Licht gibt es keine Fotosynthese.",bad:["Alufolie baut Stärke ab.","Das Ethanol löst die Stärke.","Blätter bilden nie Stärke."]}]},
+ zucker:{title:"Zucker-Quiz",q:[
+  {q:"Wie viele Bausteine hat ein Zweifachzucker?",ok:"2",bad:["1","10","1.000"]},
+  {q:"Welcher Zucker ist ein Einfachzucker?",ok:"Glukose (Traubenzucker)",bad:["Saccharose (Rohrzucker)","Laktose (Milchzucker)","Stärke"]},
+  {q:"Woraus bestehen alle Kohlenhydrate?",ok:"Kohlenstoff, Wasserstoff und Sauerstoff",bad:["Kohlenstoff, Stickstoff und Schwefel","Nur aus Kohlenstoff","Wasserstoff, Stickstoff und Eisen"]},
+  {q:"Warum stehen Einfachzucker schnell als Energie zur Verfügung?",ok:"Sie müssen nicht aufwendig gespalten werden.",bad:["Sie sind unlöslich.","Sie bestehen aus tausend Bausteinen.","Sie werden erst in der Leber gebildet."]},
+  {q:"Wo speichert der Körper überschüssige Glukose als Glykogen?",ok:"In Muskeln und Leber",bad:["In den Knochen","Im Blut","In der Lunge"]},
+  {q:"Was ist Zellulose für den Menschen?",ok:"Ein Ballaststoff, nicht verdaulich, aber wichtig für den Darm",bad:["Ein schneller Energielieferant","Ein Einfachzucker","Ein Enzym"]},
+  {q:"Welche Zuckerarten sind nie süß?",ok:"Vielfachzucker wie Stärke",bad:["Einfachzucker","Zweifachzucker","Alle Zucker sind süß"]},
+  {q:"Was ist Glykogen?",ok:"Speicherform von Zucker im Körper (tierische Stärke)",bad:["Ein Einfachzucker","Ein Enzym im Speichel","Der grüne Pflanzenfarbstoff"]},
+  {q:"Wie viele Bausteine haben Nahrungsfasern (Zellulose) etwa?",ok:"100 bis 10.000",bad:["1","2","unter 10"]}]}
+};
+FACTS.push(...QUIZ.photo.q,...QUIZ.zucker.q);
+
 /* ============ Zustand ============ */
-let st={screen:"home"},ex=null,pg=null,bl=null,ts=null;
+let st={screen:"home"},ex=null,pg=null,bl=null,ts=null,gg=null,od=null;
 
 /* ============ Ansichten ============ */
-function sketch(id,r){TXT=[];const shapes=D[id](r);return `<svg class="sketch" viewBox="0 0 420 230" role="img" aria-label="Skizze zu Versuch ${id}: ${r?"Ergebnis":"Aufbau"}"><g filter="url(#wob)">${shapes}</g>${TXT.join("")}</svg>`}
+function sketch(id,r){TXT=[];const shapes=D[id](r);return `<svg class="sketch" viewBox="0 0 420 230" role="img" aria-label="Skizze ${typeof id==="number"?"zu Versuch "+id+": "+(r?"Ergebnis":"Aufbau"):"zur Fotosynthese"}"><g filter="url(#wob)">${shapes}</g>${TXT.join("")}</svg>`}
 
 function viewHome(){
  const done=EXP.filter(e=>prog[e.id]).length,stars=EXP.reduce((a,e)=>a+(prog[e.id]||0),0);
@@ -287,12 +354,27 @@ function viewHome(){
  <p>${done} von ${EXP.length} geschafft · ${stars} von ${EXP.length*3} Sternen</p>
  <div class="grid">${EXP.map((e,i)=>`<button class="btn exp" data-a="exp" data-i="${i}"><b>Versuch ${e.id}</b><span>${esc(e.title)}</span><span class="stars">${starStr(prog[e.id]||0)}</span></button>`).join("")}</div>
  <p class="note">Versuch 4 war in den Notizen nicht dabei und fehlt deshalb. Er lässt sich in der Datei einfach ergänzen.</p></div>
- <div class="card"><h2>2 · Begriffe-Spiele</h2>
- <button class="btn block" data-a="pairs">🔗 Begriff und Erklärung zuordnen</button>
+ <div class="card"><h2>2 · Fotosynthese</h2>
+ <button class="btn block" data-a="learn" data-k="photo">📖 Erklärung mit Skizze lesen</button>
+ <button class="btn block" data-a="gap" data-k="formel">🧪 Formel zusammensetzen</button>
+ <button class="btn block" data-a="gap" data-k="worte">✍ Fotosynthese in Worten (Lückentext)</button>
+ <button class="btn block" data-a="order" data-k="photo">🔢 Ablauf in die richtige Reihenfolge bringen</button>
+ <button class="btn block" data-a="pairs" data-k="photo">🔗 Begriffe zuordnen</button>
+ <button class="btn block" data-a="quiz" data-k="photo">❓ Fotosynthese-Quiz</button></div>
+ <div class="card"><h2>3 · Zucker und Ernährung</h2>
+ <button class="btn block" data-a="learn" data-k="zucker">📖 Tabelle und Erklärung lesen</button>
+ <button class="btn block" data-a="pairs" data-k="bausteine">🔗 Zuckerarten und Bausteine zuordnen</button>
+ <button class="btn block" data-a="pairs" data-k="fach">🔗 Fachnamen zuordnen (Mono-, Di-, Polysaccharide)</button>
+ <button class="btn block" data-a="pairs" data-k="namen">🔗 Zuckernamen zuordnen (Traubenzucker = Glukose …)</button>
+ <button class="btn block" data-a="blitz" data-k="zucker">⚡ Blitz: Zuckerarten</button>
+ <button class="btn block" data-a="gap" data-k="zucker">✍ Kohlenhydrate in Worten (Lückentext)</button>
+ <button class="btn block" data-a="order" data-k="zucker">🔢 Der Weg des Zuckers im Körper</button>
+ <button class="btn block" data-a="quiz" data-k="zucker">❓ Zucker-Quiz</button></div>
+ <div class="card"><h2>4 · Begriffe-Spiele</h2>
+ <button class="btn block" data-a="pairs" data-k="vocab">🔗 Begriff und Erklärung zuordnen</button>
  <button class="btn block" data-a="blitz" data-k="mix">⚡ Blitz: Gemische (Lösung, Suspension, Emulsion)</button>
- <button class="btn block" data-a="blitz" data-k="wasser">⚡ Blitz: Wasser und Öl (hydrophil, hydrophob, lipophil)</button>
- <button class="btn block" data-a="blitz" data-k="zucker">⚡ Blitz: Zuckerarten</button></div>
- <div class="card"><h2>3 · Test-Simulation</h2><p>12 gemischte Fragen wie im Chemietest.</p><button class="btn primary block" data-a="test">Los geht’s</button></div>`}
+ <button class="btn block" data-a="blitz" data-k="wasser">⚡ Blitz: Wasser und Öl (hydrophil, hydrophob, lipophil)</button></div>
+ <div class="card"><h2>5 · Test-Simulation</h2><p>12 gemischte Fragen wie im Chemietest.</p><button class="btn primary block" data-a="test">Los geht’s</button></div>`}
 
 function viewExp(){
  const e=EXP[ex.i],steps=["Beobachtung","Fachwörter","Auswertung","Merkblatt"];
@@ -339,12 +421,12 @@ function viewExp(){
 
 function viewPairs(){
  const all=pg.done.size===pg.ps.length;
- let h=`<div class="bar"><button class="btn small" data-a="home">← Menü</button><span>Fehler: ${pg.mist}</span></div><div class="card"><h2>🔗 Zuordnen</h2><p>Tippe links einen Begriff an und rechts die passende Erklärung.</p><div class="pair"><div>`;
+ let h=`<div class="bar"><button class="btn small" data-a="home">← Menü</button><span>Fehler: ${pg.mist}</span></div><div class="card"><h2>🔗 ${esc(pg.title)}</h2><p>Tippe links einen Begriff an und rechts die passende Erklärung.</p><div class="pair"><div>`;
  pg.L.forEach(i=>h+=`<button class="btn ${pg.done.has(i)?"done":""} ${pg.selL===i?"sel":""} ${pg.bad&&pg.bad.l===i?"no shake":""}" data-a="pl" data-i="${i}">${esc(pg.ps[i].t)}</button>`);
  h+=`</div><div>`;
  pg.R.forEach(i=>h+=`<button class="btn ${pg.done.has(i)?"done":""} ${pg.selR===i?"sel":""} ${pg.bad&&pg.bad.r===i?"no shake":""}" data-a="pr" data-i="${i}">${esc(pg.ps[i].d)}</button>`);
  h+=`</div></div>`;
- if(all)h+=`<div class="msg good">Geschafft mit ${pg.mist} Fehler${pg.mist===1?"":"n"}!</div><button class="btn primary" data-a="pairs">Neue Runde</button>`;
+ if(all)h+=`<div class="msg good">Geschafft mit ${pg.mist} Fehler${pg.mist===1?"":"n"}!</div><button class="btn primary" data-a="pairs" data-k="${pg.k}">Neue Runde</button>`;
  return h+`</div>`}
 
 function viewBlitz(){
@@ -359,21 +441,69 @@ function viewBlitz(){
 
 function viewTest(){
  if(ts.i>=ts.qs.length){
-  return `<div class="bar"><button class="btn small" data-a="home">← Menü</button></div><div class="card"><h2>Test-Simulation: Ergebnis</h2><p class="big">${ts.score} von ${ts.qs.length}</p><p class="msg">${ts.score>=10?"Sehr gut vorbereitet!":ts.score>=7?"Gut, die Fehler unten nochmal ansehen.":"Noch etwas üben: Versuche-Parcours und Begriffe-Spiele helfen."}</p>`
+  return `<div class="bar"><button class="btn small" data-a="home">← Menü</button></div><div class="card"><h2>${esc(ts.title)}: Ergebnis</h2><p class="big">${ts.score} von ${ts.qs.length}</p><p class="msg">${ts.score>=ts.qs.length*.85?"Sehr gut vorbereitet!":ts.score>=ts.qs.length*.6?"Gut, die Fehler unten nochmal ansehen.":"Noch etwas üben: Versuche-Parcours und Begriffe-Spiele helfen."}</p>`
    +(ts.wrong.length?`<h2>Nochmal anschauen</h2>`+ts.wrong.map(w=>`<div class="msg"><b>${esc(w.q)}</b><br>✓ ${esc(w.ok)}</div>`).join(""):"")
-   +`<div class="row"><button class="btn primary" data-a="test">Neuer Test</button><button class="btn" data-a="home">Menü</button></div></div>`}
+   +`<div class="row"><button class="btn primary" data-a="${ts.k?"quiz":"test"}" data-k="${ts.k||""}">${ts.k?"Nochmal":"Neuer Test"}</button><button class="btn" data-a="home">Menü</button></div></div>`}
  const q=ts.qs[ts.i];
- let h=`<div class="bar"><button class="btn small" data-a="home">← Menü</button><span>${ts.i+1}/${ts.qs.length}</span></div><div class="card"><div class="prog"><i style="width:${ts.i/ts.qs.length*100}%"></i></div><h2>${esc(q.q)}</h2>`;
+ let h=`<div class="bar"><button class="btn small" data-a="home">← Menü</button><span>${esc(ts.title)} · ${ts.i+1}/${ts.qs.length}</span></div><div class="card"><div class="prog"><i style="width:${ts.i/ts.qs.length*100}%"></i></div><h2>${esc(q.q)}</h2>`;
  q.opts.forEach((o,k)=>{const cls=ts.pick!==null?(o===q.ok?"ok":k===ts.pick?"no":""):"";h+=`<button class="btn opt ${cls}" data-a="tans" data-k="${k}"${ts.pick!==null?" disabled":""}>${cls==="ok"?"✓ ":cls==="no"?"✗ ":""}${esc(o)}</button>`});
  if(ts.pick!==null)h+=`<button class="btn primary" data-a="tnext">${ts.i===ts.qs.length-1?"Ergebnis":"Weiter"} →</button>`;
  return h+`</div>`}
 
+function viewLearn(){
+ const k=st.learn,back=`<div class="bar"><button class="btn small" data-a="home">← Menü</button></div>`;
+ if(k==="photo")return back+`<div class="card"><h2>🌿 Fotosynthese: Erklärung</h2>${sketch("photo",true)}
+ <p><b>Was ist das?</b> Pflanzen stellen mit Sonnenlicht aus <b>Wasser</b> und <b>Kohlenstoffdioxid</b> ihren eigenen Zucker her: <b>Traubenzucker (Glukose)</b>. Dabei entsteht <b>Sauerstoff</b> als Abfall.</p>
+ <p class="hl"><b>In Worten:</b> Wasser + Kohlenstoffdioxid → (Licht, Chlorophyll) → Glukose + Sauerstoff</p>
+ <p class="hl"><b>Formel:</b> 6 H₂O + 6 CO₂ → C₆H₁₂O₆ + 6 O₂</p>
+ <ul class="list">
+ <li><b>Wo?</b> In den <b>Chloroplasten</b> der Blattzellen (im Skript „Minikraftwerke“ genannt). Sie enthalten das grüne <b>Chlorophyll</b>, das das Licht einfängt.</li>
+ <li><b>Wie kommen die Stoffe hin?</b> Wasser über die Wurzeln. Kohlenstoffdioxid kommt durch die <b>Spaltöffnungen</b> ins Blatt, der Sauerstoff geht dort wieder hinaus.</li>
+ <li><b>Was passiert mit dem Zucker?</b> Viele Glukose-Bausteine werden zu <b>Stärke</b> verknüpft und in Blättern, Stängeln, Wurzeln und Samen gespeichert (viel Stärke: Getreide, Kartoffeln, Hülsenfrüchte, Bananen).</li>
+ <li><b>Energie:</b> Die Energie des Sonnenlichts ist danach chemisch im Zucker gespeichert.</li>
+ <li><b>Warum wichtig?</b> Fast alle Lebewesen hängen direkt oder indirekt von diesen Kohlenhydraten ab. Der Sauerstoff zum Einatmen stammt von Pflanzen, Algen und Bakterien.</li>
+ <li><b>Zu Versuch 9:</b> Das abgedunkelte Blatt sollte keine Stärke haben, weil es ohne Licht keine Fotosynthese gibt. Ethanol löst das Chlorophyll heraus, damit man die Jodfärbung sehen kann.</li></ul>
+ <p class="note">Fotosynthese und Photosynthese sind zwei Schreibweisen desselben Wortes.</p>
+ <div class="row"><button class="btn primary" data-a="gap" data-k="formel">Formel zusammensetzen</button><button class="btn" data-a="order" data-k="photo">Ablauf sortieren</button><button class="btn" data-a="quiz" data-k="photo">Quiz</button></div></div>`;
+ return back+`<div class="card"><h2>🍬 Zucker und Ernährung: Erklärung</h2>
+ <table class="tbl"><tr><th>Art</th><th>Bausteine</th><th>Beispiele</th></tr>
+ <tr><td><b>Einfachzucker</b><br>(Monosaccharide)</td><td>1</td><td>Traubenzucker (Glukose), Fruchtzucker (Fructose), Schleimzucker (Galaktose)</td></tr>
+ <tr><td><b>Zweifachzucker</b><br>(Disaccharide)</td><td>2</td><td>Rüben-/Rohrzucker (Saccharose), Milchzucker (Laktose), Malzzucker (Maltose)</td></tr>
+ <tr><td><b>Vielfachzucker</b><br>(Polysaccharide)</td><td>&lt;10 bis 1.000</td><td>Stärke (pflanzlich), Glykogen (tierisch); nicht süß, nicht löslich</td></tr>
+ <tr><td><b>Nahrungsfasern</b><br>(Zellulose)</td><td>100 bis 10.000</td><td>Zellulose, vom Menschen nicht verdaulich</td></tr></table>
+ <ul class="list">
+ <li>Alle Kohlenhydrate bestehen aus <b>Kohlenstoff, Wasserstoff und Sauerstoff</b>.</li>
+ <li><b>Wenig Bausteine = schnell im Blut</b>, macht aber nur kurz satt. Einfachzucker müssen nicht gespalten werden.</li>
+ <li>Im Verdauungstrakt werden Kohlenhydrate in Glukose, Fructose und Galaktose zerlegt. Die Darmwand nimmt sie auf, sie gelangen ins Blut.</li>
+ <li><b>Insulin</b> schleust Glukose in die Zellen. Überschuss wird als <b>Glykogen</b> in Muskeln und Leber gespeichert, danach als <b>Fett</b>.</li>
+ <li><b>Zellulose</b> kann der Mensch nicht verwerten (Ballaststoff), sie ist aber für den Darm wichtig. Rinder und andere Wiederkäuer können sie mit ihrem Enzymsystem spalten.</li></ul>
+ <div class="row"><button class="btn primary" data-a="pairs" data-k="bausteine">Bausteine zuordnen</button><button class="btn" data-a="order" data-k="zucker">Weg des Zuckers</button><button class="btn" data-a="quiz" data-k="zucker">Quiz</button></div></div>`}
+
+function viewGap(){
+ const s=GAPSETS[gg.k];let gi=0;
+ let h=`<div class="bar"><button class="btn small" data-a="home">← Menü</button><span>Fehler: ${gg.mist}</span></div><div class="card"><h2>${esc(s.title)}</h2><p class="hl"><b>${esc(s.intro)}</b> Tippe ein Wort an, es springt in die nächste Lücke.</p><div class="lueck">`;
+ gg.parts.forEach(p=>{if(!p.gap){h+=esc(p.t)}else{const i=gi++,f=gg.fill[i],res=gg.gres?gg.gres[i]:null,cls=res===true?"ok":res===false?"no":gg.gsel===i?"act":"";
+  h+=`<button class="gap ${cls}" data-a="ggslot" data-i="${i}" aria-label="Lücke ${i+1}">${f===null?"…":(res===true?"✓ ":res===false?"✗ ":"")+esc(gg.bank[f])}</button>`}});
+ h+=`</div><div class="chips">`+gg.bank.map((w,i)=>`<button class="chip" data-a="ggchip" data-i="${i}"${gg.fill.includes(i)||gg.done?" disabled":""}>${esc(w)}</button>`).join("")+`</div>`;
+ if(gg.done)h+=`<div class="msg good">Richtig!</div><p><b>Merke:</b> ${esc(s.merk)}</p><div class="row"><button class="btn primary" data-a="gap" data-k="${gg.k}">Nochmal</button><button class="btn" data-a="home">Menü</button></div>`;
+ else{h+=`<button class="btn primary" data-a="ggcheck"${gg.fill.every(x=>x!==null)?"":" disabled"}>Prüfen</button>`;
+  if(gg.gres&&gg.gres.includes(false))h+=`<div class="msg bad">Die ✗-Lücken antippen, leeren und neu versuchen.</div>`;
+  if(gg.gfails>=2)h+=` <button class="btn small" data-a="ggshow">Lösung zeigen</button>`}
+ return h+`</div>`}
+
+function viewOrder(){
+ const s=ORDERS[od.k],all=od.next>=s.steps.length;
+ let h=`<div class="bar"><button class="btn small" data-a="home">← Menü</button><span>Fehler: ${od.mist}</span></div><div class="card"><h2>${esc(s.title)}</h2><p class="hl"><b>${esc(s.intro)}</b></p>`;
+ od.order.forEach(i=>{const pos=od.placed[i];h+=`<button class="btn opt ${pos?"ok":""} ${od.bad===i?"no shake":""}" data-a="ostep" data-i="${i}">${pos?`<span class="badge">${pos}</span>`:""}${esc(s.steps[i])}</button>`});
+ if(all)h+=`<div class="msg good">Geschafft mit ${od.mist} Fehler${od.mist===1?"":"n"}!</div><p><b>Merke:</b> ${esc(s.merk)}</p><div class="row"><button class="btn primary" data-a="order" data-k="${od.k}">Nochmal</button><button class="btn" data-a="home">Menü</button></div>`;
+ return h+`</div>`}
+
 function render(){
- const v={home:viewHome,exp:viewExp,pairs:viewPairs,blitz:viewBlitz,test:viewTest}[st.screen];
+ const v={home:viewHome,exp:viewExp,pairs:viewPairs,blitz:viewBlitz,test:viewTest,learn:viewLearn,gap:viewGap,order:viewOrder}[st.screen];
  document.getElementById("app").innerHTML=v();
  window.scrollTo(0,0);
 }
-function rerender(){const y=window.scrollY;document.getElementById("app").innerHTML=({home:viewHome,exp:viewExp,pairs:viewPairs,blitz:viewBlitz,test:viewTest})[st.screen]();window.scrollTo(0,y)}
+function rerender(){const y=window.scrollY;document.getElementById("app").innerHTML=({home:viewHome,exp:viewExp,pairs:viewPairs,blitz:viewBlitz,test:viewTest,learn:viewLearn,gap:viewGap,order:viewOrder})[st.screen]();window.scrollTo(0,y)}
 
 /* ============ Logik ============ */
 function parseGaps(t){const out=[];let last=0;t.replace(/\{([^}]+)\}/g,(m,w,idx)=>{out.push({t:t.slice(last,idx)});out.push({gap:true,t:w});last=idx+m.length;return m});out.push({t:t.slice(last)});return out}
@@ -382,12 +512,16 @@ function startExp(i){const e=EXP[i],parts=parseGaps(e.gaps.text),answers=parts.f
   bank:shuffle([...e.terms.ok,...e.terms.decoy]),sel:new Set(),chk:null,fails:0,termDone:false,
   gparts:parts,answers,bank2:shuffle([...new Set([...answers,...e.gaps.decoy])]),fill:answers.map(()=>null),gsel:null,gres:null,gfails:0,gapDone:false};
  st.screen="exp";render()}
-function startPairs(){const ps=shuffle(VOC).slice(0,6);pg={ps,L:shuffle(ps.map((p,i)=>i)),R:shuffle(ps.map((p,i)=>i)),selL:null,selR:null,done:new Set(),bad:null,mist:0};st.screen="pairs";render()}
+function startPairs(k){const set=k==="vocab"?{name:"Begriff und Erklärung",pairs:VOC}:PAIRSETS[k],ps=shuffle(set.pairs).slice(0,6);pg={k,title:set.name,ps,L:shuffle(ps.map((p,i)=>i)),R:shuffle(ps.map((p,i)=>i)),selL:null,selR:null,done:new Set(),bad:null,mist:0};st.screen="pairs";render()}
 function startBlitz(k){bl={k,items:shuffle(BLITZ[k].items),i:0,score:0,ans:null};st.screen="blitz";render()}
 function startTest(){
  const f=shuffle(FACTS).slice(0,8).map(x=>({q:x.q,ok:x.ok,opts:shuffle([x.ok,...x.bad])}));
  const v=shuffle(VOC).slice(0,4).map(p=>({q:`Was bedeutet „${p.t}“?`,ok:p.d,opts:shuffle([p.d,...shuffle(VOC.filter(o=>o!==p)).slice(0,3).map(o=>o.d)])}));
- ts={qs:shuffle([...f,...v]),i:0,score:0,pick:null,wrong:[]};st.screen="test";render()}
+ ts={title:"Test-Simulation",k:null,qs:shuffle([...f,...v]),i:0,score:0,pick:null,wrong:[]};st.screen="test";render()}
+function startGap(k){const s=GAPSETS[k],parts=parseGaps(s.text),answers=parts.filter(p=>p.gap).map(p=>p.t);
+ gg={k,parts,answers,bank:shuffle([...new Set([...answers,...s.decoy])]),fill:answers.map(()=>null),gsel:null,gres:null,gfails:0,done:false,mist:0};st.screen="gap";render()}
+function startOrder(k){od={k,order:shuffle(ORDERS[k].steps.map((_,i)=>i)),next:0,placed:{},mist:0,bad:null};st.screen="order";render()}
+function startQuiz(k){const Q=QUIZ[k];ts={title:Q.title,k,qs:shuffle(Q.q).map(x=>({q:x.q,ok:x.ok,opts:shuffle([x.ok,...x.bad])})),i:0,score:0,pick:null,wrong:[]};st.screen="test";render()}
 function pairResolve(){
  if(pg.selL===null||pg.selR===null)return;
  if(pg.selL===pg.selR){pg.done.add(pg.selL);pg.selL=pg.selR=null}
@@ -402,7 +536,11 @@ document.getElementById("app").addEventListener("click",ev=>{
  switch(a){
   case"home":st.screen="home";render();return;
   case"exp":startExp(+b.dataset.i);return;
-  case"pairs":startPairs();return;
+  case"pairs":startPairs(b.dataset.k||"vocab");return;
+  case"learn":st.screen="learn";st.learn=b.dataset.k;render();return;
+  case"gap":startGap(b.dataset.k);return;
+  case"order":startOrder(b.dataset.k);return;
+  case"quiz":startQuiz(b.dataset.k);return;
   case"blitz":startBlitz(b.dataset.k);return;
   case"test":startTest();return;
   case"obs":{const k=+b.dataset.k;if(ex.obsDone)return;if(k===0)ex.obsDone=true;else{ex.obsWrong.add(k);ex.mistakes++;ex.shake=k}break}
@@ -415,6 +553,11 @@ document.getElementById("app").addEventListener("click",ev=>{
   case"gcheck":{ex.gres=ex.fill.map((f,i)=>ex.bank2[f]===ex.answers[i]);const wrong=ex.gres.filter(x=>!x).length;if(!wrong)ex.gapDone=true;else{ex.gfails++;ex.mistakes+=wrong}break}
   case"gshow":ex.fill=ex.answers.map(w=>ex.bank2.indexOf(w));ex.gres=ex.fill.map(()=>true);ex.gapDone=true;break;
   case"next":ex.step++;if(ex.step===3)finishExp();break;
+  case"ggchip":{const i=+b.dataset.i;let slot=gg.gsel!==null&&gg.fill[gg.gsel]===null?gg.gsel:gg.fill.indexOf(null);if(slot<0)break;gg.fill[slot]=i;gg.gsel=null;if(gg.gres)gg.gres[slot]=null;break}
+  case"ggslot":{const i=+b.dataset.i;if(gg.fill[i]!==null){gg.fill[i]=null;if(gg.gres)gg.gres[i]=null}else gg.gsel=i;break}
+  case"ggcheck":{gg.gres=gg.fill.map((f,i)=>gg.bank[f]===gg.answers[i]);const w=gg.gres.filter(x=>!x).length;if(!w)gg.done=true;else{gg.gfails++;gg.mist+=w}break}
+  case"ggshow":gg.fill=gg.answers.map(w=>gg.bank.indexOf(w));gg.gres=gg.fill.map(()=>true);gg.done=true;break;
+  case"ostep":{const i=+b.dataset.i;if(od.placed[i])return;if(i===od.next){od.next++;od.placed[i]=od.next}else{od.mist++;od.bad=i;setTimeout(()=>{if(od){od.bad=null;rerender()}},600)}break}
   case"pl":pg.selL=+b.dataset.i;pairResolve();break;
   case"pr":pg.selR=+b.dataset.i;pairResolve();break;
   case"bans":{if(bl.ans)return;bl.ans=b.dataset.c;if(bl.ans===bl.items[bl.i][1])bl.score++;break}
