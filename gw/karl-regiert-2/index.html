@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Karl regiert ein riesiges Reich</title>
+<script src="jspdf.umd.min.js"></script>
 <style>
 @font-face{font-family:"Hand";src:url("../karl-regiert/caveat.woff2") format("woff2");font-display:swap}
 :root{--bg:#f5f3ee;--card:#fff;--ink:#1d2433;--muted:#6b7280;--line:#d6d2c7;--accent:#2f6fde;--ok:#1f8a4c;--soft:#eef3fd;--warm:#fff6e0}
@@ -39,6 +40,7 @@ button.main{background:var(--accent);border-color:var(--accent);color:#fff;font-
 .w{border-bottom:2px dotted var(--accent);cursor:pointer}
 .nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);padding:10px 14px calc(10px + env(safe-area-inset-bottom))}
 .nav div{max-width:640px;margin:0 auto;display:flex;gap:10px}
+.nav .saved{display:block}
 .nav button{flex:1;font-size:1.1rem}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;padding:20px;z-index:20}
 .modal.show{display:flex}
@@ -49,6 +51,10 @@ button.main{background:var(--accent);border-color:var(--accent);color:#fff;font-
 .steps li{margin:4px 0}
 .wort{display:inline-block;border:2px solid var(--line);border-radius:8px;padding:2px 10px;margin:3px;font-size:1rem}
 .small{font-size:.9rem;color:var(--muted)}
+.saved{font-size:.85rem;color:var(--ok);text-align:center;min-height:1.2em}
+.modal .mc.big{max-width:600px;max-height:85vh;overflow:auto}
+.ft .l{display:flex;gap:8px;margin:3px 0}.ft .z{color:var(--muted);font-size:.85rem;min-width:1.6em;text-align:right;padding-top:3px}
+.ft h3{margin:4px 0 8px}
 .done-badge{font-size:3rem;text-align:center}
 </style>
 </head>
@@ -59,15 +65,17 @@ button.main{background:var(--accent);border-color:var(--accent);color:#fff;font-
   <div class="bar" id="bar"></div>
   <div id="screen"></div>
 </main>
-<div class="nav"><div><button id="back">← Zurück</button><button class="main" id="next">Weiter →</button></div></div>
+<div class="nav"><div class="saved" id="saved"></div><div><button id="back">← Zurück</button><button class="main" id="next">Weiter →</button></div></div>
 <div class="modal" id="modal"><div class="mc"><div class="mw" id="mw"></div><div class="md" id="md"></div><div class="mh" id="mh"></div>
   <div class="btns"><button class="main" id="mclose" style="flex:1">OK</button></div></div></div>
 
+<div class="modal" id="tmodal"><div class="mc big"><div class="ft" id="ftext"></div>
+  <div class="btns"><button class="main" id="tclose" style="flex:1">Schließen</button></div></div></div>
 <script>
 const LS='karl-regiert-2';
 let S={}; try{S=JSON.parse(localStorage.getItem(LS)||'{}')}catch(e){S={}}
-S.spick=S.spick||{}; S.page=S.page||0;
-const save=()=>{try{localStorage.setItem(LS,JSON.stringify(S))}catch(e){}};
+S.spick=S.spick||{}; S.easy=S.easy||{}; S.page=S.page||0;
+const save=()=>{try{localStorage.setItem(LS,JSON.stringify(S));const v=document.getElementById('saved');if(v){v.textContent='✔ gespeichert';clearTimeout(save.t);save.t=setTimeout(()=>v.textContent='',1500)}}catch(e){}};
 
 // ---------- Glossar ----------
 const G={
@@ -88,6 +96,7 @@ const G={
 const w=t=>`<span class="w" data-w="${t}">${t}</span>`;
 function openWord(t){const g=G[t];document.getElementById('mw').textContent=t;document.getElementById('md').textContent=g[0];
   document.getElementById('mh').textContent=g[1]?'💡 Herkunft: '+g[1]:'';document.getElementById('modal').classList.add('show');}
+document.getElementById('tclose').onclick=()=>document.getElementById('tmodal').classList.remove('show');
 document.getElementById('mclose').onclick=()=>document.getElementById('modal').classList.remove('show');
 document.getElementById('modal').onclick=e=>{if(e.target.id==='modal')e.target.classList.remove('show')};
 
@@ -155,13 +164,16 @@ function startScreen(){return `
  <div class="card"><p>Wie regiert man ein Reich, das so groß ist, dass ein Reiter <b>Monate</b> braucht, um es zu durchqueren? Ohne Handy, ohne Auto, ohne Internet?</p>
  <p><b>Das brauchst du:</b><br>📗 Buch S. 52–53 (wenn du es hast)<br>📒 Arbeitsheft S. 8–9 (das PDF bekommst du in IServ)</p>
  <p class="small">Lieber auf Papier? <a href="AB_karl_regiert_v2.pdf">Arbeitsblatt als PDF</a></p>
- <p class="small">Kein Buch? Dann hilft dir der 👀 Spickzettel. Für die ⭐-Fragen brauchst du aber Buch oder Arbeitsheft.</p></div>
+ </div>
+ <div class="card"><b>✍️ Dein Name</b><input type="text" data-k="name" placeholder="Vorname Nachname" style="margin-top:8px">
+ <p class="small">Alles wird automatisch gespeichert – auch wenn du die Seite schließt. Öffne die Seite später einfach wieder auf <b>diesem Handy</b> im <b>selben Browser</b>.</p></div>
  <div class="card"><b>🔍 So arbeitest du mit dem Text</b>
  <ol class="steps"><li>Lies die <b>Frage</b>. Welches Wort ist wichtig? Das ist dein <b>Stichwort</b>.</li>
  <li>Tippe auf <b>📍 Wo finde ich das?</b> und schlage die Stelle auf.</li>
  <li>Suche dein Stichwort im Text. Lies den Satz davor und danach.</li>
  <li>Schreibe einen <b>ganzen Satz</b>: Nimm die Wörter aus der Frage an den Anfang, der Rest kommt aus dem Text.</li>
- <li>Du kommst nicht weiter? Tippe auf <b>👀 Spicken</b>. Das ist erlaubt, aber Herr Gunsteren sieht es später. 😉</li>
+ <li>Das Buch ist zu schwer? Tippe auf <b>📜 Einfacher Text</b>. Dort steht alles in einfacher Sprache – die Antwort musst du aber selbst finden.</li>
+ <li>Du kommst gar nicht weiter? Dann <b>👀 Spicken</b>: Es zeigt genau die richtigen Zeilen. Erlaubt – aber Herr Gunsteren sieht später, wo du Hilfe genommen hast. 😉</li>
  <li><span class="w" data-w="Lehen">Gepunktete Wörter</span> kannst du antippen.</li></ol></div>`;}
 
 function qScreen(i){
@@ -174,7 +186,7 @@ function qScreen(i){
  if(f.type==='free') body=`<textarea data-k="f${i}" placeholder="Schreibe einen ganzen Satz …"></textarea>`;
  const spick=f.lines.map(n=>`<div class="l"><span class="z">${n}</span><span>${H[n]}</span></div>`).join('');
  return `<div class="card"><div class="nr">Frage ${i+1} von ${F.length}</div><div class="frage">${f.q}</div>
-  <div class="btns"><button data-show="tipp">📍 Wo finde ich das?</button><button data-show="spick">👀 Spicken</button></div>
+  <div class="btns"><button data-show="tipp">📍 Wo steht das?</button><button data-easy="1">📜 Einfacher Text</button><button data-show="spick">👀 Spicken</button></div>
   <div class="box tipp" id="tipp">📍 ${f.tipp}</div>
   <div class="box spick" id="spick"><b>Spickzettel:</b>${spick}</div>
   ${body}
@@ -184,15 +196,28 @@ function qScreen(i){
     <textarea data-k="s${i}" style="min-height:70px" placeholder="Nur wenn du magst …"></textarea></div>`:''}
  </div>`;}
 
+function helpList(o){return Object.keys(o).map(k=>+k+1).filter(n=>n>=1&&n<=F.length).sort((a,b)=>a-b);}
 function endScreen(){
- const sp=Object.keys(S.spick).map(k=>+k+1).sort((a,b)=>a-b);
+ const sp=helpList(S.spick), ea=helpList(S.easy);
+ const leer=F.map((f,i)=>i).filter(i=>F[i].type!=='given'&&!answered(i)).map(i=>i+1);
  return `<div class="card"><div class="done-badge">👑</div>
  <p><b>Geschafft!</b> Du weißt jetzt, wie Karl sein riesiges Reich regiert hat.</p>
- <p class="small">${sp.length?'Gespickt bei Frage '+sp.join(', ')+'.':'Du hast nicht gespickt. Stark!'}</p>
+ ${leer.length?`<p>⚠️ Noch leer: Frage ${leer.join(', ')}. Geh mit „Zurück“ dorthin.</p>`:''}
+ <p class="small">📜 Einfacher Text genutzt: ${ea.length?'Frage '+ea.join(', '):'nie'}<br>👀 Gespickt: ${sp.length?'Frage '+sp.join(', '):'nie – stark!'}</p>
  <input type="text" data-k="name" placeholder="Dein Name" style="margin:8px 0">
- <div class="btns"><button class="main" id="copy" style="flex:1">📋 Alles kopieren</button></div>
- <p>Füge den Text in <b>IServ</b> ein (Aufgabe oder Nachricht an Herrn Gunsteren). Vergiss nicht das ausgefüllte <b>Arbeitsheft-PDF</b>!</p></div>`;}
-
+ <div class="btns"><button class="main" id="share" style="flex:1">📤 PDF an Herrn Gunsteren schicken</button></div>
+ <p class="small">Es öffnet sich „Teilen“. Wähle <b>IServ</b> (oder E-Mail) und schicke es an Herrn Gunsteren.</p>
+ <div class="btns"><button id="pdf" style="flex:1">📄 Nur PDF speichern</button><button id="copy" style="flex:1">📋 Als Text kopieren</button></div>
+ <p class="small">Klappt das Teilen nicht? Dann speichere das PDF und lade es in IServ hoch.</p></div>`;}
+function answered(i){const f=F[i];
+ if(f.type==='gaps') return f.parts.some(p=>p[0]==='#'&&(S['f'+i+p.slice(1)]||'').trim());
+ if(f.type==='starter2') return f.starts.some((st,k)=>(S['f'+i+'_'+k]||'').trim().length>st.length+2);
+ const v=(S['f'+i]||'').trim(); return f.start? v.length>f.start.trim().length+2 : v.length>0;}
+function openText(){
+ let n=0; const head=['Karl verwaltet das Land mit Grafen','','Karl reist von Pfalz zu Pfalz','','Land gegen Treue: das Lehnswesen'];
+ let h='<h3>📜 Einfacher Text</h3><p class="small">Suche dein Stichwort und schreibe die Antwort selbst als Satz.</p>';
+ H.forEach((l,i)=>{ if(i===0) return; h+= l? `<div class="l"><span class="z">${i}</span><span>${l}</span></div>` : '<div style="height:10px"></div>'; });
+ document.getElementById('ftext').innerHTML=h; document.getElementById('tmodal').classList.add('show');}
 function render(){
  const p=S.page; const bar=document.getElementById('bar');
  bar.innerHTML=Array.from({length:N},(_,k)=>`<span class="${k<p?'done':k===p?'now':''}"></span>`).join('');
@@ -203,13 +228,42 @@ function render(){
    el.value=S[k]!=null?S[k]:(el.dataset.start||''); el.addEventListener('input',()=>{S[k]=el.value;save()});});
  scr.querySelectorAll('[data-show]').forEach(b=>b.onclick=()=>{const box=document.getElementById(b.dataset.show);box.classList.toggle('show');
    if(b.dataset.show==='spick'&&box.classList.contains('show')){S.spick[p-1]=1;save();}});
+ scr.querySelectorAll('[data-easy]').forEach(b=>b.onclick=()=>{S.easy[p-1]=1;save();openText();});
  const c=document.getElementById('copy'); if(c) c.onclick=copyAll;
+ const pd=document.getElementById('pdf'); if(pd) pd.onclick=()=>makePdf(false);
+ const sh=document.getElementById('share'); if(sh) sh.onclick=()=>makePdf(true);
  window.scrollTo(0,0);
 }
 document.addEventListener('click',e=>{const s=e.target.closest('.w');if(s)openWord(s.dataset.w)});
 document.getElementById('next').onclick=()=>{S.page=S.page<N-1?S.page+1:0;save();render()};
 document.getElementById('back').onclick=()=>{if(S.page>0)S.page--;save();render()};
 
+function answerLines(i){const f=F[i],g=k=>(S[k]||'').trim();
+ if(f.type==='given') return [f.given];
+ if(f.type==='gaps') return [f.parts.map(p=>p[0]==='#'?(g('f'+i+p.slice(1))||'______'):p).join('')];
+ if(f.type==='starter2') return f.starts.map((st,k)=>g('f'+i+'_'+k)||st+'…');
+ return [g('f'+i)||'(keine Antwort)'];}
+const clean=t=>t.replace(/<[^>]+>/g,'').replace(/[„“”]/g,'"').replace(/[–—]/g,'-').replace(/…/g,'...').replace(/[^\x00-\xFF]/g,'').trim();
+function makePdf(share){
+ if(!window.jspdf){alert('PDF geht gerade nicht. Nutze „Als Text kopieren“.');return;}
+ const doc=new jspdf.jsPDF({unit:'mm',format:'a4'}); let y=20; const L=20,Wd=170;
+ const line=(t,o={})=>{doc.setFont('helvetica',o.b?'bold':(o.i?'italic':'normal'));doc.setFontSize(o.s||11);
+   doc.splitTextToSize(clean(t),Wd-(o.ind||0)).forEach(r=>{if(y>280){doc.addPage();y=20;}doc.text(r,L+(o.ind||0),y);y+=(o.s||11)*0.48;}); y+=o.after||1.5;};
+ const name=(S.name||'').trim()||'(ohne Namen)';
+ line('Karl regiert ein riesiges Reich',{s:18,b:true,after:2});
+ line('Name: '+name+'     Datum: '+new Date().toLocaleDateString('de-DE'),{after:6});
+ F.forEach((f,i)=>{ line((i+1)+'. '+f.q,{b:true});
+   answerLines(i).forEach(a=>line(a,{ind:5}));
+   if(f.star&&(S['s'+i]||'').trim()) line('* '+f.star+'  '+S['s'+i].trim(),{ind:5,i:true});
+   y+=3; });
+ const sp=helpList(S.spick), ea=helpList(S.easy);
+ y+=2; line('Einfacher Text genutzt: '+(ea.length?'Frage '+ea.join(', '):'nie'),{s:10});
+ line('Gespickt: '+(sp.length?'Frage '+sp.join(', '):'nie'),{s:10});
+ const fn='Karl_regiert_'+name.replace(/[^A-Za-zÄÖÜäöüß0-9]+/g,'_')+'.pdf';
+ if(share){ try{ const file=new File([doc.output('blob')],fn,{type:'application/pdf'});
+     if(navigator.canShare&&navigator.canShare({files:[file]})){ navigator.share({files:[file],title:'Karl regiert – '+name}).catch(()=>{}); return; } }catch(e){}
+   alert('Teilen geht auf diesem Gerät nicht. Das PDF wird gespeichert – lade es dann in IServ hoch.'); }
+ doc.save(fn);}
 function copyAll(){
  const g=k=>(S[k]||'–').trim(), plain=t=>t.replace(/<[^>]+>/g,'');
  const out=['Karl regiert ein riesiges Reich – '+g('name'),''];
