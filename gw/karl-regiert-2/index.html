@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Karl regiert ein riesiges Reich</title>
+<style>
+@font-face{font-family:"Hand";src:url("../karl-regiert/caveat.woff2") format("woff2");font-display:swap}
+:root{--bg:#f5f3ee;--card:#fff;--ink:#1d2433;--muted:#6b7280;--line:#d6d2c7;--accent:#2f6fde;--ok:#1f8a4c;--soft:#eef3fd;--warm:#fff6e0}
+@media (prefers-color-scheme: dark){:root{--bg:#14171d;--card:#1e222a;--ink:#e8e9ec;--muted:#9aa1ad;--line:#363b46;--accent:#6b9cff;--ok:#4cc27e;--soft:#232a38;--warm:#2e2918}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:19px;line-height:1.5}
+main{max-width:640px;margin:0 auto;padding:14px 14px 110px}
+.crumb{color:var(--muted);font-weight:700;font-size:.9rem}.crumb a{color:inherit}
+h1{font-size:1.55rem;line-height:1.25;margin:.3em 0}
+.bar{display:flex;gap:4px;margin:10px 0 6px}
+.bar span{flex:1;height:8px;border-radius:9px;background:var(--line)}
+.bar span.done{background:var(--ok)}.bar span.now{background:var(--accent)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:12px}
+.nr{font-size:.9rem;color:var(--muted);font-weight:700}
+.frage{font-size:1.25rem;font-weight:700;line-height:1.35;margin:.2em 0 .4em}
+.hand{font-family:"Hand",cursive;font-size:1.6rem;line-height:1.25}
+.given{font-family:"Hand",cursive;font-size:1.6rem;line-height:1.25;background:var(--soft);border-radius:10px;padding:8px 12px}
+textarea,input[type=text]{width:100%;font-family:"Hand",cursive;font-size:1.5rem;line-height:1.25;padding:10px 12px;border:2px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+textarea{min-height:110px;resize:vertical}
+textarea:focus,input:focus{outline:none;border-color:var(--accent)}
+input.gap{display:inline-block;width:9em;max-width:100%;font-family:"Hand",cursive;font-size:1.5rem;padding:0 6px;border-width:0 0 2px;border-radius:0;background:transparent}
+.btns{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+button{font:inherit;font-size:1rem;padding:10px 14px;border-radius:12px;border:2px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;min-height:48px}
+button.main{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
+.box{border-radius:12px;padding:10px 14px;margin-top:10px;display:none}
+.box.show{display:block}
+.tipp{background:var(--soft)}
+.spick{background:var(--warm)}
+.spick .l{display:flex;gap:8px}.spick .z{color:var(--muted);font-size:.85rem;min-width:1.6em;text-align:right;padding-top:3px}
+.star{margin-top:16px;border-top:2px dashed var(--line);padding-top:12px}
+.star .frage{font-size:1.05rem;font-weight:600;font-style:italic}
+.w{border-bottom:2px dotted var(--accent);cursor:pointer}
+.nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);padding:10px 14px calc(10px + env(safe-area-inset-bottom))}
+.nav div{max-width:640px;margin:0 auto;display:flex;gap:10px}
+.nav button{flex:1;font-size:1.1rem}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;padding:20px;z-index:20}
+.modal.show{display:flex}
+.modal .mc{background:var(--card);border-radius:20px;padding:22px;max-width:460px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,.3)}
+.modal .mw{font-size:1.8rem;font-weight:800}
+.modal .md{font-size:1.2rem;margin-top:8px}
+.modal .mh{margin-top:10px;color:var(--muted)}
+.steps li{margin:4px 0}
+.wort{display:inline-block;border:2px solid var(--line);border-radius:8px;padding:2px 10px;margin:3px;font-size:1rem}
+.small{font-size:.9rem;color:var(--muted)}
+.done-badge{font-size:3rem;text-align:center}
+</style>
+</head>
+<body>
+<main>
+  <div class="crumb"><a href="../../">Klasse 7.3</a> › <a href="../">GW</a></div>
+  <h1>👑 Karl regiert ein riesiges Reich</h1>
+  <div class="bar" id="bar"></div>
+  <div id="screen"></div>
+</main>
+<div class="nav"><div><button id="back">← Zurück</button><button class="main" id="next">Weiter →</button></div></div>
+<div class="modal" id="modal"><div class="mc"><div class="mw" id="mw"></div><div class="md" id="md"></div><div class="mh" id="mh"></div>
+  <div class="btns"><button class="main" id="mclose" style="flex:1">OK</button></div></div></div>
+
+<script>
+const LS='karl-regiert-2';
+let S={}; try{S=JSON.parse(localStorage.getItem(LS)||'{}')}catch(e){S={}}
+S.spick=S.spick||{}; S.page=S.page||0;
+const save=()=>{try{localStorage.setItem(LS,JSON.stringify(S))}catch(e){}};
+
+// ---------- Glossar ----------
+const G={
+ Graf:['ein Adliger, der für den König einen Teil des Reiches regiert'],
+ Grafen:['Adlige, die für den König einen Teil des Reiches regieren'],
+ Sendgraf:['ein Bote des Königs','senden = schicken'],
+ Sendgrafen:['Boten des Königs. Sie bringen Befehle und kontrollieren die Grafen.','senden = schicken'],
+ Pfalz:['ein großer Königshof, auf dem der König einige Wochen wohnt','von lateinisch „palatium“ = Palast'],
+ Reisekönigtum:['Der König hat keine Hauptstadt. Er regiert, indem er durch sein Reich reist.'],
+ Richter:['jemand, der bei Streit entscheidet, wer recht hat'],
+ Lehen:['Land, das nur geliehen ist','von „leihen“'],
+ Vasall:['jemand, der ein Lehen bekommt und dafür dienen muss','von lateinisch „vassus“ = Diener'],
+ Lehnsherr:['jemand, der ein Lehen verleiht, zum Beispiel der König'],
+ treu:['zu jemandem halten und ihn nicht verraten'],
+ Kronvasall:['ein Vasall, der sein Lehen direkt vom König bekommt'],
+ Untervasall:['ein Vasall von einem Vasallen, zum Beispiel ein Ritter']
+};
+const w=t=>`<span class="w" data-w="${t}">${t}</span>`;
+function openWord(t){const g=G[t];document.getElementById('mw').textContent=t;document.getElementById('md').textContent=g[0];
+  document.getElementById('mh').textContent=g[1]?'💡 Herkunft: '+g[1]:'';document.getElementById('modal').classList.add('show');}
+document.getElementById('mclose').onclick=()=>document.getElementById('modal').classList.remove('show');
+document.getElementById('modal').onclick=e=>{if(e.target.id==='modal')e.target.classList.remove('show')};
+
+// ---------- Hilfetext (Spickzettel) ----------
+const H=[null,
+ 'Karls Reich war <b>riesig</b>.',
+ 'Ein Reiter brauchte oft <b>Monate</b> von einer Grenze zur anderen.',
+ 'Karl brauchte Helfer. Die Helfer hießen <b>'+w('Grafen')+'</b>.',
+ 'Ein Graf regierte für Karl in einem <b>Teil des Reiches</b>.',
+ 'Karl schickte <b>Boten</b> zu den Grafen. Die Boten hießen <b>'+w('Sendgrafen')+'</b>.',
+ 'Die Sendgrafen brachten <b>Befehle</b> und <b>kontrollierten</b> die Grafen.',
+ '',
+ 'Karl hatte <b>keine Hauptstadt</b>. Karl reiste von <b>'+w('Pfalz')+'</b> zu Pfalz.',
+ 'Eine Pfalz war ein großer <b>Königshof</b>.',
+ 'Auf der Pfalz war Karl <b>'+w('Richter')+'</b> und hörte Beschwerden an.',
+ 'So <b>kontrollierte</b> Karl die Grafen. Das heißt <b>'+w('Reisekönigtum')+'</b>.',
+ 'Auf einer Pfalz gab es <b>Wohnhäuser</b>, eine <b>Kirche</b>, <b>Ställe</b> und <b>Gärten</b>.',
+ '',
+ 'Karl bezahlte die Grafen <b>nicht mit Geld</b>.',
+ 'Karl gab den Grafen <b>Land</b>. Das Land war nur <b>geliehen</b>.',
+ 'Das geliehene Land hieß <b>'+w('Lehen')+'</b>.',
+ 'Wer ein Lehen bekam, war ein <b>'+w('Vasall')+'</b>. Karl war der <b>'+w('Lehnsherr')+'</b>.',
+ 'Der Vasall musste dem Lehnsherrn <b>'+w('treu')+'</b> sein.',
+ 'Der Vasall musste für den Lehnsherrn im <b>Krieg kämpfen</b>.',
+ 'Der Lehnsherr musste den Vasall <b>beschützen</b>.'
+];
+
+// ---------- Fragen ----------
+// type: given | gaps | starter | free ; lines = Spickzettel-Zeilen ; tipp = wo nachsehen
+const F=[
+ {q:'Warum war es schwer, Karls Reich zu regieren?',lines:[1,2],type:'given',
+  given:'Karls Reich war riesig. Ein Reiter brauchte oft Monate von einer Grenze zur anderen.',
+  tipp:'Buch S. 52, Abschnitt „Karl verwaltet das Land mithilfe seiner Grafen“, die ersten zwei Sätze.',
+  note:'Diese Antwort ist schon vorgegeben. Schau dir an: Die Wörter aus der Frage („Karls Reich“) stehen am Anfang, der Rest kommt aus dem Text.'},
+ {q:'Wer half Karl beim Regieren?',lines:[3,4],type:'gaps',
+  parts:['Karls Helfer hießen ','#a','. Sie regierten für Karl in einem ','#b','.'],
+  tipp:'Buch S. 52, Abschnitt „Karl verwaltet das Land mithilfe seiner Grafen“.',
+  star:'Warum waren die Reisen im Reich so langsam?',startip:'Buch S. 52, im ersten Abschnitt. Achte auf die Straßen.'},
+ {q:'Wie kontrollierte Karl seine '+w('Grafen')+'?',lines:[5,6],type:'starter',start:'Karl schickte ',
+  tipp:'Buch S. 52, rechte Spalte: der Absatz über die Sendgrafen.',
+  star:'Wen schickte Karl meistens los?',startip:'Buch S. 52, letzter Satz über die Sendgrafen.'},
+ {q:'Warum reiste Karl von '+w('Pfalz')+' zu Pfalz?',lines:[8,9,10,11],type:'starter',start:'Karl hatte keine ',
+  tipp:'Buch S. 52 unten: „Karl regiert das Land von Königspfalzen aus“. Oder Arbeitsheft S. 9: „Ein König auf Reisen“.',
+  star:'Wie viele Menschen reisten mit Karl?',startip:'Buch S. 52, rechte Spalte unten.'},
+ {q:'Was gab es auf einer Pfalz? Nenne drei Dinge.',lines:[12],type:'free',
+  tipp:'Arbeitsheft S. 9: das Bild der Kaiserpfalz (Aufgabe 3) und der Text „Ein König auf Reisen“.',
+  star:'Warum war Aachen Karls Lieblingspfalz?',startip:'Arbeitsheft S. 9, die letzten Sätze von „Ein König auf Reisen“.'},
+ {q:'Was ist ein '+w('Lehen')+', und wer bekam es?',lines:[14,15,16,17],type:'free',
+  tipp:'Buch S. 53: „Das Lehnswesen“. Oder Arbeitsheft S. 8: „Von Lehen und Vasallen“.',
+  star:'Wie lange durfte ein Vasall sein Lehen behalten?',startip:'Arbeitsheft S. 8, Mitte des Textes.'},
+ {q:'Was mussten '+w('Vasall')+' und '+w('Lehnsherr')+' füreinander tun?',lines:[17,18,19,20],type:'starter2',
+  starts:['Der Vasall musste ','Der Lehnsherr musste '],
+  tipp:'Buch S. 53: „Das Lehnswesen“ und das Bild M3 (die Pyramide).',
+  star:'Was ist ein '+w('Untervasall')+'?',startip:'Arbeitsheft S. 8, die letzten Sätze. Oder Buch S. 53 unten.'},
+ {q:'Die große Frage: Wie gelang es Karl, das riesige Reich zu regieren? Nenne drei Dinge.',lines:[3,5,8,11,15,17],type:'starter',
+  start:'Karl regierte sein Reich mit Hilfe von ',
+  words:['Grafen','Sendgrafen','Reisekönigtum','Pfalzen','Lehen','Vasallen'],
+  tipp:'Schau dir deine Antworten 2 bis 7 noch einmal an. Jede Frage war ein Teil der Lösung.'}
+];
+const N=F.length+2; // Start + Fragen + Ende
+
+// ---------- Bildschirme ----------
+const scr=document.getElementById('screen');
+function startScreen(){return `
+ <div class="card"><p>Wie regiert man ein Reich, das so groß ist, dass ein Reiter <b>Monate</b> braucht, um es zu durchqueren? Ohne Handy, ohne Auto, ohne Internet?</p>
+ <p><b>Das brauchst du:</b><br>📗 Buch S. 52–53 (wenn du es hast)<br>📒 Arbeitsheft S. 8–9 (das PDF bekommst du in IServ)</p>
+ <p class="small">Lieber auf Papier? <a href="AB_karl_regiert_v2.pdf">Arbeitsblatt als PDF</a></p>
+ <p class="small">Kein Buch? Dann hilft dir der 👀 Spickzettel. Für die ⭐-Fragen brauchst du aber Buch oder Arbeitsheft.</p></div>
+ <div class="card"><b>🔍 So arbeitest du mit dem Text</b>
+ <ol class="steps"><li>Lies die <b>Frage</b>. Welches Wort ist wichtig? Das ist dein <b>Stichwort</b>.</li>
+ <li>Tippe auf <b>📍 Wo finde ich das?</b> und schlage die Stelle auf.</li>
+ <li>Suche dein Stichwort im Text. Lies den Satz davor und danach.</li>
+ <li>Schreibe einen <b>ganzen Satz</b>: Nimm die Wörter aus der Frage an den Anfang, der Rest kommt aus dem Text.</li>
+ <li>Du kommst nicht weiter? Tippe auf <b>👀 Spicken</b>. Das ist erlaubt, aber Herr Gunsteren sieht es später. 😉</li>
+ <li><span class="w" data-w="Lehen">Gepunktete Wörter</span> kannst du antippen.</li></ol></div>`;}
+
+function qScreen(i){
+ const f=F[i]; let body='';
+ if(f.type==='given') body=`<div class="given">${f.given}</div><p class="small">${f.note}</p>`;
+ if(f.type==='gaps') body=`<div class="hand">${f.parts.map(p=>p[0]==='#'?`<input class="gap" type="text" data-k="f${i}${p.slice(1)}">`:p).join('')}</div>`;
+ if(f.type==='starter') body=(f.words?`<p>Wortspeicher: ${f.words.map(x=>`<span class="wort">${x}</span>`).join('')}</p>`:'')+
+   `<textarea data-k="f${i}" data-start="${f.start}"></textarea>`;
+ if(f.type==='starter2') body=f.starts.map((s,k)=>`<textarea data-k="f${i}_${k}" data-start="${s}" style="min-height:80px;margin-top:8px"></textarea>`).join('');
+ if(f.type==='free') body=`<textarea data-k="f${i}" placeholder="Schreibe einen ganzen Satz …"></textarea>`;
+ const spick=f.lines.map(n=>`<div class="l"><span class="z">${n}</span><span>${H[n]}</span></div>`).join('');
+ return `<div class="card"><div class="nr">Frage ${i+1} von ${F.length}</div><div class="frage">${f.q}</div>
+  <div class="btns"><button data-show="tipp">📍 Wo finde ich das?</button><button data-show="spick">👀 Spicken</button></div>
+  <div class="box tipp" id="tipp">📍 ${f.tipp}</div>
+  <div class="box spick" id="spick"><b>Spickzettel:</b>${spick}</div>
+  ${body}
+  ${f.star?`<div class="star"><div class="frage">⭐ Extra: ${f.star}</div>
+    <div class="btns"><button data-show="startipp">📍 Wo finde ich das?</button></div>
+    <div class="box tipp" id="startipp">📍 ${f.startip}<br><span class="small">Das steht nicht auf dem Spickzettel.</span></div>
+    <textarea data-k="s${i}" style="min-height:70px" placeholder="Nur wenn du magst …"></textarea></div>`:''}
+ </div>`;}
+
+function endScreen(){
+ const sp=Object.keys(S.spick).map(k=>+k+1).sort((a,b)=>a-b);
+ return `<div class="card"><div class="done-badge">👑</div>
+ <p><b>Geschafft!</b> Du weißt jetzt, wie Karl sein riesiges Reich regiert hat.</p>
+ <p class="small">${sp.length?'Gespickt bei Frage '+sp.join(', ')+'.':'Du hast nicht gespickt. Stark!'}</p>
+ <input type="text" data-k="name" placeholder="Dein Name" style="margin:8px 0">
+ <div class="btns"><button class="main" id="copy" style="flex:1">📋 Alles kopieren</button></div>
+ <p>Füge den Text in <b>IServ</b> ein (Aufgabe oder Nachricht an Herrn Gunsteren). Vergiss nicht das ausgefüllte <b>Arbeitsheft-PDF</b>!</p></div>`;}
+
+function render(){
+ const p=S.page; const bar=document.getElementById('bar');
+ bar.innerHTML=Array.from({length:N},(_,k)=>`<span class="${k<p?'done':k===p?'now':''}"></span>`).join('');
+ scr.innerHTML = p===0?startScreen(): p<=F.length?qScreen(p-1): endScreen();
+ document.getElementById('back').style.visibility=p===0?'hidden':'visible';
+ document.getElementById('next').textContent=p===0?"Los geht's →":p===N-1?'Nochmal ansehen':'Weiter →';
+ scr.querySelectorAll('[data-k]').forEach(el=>{const k=el.dataset.k;
+   el.value=S[k]!=null?S[k]:(el.dataset.start||''); el.addEventListener('input',()=>{S[k]=el.value;save()});});
+ scr.querySelectorAll('[data-show]').forEach(b=>b.onclick=()=>{const box=document.getElementById(b.dataset.show);box.classList.toggle('show');
+   if(b.dataset.show==='spick'&&box.classList.contains('show')){S.spick[p-1]=1;save();}});
+ const c=document.getElementById('copy'); if(c) c.onclick=copyAll;
+ window.scrollTo(0,0);
+}
+document.addEventListener('click',e=>{const s=e.target.closest('.w');if(s)openWord(s.dataset.w)});
+document.getElementById('next').onclick=()=>{S.page=S.page<N-1?S.page+1:0;save();render()};
+document.getElementById('back').onclick=()=>{if(S.page>0)S.page--;save();render()};
+
+function copyAll(){
+ const g=k=>(S[k]||'–').trim(), plain=t=>t.replace(/<[^>]+>/g,'');
+ const out=['Karl regiert ein riesiges Reich – '+g('name'),''];
+ F.forEach((f,i)=>{ out.push((i+1)+'. '+plain(f.q));
+   if(f.type==='given') out.push(f.given);
+   else if(f.type==='gaps') out.push(f.parts.map(p=>p[0]==='#'?(S['f'+i+p.slice(1)]||'___'):p).join(''));
+   else if(f.type==='starter2') f.starts.forEach((s,k)=>out.push(g('f'+i+'_'+k)));
+   else out.push(g('f'+i));
+   if(f.star&&S['s'+i]&&S['s'+i].trim()) out.push('⭐ '+plain(f.star)+' '+S['s'+i].trim());
+   out.push(''); });
+ const sp=Object.keys(S.spick).map(k=>+k+1).sort((a,b)=>a-b);
+ out.push('Gespickt bei: '+(sp.length?'Frage '+sp.join(', '):'nirgends'));
+ const t=out.join('\n');
+ (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>{const b=document.getElementById('copy');b.textContent='✔ Kopiert!';})
+  .catch(()=>prompt('Bitte kopieren:',t));
+}
+render();
+</script>
+</body>
+</html>
