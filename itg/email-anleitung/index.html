@@ -3,7 +3,7 @@
 .mail .hd{border-bottom:2px solid #bbb;padding-bottom:1.5mm;margin-bottom:2.5mm}
 .mail p{margin:0 0 2mm}.mail .ex{margin:2.5mm 0 3.5mm 7mm;font-style:italic}
 .mail .g{font-style:normal;font-weight:700;background:#fff2a8;border:1.5px solid #1e1e1e;border-radius:4px;padding:0 4px;margin-right:2px}
-.mail .red{color:#d11}.mail h3{font-size:1.25em;margin:3.5mm 0 1.5mm}
+.mail p,.mail li,.mail .hd,.mail h3{font-weight:700}.mail .ex{font-weight:400}.mail .red{color:#d11}.mail h3{font-size:1.25em;margin:3.5mm 0 1.5mm}
 .mail ol,.mail ul{margin:0 0 1mm;padding-left:7mm}.mail li{margin:0}
 .wort{margin:0 0 2mm}.wort span{display:inline-block;border:1.6px solid #1e1e1e;border-radius:12px;padding:0 7px;margin:2px 2px;background:#fff7d6}@font-face{font-family:"Shantell Sans";src:url(fonts/shantell-sans-latin-400-normal.woff2) format("woff2");font-weight:400}
 @font-face{font-family:"Shantell Sans";src:url(fonts/shantell-sans-latin-700-normal.woff2) format("woff2");font-weight:700}
@@ -12,7 +12,7 @@ html,body{height:100%;margin:0}
 body{font-family:"Shantell Sans","Comic Sans MS",sans-serif;font-size:17px;color:#1e1e1e;background:#fbfaf5;line-height:1.4;display:flex;flex-direction:column;overflow:hidden}
 .top{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:2px solid #1e1e1e;background:#fff}
 .top b{flex:1;font-size:16px}
-.top a,.nav button{border:2px solid #1e1e1e;border-radius:8px;background:#ffe066;color:#1e1e1e;font:inherit;font-weight:700;padding:3px 12px;text-decoration:none;cursor:pointer}
+.top a{margin-left:0}.top a,.nav button{border:2px solid #1e1e1e;border-radius:8px;background:#ffe066;color:#1e1e1e;font:inherit;font-weight:700;padding:3px 12px;text-decoration:none;cursor:pointer}
 .track{flex:1;display:flex;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scroll-behavior:smooth;-webkit-overflow-scrolling:touch}
 .card{flex:none;width:100%;scroll-snap-align:start;scroll-snap-stop:always;overflow-y:auto;padding:14px 16px 24px}
 .card>.in{max-width:760px;margin:0 auto}
@@ -47,7 +47,7 @@ th{background:#e7f5ff}td.n{width:34px;text-align:center;font-weight:700}
 .nav button:disabled{opacity:.3}
 @media(max-width:600px){h1{font-size:23px}.aufgabe .t{font-size:19px}}
 </style></head><body>
-<div class="top"><b>✏️ Hausaufgabe E-Mail</b><a href="E-Mail-Anleitung_IServ.pdf">📄 PDF</a></div>
+<div class="top"><b>✏️ Hausaufgabe E-Mail</b><a href="Hausaufgabe_E-Mail_Druck_sw.pdf">🖨️ Druck</a><a href="E-Mail-Anleitung_IServ.pdf">📄 PDF</a></div>
 <div class="track" id="track">
 
 <section class="card"><div class="in">
@@ -64,19 +64,20 @@ th{background:#e7f5ff}td.n{width:34px;text-align:center;font-weight:700}
 <div class="hd"><b>An:</b> m.gun******@hvh-schule.de<br><b>Betreff:</b> Hausaufgabe ITG 7.3, 24.11.: Aufbau einer E-Mail<br><b>Anhang:</b> keiner</div>
 <p>Sehr geehrter Herr van Gun***,</p>
 <p class="ex">(==&gt; Die <span class="g">1</span> ________ steht ganz oben. Danach schreibe ich klein weiter.)</p>
-<h3>Einleitung</h3>
+<h3>[Einleitung]</h3>
 <p>ich schreibe Ihnen als Hausaufgabe, weil ich zeigen soll, wie eine E-Mail aufgebaut ist.</p>
 <p class="ex">(==&gt; Hier sage ich kurz, <span class="g">2</span> ________ ich schreibe.)</p>
-<h3>Hauptteil</h3>
+<h3>[Hauptteil]</h3>
 <p>Eine E-Mail hat diese Teile in dieser Reihenfolge:</p>
 <ol><li>An (der Adressat)</li><li>Betreff</li><li>Anrede</li><li>Einleitung</li><li><span class="g">3</span> ________</li><li><span class="g">4</span> ________</li><li>Name</li><li>Anhang (eine Datei, die man mitschickt)</li></ol>
 <p class="ex">(==&gt; Die Reihenfolge ist wichtig, darum eine <span class="g">5</span> ________ Liste.)</p>
 <p class="ex" style="margin-top:0">(==&gt; Der Adressat steht bei An: Dort steht, wer die E-Mail bekommt. Ein Anhang ist zum Beispiel ein Foto oder ein Dokument.)</p>
 <p class="red">Der <b>Betreff</b> sagt in wenigen Wörtern, <span class="g">6</span> ________ es geht.</p>
+<p class="ex" style="margin-top:0">(diese Zeile in rot)</p>
 <p>Meine Tipps:</p>
 <ul><li>Schreibe kurze <span class="g">7</span> ________.</li><li>Mache einen <span class="g">8</span> ________, wenn ein neuer Gedanke beginnt.</li></ul>
 <p class="ex">(==&gt; Bei den Tipps ist die <span class="g">9</span> ________ egal, darum Punkte.)</p>
-<h3>Schluss</h3>
+<h3>[Schluss]</h3>
 <p>Vielen Dank fürs Lesen.</p>
 <p>Mit freundlichen Grüßen</p>
 <p>Vorname Nachname, Klasse 7.3</p>
