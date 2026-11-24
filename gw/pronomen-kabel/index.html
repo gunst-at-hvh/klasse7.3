@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title>Kabel-Detektiv: Wer ist gemeint?</title>
+<style>
+:root{--bg:#f5f3ee;--card:#fff;--ink:#1d2433;--muted:#6b7280;--line:#d6d2c7;--accent:#2f6fde;--ok:#1f8a4c;--bad:#d1372a;--cable:#e07b00}
+@media (prefers-color-scheme: dark){:root{--bg:#14171d;--card:#1e222a;--ink:#e8e9ec;--muted:#9aa1ad;--line:#363b46;--accent:#6b9cff;--ok:#4cc27e;--bad:#ff6b5e;--cable:#ffae3d}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:19px;line-height:1.5;user-select:none;-webkit-user-select:none}
+main{max-width:720px;margin:0 auto;padding:12px 14px 40px}
+.crumb{color:var(--muted);font-weight:700;font-size:.9rem}.crumb a{color:inherit}
+h1{font-size:1.45rem;margin:.2em 0}
+.hud{position:sticky;top:0;z-index:5;background:var(--bg);display:flex;align-items:center;gap:10px;padding:8px 0}
+.score{font-size:1.4rem;font-weight:800;min-width:4.5em}
+.lvl{color:var(--muted);font-weight:700;flex:1}
+.prog{font-weight:700}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin-top:10px;position:relative}
+.title{font-weight:800;font-size:1.15rem;margin-bottom:4px}
+.how{color:var(--muted);font-size:.95rem}
+.text{position:relative;font-size:1.3rem;line-height:2.7;margin-top:6px}
+.t{padding:2px 2px;border-radius:8px;cursor:pointer;transition:background .15s}
+.t.hover{background:rgba(224,123,0,.18)}
+.pr{border:2.5px solid var(--ink);border-radius:9px;padding:0 6px;font-weight:800;cursor:grab;touch-action:none;position:relative;background:var(--card)}
+.pr.sel{border-color:var(--cable);box-shadow:0 0 0 4px rgba(224,123,0,.25)}
+.pr.done{border-color:var(--ok);color:var(--ok);cursor:default}
+.t.hit{outline:2.5px solid var(--ok);outline-offset:1px;border-radius:50%}
+svg.cables{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+.plug{fill:var(--cable)}
+.shake{animation:shake .35s}
+@keyframes shake{20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
+.float{position:absolute;font-weight:900;font-size:1.3rem;pointer-events:none;animation:up 1s ease-out forwards;z-index:9}
+.float.plus{color:var(--ok)}.float.minus{color:var(--bad)}
+@keyframes up{from{transform:translateY(0);opacity:1}to{transform:translateY(-46px);opacity:0}}
+.msg{min-height:2.2em;margin-top:8px;font-weight:700}
+.msg.ok{color:var(--ok)}.msg.bad{color:var(--bad)}
+button{font:inherit;font-size:1.05rem;padding:11px 16px;border-radius:12px;border:2px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;min-height:48px}
+button.main{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:800}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.big{font-size:3.2rem;text-align:center}
+.small{color:var(--muted);font-size:.9rem}
+</style>
+</head>
+<body>
+<main>
+  <div class="crumb"><a href="../../">Klasse 7.3</a> › <a href="../">GW</a></div>
+  <h1>🔌 Kabel-Detektiv: Wer ist gemeint?</h1>
+  <div class="hud"><span class="score" id="score">⭐ 0</span><span class="lvl" id="lvl"></span><span class="prog" id="prog"></span><button id="mute" style="min-height:40px;padding:6px 10px">🔊</button></div>
+  <div id="app"></div>
+</main>
+<script>
+// ===================== Texte =====================
+// [Pronomen>gruppe]   {Nomen#gruppe}   Gruppe = gemeinte Person/Sache
+const LEVELS=[
+ {t:'1 · Ein Lehen für Graf Otto', names:{k:'König Karl',o:'Graf Otto',l:'das Land'},
+  s:'{König#k} {Karl#k} ruft {Graf#o} {Otto#o} zu sich. [Er>k] gibt [ihm>o] ein großes Stück {Land#l}. Aber das {Land#l} gehört nicht {Otto#o}. Der {König#k} leiht [es>l] [ihm>o] nur. Dafür muss der {Graf#o} [ihm>k] immer treu sein.'},
+ {t:'2 · Der Ritter Konrad', names:{o:'Graf Otto',r:'die Ritter',c:'Konrad',d:'das Dorf'},
+  s:'{Graf#o} {Otto#o} hat viele {Ritter#r}. Einer von [ihnen>r] heißt {Konrad#c}. {Otto#o} verleiht [ihm>c] ein {Dorf#d}. Nun muss {Konrad#c} für [seinen>c] {Herrn#o} in den Krieg ziehen. Dafür schützt [ihn>c] der {Graf#o}. Verkaufen darf {Konrad#c} das {Dorf#d} nie, denn [es>d] gehört [ihm>c] nicht.'},
+ {t:'3 · Der Sendgraf kommt', names:{b:'die Bauern',s:'der Sendgraf',k:'König Karl',g:'der Graf'},
+  s:'Die {Bauern#b} im Dorf sind aufgeregt. Der {Sendgraf#s} ist da! {Karl#k} hat [ihn>s] geschickt. [Er>s] soll prüfen, ob der {Graf#g} [seine>g] Arbeit gut macht. Die {Bauern#b} erzählen [ihm>s], dass der {Graf#g} [ihnen>b] zu viel Korn wegnimmt. Am Abend reitet der {Sendgraf#s} zurück zu [seinem>s] {König#k}.'},
+ {t:'4 · Der Reisekönig kommt', names:{k:'der König',p:'der Pfalzgraf',m:'die Menschen'},
+  s:'Wenn der {König#k} mit [seinem>k] Gefolge kommt, hat der {Pfalzgraf#p} viel Arbeit. [Er>p] muss tausend {Menschen#m} versorgen. [Ihre>m] Pferde brauchen Futter, und [sie>m] selbst wollen essen und schlafen. Nach drei Wochen sind alle Vorräte leer. Dann zieht der {König#k} weiter. [Er>k] nimmt [seine>k] Leute einfach mit.'}
+];
+
+// ===================== Sound =====================
+let AC=null, muted=false;
+function ac(){ if(!AC){ try{AC=new (window.AudioContext||window.webkitAudioContext)();}catch(e){} } if(AC&&AC.state==='suspended') AC.resume(); return AC; }
+function tone(f1,f2,t0,dur,type,vol){ const a=ac(); if(!a||muted) return; const o=a.createOscillator(), g=a.createGain();
+  o.type=type; o.frequency.setValueAtTime(f1,a.currentTime+t0); o.frequency.exponentialRampToValueAtTime(f2,a.currentTime+t0+dur);
+  g.gain.setValueAtTime(0.0001,a.currentTime+t0); g.gain.exponentialRampToValueAtTime(vol,a.currentTime+t0+0.01); g.gain.exponentialRampToValueAtTime(0.0001,a.currentTime+t0+dur);
+  o.connect(g).connect(a.destination); o.start(a.currentTime+t0); o.stop(a.currentTime+t0+dur+0.02); }
+function soundOk(){ tone(880,880,0,0.09,'triangle',0.25); tone(1320,1330,0.08,0.16,'triangle',0.25); }
+function soundBad(){ const a=ac(); if(!a||muted) return;
+  // Peitschenknall: kurzes Rauschen mit Hochpass-Sweep
+  const len=Math.floor(a.sampleRate*0.09), buf=a.createBuffer(1,len,a.sampleRate), d=buf.getChannelData(0);
+  for(let i=0;i<len;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/len,3);
+  const n=a.createBufferSource(); n.buffer=buf; const hp=a.createBiquadFilter(); hp.type='highpass';
+  hp.frequency.setValueAtTime(700,a.currentTime); hp.frequency.exponentialRampToValueAtTime(7000,a.currentTime+0.06);
+  const g=a.createGain(); g.gain.value=0.6; n.connect(hp).connect(g).connect(a.destination); n.start();
+  // „Määp“ nach unten
+  tone(300,130,0.07,0.28,'square',0.09); }
+function soundWin(){ [523,659,784,1047].forEach((f,i)=>tone(f,f,i*0.1,0.18,'triangle',0.22)); }
+
+// ===================== Zustand =====================
+let score=0, level=0, best=0; try{best=+localStorage.getItem('kabel-best')||0}catch(e){}
+const app=document.getElementById('app');
+function setScore(d){ score+=d; document.getElementById('score').textContent='⭐ '+score; }
+
+// ===================== Level bauen =====================
+let cables=[], drag=null, selected=null, svg, textEl, msg, prs=[];
+function parse(s){ const out=[]; const re=/\[([^\]>]+)>(\w)\]|\{([^}#]+)#(\w)\}|([^\s\[\{]+)|(\s+)/g; let m;
+  while((m=re.exec(s))){ if(m[1]) out.push({k:'p',w:m[1],a:m[2]}); else if(m[3]) out.push({k:'n',w:m[3],g:m[4]}); else if(m[5]) out.push({k:'w',w:m[5]}); else out.push({k:'s'}); }
+  return out; }
+function startScreen(){
+  document.getElementById('lvl').textContent=''; document.getElementById('prog').textContent='';
+  app.innerHTML=`<div class="card"><div class="big">🔌</div>
+  <p><b>Pronomen</b> wie <i>er, ihm, ihn, sie, es, sein</i> stehen für ein <b>Nomen</b>. Aber für welches?</p>
+  <p>Zieh ein <b>Kabel</b> vom <span class="pr" style="cursor:default">eingerahmten</span> Wort zu dem Wort, das gemeint ist.<br>
+  <span class="small">Oder: erst das Pronomen antippen, dann das Nomen.</span></p>
+  <p>✅ Richtig: <b>+10</b> &nbsp; ❌ Falsch: <b>−5</b> – das Kabel schnalzt zurück!</p>
+  <p class="small">Achtung: Manchmal steht das Nomen weit weg. Und zweimal „ihm“ heißt nicht immer dieselbe Person …</p>
+  ${best?`<p class="small">Dein Rekord: ⭐ ${best}</p>`:''}
+  <div class="row"><button class="main" id="go">Los geht's</button></div></div>`;
+  document.getElementById('go').onclick=()=>{ac(); score=0; setScore(0); level=0; buildLevel();};
+}
+function buildLevel(){
+  const L=LEVELS[level]; cables=[]; selected=null; drag=null;
+  document.getElementById('lvl').textContent='Text '+(level+1)+' von '+LEVELS.length;
+  app.innerHTML=`<div class="card"><div class="title">${L.t}</div><div class="how">Verbinde jedes eingerahmte Pronomen mit dem gemeinten Wort.</div>
+   <div class="text" id="text"></div><div class="msg" id="msg"></div><div class="row" id="next"></div></div>`;
+  textEl=document.getElementById('text'); msg=document.getElementById('msg');
+  textEl.innerHTML=parse(L.s).map((t,i)=>t.k==='s'?' ':t.k==='p'?`<span class="pr" data-a="${t.a}" data-i="${i}">${t.w}</span>`
+    :/^[.,!?;:]+$/.test(t.w)?t.w:`<span class="t" ${t.k==='n'?`data-g="${t.g}"`:''}>${t.w}</span>`).join('')
+    +'<svg class="cables" id="svg"></svg>';
+  svg=document.getElementById('svg'); prs=[...textEl.querySelectorAll('.pr')];
+  prs.forEach(p=>p.addEventListener('pointerdown',onDown));
+  textEl.querySelectorAll('.t').forEach(t=>t.addEventListener('click',e=>{ if(selected) shootTo(selected,t); }));
+  updProg();
+}
+function updProg(){ const d=prs.filter(p=>p.classList.contains('done')).length; document.getElementById('prog').textContent=d+'/'+prs.length+' 🔌'; }
+
+// ===================== Kabel-Geometrie =====================
+function center(el,top){ const r=el.getBoundingClientRect(), b=textEl.getBoundingClientRect(); return {x:r.left+r.width/2-b.left, y:(top?r.top+4:r.top+r.height/2)-b.top}; }
+function rel(e){ const b=textEl.getBoundingClientRect(); return {x:e.clientX-b.left, y:e.clientY-b.top}; }
+function cablePath(a,b,sag){ const mx=(a.x+b.x)/2, my=(a.y+b.y)/2, dist=Math.hypot(b.x-a.x,b.y-a.y);
+  return `M${a.x},${a.y} Q${mx},${my+sag+dist*0.18} ${b.x},${b.y}`; }
+function newCable(){ const p=document.createElementNS('http://www.w3.org/2000/svg','path'); p.setAttribute('fill','none');
+  p.setAttribute('stroke','var(--cable)'); p.setAttribute('stroke-width','4'); p.setAttribute('stroke-linecap','round');
+  const c=document.createElementNS('http://www.w3.org/2000/svg','circle'); c.setAttribute('r','6'); c.setAttribute('class','plug');
+  svg.appendChild(p); svg.appendChild(c); return {p,c}; }
+function drawCable(cb,a,b,sag){ cb.p.setAttribute('d',cablePath(a,b,sag)); cb.c.setAttribute('cx',b.x); cb.c.setAttribute('cy',b.y); }
+
+// ===================== Ziehen =====================
+function onDown(e){ const p=e.currentTarget; if(p.classList.contains('done')) return; ac(); e.preventDefault();
+  p.setPointerCapture(e.pointerId); const cb=newCable(); drag={p,cb,moved:false,start:rel(e),hover:null};
+  drawCable(cb,center(p),rel(e),0);
+  p.onpointermove=ev=>{ const pt=rel(ev); if(Math.hypot(pt.x-drag.start.x,pt.y-drag.start.y)>8) drag.moved=true;
+    drawCable(cb,center(p),pt,8); const t=target(ev); if(drag.hover&&drag.hover!==t) drag.hover.classList.remove('hover'); if(t){t.classList.add('hover');} drag.hover=t; };
+  p.onpointerup=ev=>{ p.onpointermove=p.onpointerup=null; if(drag.hover) drag.hover.classList.remove('hover');
+    const t=target(ev), d=drag; drag=null;
+    if(!d.moved){ d.cb.p.remove(); d.cb.c.remove(); select(p); return; }
+    if(!t){ snapBack(p,d.cb,rel(ev)); return; }
+    check(p,t,d.cb,rel(ev)); };
+}
+function target(ev){ const el=document.elementFromPoint(ev.clientX,ev.clientY); return el&&el.classList&&el.classList.contains('t')?el:null; }
+function select(p){ prs.forEach(x=>x.classList.remove('sel')); if(selected===p){selected=null;return;} selected=p; p.classList.add('sel');
+  msg.className='msg'; msg.textContent='Jetzt tippe auf das Wort, das „'+p.textContent+'“ meint.'; }
+function shootTo(p,t){ p.classList.remove('sel'); selected=null; const cb=newCable(), a=center(p), b=center(t); let k=0;
+  (function f(){ k=Math.min(1,k+0.12); drawCable(cb,a,{x:a.x+(b.x-a.x)*k,y:a.y+(b.y-a.y)*k},10*(1-k)); if(k<1) requestAnimationFrame(f); else check(p,t,cb,b); })(); }
+
+// ===================== Prüfen =====================
+function check(p,t,cb,from){
+  const L=LEVELS[level], ok=t.dataset.g===p.dataset.a;
+  if(ok){ p.classList.add('done'); t.classList.add('hit'); setScore(10); soundOk(); floatTxt('+10',t,true);
+    msg.className='msg ok'; msg.textContent='✓ „'+p.textContent+'“ = '+L.names[p.dataset.a];
+    const c={p,t,cb,t0:performance.now()}; cables.push(c); wobble(c); updProg();
+    if(prs.every(x=>x.classList.contains('done'))) setTimeout(levelDone,700);
+  } else { setScore(-5); soundBad(); floatTxt('−5',t,false); t.classList.add('shake'); setTimeout(()=>t.classList.remove('shake'),400);
+    msg.className='msg bad'; msg.textContent='✗ Nicht „'+t.textContent.replace(/[.,!?]/g,'')+'“. Lies den Satz noch einmal genau.'; snapBack(p,cb,from); }
+}
+function wobble(c){ const f=()=>{ const dt=(performance.now()-c.t0)/1000; const sag=22*Math.exp(-5*dt)*Math.sin(dt*18);
+  drawCable(c.cb,center(c.p),center(c.t),sag); if(dt<1.2) requestAnimationFrame(f); }; f(); }
+function snapBack(p,cb,from){ const t0=performance.now(), D=420;
+  const f=()=>{ const a=center(p); let k=Math.min(1,(performance.now()-t0)/D);
+    const e=1-Math.pow(2,-10*k)*Math.cos(k*Math.PI*4.5); // elastisch zurück
+    const b={x:from.x+(a.x-from.x)*e, y:from.y+(a.y-from.y)*e};
+    drawCable(cb,a,b,-14*(1-k)); if(k<1) requestAnimationFrame(f); else { cb.p.remove(); cb.c.remove(); p.classList.add('shake'); setTimeout(()=>p.classList.remove('shake'),400);} };
+  f(); }
+function floatTxt(s,el,plus){ const r=el.getBoundingClientRect(); const d=document.createElement('div'); d.className='float '+(plus?'plus':'minus');
+  d.textContent=s; d.style.left=(r.left+window.scrollX)+'px'; d.style.top=(r.top+window.scrollY-10)+'px'; document.body.appendChild(d); setTimeout(()=>d.remove(),1000); }
+window.addEventListener('resize',()=>cables.forEach(c=>drawCable(c.cb,center(c.p),center(c.t),0)));
+
+// ===================== Level-Ende =====================
+function levelDone(){ soundWin(); const last=level===LEVELS.length-1;
+  document.getElementById('next').innerHTML= last? `<button class="main" id="nx">🏁 Zum Ergebnis</button>` : `<button class="main" id="nx">Nächster Text →</button>`;
+  msg.className='msg ok'; msg.textContent='🎉 Alle Kabel stecken!';
+  document.getElementById('nx').onclick=()=>{ if(last) endScreen(); else { level++; buildLevel(); window.scrollTo(0,0);} }; }
+function endScreen(){ const max=LEVELS.reduce((s,L)=>s+(L.s.match(/\[/g)||[]).length*10,0);
+  if(score>best){best=score; try{localStorage.setItem('kabel-best',best)}catch(e){}}
+  const stars=score>=max*0.9?'⭐⭐⭐':score>=max*0.6?'⭐⭐':'⭐';
+  document.getElementById('lvl').textContent='Fertig!'; document.getElementById('prog').textContent='';
+  app.innerHTML=`<div class="card"><div class="big">${stars}</div><p style="text-align:center;font-size:1.3rem"><b>${score}</b> von ${max} Punkten</p>
+   <p>Du hast herausgefunden, wer bei Lehnsherr, Vasall, Sendgraf und Reisekönig gemeint ist. 🔌</p>
+   <p class="small">Rekord auf diesem Gerät: ⭐ ${best}</p>
+   <div class="row"><button class="main" id="again">Nochmal spielen</button></div></div>`;
+  document.getElementById('again').onclick=()=>{score=0;setScore(0);level=0;buildLevel();}; }
+
+document.getElementById('mute').onclick=e=>{muted=!muted; e.target.textContent=muted?'🔇':'🔊';};
+startScreen();
+</script>
+</body>
+</html>
