@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Notenrechner (ZP)</title>
+<style>
+  :root { --ink:#1b2430; --muted:#5b6675; --line:#1b2430; --hl:#ffe45c; --bg:#f4f6f9; }
+  * { box-sizing: border-box; }
+  body { font-family: system-ui, "Segoe UI", Arial, sans-serif; color:var(--ink); background:var(--bg); margin:0; padding:20px; }
+  .wrap { max-width: 760px; margin: 0 auto; }
+  h1 { margin: 0 0 14px; font-size: 1.5rem; }
+  .card { background:#fff; border:2px solid var(--line); border-radius:10px; padding:16px; margin-bottom:16px; }
+  .inputs { display:flex; flex-wrap:wrap; gap:16px; align-items:flex-end; }
+  label { display:block; font-weight:600; font-size:.9rem; margin-bottom:4px; }
+  input { font-size:1.4rem; width:150px; padding:8px 10px; border:2px solid var(--line); border-radius:6px; text-align:right; }
+  #max { background:var(--hl); }
+  .result { display:flex; flex-wrap:wrap; gap:12px; margin-top:16px; }
+  .box { flex:1 1 120px; border:2px solid var(--line); border-radius:8px; padding:10px; text-align:center; }
+  .box small { display:block; color:var(--muted); font-weight:600; }
+  .box strong { font-size:2.2rem; line-height:1.1; }
+  .note { color:var(--muted); font-size:.85rem; margin-top:10px; }
+  table { border-collapse:collapse; width:100%; background:#fff; }
+  th, td { border:1px solid var(--line); padding:6px 10px; text-align:right; }
+  th { border:2px solid var(--line); background:#fff; text-align:left; }
+  td:first-child { font-weight:700; }
+  tr.active td { background:var(--hl); font-weight:700; outline:3px solid var(--line); outline-offset:-3px; }
+  tr.active td:first-child::before { content:"▶ "; }
+  .err { color:#b00020; font-weight:600; }
+  @media print { body { background:#fff; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Notenrechner: Punkte → ZP</h1>
+
+  <div class="card">
+    <div class="inputs">
+      <div>
+        <label for="max">maximale Punktzahl</label>
+        <input id="max" type="number" min="1" step="0.5" value="100" inputmode="decimal">
+      </div>
+      <div>
+        <label for="pts">erreichte Punkte</label>
+        <input id="pts" type="number" min="0" step="0.5" inputmode="decimal" autofocus>
+      </div>
+    </div>
+    <div id="msg" class="err"></div>
+    <div class="result">
+      <div class="box"><small>Prozent</small><strong id="rPct">–</strong></div>
+      <div class="box"><small>ZP</small><strong id="rZp">–</strong></div>
+      <div class="box"><small>Note</small><strong id="rNote">–</strong></div>
+    </div>
+    <div class="note">Die Grenzpunkte werden bei x,5 aufgerundet (z. B. 18,5 → 19).</div>
+  </div>
+
+  <table>
+    <thead>
+      <tr><th>Prozent</th><th>ZP</th><th>Note</th><th>ab Punkte</th><th>Bereich</th></tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+  </table>
+</div>
+
+<script>
+// ZP, Mindest-Prozent, Note
+const STUFEN = [
+  [15,100,1],[14,95,1],[13,90,1],[12,85,2],[11,80,2],[10,75,2],[9,70,3],[8,66,3],
+  [7,62,3],[6,58,4],[5,54,4],[4,50,4],[3,36,5],[2,26,5],[1,16,5],[0,0,6]
+];
+// kaufmännisch runden: 0,5 immer auf
+const runde = x => Math.floor(x + 0.5 + 1e-9);
+const fmt = x => String(x).replace('.', ',');
+
+const elMax = document.getElementById('max'), elPts = document.getElementById('pts');
+const tbody = document.getElementById('tbody');
+
+function grenzen(max) {
+  // Mindestpunkte je ZP (aufgerundet bei 0,5)
+  const g = STUFEN.map(([zp, p, note]) => ({ zp, p, note, min: zp === 0 ? 0 : runde(p * max / 100) }));
+  g.forEach((s, i) => {
+    s.max = i === 0 ? max : g[i - 1].min - 1;   // obere Grenze (ganze Punkte)
+  });
+  return g;
+}
+
+function berechne() {
+  const max = parseFloat(elMax.value.replace(',', '.'));
+  const pts = parseFloat(elPts.value.replace(',', '.'));
+  const msg = document.getElementById('msg');
+  msg.textContent = '';
+  if (!(max > 0)) { msg.textContent = 'Bitte eine maximale Punktzahl > 0 eingeben.'; return; }
+
+  const g = grenzen(max);
+  let aktiv = null;
+  if (!isNaN(pts)) {
+    if (pts < 0 || pts > max) msg.textContent = 'Die Punktzahl muss zwischen 0 und ' + fmt(max) + ' liegen.';
+    else {
+      // erreichte Punkte werden bei x,5 ebenfalls aufgerundet
+      const eff = runde(pts);
+      aktiv = g.find(s => eff >= s.min);
+    }
+  }
+
+  document.getElementById('rPct').textContent = (!isNaN(pts) && pts >= 0 && pts <= max) ? fmt(Math.round(pts / max * 1000) / 10) + ' %' : '–';
+  document.getElementById('rZp').textContent = aktiv ? aktiv.zp : '–';
+  document.getElementById('rNote').textContent = aktiv ? aktiv.note : '–';
+
+  tbody.innerHTML = g.map(s => {
+    const bereich = s.min > s.max ? '–' : (s.min === s.max ? fmt(s.min) : fmt(s.min) + ' – ' + fmt(s.max));
+    const label = s.zp === 0 ? '< ' + STUFEN[STUFEN.length - 2][1] : (s.p === 100 ? '100' : 'ab ' + s.p);
+    return `<tr class="${aktiv && aktiv.zp === s.zp ? 'active' : ''}"><td>${label}</td><td>${s.zp}</td><td>${s.note}</td><td>${s.zp === 0 ? '0' : fmt(s.min)}</td><td>${bereich}</td></tr>`;
+  }).join('');
+}
+
+elMax.addEventListener('input', berechne);
+elPts.addEventListener('input', berechne);
+berechne();
+</script>
+</body>
+</html>
